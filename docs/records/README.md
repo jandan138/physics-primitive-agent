@@ -65,3 +65,5 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-14 Current CPD-Like Status And Newton Probe Next Step](2026-05-14-current-cpd-like-status-and-newton-probe-next-step.md):
   separates clean environment readiness, geometry-only CPD-like evidence, and the unimplemented
   Newton simulation probe layer.
+- [2026-05-14 Newton Contact Smoke](2026-05-14-newton-contact-smoke.md): first contact-only
+  Newton canary consuming CPD-like primitive proposals.

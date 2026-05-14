@@ -17,6 +17,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   diagnostics.
 - The current code can run a geometry-only CPD-like face-merge primitive proposal smoke path for
   a restricted primitive subset, when tied to a dated record and capped asset/config settings.
+- The current code can run a contact-only Newton canary for representative Newton-mapped primitive
+  types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current clean local Python/Newton environment-readiness report can be described as
   `smoke_passed` evidence for the named environment path, Newton source checkout, and hardware
   environment in the dated record.

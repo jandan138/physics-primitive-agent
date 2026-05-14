@@ -10,9 +10,10 @@ DeepDive-first workflow around Newton primitive collision artifacts.
 This repository is a proposal/bootstrap for a DeepDive-first Newton primitive collision
 compiler. It now includes a geometry-only CPD-like face-merge smoke path over USD meshes, plus
 config dry-runs, USD asset-open smoke diagnostics, Newton source diagnostics, and environment
-readiness checks. The clean local Newton Python environment has recorded readiness evidence, but
-the repository does not yet run Newton simulation probes, produce benchmark results, or implement a
-production collision compiler.
+readiness checks. It also includes a contact-only Newton canary for representative mapped primitive
+types. The clean local Newton Python environment has recorded readiness evidence, but the
+repository does not yet run task-level Newton simulation probes, produce benchmark results, or
+implement a production collision compiler.
 
 ## Strategic Framing
 
@@ -89,7 +90,7 @@ current basis for project framing, claim boundaries, and future implementation p
 ## Current Non-Goals
 
 - No production mesh-processing or collision-compiler implementation.
-- No Newton simulation probe execution yet; the next implementation target is the first named
-  Newton diagnostic probe.
+- No task-level Newton simulation probe execution yet; the next implementation target is a small
+  drop/settle diagnostic probe.
 - No generated collision artifact pipeline.
 - No claim of production readiness.

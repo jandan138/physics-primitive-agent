@@ -16,6 +16,9 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run a geometry-only CPD-like face-merge smoke path that
   extracts a USD mesh, fits restricted `box`/`sphere`/`capsule` primitive candidates, greedily
   merges adjacent face groups by weighted excess volume, and emits a JSON diagnostic report.
+- The current executable surface can convert the CPD-like geometry report into a common collision
+  package and run `newton_contact_smoke`, a contact-only Newton canary for representative
+  Newton-mapped primitive types.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
@@ -25,7 +28,7 @@ This file separates current evidence from future claims. See [message-map.md](me
 ## Current Unsupported Claims
 
 - General primitive fitting quality across arbitrary assets has not been evaluated.
-- Newton simulation checker results exist for CPD-like primitive proposals.
+- Task-level Newton simulation checker results exist for CPD-like primitive proposals.
 - The method beats CoACD, V-HACD, CPD-like decomposition, manual primitive colliders, or Newton-native approximate mesh modes.
 - The approach improves robot policy training, real robot behavior, or deployment safety.
 - LLM/VLM improves primitive generation.
@@ -59,10 +62,10 @@ Physical intelligence requires model outputs to be checked against physical cons
 
 ## Narrow First Milestone
 
-The first local clean Newton runtime readiness gap is resolved, and a geometry-only CPD-like
-primitive proposal smoke path exists. Next connect that proposal output to a named Newton
-diagnostic checker before adding LLM/VLM. Report failures and fallback behavior as first-class
-evidence.
+The first local clean Newton runtime readiness gap is resolved, a geometry-only CPD-like primitive
+proposal smoke path exists, and a contact-only Newton canary exists. Next expand from contact
+canary evidence to a task-level Newton diagnostic probe before adding LLM/VLM. Report failures and
+fallback behavior as first-class evidence.
 
 ## Current Non-Goals
 
