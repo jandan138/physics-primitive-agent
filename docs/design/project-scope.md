@@ -28,7 +28,7 @@ The leadership story connects the project to AI model physical safety constraint
 
 ## First Milestone
 
-The first 0-4 week milestone is non-LLM primitive baseline plus Newton checker/verifier. The milestone should prove whether primitive-first compilation is worth expanding before LLM/VLM is introduced.
+The first 0-4 week milestone is non-LLM primitive baseline plus Newton checker/verifier. The milestone should measure whether primitive-first compilation is worth expanding before LLM/VLM is introduced.
 
 ## Current Non-Goals
 

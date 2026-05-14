@@ -2,6 +2,8 @@
 
 The evaluation plan defines what evidence must exist before the project makes stronger claims. It supports the DeepDive first milestone: non-LLM primitive baseline plus Newton checker/verifier.
 
+Physics engines are treated here as executable diagnostics for AI model physical safety constraints. The metrics below are not safety guarantees; they are scoped observations of candidate collision-proxy failures under named Newton assumptions, tasks, and versions.
+
 ## Baseline
 
 Compare against:
@@ -12,6 +14,7 @@ Compare against:
 - V-HACD;
 - CoACD;
 - CPD-like primitive decomposition when available;
+- VisACD when available;
 - manual primitive colliders when available;
 - SDF or hydroelastic oracle where appropriate;
 - original triangle mesh where valid for the simulator/task;
@@ -74,13 +77,13 @@ Do not report benchmark superiority until the sample size, task coverage, and st
 
 ## Phase Gate
 
-Phase 0 gate: reproduce baselines on about 20 provenance-clear assets and confirm the checker harness is stable enough to measure them.
+DeepDive proof point, 0-4 weeks: run 5-10 provenance-clear assets, 2-3 Newton probes, and 2-3 baselines to confirm the project is measurable and failure modes are reportable.
 
-Phase 1 gate: evaluate the non-LLM primitive baseline on about 50 assets and show whether it provides runtime, editability, task, or fallback-reporting value.
+Phase 1 gate, 4-8 weeks: expand toward about 20-50 assets and the broader baseline matrix, including VisACD when available, manual primitives when available, and Newton-native approximation modes.
 
-Phase 2 gate: add checker-guided repair and verify that repair/fallback improves failures without hiding unsupported regions.
+Phase 2 gate, 8-12 weeks: add checker-guided repair and measure whether repair/fallback improves failures without hiding unsupported regions.
 
-Phase 3 gate: add LLM/VLM only after non-LLM value is demonstrated; require ablation evidence that model semantics improve planning, budget selection, or repair.
+Phase 3/4 gate, 12-24 weeks: add LLM/VLM only after non-LLM value is demonstrated; require ablation evidence that model semantics improve planning, budget selection, or repair, then decide whether productization or paper work is justified.
 
 ## No-Go Criteria
 

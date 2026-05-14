@@ -36,11 +36,13 @@ Do not claim:
 
 The 0-4 week proof point is deliberately narrow:
 
-- implement a non-LLM primitive baseline for simple assets;
-- build a Newton checker/verifier harness for drop, stack, slide, sphere-rain, grasp-proxy, container, and hole-traversal style tasks where applicable;
-- compare against simple baselines such as bounding box, bounding sphere, single convex hull, V-HACD, CoACD, manual primitive colliders when available, and Newton-native approximate mesh modes;
-- report primitive count, fallback ratio, step time, contact behavior, penetration, jitter, task success, and generation failure rate;
+- implement a non-LLM primitive baseline for 5-10 simple, provenance-clear assets;
+- build 2-3 Newton probes first: drop, stack or slide, and sphere-rain/contact stress;
+- compare against 2-3 baselines first: bounding box or sphere, single convex hull, and CoACD or V-HACD when available;
+- report a minimal metric set: primitive count, fallback ratio, step time, contact count, penetration or jitter, and generation failure rate;
 - produce failure examples and fallback reasons instead of hiding them.
+
+The full benchmark matrix belongs to later phases after this proof point shows the path is measurable.
 
 LLM/VLM planning, repair, or semantic decomposition is deferred until the non-LLM baseline demonstrates value.
 

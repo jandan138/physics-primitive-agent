@@ -8,6 +8,7 @@ Time: 4-5 minutes.
 
 - Physical-intelligence workflows depend on simulation checks.
 - Collision geometry is a hidden contract between assets, models, policies, and physics.
+- A concrete failure case: a visual handle or gap can be open in the render mesh but blocked by a coarse collider, while an under-conservative proxy can let a policy appear to pass through a surface.
 - Render meshes are not reliable dynamic collision assets.
 - Existing automated convex decomposition is useful but can be hard to edit, explain, or tune for tasks.
 
@@ -49,11 +50,10 @@ Time: 4-5 minutes.
 
 0-4 weeks:
 
-- build non-LLM primitive baseline;
-- build Newton checker/verifier harness;
-- run a small licensed asset set;
-- compare against simple baselines and existing decomposition modes;
-- report failures, fallback ratio, and task metrics.
+- build a non-LLM primitive baseline for 5-10 provenance-clear assets;
+- build 2-3 Newton probes: drop, stack or slide, and sphere-rain/contact stress;
+- compare against 2-3 baselines: bounding box or sphere, single convex hull, and CoACD or V-HACD when available;
+- report failures, fallback ratio, step time, contact count, and penetration or jitter.
 
 4-12 weeks:
 

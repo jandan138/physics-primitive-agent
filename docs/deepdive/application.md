@@ -4,9 +4,11 @@
 
 AI systems for physical intelligence increasingly generate scenes, assets, and robot behaviors. Those outputs become meaningful only when they can be tested against physical constraints. Today, collision geometry is often treated as a low-level asset conversion detail, but it is actually a hidden contract between model output, simulator behavior, and downstream robotics evaluation.
 
+Concrete failure scenario: an imported or AI-generated asset may look correct, but its collision proxy can leave a handle hollow in the render mesh and blocked in physics, or allow a gripper to pass through a surface. Newton can expose that false clearance or unstable contact only if the proxy is represented, checked, and reported as an explicit artifact.
+
 The project asks whether we can build a Newton Primitive Collision Compiler: a primitive-first, simulation-checked, fallback-aware tool that turns visual assets into editable collision proxies, checks them in Newton, and records when existing methods such as CoACD, SDF, hydroelastic, or manual review are still required.
 
-The immediate DeepDive goal is not to claim a finished compiler. It is to get review and support for a narrow first milestone that can quickly prove whether the non-LLM baseline has value.
+The immediate DeepDive goal is not to claim a finished compiler. It is to get review and support for a narrow first milestone that can quickly measure whether the non-LLM baseline has value.
 
 ## Strategic Relevance
 
@@ -44,12 +46,12 @@ The current evidence supports a project proposal and milestone plan, not researc
 
 The first milestone is a non-LLM primitive baseline plus Newton checker/verifier:
 
-- select a small, licensed/provenance-clear asset set;
+- select 5-10 simple, licensed/provenance-clear assets;
 - normalize scale and task labels;
 - generate simple primitive proposals with a fixed budget;
-- compare against bounding box, bounding sphere, single convex hull, V-HACD, CoACD, manual primitive colliders where available, and Newton-native approximate mesh modes;
-- run Newton task probes such as drop, stack, slide, sphere rain, grasp proxy, container, and hole traversal when applicable;
-- report primitive count, fallback surface ratio, generation failure rate, runtime, contact counts, penetration, jitter, and task success;
+- compare against 2-3 baselines: bounding box or sphere, single convex hull, and CoACD or V-HACD when available;
+- run 2-3 Newton probes first: drop, stack or slide, and sphere-rain/contact stress;
+- report primitive count, fallback surface ratio, generation failure rate, step time, contact count, and one penetration or jitter signal;
 - decide whether the baseline justifies Phase 1.
 
 Success means useful evidence and clear failure modes, not universal success across assets.

@@ -2,6 +2,8 @@
 
 This protocol defines how future evidence should be collected for the Newton Primitive Collision Compiler. It exists before benchmark execution so the project does not retrofit metrics to outcomes.
 
+The benchmark is a scoped diagnostic for AI model physical safety constraints: it makes candidate collision-proxy failures observable in Newton, but it does not certify real-world safety.
+
 ## Asset Categories
 
 Include representative assets across:
@@ -66,7 +68,16 @@ Benchmark task templates include:
 - hole traversal;
 - explicit precision-task rejection.
 
-Each template must define initial conditions, solver settings, duration, metrics, seeds, and pass/fail interpretation.
+Minimal initial templates:
+
+| Task | Initial Conditions | Metrics | Pass/Fail Interpretation |
+|---|---|---|---|
+| drop | object above plane, fixed gravity, fixed duration | penetration, jitter, contact count, step time | detects gross missed collision or unstable rest |
+| stack or slide | object placed on support or pushed along plane | stability time, contact count, jitter, displacement | detects over/under-conservative support behavior |
+| sphere rain/contact stress | small spheres above/around asset | contact count p95, penetration, runtime | detects blocked openings, excess contacts, and false clearances |
+| precision rejection | peg/hole or thin-wall stress asset | rejection/fallback decision, reason | passes only if primitive-only output is rejected or locally falls back |
+
+Later templates may add roll, grasp proxy, container, and hole traversal after the proof point is stable. Each template must define solver settings, duration, seeds, and pass/fail interpretation before it can support claims.
 
 ## Failure Taxonomy
 
@@ -92,7 +103,7 @@ The benchmark supports the physical-intelligence safety-constraint story by maki
 
 ## Narrow First Milestone
 
-Use a small provenance-clear subset for the 0-4 week non-LLM primitive baseline plus Newton checker/verifier.
+Use 5-10 provenance-clear assets for the 0-4 week non-LLM primitive baseline plus Newton checker/verifier. Broader task and asset coverage belongs to later phase gates.
 
 ## Current Non-Goals
 

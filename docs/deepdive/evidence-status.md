@@ -8,7 +8,7 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The safe project framing is primitive-first, simulation-checked, fallback-aware collision asset compilation.
 - The first milestone is a non-LLM primitive baseline plus Newton checker/verifier.
 - LLM/VLM should be deferred until the non-LLM baseline shows value.
-- The project explicitly preserves fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.
+- The proposal requires explicit fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.
 
 ## Current Unsupported Claims
 
