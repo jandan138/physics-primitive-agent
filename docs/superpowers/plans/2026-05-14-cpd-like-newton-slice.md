@@ -114,13 +114,13 @@ assets:
   - role: bed_dev_smoke
     path: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets/bed/0a85b986de35ccfdec7c686d791fd747/usd/0a85b986de35ccfdec7c686d791fd747.usd
     sha256: 1bc5a26ddb2551de4ac7acbc13a39d118beda10db503419da65ce82528322265
-    size_bytes: 41358161
+    size_bytes: 41255804
     provenance_status: internal_dataset_path_unreviewed
     include_in_cpd_like_aggregate: false
   - role: franka_import_smoke
     path: /cpfs/user/zhuzihou/assets/zzh-grscenes/robots/franka/franka.usd
     sha256: 2bfd004928d4157ca2fdca3e79bcfb913b4008eef3ec16f839ad89314141976b
-    size_bytes: 79079
+    size_bytes: 79629
     provenance_status: internal_dataset_path_unreviewed
     include_in_cpd_like_aggregate: false
 ```
