@@ -37,8 +37,9 @@ Current repository state:
 - a minimal Python package skeleton and dry-run CLI exist;
 - a geometry-only CPD-like face-merge smoke path exists for restricted
   `box`/`sphere`/`capsule` primitive proposals;
+- a contact-only Newton canary smoke path exists for representative mapped primitive types;
 - DeepDive application materials are being organized;
-- no Newton checker results exist today;
+- no task-level Newton diagnostic probe results exist today;
 - no benchmark metrics exist today.
 
 The current evidence supports a project proposal and milestone plan, not research conclusions.

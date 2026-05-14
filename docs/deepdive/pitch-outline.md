@@ -41,9 +41,11 @@ Time: 3-4 minutes.
 - Repository skeleton exists.
 - Dry-run package contracts exist.
 - Geometry-only CPD-like face-merge primitive proposal smoke exists.
+- Contact-only Newton canary smoke exists for representative mapped primitive types.
 - DeepDive docs define claim boundaries.
 - Current status is proposal/bootstrap only.
-- No Newton checker results, benchmark metrics, or full CPD paper reproduction exist yet.
+- No task-level Newton diagnostic probe results, benchmark metrics, or full CPD paper
+  reproduction exist yet.
 
 ## 5. Next Milestones
 

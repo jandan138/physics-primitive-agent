@@ -29,7 +29,7 @@ Do not claim:
 - complete replacement of convex decomposition;
 - primitive-only sufficiency for all assets or precision tasks;
 - LLM/VLM benefit before the non-LLM baseline is measured;
-- Newton checker results before the checker exists and has run;
+- task-level Newton checker results before the checker exists and has run;
 - simulator checks as proof of collision correctness outside named assumptions.
 
 ## First 4-Week Proof Point

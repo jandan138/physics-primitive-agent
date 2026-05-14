@@ -31,9 +31,11 @@ LLM/VLM is deferred until the non-LLM baseline demonstrates value.
 ## Current Status
 
 - Proposal and project bootstrap.
-- Minimal package, dry-run CLI, and geometry-only CPD-like face-merge smoke path exist.
+- Minimal package, dry-run CLI, geometry-only CPD-like face-merge smoke path, and
+  contact-only Newton canary exist.
 - DeepDive documentation defines scope and evidence boundaries.
-- No Newton checker results, benchmark metrics, or full CPD paper reproduction exist yet.
+- No task-level Newton diagnostic probe results, benchmark metrics, or full CPD paper
+  reproduction exist yet.
 
 ## Support Requested
 
