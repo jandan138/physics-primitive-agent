@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -48,4 +49,26 @@ class AssetSmokeReport:
             "path": self.path,
             "checks": [check.to_dict() for check in self.checks],
             "metadata": self.metadata,
+        }
+
+
+@dataclass(frozen=True)
+class NewtonShapeMapping:
+    primitive_id: str
+    kind: str
+    status: str
+    detail: str
+    center: tuple[float, float, float]
+    dimensions: dict[str, Any]
+    axes: tuple[tuple[float, float, float], ...] = ()
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "primitive_id": self.primitive_id,
+            "kind": self.kind,
+            "status": self.status,
+            "detail": self.detail,
+            "center": list(self.center),
+            "axes": [list(axis) for axis in self.axes],
+            "dimensions": dict(self.dimensions),
         }
