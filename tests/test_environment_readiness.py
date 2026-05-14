@@ -1,3 +1,6 @@
+import json
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -145,3 +148,31 @@ def test_run_readiness_check_combines_dependency_gap_status(tmp_path):
     assert report["python"]["executable"] == sys.executable
     assert report["newton_source"]["status"] == "dependency_gap"
     assert report["output"]["status"] == "smoke_passed"
+
+
+def test_readiness_script_writes_output_file(tmp_path):
+    script = Path(__file__).resolve().parents[1] / "scripts" / "env" / "readiness_check.py"
+    output_path = tmp_path / "readiness.json"
+    env = {
+        **os.environ,
+        "NPC_ENV_ROOT": sys.prefix,
+        "NPC_PYTHON": sys.executable,
+        "NPC_CODE_ROOT": str(Path(__file__).resolve().parents[1]),
+        "NEWTON_SOURCE_DIR": str(tmp_path / "missing-newton"),
+        "NPC_OUTPUT_DIR": str(tmp_path / "out"),
+    }
+
+    result = subprocess.run(
+        [sys.executable, str(script), "--output", str(output_path)],
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    assert result.returncode == 1
+    stdout_report = json.loads(result.stdout)
+    file_report = json.loads(output_path.read_text(encoding="utf-8"))
+    assert stdout_report["stage"] == "environment_readiness"
+    assert file_report["stage"] == "environment_readiness"
+    assert file_report["status"] == "dependency_gap"
