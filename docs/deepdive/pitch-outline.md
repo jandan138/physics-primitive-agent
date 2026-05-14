@@ -40,9 +40,10 @@ Time: 3-4 minutes.
 
 - Repository skeleton exists.
 - Dry-run package contracts exist.
+- Geometry-only CPD-like face-merge primitive proposal smoke exists.
 - DeepDive docs define claim boundaries.
 - Current status is proposal/bootstrap only.
-- No primitive fitting, Newton checker results, or benchmark metrics exist yet.
+- No Newton checker results, benchmark metrics, or full CPD paper reproduction exist yet.
 
 ## 5. Next Milestones
 

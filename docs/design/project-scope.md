@@ -15,7 +15,7 @@ The project proposes a Newton Primitive Collision Compiler: a primitive-first, s
 
 ## Out Of Scope Today
 
-- Primitive fitting implementation.
+- Production primitive fitting and collision package generation.
 - Newton checker execution.
 - Benchmark results.
 - LLM/VLM primitive generation, planning, repair, or evaluation.

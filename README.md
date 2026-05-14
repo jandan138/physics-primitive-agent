@@ -8,8 +8,10 @@ DeepDive-first workflow around Newton primitive collision artifacts.
 ## Current Status
 
 This repository is a proposal/bootstrap for a DeepDive-first Newton primitive collision
-compiler. It does not implement real mesh processing yet, and the `src/` package and test
-suite contain only command-surface stubs for now.
+compiler. It now includes a geometry-only CPD-like face-merge smoke path over USD meshes, plus
+config dry-runs, USD asset-open smoke diagnostics, Newton source diagnostics, and environment
+readiness checks. It does not yet run Newton simulation probes, produce benchmark results, or
+implement a production collision compiler.
 
 ## Strategic Framing
 
@@ -30,8 +32,8 @@ reviewed, and simulation-checked inputs.
 
 Do not claim that this repository currently:
 
-- Implements a working collision compiler.
-- Performs real mesh processing.
+- Implements a finished collision compiler.
+- Performs complete production mesh processing.
 - Produces production-ready Newton collision primitives.
 - Provides simulation-verified results. In this repository, simulation-checked means records
   have been checked against planned or documented simulation evidence; simulation-verified
@@ -42,7 +44,8 @@ Do not claim that this repository currently:
 - `docs/`: research notes, source records, and bootstrap planning materials.
 - `configs/`: DeepDive and Phase 0 config examples.
 - `scripts/`: repository maintenance and validation commands.
-- `src/primitive_collision_compiler/`: command-surface stubs for the future package.
+- `src/primitive_collision_compiler/`: installable package with CLI, diagnostics, and the
+  geometry-only CPD-like smoke path.
 - `tests/`: bootstrap tests for currently advertised command surfaces.
 - `assets/`, `experiments/`, `reports/`, `archive/`: artifact boundaries and registries.
 - `AGENTS.md`: rules for future agentic work in this repository.
@@ -84,7 +87,7 @@ current basis for project framing, claim boundaries, and future implementation p
 
 ## Current Non-Goals
 
-- No real mesh processing implementation.
-- No real compiler implementation beyond command-surface stubs.
+- No production mesh-processing or collision-compiler implementation.
+- No Newton simulation probe execution.
 - No generated collision artifact pipeline.
 - No claim of production readiness.

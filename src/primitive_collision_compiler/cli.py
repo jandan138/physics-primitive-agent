@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -54,6 +55,7 @@ def main(argv=None):
         if not source_dir:
             print("npc-compile: --check-newton requires config key newton.source_dir.", file=sys.stderr)
             return 2
+        source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
 
         report = inspect_newton_environment(source_dir)
         print(json.dumps(report.to_dict(), sort_keys=True))
@@ -106,11 +108,12 @@ def main(argv=None):
         try:
             primitive_subset = _cpd_like_primitive_subset(cpd_like_section)
             max_source_faces = _positive_int(cpd_like_section.get("max_source_faces"), default=256)
+            source_path = _cpd_like_source_path(config, cpd_like_section)
         except ValueError as exc:
             print(f"npc-compile: {exc}", file=sys.stderr)
             return 2
         try:
-            mesh = load_first_mesh(config.asset_path, max_faces=max_source_faces)
+            mesh = load_first_mesh(source_path, max_faces=max_source_faces)
             report = decompose_mesh(
                 mesh,
                 max_primitives=config.max_primitives,
@@ -125,7 +128,7 @@ def main(argv=None):
                         if "dependency_gap" in str(exc)
                         else "smoke_failed",
                         "asset_id": config.asset_id or Path(config.asset_path).stem,
-                        "source_path": config.asset_path,
+                        "source_path": source_path,
                         "fallback_reason": str(exc),
                     },
                     sort_keys=True,
@@ -135,7 +138,7 @@ def main(argv=None):
 
         payload = report.to_dict()
         payload["asset_id"] = config.asset_id or Path(config.asset_path).stem
-        payload["source_path"] = config.asset_path
+        payload["source_path"] = source_path
         payload["claim_boundary"] = cpd_like_section.get(
             "claim_boundary",
             "internal_baseline_not_reproduction_claim",
@@ -192,6 +195,22 @@ def _cpd_like_primitive_subset(cpd_like_section):
     return result
 
 
+def _cpd_like_source_path(config, cpd_like_section):
+    asset_role = cpd_like_section.get("asset_role")
+    asset_manifest = cpd_like_section.get("asset_manifest")
+    if asset_role:
+        manifest_path = asset_manifest or config.asset_path
+        assets = load_asset_manifest(manifest_path)
+        for asset in assets:
+            if asset.get("role") == asset_role:
+                path = asset.get("path")
+                if not path:
+                    raise ValueError(f"asset role {asset_role!r} has no path")
+                return str(path)
+        raise ValueError(f"asset role {asset_role!r} not found in manifest: {manifest_path}")
+    return config.asset_path
+
+
 def _positive_int(value, default):
     if value in (None, ""):
         return default
@@ -202,6 +221,13 @@ def _positive_int(value, default):
     if result < 1:
         raise ValueError("cpd_like.max_source_faces must be at least 1")
     return result
+
+
+def _expand_env_path(value, key):
+    expanded = os.path.expandvars(value)
+    if "$" in expanded:
+        raise ValueError(f"{key} references an unset environment variable: {value}")
+    return expanded
 
 
 if __name__ == "__main__":

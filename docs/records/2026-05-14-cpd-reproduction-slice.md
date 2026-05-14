@@ -30,6 +30,11 @@ adjacent face-group merges, and excess-volume scoring, but it is not a full pape
 npc-compile --config configs/experiments/cpd_like_baseline.yaml --run-cpd-like
 ```
 
+The committed config points at `assets/manifests/cpd_like_smoke_assets.yaml` and selects
+`bed_dev_smoke` by role. Machine-local asset paths stay in the manifest and this dated record, not
+in the runnable experiment config. Newton source lookup uses `NEWTON_SOURCE_DIR` when Newton
+diagnostics are requested.
+
 ## Real Asset Smoke
 
 Command:
@@ -44,6 +49,7 @@ Result:
 - stage: `cpd_like_face_merge`
 - status: `smoke_passed`
 - asset ID: `grscenes_bed_0a85b986_smoke`
+- asset path: resolved from `assets/manifests/cpd_like_smoke_assets.yaml` role `bed_dev_smoke`
 - mesh point count in capped extraction: 1898
 - mesh face count in capped extraction: 256
 - requested max primitives: 32
@@ -62,6 +68,7 @@ directory was committed.
 - `python scripts/validate_docs.py`: passed.
 - `git diff --check`: passed.
 - Clean-env real asset smoke command above: exit 0, status `smoke_passed`.
+- `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton`: exit 0, status `smoke_passed`.
 
 ## Claim Impact
 
