@@ -1,6 +1,9 @@
+import sys
+
 from primitive_collision_compiler.environment.readiness import (
     REQUIRED_ENV_VARS,
     build_configuration_report,
+    inspect_python_environment,
     pick_report_status,
 )
 
@@ -44,3 +47,23 @@ def test_build_configuration_report_preserves_top_level_shape():
         "NPC_ENV_ROOT",
         "NPC_OUTPUT_DIR",
     ]
+
+
+def test_inspect_python_environment_records_interpreter_identity():
+    report = inspect_python_environment(sys.executable)
+
+    assert report["status"] in {"smoke_passed", "dependency_gap", "import_error"}
+    assert report["executable"] == sys.executable
+    assert report["realpath"]
+    assert report["version"].startswith(str(sys.version_info.major))
+    assert isinstance(report["site_packages"], list)
+    assert set(report["modules"]) == {"newton", "warp", "pxr_usd", "usd_core"}
+
+
+def test_inspect_python_environment_reports_missing_executable(tmp_path):
+    missing_python = tmp_path / "missing-python"
+
+    report = inspect_python_environment(str(missing_python))
+
+    assert report["status"] == "configuration_error"
+    assert "does not exist" in report["detail"]
