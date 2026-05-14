@@ -478,6 +478,7 @@ def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, mon
                 "  probe_type: drop_settle",
                 "  drop_settle:",
                 "    max_floor_breach_m: 0.125",
+                "    max_settle_linear_speed_mps: 0.25",
             ]
         ),
         encoding="utf-8",
@@ -497,6 +498,7 @@ def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, mon
 
     def noisy_drop_settle(*args, **kwargs):
         captured_options["max_floor_breach_m"] = kwargs["options"].max_floor_breach_m
+        captured_options["max_settle_linear_speed_mps"] = kwargs["options"].max_settle_linear_speed_mps
         print("Warp 1.13.0 initialized:")
         return NewtonDiagnosticReport(
             stage="newton_drop_settle",
@@ -526,6 +528,7 @@ def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, mon
     assert captured.out.startswith("{")
     assert "Warp 1.13.0 initialized:" in captured.err
     assert captured_options["max_floor_breach_m"] == 0.125
+    assert captured_options["max_settle_linear_speed_mps"] == 0.25
 
 
 def test_cli_run_newton_contact_smoke_rejects_unsupported_probe_type(tmp_path, capsys, monkeypatch):
@@ -557,6 +560,38 @@ def test_cli_run_newton_contact_smoke_rejects_unsupported_probe_type(tmp_path, c
     payload = json.loads(capsys.readouterr().out)
     assert payload["stage"] == "newton_contact_smoke"
     assert payload["status"] == "smoke_failed"
+    assert "newton_diagnostic.probe_type" in payload["fallback_reason"]
+
+
+def test_cli_run_newton_drop_settle_rejects_unsupported_probe_type(tmp_path, capsys, monkeypatch):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: bad_drop_probe",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  probe_type: contact_canary",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "_run_cpd_like_report",
+        lambda config: (object(), "assets/example.usda", 8),
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-newton-drop-settle"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "newton_drop_settle"
+    assert payload["status"] == "runtime_failure"
     assert "newton_diagnostic.probe_type" in payload["fallback_reason"]
 
 

@@ -111,6 +111,7 @@ class NewtonDropSettleRun:
     failure_labels: tuple[str, ...]
     final_support_height: float | None = None
     min_support_height: float | None = None
+    final_linear_speed_mps: float | None = None
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -122,6 +123,7 @@ class NewtonDropSettleRun:
             "final_height": _json_safe(self.final_height),
             "min_height": _json_safe(self.min_height),
             "final_linear_velocity": _json_safe(list(self.final_linear_velocity)),
+            "final_linear_speed_mps": _json_safe(self.final_linear_speed_mps),
             "max_contact_count": self.max_contact_count,
             "final_contact_count": self.final_contact_count,
             "finite_state": self.finite_state,

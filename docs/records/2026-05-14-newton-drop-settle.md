@@ -19,14 +19,14 @@ Complete for the first named task-level Newton smoke diagnostic.
   per-run summaries.
 - Added support-height tracking so floor-breach decisions are based on the estimated bottom of the
   compound package, not only the rigid-body origin.
+- Hardened the settle criteria after review: `smoke_passed` now requires final contact and final
+  linear speed under the recorded threshold, not just "touched at least once."
 
 ## Verification
 
-- `python -m pytest tests/test_cli.py::test_cli_run_newton_drop_settle_keeps_stdout_json_only tests/test_cpd_like_config.py::test_newton_drop_settle_config_owns_probe_parameters -q`:
-  exit 0, 2 passed.
-- `python -m pytest tests/test_newton_drop_settle.py tests/test_reports_schema.py -q`: exit 0,
-  10 passed.
-- `python -m pytest -q`: exit 0, 101 passed.
+- `python -m pytest tests/test_newton_drop_settle.py tests/test_cli.py tests/test_cpd_like_config.py tests/test_reports_schema.py -q`:
+  exit 0, 40 passed.
+- `python -m pytest -q`: exit 0, 104 passed.
 - `python scripts/validate_docs.py`: exit 0.
 - `git diff --check`: exit 0.
 - Clean-env drop/settle smoke:
@@ -50,27 +50,29 @@ Observed clean-env result:
 - Newton source commit: `96713fa965463b69c229a4d30582c733ff3526bb`
 - primitive count: `32`
 - shape status counts: `mapped: 32`
-- completed steps: `960`
-- solver: `xpbd`, `frames: 120`, `substeps: 8`, `iterations: 2`
+- completed steps: `2880`
+- solver: `xpbd`, `frames: 360`, `substeps: 8`, `iterations: 2`
 - initial body height: `0.25`
-- final body height: `-0.248321533203125`
-- minimum body height: `-1.2665519714355469`
-- final support height: `-0.00000394387747348901`
+- final body height: `-0.9940872192382812`
+- minimum body height: `-1.36126708984375`
+- final linear velocity: `[0.0036787723656743765, -0.04024580121040344, 0.0018632062710821629]`
+- final linear speed: `0.04045651268701197`
+- final support height: `-0.00000374544364012408`
 - minimum support height: `-0.0010166456339897323`
 - maximum contact count: `8`
-- final contact count: `3`
+- final contact count: `4`
 - failure labels: none
 
 The body-origin height is not treated as the floor-breach metric. The estimated support height is
 the bounded smoke metric for ground-plane breach, with `max_floor_breach_m: 0.05` recorded in the
-config.
+config. The settle criterion is the final linear speed, with
+`max_settle_linear_speed_mps: 0.05` recorded in the config.
 
 ## Artifacts
 
 - Config: `configs/experiments/newton_drop_settle.yaml`
 - Smoke asset manifest: `assets/manifests/cpd_like_smoke_assets.yaml`
 - Generated report target: `reports/generated/newton_drop_settle/` (ignored)
-- Implementation commit before this record: `521f5ca`
 - Raw USD assets: not committed.
 
 ## Claim Impact

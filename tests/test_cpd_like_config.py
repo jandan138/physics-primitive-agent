@@ -73,9 +73,10 @@ def test_newton_drop_settle_config_owns_probe_parameters():
     assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
         "drop_settle_task_smoke_not_collision_quality_or_safety"
     )
-    assert config.protocol["newton_diagnostic"]["drop_settle"]["frames"] == 120
+    assert config.protocol["newton_diagnostic"]["drop_settle"]["frames"] == 360
     assert config.protocol["newton_diagnostic"]["drop_settle"]["substeps"] == 8
     assert config.protocol["newton_diagnostic"]["drop_settle"]["height_m"] == 0.25
     assert config.protocol["newton_diagnostic"]["drop_settle"]["max_floor_breach_m"] == 0.05
+    assert config.protocol["newton_diagnostic"]["drop_settle"]["max_settle_linear_speed_mps"] == 0.05
     assert config.protocol["report"]["evidence_level"] == "newton_drop_settle_task_smoke"
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")

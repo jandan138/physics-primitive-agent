@@ -88,33 +88,36 @@ For each run:
    package bottom-center anchor.
 6. Place the body so the package bottom starts `height_m` above the static plane.
 7. Simulate fixed `frames * substeps` with `SolverXPBD`.
-8. Record finite-state status, initial/final body height, initial/final vertical velocity, estimated
-   support height, maximum contact count, final contact count, contact-observed flag, descent flag,
-   and failure labels.
+8. Record finite-state status, initial/final body height, final linear velocity and speed,
+   estimated support height, maximum contact count, final contact count, contact-observed flag,
+   descent flag, and failure labels.
 
 Default smoke settings:
 
 - `device: cpu`
 - `solver: xpbd`
 - `iterations: 2`
-- `frames: 120`
+- `frames: 360`
 - `frame_dt_seconds: 0.016666666666666666`
 - `substeps: 8`
 - `height_m: 0.25`
 - `gravity_mps2: -9.81`
 - `ground_height_m: 0.0`
 - `max_floor_breach_m: 0.05`
+- `max_settle_linear_speed_mps: 0.05`
 
 ## Status Semantics
 
 - `smoke_passed`: all primitives mapped, Newton runtime imported from the configured source, the
-  fixed simulation completed, the state stayed finite, the package body descended, and at least one
-  contact was observed.
+  fixed simulation completed, the state stayed finite, the package body descended, at least one
+  contact was observed, final contact is still present, final linear speed is under the recorded
+  settle threshold, and support height stays within the recorded floor-breach tolerance.
 - `mapping_gap`: one or more package primitives could not be mapped into supported Newton primitive
   shapes.
 - `dependency_gap`: source or Python dependency readiness prevents the Newton runtime import.
 - `runtime_failure`: Newton imports but the probe crashes, produces non-finite state, does not
-  descend, observes no contacts, or breaches the recorded support-height floor tolerance.
+  descend, observes no contacts, ends with no final contact, ends above the recorded settle speed,
+  or breaches the recorded support-height floor tolerance.
 
 The status name `smoke_passed` means the diagnostic executed and returned basic expected signals. It
 does not mean the collision proxy is high quality, stable for downstream tasks, safe, or benchmarked.

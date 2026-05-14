@@ -264,7 +264,7 @@ def main(argv=None):
                 json.dumps(
                     {
                         "stage": "newton_drop_settle",
-                        "status": _newton_contact_error_status(str(exc)),
+                        "status": _newton_drop_settle_error_status(str(exc)),
                         "fallback_reason": str(exc),
                     },
                     sort_keys=True,
@@ -400,7 +400,7 @@ def _newton_drop_settle_options(section):
         raise ValueError("newton_diagnostic.drop_settle must be a mapping")
     options = DropSettleOptions(
         height_m=_float_value(drop_section.get("height_m", 0.25), "newton_diagnostic.drop_settle.height_m"),
-        frames=_int_value(drop_section.get("frames", 120), "newton_diagnostic.drop_settle.frames"),
+        frames=_int_value(drop_section.get("frames", 360), "newton_diagnostic.drop_settle.frames"),
         substeps=_int_value(drop_section.get("substeps", 8), "newton_diagnostic.drop_settle.substeps"),
         frame_dt_seconds=_float_value(
             drop_section.get("frame_dt_seconds", 1.0 / 60.0),
@@ -425,6 +425,10 @@ def _newton_drop_settle_options(section):
         max_floor_breach_m=_float_value(
             drop_section.get("max_floor_breach_m", 0.05),
             "newton_diagnostic.drop_settle.max_floor_breach_m",
+        ),
+        max_settle_linear_speed_mps=_float_value(
+            drop_section.get("max_settle_linear_speed_mps", 0.05),
+            "newton_diagnostic.drop_settle.max_settle_linear_speed_mps",
         ),
     )
     return {
@@ -458,6 +462,16 @@ def _newton_contact_error_status(message):
     ):
         return "dependency_gap"
     return "smoke_failed"
+
+
+def _newton_drop_settle_error_status(message):
+    if (
+        "dependency_gap" in message
+        or "newton.source_dir" in message
+        or "unset environment variable" in message
+    ):
+        return "dependency_gap"
+    return "runtime_failure"
 
 
 def _expand_env_path(value, key):

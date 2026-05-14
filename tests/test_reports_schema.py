@@ -109,6 +109,7 @@ def test_newton_diagnostic_report_serializes_drop_settle_run():
         final_height=0.0,
         min_height=0.0,
         final_linear_velocity=(0.0, 0.0, 0.0),
+        final_linear_speed_mps=0.0,
         max_contact_count=1,
         final_contact_count=1,
         finite_state=True,
@@ -144,6 +145,7 @@ def test_newton_diagnostic_report_serializes_drop_settle_run():
     assert payload["probe_type"] == "drop_settle"
     assert payload["drop_settle_runs"][0]["run_id"] == "seed0"
     assert payload["drop_settle_runs"][0]["primitive_ids"] == ["box"]
+    assert payload["drop_settle_runs"][0]["final_linear_speed_mps"] == 0.0
     assert payload["drop_settle_runs"][0]["final_support_height"] == 0.0
     assert payload["drop_settle_runs"][0]["min_support_height"] == 0.0
     assert payload["task_scope"] == "single_asset_drop_settle_static_plane"

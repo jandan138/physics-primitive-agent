@@ -30,7 +30,8 @@ Before any Newton simulation claim, record:
 
 ## Phase 0 Probe Shape
 
-- Drop: measure whether an asset settles with plausible contacts and bounded penetration.
+- Drop: measure whether an asset ends with plausible contact, bounded final speed, and bounded
+  penetration.
 - Drop/settle status now uses estimated support height, not only body-origin height, for
   ground-plane breach decisions.
 - Stack or slide: expose coarse collider overhangs, missing support, and solver jitter.

@@ -36,7 +36,7 @@ newton_diagnostic:
   claim_boundary: drop_settle_task_smoke_not_collision_quality_or_safety
   drop_settle:
     height_m: 0.25
-    frames: 120
+    frames: 360
     substeps: 8
     frame_dt_seconds: 0.016666666666666666
     iterations: 2
@@ -44,6 +44,7 @@ newton_diagnostic:
     ground_height_m: 0.0
     friction: 0.5
     max_floor_breach_m: 0.05
+    max_settle_linear_speed_mps: 0.05
 report:
   output_dir: reports/generated/newton_drop_settle
   evidence_level: newton_drop_settle_task_smoke

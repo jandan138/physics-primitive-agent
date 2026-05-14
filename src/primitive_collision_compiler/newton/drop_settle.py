@@ -31,7 +31,7 @@ DROP_SETTLE_TASK_SCOPE = "single_asset_drop_settle_static_plane"
 @dataclass(frozen=True)
 class DropSettleOptions:
     height_m: float = 0.25
-    frames: int = 120
+    frames: int = 360
     substeps: int = 8
     frame_dt_seconds: float = 1.0 / 60.0
     iterations: int = 2
@@ -40,6 +40,7 @@ class DropSettleOptions:
     friction: float = 0.5
     min_descent_m: float = 1.0e-5
     max_floor_breach_m: float = 0.05
+    max_settle_linear_speed_mps: float = 0.05
 
     def __post_init__(self) -> None:
         _positive_int(self.frames, "frames")
@@ -50,6 +51,7 @@ class DropSettleOptions:
         _non_negative_float(self.friction, "friction")
         _non_negative_float(self.min_descent_m, "min_descent_m")
         _non_negative_float(self.max_floor_breach_m, "max_floor_breach_m")
+        _non_negative_float(self.max_settle_linear_speed_mps, "max_settle_linear_speed_mps")
 
     @property
     def step_dt_seconds(self) -> float:
@@ -78,6 +80,7 @@ class DropSettleOptions:
             "initial_velocity_mps": [0.0, 0.0, 0.0],
             "body_orientation": "identity",
             "max_floor_breach_m": self.max_floor_breach_m,
+            "max_settle_linear_speed_mps": self.max_settle_linear_speed_mps,
         }
 
 
@@ -193,17 +196,24 @@ def evaluate_drop_settle_trace(
     final_support_height: float | None = None,
     min_support_height: float | None = None,
     min_allowed_support_height: float | None = None,
+    max_settle_linear_speed_mps: float = 0.05,
     run_id: str = "seed0",
 ) -> NewtonDropSettleRun:
     descended = bool(final_height < initial_height - min_descent_m)
     contact_observed = bool(max_contact_count > 0)
+    final_contact_observed = bool(final_contact_count > 0)
+    final_linear_speed_mps = _linear_speed(final_linear_velocity)
     labels: list[str] = []
-    if not finite_state:
+    if not finite_state or not np.isfinite(final_linear_speed_mps):
         labels.append("non_finite_state")
     if not descended:
         labels.append("no_descent")
     if not contact_observed:
         labels.append("no_contact_observed")
+    if contact_observed and not final_contact_observed:
+        labels.append("no_final_contact")
+    if np.isfinite(final_linear_speed_mps) and final_linear_speed_mps > max_settle_linear_speed_mps:
+        labels.append("not_settled")
     if (
         min_support_height is not None
         and min_allowed_support_height is not None
@@ -228,6 +238,7 @@ def evaluate_drop_settle_trace(
         failure_labels=tuple(labels),
         final_support_height=None if final_support_height is None else float(final_support_height),
         min_support_height=None if min_support_height is None else float(min_support_height),
+        final_linear_speed_mps=None if not np.isfinite(final_linear_speed_mps) else float(final_linear_speed_mps),
     )
 
 
@@ -325,6 +336,7 @@ def _run_drop_settle(
         final_support_height=final_support_height,
         min_support_height=min_support_height,
         min_allowed_support_height=options.ground_height_m - options.max_floor_breach_m,
+        max_settle_linear_speed_mps=options.max_settle_linear_speed_mps,
     )
 
 
@@ -452,6 +464,11 @@ def _axes_matrix(mapping: NewtonShapeMapping) -> np.ndarray:
     if mapping.axes:
         return np.asarray(mapping.axes, dtype=float).T
     return np.eye(3, dtype=float)
+
+
+def _linear_speed(velocity: tuple[float, float, float]) -> float:
+    vector = np.asarray(velocity, dtype=float)
+    return float(np.linalg.norm(vector))
 
 
 def _drop_report(

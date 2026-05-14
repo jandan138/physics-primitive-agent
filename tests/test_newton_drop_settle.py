@@ -109,6 +109,41 @@ def test_evaluate_drop_settle_trace_reports_smoke_passed_for_descent_and_contact
     assert run.failure_labels == ()
 
 
+def test_evaluate_drop_settle_trace_requires_final_contact():
+    run = evaluate_drop_settle_trace(
+        primitive_ids=("box",),
+        completed_steps=16,
+        initial_height=0.25,
+        final_height=0.02,
+        min_height=0.01,
+        final_linear_velocity=(0.0, 0.0, 0.0),
+        max_contact_count=2,
+        final_contact_count=0,
+        finite_state=True,
+    )
+
+    assert run.status == "runtime_failure"
+    assert "no_final_contact" in run.failure_labels
+
+
+def test_evaluate_drop_settle_trace_reports_unsettled_final_speed():
+    run = evaluate_drop_settle_trace(
+        primitive_ids=("box",),
+        completed_steps=16,
+        initial_height=0.25,
+        final_height=0.02,
+        min_height=0.01,
+        final_linear_velocity=(0.5, 0.0, 0.0),
+        max_contact_count=2,
+        final_contact_count=1,
+        finite_state=True,
+        max_settle_linear_speed_mps=0.05,
+    )
+
+    assert run.status == "runtime_failure"
+    assert "not_settled" in run.failure_labels
+
+
 def test_evaluate_drop_settle_trace_reports_floor_breach_from_support_height():
     run = evaluate_drop_settle_trace(
         primitive_ids=("box",),

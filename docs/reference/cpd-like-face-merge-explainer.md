@@ -71,7 +71,7 @@ For the current capped bed smoke:
 - Newton contact smoke: 32 mapped box descriptors and one representative box contact canary;
 - observed representative contact count: 1.
 - Newton drop/settle smoke: all 32 proposals mapped into one compound package body, dropped on a
-  static plane, with support-height and contact metrics recorded.
+  static plane, with contact, final-speed, and support-height metrics recorded.
 
 This proves the pipeline can produce and ingest a simple primitive proposal report. It does not
 prove the proposals are good collision geometry.

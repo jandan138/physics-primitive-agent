@@ -23,7 +23,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   Newton-mapped primitive types.
 - The current executable surface can run `newton_drop_settle`, a named task-level Newton smoke
   diagnostic over the capped bed CPD-like collision package, with explicit solver settings,
-  support-height metrics, and failure labels.
+  final-contact, final-speed, support-height metrics, and failure labels.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
@@ -31,7 +31,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   mesh triangles, reduced to 32 restricted primitives, using the clean Newton Python environment.
 - The 2026-05-14 Newton drop/settle record reports `smoke_passed` for the capped bed CPD-like
   collision package in the clean Newton Python environment, with all 32 primitives mapped and no
-  floor-breach failure label under the recorded `0.05m` support-height tolerance.
+  floor-breach or unsettled failure label under the recorded `0.05m` support-height tolerance and
+  `0.05m/s` final-speed threshold.
 
 ## Current Unsupported Claims
 
