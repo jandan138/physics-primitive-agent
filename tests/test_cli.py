@@ -291,6 +291,61 @@ def test_cli_run_cpd_like_emits_report_for_tiny_usd(tmp_path, capsys):
     assert payload["primitive_count"] == 1
 
 
+def test_cli_run_cpd_like_component_merge_gate_emits_merge_metrics(tmp_path, capsys):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    asset_path = tmp_path / "disconnected_triangles.usda"
+    stage = Usd.Stage.CreateNew(str(asset_path))
+    mesh = UsdGeom.Mesh.Define(stage, "/Disconnected")
+    mesh.CreatePointsAttr(
+        [
+            (0, 0, 0),
+            (1, 0, 0),
+            (0, 1, 0),
+            (4, 0, 0),
+            (5, 0, 0),
+            (4, 1, 0),
+        ]
+    )
+    mesh.CreateFaceVertexCountsAttr([3, 3])
+    mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3, 4, 5])
+    stage.GetRootLayer().Save()
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: disconnected_triangles",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "  max_source_faces: 8",
+                "  component_merge: virtual_pairwise",
+                "  report_merge_trace: summary",
+                "  claim_boundary: component_merge_gate_not_cpd_reproduction",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_component_merge_gate"
+    assert payload["status"] == "smoke_passed"
+    assert payload["merge_policy"] == "virtual_pairwise"
+    assert payload["virtual_component_merge_count"] == 1
+    assert payload["merge_cost_summary"]["accepted_merge_count"] == 1
+    assert payload["primitives"][0]["source_component_ids"] == [0, 1]
+    assert payload["claim_boundary"] == "component_merge_gate_not_cpd_reproduction"
+
+
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")
@@ -531,6 +586,136 @@ def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, mon
     assert captured_options["max_settle_linear_speed_mps"] == 0.25
 
 
+def test_cli_run_newton_sphere_rain_emits_report_for_tiny_usd(tmp_path, capsys):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    asset_path = tmp_path / "quad.usda"
+    stage = Usd.Stage.CreateNew(str(asset_path))
+    mesh = UsdGeom.Mesh.Define(stage, "/Quad")
+    mesh.CreatePointsAttr([(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)])
+    mesh.CreateFaceVertexCountsAttr([4])
+    mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3])
+    stage.GetRootLayer().Save()
+    source_dir = tmp_path / "newton-source"
+    source_dir.mkdir()
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: tiny_quad",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "  allowed_fallback:",
+                "    - convex_hull",
+                "  verify:",
+                "    - newton_sphere_rain",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "    - sphere",
+                "    - capsule",
+                "  max_source_faces: 8",
+                "newton:",
+                f"  source_dir: {source_dir}",
+                "newton_diagnostic:",
+                "  probe_type: sphere_rain",
+                "  device: cpu",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = cli.main(["--config", str(config_path), "--run-newton-sphere-rain"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code in {0, 2}
+    assert payload["stage"] == "newton_sphere_rain"
+    assert payload["asset_id"] == "tiny_quad"
+    assert payload["package_id"] == "tiny_quad:cpd_like_face_merge"
+    assert payload["probe_type"] == "sphere_rain"
+    assert payload["status"] in {"smoke_passed", "dependency_gap", "mapping_gap", "runtime_failure"}
+    assert payload["primitive_count"] == 1
+    assert payload["claim_boundary"] == "sphere_rain_task_smoke_not_collision_quality_or_safety"
+
+
+def test_cli_run_newton_sphere_rain_keeps_stdout_json_only(tmp_path, capsys, monkeypatch):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: noisy_asset",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  probe_type: sphere_rain",
+                "  sphere_rain:",
+                "    sphere_count_x: 2",
+                "    sphere_count_y: 3",
+                "    sphere_radius_m: 0.125",
+                "    min_contact_density: 0.25",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "_run_cpd_like_report",
+        lambda config: (object(), "assets/example.usda", 8),
+    )
+    monkeypatch.setattr(
+        cli,
+        "package_from_cpd_like_report",
+        lambda *args, **kwargs: CollisionPackage("noisy_asset"),
+    )
+
+    captured_options = {}
+
+    def noisy_sphere_rain(*args, **kwargs):
+        captured_options["sphere_count"] = kwargs["options"].sphere_count
+        captured_options["sphere_radius_m"] = kwargs["options"].sphere_radius_m
+        captured_options["min_contact_density"] = kwargs["options"].min_contact_density
+        print("Warp 1.13.0 initialized:")
+        return NewtonDiagnosticReport(
+            stage="newton_sphere_rain",
+            status="smoke_passed",
+            asset_id="noisy_asset",
+            package_id="noisy_asset:pkg",
+            probe_type="sphere_rain",
+            device="cpu",
+            environment=None,
+            primitive_count=0,
+            type_counts={},
+            shape_mappings=(),
+            contact_canaries=(),
+            sphere_rain_runs=(),
+            task_scope="single_asset_sphere_rain_static_package",
+            claim_boundary="sphere_rain_task_smoke_not_collision_quality_or_safety",
+            evidence_level="newton_sphere_rain_task_smoke",
+        )
+
+    monkeypatch.setattr(cli, "run_newton_sphere_rain", noisy_sphere_rain)
+
+    assert cli.main(["--config", str(config_path), "--run-newton-sphere-rain"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "newton_sphere_rain"
+    assert captured.out.startswith("{")
+    assert "Warp 1.13.0 initialized:" in captured.err
+    assert captured_options["sphere_count"] == 6
+    assert captured_options["sphere_radius_m"] == 0.125
+    assert captured_options["min_contact_density"] == 0.25
+
+
 def test_cli_run_newton_contact_smoke_rejects_unsupported_probe_type(tmp_path, capsys, monkeypatch):
     config_path = tmp_path / "config.yaml"
     config_path.write_text(
@@ -591,6 +776,38 @@ def test_cli_run_newton_drop_settle_rejects_unsupported_probe_type(tmp_path, cap
 
     payload = json.loads(capsys.readouterr().out)
     assert payload["stage"] == "newton_drop_settle"
+    assert payload["status"] == "runtime_failure"
+    assert "newton_diagnostic.probe_type" in payload["fallback_reason"]
+
+
+def test_cli_run_newton_sphere_rain_rejects_unsupported_probe_type(tmp_path, capsys, monkeypatch):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: bad_sphere_rain_probe",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  probe_type: contact_canary",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "_run_cpd_like_report",
+        lambda config: (object(), "assets/example.usda", 8),
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-newton-sphere-rain"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "newton_sphere_rain"
     assert payload["status"] == "runtime_failure"
     assert "newton_diagnostic.probe_type" in payload["fallback_reason"]
 
@@ -688,6 +905,11 @@ def test_cli_run_cpd_like_reports_clean_error_for_bad_face_cap(tmp_path, capsys)
     captured = capsys.readouterr()
     assert "cpd_like.max_source_faces must be an integer" in captured.err
     assert "Traceback" not in captured.err
+
+
+def test_cli_int_value_reports_non_finite_number_as_value_error():
+    with pytest.raises(ValueError, match="newton_diagnostic.sphere_rain.frames must be an integer"):
+        cli._int_value(float("inf"), "newton_diagnostic.sphere_rain.frames")
 
 
 def test_cli_run_cpd_like_returns_json_for_invalid_usd(tmp_path, capsys):

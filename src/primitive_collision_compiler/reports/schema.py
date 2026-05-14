@@ -136,6 +136,54 @@ class NewtonDropSettleRun:
 
 
 @dataclass(frozen=True)
+class NewtonSphereRainRun:
+    run_id: str
+    status: str
+    primitive_ids: tuple[str, ...]
+    sphere_count: int
+    completed_steps: int
+    initial_min_height: float
+    final_min_height: float
+    min_height: float
+    max_contact_count: int
+    final_contact_count: int
+    max_contacted_probe_count: int
+    final_contacted_probe_count: int
+    contact_density: float
+    finite_state: bool
+    contact_observed: bool
+    final_contact_observed: bool
+    failure_labels: tuple[str, ...]
+    sphere_radius_m: float | None = None
+    total_steps: int | None = None
+    package_contact_count_p95: float | None = None
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "run_id": self.run_id,
+            "status": self.status,
+            "primitive_ids": list(self.primitive_ids),
+            "sphere_count": self.sphere_count,
+            "sphere_radius_m": _json_safe(self.sphere_radius_m),
+            "completed_steps": self.completed_steps,
+            "total_steps": self.total_steps,
+            "initial_min_height": _json_safe(self.initial_min_height),
+            "final_min_height": _json_safe(self.final_min_height),
+            "min_height": _json_safe(self.min_height),
+            "max_contact_count": self.max_contact_count,
+            "final_contact_count": self.final_contact_count,
+            "max_contacted_probe_count": self.max_contacted_probe_count,
+            "final_contacted_probe_count": self.final_contacted_probe_count,
+            "package_contact_count_p95": _json_safe(self.package_contact_count_p95),
+            "contact_density": _json_safe(self.contact_density),
+            "finite_state": self.finite_state,
+            "contact_observed": self.contact_observed,
+            "final_contact_observed": self.final_contact_observed,
+            "failure_labels": list(self.failure_labels),
+        }
+
+
+@dataclass(frozen=True)
 class NewtonDiagnosticReport:
     stage: str
     status: str
@@ -150,6 +198,7 @@ class NewtonDiagnosticReport:
     contact_canaries: tuple[NewtonContactCanary, ...]
     claim_boundary: str
     drop_settle_runs: tuple[NewtonDropSettleRun, ...] = ()
+    sphere_rain_runs: tuple[NewtonSphereRainRun, ...] = ()
     task_scope: str = ""
     initial_conditions: dict[str, object] | None = None
     solver: dict[str, object] | None = None
@@ -179,6 +228,7 @@ class NewtonDiagnosticReport:
             "shape_mappings": [mapping.to_dict() for mapping in self.shape_mappings],
             "contact_canaries": [canary.to_dict() for canary in self.contact_canaries],
             "drop_settle_runs": [run.to_dict() for run in self.drop_settle_runs],
+            "sphere_rain_runs": [run.to_dict() for run in self.sphere_rain_runs],
             "task_scope": self.task_scope,
             "initial_conditions": _json_safe(dict(self.initial_conditions or {})),
             "solver": _json_safe(dict(self.solver or {})),

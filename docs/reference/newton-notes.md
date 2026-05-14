@@ -17,6 +17,10 @@ experiment records.
 - The first named task-level Newton smoke diagnostic is `newton_drop_settle` for the capped bed
   CPD-like collision package. It is diagnostic evidence for one recorded asset/config/environment,
   not collision quality validation.
+- The second named task-level Newton smoke diagnostic is `newton_sphere_rain`, a sphere-rain
+  contact-density proxy over the capped bed CPD-like collision package. The density is based on
+  unique contacted probe spheres, while raw contact-row counts remain available for review. It is
+  not a calibrated contact-stress measurement.
 
 ## Environment Readiness Before Newton Claims
 
@@ -35,7 +39,8 @@ Before any Newton simulation claim, record:
 - Drop/settle status now uses estimated support height, not only body-origin height, for
   ground-plane breach decisions.
 - Stack or slide: expose coarse collider overhangs, missing support, and solver jitter.
-- Sphere rain or contact stress: stress-test dense contact regions and hidden holes.
+- Sphere rain or contact-density proxy: stress-test dense contact regions and hidden holes without
+  claiming calibrated physical stress.
 - Precision rejection: record when no safe primitive approximation is found and fallback is used.
 
 ## Records Required For Any Newton Claim

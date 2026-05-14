@@ -5,6 +5,7 @@ from primitive_collision_compiler.reports.schema import (
     NewtonDiagnosticReport,
     NewtonDropSettleRun,
     NewtonShapeMapping,
+    NewtonSphereRainRun,
 )
 
 
@@ -152,3 +153,56 @@ def test_newton_diagnostic_report_serializes_drop_settle_run():
     assert payload["initial_conditions"] == {"height_m": 0.25}
     assert payload["solver"] == {"solver": "xpbd", "frames": 120}
     assert payload["evidence_level"] == "newton_drop_settle_task_smoke"
+
+
+def test_newton_diagnostic_report_serializes_sphere_rain_run():
+    run = NewtonSphereRainRun(
+        run_id="seed0",
+        status="smoke_passed",
+        primitive_ids=("box",),
+        sphere_count=9,
+        completed_steps=16,
+        initial_min_height=0.75,
+        final_min_height=0.10,
+        min_height=0.05,
+        max_contact_count=3,
+        final_contact_count=0,
+        max_contacted_probe_count=2,
+        final_contacted_probe_count=0,
+        contact_density=2 / 9,
+        finite_state=True,
+        contact_observed=True,
+        final_contact_observed=False,
+        failure_labels=(),
+    )
+    report = NewtonDiagnosticReport(
+        stage="newton_sphere_rain",
+        status="smoke_passed",
+        asset_id="asset",
+        package_id="pkg",
+        probe_type="sphere_rain",
+        device="cpu",
+        environment=None,
+        primitive_count=1,
+        type_counts={"box": 1},
+        shape_mappings=(),
+        contact_canaries=(),
+        sphere_rain_runs=(run,),
+        task_scope="single_asset_sphere_rain_static_package",
+        initial_conditions={"sphere_count": 9},
+        solver={"solver": "xpbd", "frames": 120},
+        claim_boundary="sphere_rain_task_smoke_not_collision_quality_or_safety",
+        evidence_level="newton_sphere_rain_task_smoke",
+    )
+
+    payload = report.to_dict()
+
+    assert payload["stage"] == "newton_sphere_rain"
+    assert payload["probe_type"] == "sphere_rain"
+    assert payload["sphere_rain_runs"][0]["run_id"] == "seed0"
+    assert payload["sphere_rain_runs"][0]["sphere_count"] == 9
+    assert payload["sphere_rain_runs"][0]["max_contact_count"] == 3
+    assert payload["sphere_rain_runs"][0]["max_contacted_probe_count"] == 2
+    assert payload["sphere_rain_runs"][0]["contact_density"] == 2 / 9
+    assert payload["task_scope"] == "single_asset_sphere_rain_static_package"
+    assert payload["evidence_level"] == "newton_sphere_rain_task_smoke"

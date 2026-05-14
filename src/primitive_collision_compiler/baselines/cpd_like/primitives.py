@@ -25,11 +25,16 @@ class PrimitiveFit:
     weighted_volume: float
     contains_assigned_points: bool
     unsupported_primitives: tuple[str, ...] = UNSUPPORTED_PAPER_PRIMITIVES
+    source_component_ids: tuple[int, ...] = ()
+    cost_weight: float = 0.0
 
     def to_dict(self) -> dict[str, object]:
         return {
             "primitive_type": self.primitive_type,
             "source_faces": list(self.source_faces),
+            "source_face_count": len(self.source_faces),
+            "source_component_ids": list(self.source_component_ids),
+            "cost_weight": self.cost_weight,
             "center": list(self.center),
             "axes": [list(axis) for axis in self.axes],
             "dimensions": self.dimensions,
@@ -73,6 +78,8 @@ def fit_best_primitive(
             weighted_volume=best.weighted_volume,
             contains_assigned_points=best.contains_assigned_points,
             unsupported_primitives=unsupported,
+            source_component_ids=best.source_component_ids,
+            cost_weight=best.cost_weight,
         )
     return best
 

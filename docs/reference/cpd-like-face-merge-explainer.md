@@ -26,7 +26,10 @@ The repository has reached a narrow slice of layer 3:
 
 - Layer 1 is partially in place: the smoke path can extract a capped USD mesh.
 - Layer 2 exists only as a simple CPD-like baseline, not the paper algorithm.
-- Layer 3 has a contact-only Newton canary and one named capped-bed drop/settle task smoke.
+- Layer 2 now has one opt-in extension: a component-merge gate that can try disconnected-component
+  pairwise merges after topological adjacency merges are exhausted.
+- Layer 3 has a contact-only Newton canary plus two named capped-bed task smokes: drop/settle and
+  sphere-rain contact-density proxy.
 - Layer 4 has not started.
 
 ## What Face-Merge Means
@@ -43,6 +46,18 @@ In this repository, a mesh is treated as many triangle faces. The face-merge bas
 
 The result is a set of primitive proposals. A proposal is a candidate collision proxy, not a final
 validated collider.
+
+## What Component-Merge Gate Adds
+
+The opt-in component-merge gate keeps the default topology-only behavior unchanged. When enabled,
+it first runs the same adjacent face-group merge loop. If adjacency is exhausted before the
+primitive budget is reached, it can try pairwise merges between disconnected components. Those
+virtual merge candidates are ranked by weighted excess volume normalized by the mesh AABB volume,
+and an optional threshold can block overly expensive virtual merges.
+
+This is still CPD-like infrastructure, not CPD reproduction. It gives the report a clearer account
+of merge policy, component counts, topology merge count, virtual merge count, blocked merge count,
+and per-primitive source component IDs.
 
 ## Why This Exists First
 
@@ -68,10 +83,14 @@ For the current capped bed smoke:
 - capped extraction: 256 mesh faces;
 - primitive budget: 32;
 - output: 32 restricted primitive proposals, all currently boxes;
+- CPD-like component-merge gate smoke: 256 initial components, 224 topology merges, 0 virtual
+  component merges needed, 0 blocked merges, and 32 final components;
 - Newton contact smoke: 32 mapped box descriptors and one representative box contact canary;
 - observed representative contact count: 1.
 - Newton drop/settle smoke: all 32 proposals mapped into one compound package body, dropped on a
   static plane, with contact, final-speed, and support-height metrics recorded.
+- Newton sphere-rain smoke: all 32 proposals mapped as a static package, 9 probe spheres dropped
+  over the package footprint, and package-probe contact-density proxy metrics recorded.
 
 This proves the pipeline can produce and ingest a simple primitive proposal report. It does not
 prove the proposals are good collision geometry.
@@ -82,9 +101,10 @@ Do not use the current face-merge baseline to claim:
 
 - full CPD paper reproduction;
 - paper-scope primitive coverage;
+- paper-faithful component classification or merge optimization;
 - collision quality;
-- broad task-level Newton simulation success beyond the single recorded capped-bed drop/settle
-  smoke;
+- broad task-level Newton simulation success beyond the recorded capped-bed drop/settle and
+  sphere-rain contact-density proxy smokes;
 - benchmark superiority over CoACD, V-HACD, convex hulls, manual colliders, or Newton-native
   approximate mesh modes;
 - deployment readiness or safety certification.
@@ -95,8 +115,10 @@ Use:
 
 - "geometry-only CPD-like face-merge primitive proposal smoke";
 - "CPD-inspired restricted primitive baseline";
+- "opt-in CPD-like component-merge gate";
 - "primitive proposals consumed by a contact-only Newton canary";
 - "one named capped-bed drop/settle smoke";
+- "one named capped-bed sphere-rain contact-density proxy smoke";
 - "not a full CPD paper reproduction";
 - "not collision-quality evidence."
 
@@ -110,8 +132,7 @@ Avoid:
 
 ## Next Step
 
-The next useful step is not to strengthen the claim on this baseline. The next useful step is to add
-one more narrow Newton diagnostic probe or asset class, such as sphere-rain/contact stress or a
-stack/slide task with explicit solver settings, timestep, seed, and metrics. Paper-faithful CPD
-decomposition work should still wait for this evaluation harness to broaden beyond one capped bed
-smoke.
+The next useful step is not to strengthen the claim on this baseline. The repository now has the
+second asset-class smoke and the small CPD-like component-merge gate. Paper-faithful CPD
+decomposition work should still avoid full reproduction claims until primitive coverage,
+benchmark settings, and dated experiment records exist.

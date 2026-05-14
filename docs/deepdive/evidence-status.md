@@ -18,12 +18,18 @@ This file separates current evidence from future claims. See [message-map.md](me
   merges adjacent face groups by weighted excess volume, and emits a JSON diagnostic report.
   The plain-language explanation is in
   [CPD-like face-merge explainer](../reference/cpd-like-face-merge-explainer.md).
+- The current executable surface can run an opt-in geometry-only CPD-like component-merge gate
+  that tries disconnected-component pairwise merge candidates after topology adjacency merges are
+  exhausted, and reports AABB-normalized excess-volume accounting.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.
 - The current executable surface can run `newton_drop_settle`, a named task-level Newton smoke
   diagnostic over the capped bed CPD-like collision package, with explicit solver settings,
   final-contact, final-speed, support-height metrics, and failure labels.
+- The current executable surface can run `newton_sphere_rain`, a named task-level Newton smoke
+  diagnostic over the capped bed CPD-like collision package, with explicit solver settings,
+  sphere-grid initial conditions, package-probe contact-density proxy metrics, and failure labels.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
@@ -33,18 +39,34 @@ This file separates current evidence from future claims. See [message-map.md](me
   collision package in the clean Newton Python environment, with all 32 primitives mapped and no
   floor-breach or unsettled failure label under the recorded `0.05m` support-height tolerance and
   `0.05m/s` final-speed threshold.
+- The 2026-05-15 Newton sphere-rain record reports `smoke_passed` for the capped bed CPD-like
+  collision package in the clean Newton Python environment, with all 32 primitives mapped, 9 probe
+  spheres, max package-probe contact count 1, max contacted probe spheres 1, contact density proxy
+  `0.1111111111111111`, and no failure labels under the recorded `0.05` minimum contact-density
+  threshold.
+- The 2026-05-15 Franka record reports `smoke_passed` for local Franka USD-open smoke and capped
+  geometry-only CPD-like first-mesh smoke: 10384 mesh points, 128 capped faces, and 16 restricted
+  primitive proposals. It remains excluded from aggregate claims.
+- The 2026-05-15 CPD-like component-merge gate record reports `smoke_passed` for the capped bed
+  geometry-only smoke: 1898 mesh points, 256 capped faces, 32 restricted primitive proposals,
+  224 topology merges, 0 virtual component merges, and 0 blocked merges. Focused tests cover the
+  virtual disconnected-component merge behavior.
 
 ## Current Unsupported Claims
 
 - General primitive fitting quality across arbitrary assets has not been evaluated.
-- Task-level Newton diagnostic evidence exists beyond the single recorded capped bed drop/settle
-  smoke.
+- Task-level Newton diagnostic evidence beyond the recorded capped bed drop/settle and
+  sphere-rain contact-density proxy smokes has not been evaluated.
+- Real contact-stress measurement has not been implemented or calibrated.
+- Whole-robot collider quality, articulation-aware robot simulation, and aggregate robot-class
+  evidence have not been evaluated.
 - The method beats CoACD, V-HACD, CPD-like decomposition, manual primitive colliders, or Newton-native approximate mesh modes.
 - The approach improves robot policy training, real robot behavior, or deployment safety.
 - LLM/VLM improves primitive generation.
 - The compiler can replace convex decomposition.
 - Full CPD paper reproduction has been implemented or evaluated.
 - The face-merge baseline is the CPD paper algorithm.
+- The component-merge gate is the CPD paper algorithm.
 - Environment-readiness diagnostics imply Newton simulation readiness.
 
 ## Future Evidence Needed
@@ -74,10 +96,13 @@ Physical intelligence requires model outputs to be checked against physical cons
 ## Narrow First Milestone
 
 The first local clean Newton runtime readiness gap is resolved, a geometry-only CPD-like primitive
-proposal smoke path exists, a contact-only Newton canary exists, and the first named drop/settle
-task smoke exists for the capped bed asset. Next broaden the diagnostic suite one narrow probe or
-asset class at a time before adding LLM/VLM. Report failures and fallback behavior as first-class
-evidence.
+proposal smoke path exists, a contact-only Newton canary exists, and the first two named task
+smokes exist for the capped bed asset: drop/settle and sphere-rain contact-density proxy. A narrow
+Franka USD-open and first-mesh CPD-like geometry smoke now broadens asset-class intake without
+making robot-quality claims. The first CPD-like algorithmic extension is an opt-in
+component-merge gate with explicit merge-cost reporting, still below full CPD reproduction. Next
+broaden CPD-like algorithm evidence one narrow slice at a time before adding LLM/VLM. Report
+failures and fallback behavior as first-class evidence.
 
 ## Current Non-Goals
 

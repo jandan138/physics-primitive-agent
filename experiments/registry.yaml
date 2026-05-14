@@ -16,3 +16,33 @@ experiments:
     claims_supported:
       - named capped-bed drop/settle task smoke only
       - no benchmark, broad asset/task, collision-quality, or CPD reproduction claim
+  - id: newton-sphere-rain-bed-smoke
+    status: complete
+    config: configs/experiments/newton_sphere_rain.yaml
+    record: docs/records/2026-05-15-newton-sphere-rain.md
+    purpose: >
+      Run the second task-level Newton smoke over the CPD-like bed collision package using a
+      sphere-rain contact-density proxy.
+    claims_supported:
+      - named capped-bed sphere-rain contact-density proxy smoke only
+      - no benchmark, broad asset/task, collision-quality, real contact-stress, or CPD reproduction claim
+  - id: franka-cpd-like-smoke
+    status: complete
+    config: configs/experiments/franka_cpd_like_smoke.yaml
+    record: docs/records/2026-05-15-franka-cpd-like-smoke.md
+    purpose: >
+      Open the local Franka USD and run capped first-mesh CPD-like geometry smoke as a second
+      asset-class intake check.
+    claims_supported:
+      - Franka USD-open and capped first-mesh CPD-like geometry smoke only
+      - no whole-robot collider-quality, articulated-dynamics, aggregate, benchmark, or CPD reproduction claim
+  - id: cpd-like-component-merge-gate-bed-smoke
+    status: complete
+    config: configs/experiments/cpd_like_component_merge_gate.yaml
+    record: docs/records/2026-05-15-cpd-like-component-merge-gate.md
+    purpose: >
+      Run the opt-in CPD-like component-merge gate over the capped bed geometry smoke and report
+      merge policy, component counts, and normalized excess-volume accounting.
+    claims_supported:
+      - geometry-only CPD-like component-merge gate smoke only
+      - no collision-quality, benchmark, broad asset/task, or full CPD reproduction claim

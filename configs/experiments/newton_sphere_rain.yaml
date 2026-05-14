@@ -1,0 +1,53 @@
+asset:
+  id: grscenes_bed_0a85b986_sphere_rain
+  path: assets/manifests/cpd_like_smoke_assets.yaml
+task:
+  primary: collision_proxy_diagnostic
+compile:
+  method: cpd_like_baseline
+  max_primitives: 32
+  allowed_fallback:
+    - convex_hull
+  verify:
+    - newton_sphere_rain
+  keep_visual: false
+cpd_like:
+  paper: Convex Primitive Decomposition for Collision Detection
+  asset_manifest: assets/manifests/cpd_like_smoke_assets.yaml
+  asset_role: bed_dev_smoke
+  primitive_subset:
+    - sphere
+    - capsule
+    - box
+  unsupported_primitives:
+    - capped_cylinder
+    - frustum
+    - trapezoidal_prism
+  max_source_faces: 256
+  decomposition_stage: cpd_like_face_merge_smoke
+  claim_boundary: internal_baseline_not_reproduction_claim
+newton:
+  source_dir: $NEWTON_SOURCE_DIR
+  expected_remote: https://github.com/newton-physics/newton.git
+  runtime_stage: source_import_check
+newton_diagnostic:
+  probe_type: sphere_rain
+  device: cpu
+  claim_boundary: sphere_rain_task_smoke_not_collision_quality_or_safety
+  sphere_rain:
+    sphere_count_x: 3
+    sphere_count_y: 3
+    sphere_radius_m: 0.5
+    spawn_height_m: 2.0
+    frames: 240
+    substeps: 4
+    frame_dt_seconds: 0.016666666666666666
+    iterations: 4
+    gravity_mps2: -9.81
+    friction: 0.5
+    min_contact_density: 0.05
+    require_final_contact: false
+    rigid_contact_max: 4096
+report:
+  output_dir: reports/generated/newton_sphere_rain
+  evidence_level: newton_sphere_rain_task_smoke

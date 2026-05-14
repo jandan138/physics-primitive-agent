@@ -44,7 +44,20 @@ def test_smoke_asset_manifest_records_paths_without_committing_assets():
         roles["bed_dev_smoke"]["sha256"]
         == "1bc5a26ddb2551de4ac7acbc13a39d118beda10db503419da65ce82528322265"
     )
-    assert roles["franka_import_smoke"]["path"] == "/cpfs/user/zhuzihou/assets/zzh-grscenes/robots/franka/franka.usd"
+    assert Path(roles["franka_import_smoke"]["path"]).name == "franka.usd"
+    assert roles["franka_import_smoke"]["include_in_cpd_like_aggregate"] is False
+
+
+def test_franka_smoke_asset_manifest_records_robot_path_without_committing_asset():
+    manifest = yaml.safe_load(Path("assets/manifests/franka_usd_smoke_assets.yaml").read_text())
+
+    assert manifest["manifest_id"] == "franka_usd_smoke_assets_2026_05_15"
+    roles = {asset["role"]: asset for asset in manifest["assets"]}
+    assert Path(roles["franka_import_smoke"]["path"]).name == "franka.usd"
+    assert (
+        roles["franka_import_smoke"]["sha256"]
+        == "2bfd004928d4157ca2fdca3e79bcfb913b4008eef3ec16f839ad89314141976b"
+    )
     assert roles["franka_import_smoke"]["include_in_cpd_like_aggregate"] is False
 
 
@@ -79,4 +92,61 @@ def test_newton_drop_settle_config_owns_probe_parameters():
     assert config.protocol["newton_diagnostic"]["drop_settle"]["max_floor_breach_m"] == 0.05
     assert config.protocol["newton_diagnostic"]["drop_settle"]["max_settle_linear_speed_mps"] == 0.05
     assert config.protocol["report"]["evidence_level"] == "newton_drop_settle_task_smoke"
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_newton_sphere_rain_config_owns_probe_parameters():
+    config_path = Path("configs/experiments/newton_sphere_rain.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "grscenes_bed_0a85b986_sphere_rain"
+    assert config.verify == ("newton_sphere_rain",)
+    assert config.protocol["newton"]["source_dir"] == "$NEWTON_SOURCE_DIR"
+    assert config.protocol["newton_diagnostic"]["probe_type"] == "sphere_rain"
+    assert config.protocol["newton_diagnostic"]["device"] == "cpu"
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "sphere_rain_task_smoke_not_collision_quality_or_safety"
+    )
+    sphere_rain = config.protocol["newton_diagnostic"]["sphere_rain"]
+    assert sphere_rain["sphere_count_x"] == 3
+    assert sphere_rain["sphere_count_y"] == 3
+    assert sphere_rain["sphere_radius_m"] == 0.5
+    assert sphere_rain["min_contact_density"] == 0.05
+    assert sphere_rain["require_final_contact"] is False
+    assert config.protocol["report"]["evidence_level"] == "newton_sphere_rain_task_smoke"
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_franka_cpd_like_smoke_config_selects_robot_manifest_role():
+    config_path = Path("configs/experiments/franka_cpd_like_smoke.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "franka_robot_cpd_like_smoke"
+    assert config.asset_path == "assets/manifests/franka_usd_smoke_assets.yaml"
+    assert config.task == "robot_usd_import_and_cpd_like_smoke"
+    assert config.method == "cpd_like_baseline"
+    assert config.max_primitives == 16
+    assert config.verify == ("usd_open", "cpd_like_geometry")
+    assert config.protocol["cpd_like"]["asset_manifest"] == "assets/manifests/franka_usd_smoke_assets.yaml"
+    assert config.protocol["cpd_like"]["asset_role"] == "franka_import_smoke"
+    assert config.protocol["cpd_like"]["max_source_faces"] == 128
+    assert config.protocol["cpd_like"]["claim_boundary"] == "robot_asset_import_smoke_not_collision_quality"
+    assert config.protocol["report"]["evidence_level"] == "franka_cpd_like_geometry_smoke"
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_cpd_like_component_merge_gate_config_is_opt_in_and_claim_bounded():
+    config_path = Path("configs/experiments/cpd_like_component_merge_gate.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "grscenes_bed_0a85b986_component_merge_gate"
+    assert config.task == "collision_proxy_diagnostic"
+    assert config.method == "cpd_like_baseline"
+    assert config.max_primitives == 32
+    assert config.verify == ("cpd_like_component_merge_gate",)
+    assert config.protocol["cpd_like"]["component_merge"] == "virtual_pairwise"
+    assert config.protocol["cpd_like"]["excess_volume_threshold_fraction"] == 1.0
+    assert config.protocol["cpd_like"]["report_merge_trace"] == "summary"
+    assert config.protocol["cpd_like"]["claim_boundary"] == "component_merge_gate_not_cpd_reproduction"
+    assert config.protocol["report"]["evidence_level"] == "geometry_only_cpd_like_component_merge_smoke"
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")

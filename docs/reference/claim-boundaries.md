@@ -7,7 +7,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 
 - The repository is a DeepDive-first proposal and bootstrap, not a completed compiler.
 - The intended direction is primitive-first, Newton-checker-planned, fallback-aware collision
-  asset generation for Newton workflows until named Newton diagnostic probe records exist.
+  asset generation for Newton workflows, with named Newton diagnostic records required for any
+  simulation-checked wording.
 - The first proof point is diagnostic: measure whether primitive collision contracts expose
   failures that mesh-only or visual-only asset review would miss.
 - The Physical Intelligence Center story is that AI models need physical safety constraints;
@@ -17,11 +18,22 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   diagnostics.
 - The current code can run a geometry-only CPD-like face-merge primitive proposal smoke path for
   a restricted primitive subset, when tied to a dated record and capped asset/config settings.
+- The current code can run an opt-in geometry-only CPD-like component-merge gate that reports
+  disconnected-component merge candidates and normalized excess-volume accounting for a restricted
+  baseline. This is not full CPD paper reproduction or collision-quality evidence.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
   capped bed CPD-like collision package under the recorded config and environment. This is not
   collision quality validation, benchmark evidence, or CPD paper reproduction.
+- The current code can run the named `newton_sphere_rain` task-level smoke diagnostic for the
+  capped bed CPD-like collision package under the recorded config and environment. This is a
+  contact-density proxy smoke, not a real contact-stress measurement, collision quality validation,
+  benchmark evidence, or CPD paper reproduction.
+- The current code can open the recorded local Franka USD and run a capped geometry-only CPD-like
+  smoke over the first extracted mesh. This is robot asset import and geometry smoke only, not
+  whole-robot collider quality, articulated dynamics, aggregate robot evidence, or benchmark
+  evidence.
 - The current clean local Python/Newton environment-readiness report can be described as
   `smoke_passed` evidence for the named environment path, Newton source checkout, and hardware
   environment in the dated record.
@@ -32,10 +44,11 @@ Use these only after a dated record links them to Phase 0 assets, configs, logs,
 
 - A non-LLM primitive baseline has been tested on the 5-10 asset proof point.
 - Newton checker probes have found or ruled out specific failure modes for specific assets.
+- Robot asset coverage beyond the recorded Franka USD-open and first-mesh geometry smoke.
 - A baseline comparison includes primitive count, fallback ratio, step time, contact count, and
   penetration or jitter measurements.
 - A generated collision package is simulation-checked for a named task in a named environment,
-  beyond the single recorded bed drop/settle smoke.
+  beyond the recorded capped-bed drop/settle and sphere-rain smokes.
 - A DLC-worker or experiment-specific Python/Newton environment has passed readiness checks for a
   named source checkout and hardware environment.
 
@@ -60,13 +73,15 @@ Use these only after broader benchmark records exist.
 - Do not treat environment-readiness diagnostics as Newton simulation checker results.
 - Do not claim full CPD paper reproduction before paper-scope primitive coverage, benchmark
   settings, and dated experiment records exist.
+- Do not describe the CPD-like component-merge gate as the CPD paper algorithm; it is a restricted
+  baseline extension and report-audit slice.
 
 ## Wording Rules
 
 - Use "simulation-checked" only for artifacts with a named task-level Newton diagnostic record.
-  Contact-only canary records do not qualify. For the single recorded bed drop/settle smoke, prefer
-  "named drop/settle smoke diagnostic" unless reviewer context specifically needs the
-  "simulation-checked" term.
+  Contact-only canary records do not qualify. For the recorded capped-bed drop/settle and
+  sphere-rain smokes, prefer the exact diagnostic names unless reviewer context specifically needs
+  the "simulation-checked" term.
 - Use "simulation-verified" only after a specific verification standard is documented.
 - Say "measure whether" instead of "prove whether" for research questions.
 - Say "fallback-aware" instead of "fallback-free" unless a record shows zero fallback.

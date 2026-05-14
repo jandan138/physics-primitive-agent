@@ -71,3 +71,13 @@ Proposed | In progress | Complete | Failed | Superseded
   Newton canary consuming CPD-like primitive proposals.
 - [2026-05-14 Newton Drop/Settle](2026-05-14-newton-drop-settle.md): first named task-level
   Newton smoke diagnostic consuming the CPD-like collision package.
+- [2026-05-15 Newton Sphere-Rain](2026-05-15-newton-sphere-rain.md): second named task-level
+  Newton smoke diagnostic, using a sphere-rain contact-density proxy over the capped bed CPD-like
+  collision package.
+- [2026-05-15 Franka CPD-Like Smoke](2026-05-15-franka-cpd-like-smoke.md): Franka/simple robot
+  USD-open and capped geometry-only CPD-like smoke evidence.
+- [2026-05-15 CPD-Like Component Merge Gate](2026-05-15-cpd-like-component-merge-gate.md):
+  opt-in disconnected-component merge gate and merge-cost reporting for the CPD-like baseline.
+- [2026-05-15 Three-Slice Final Verification](2026-05-15-three-slice-final-verification.md):
+  final verification and review-fix record for sphere-rain, Franka smoke, and component-merge
+  gate.

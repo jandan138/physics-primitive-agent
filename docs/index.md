@@ -1,9 +1,9 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, a contact-only Newton canary, and the first named Newton drop/settle task smoke. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps all 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: review the drop/settle slice, then add one more narrow Newton diagnostic probe
-or asset class while keeping fallback decisions and unsupported primitive types explicit.
+Current next action: run full verification and final review over the combined sphere-rain, Franka,
+and component-merge-gate slice.
 
 ## DeepDive Package
 
@@ -45,6 +45,15 @@ or asset class while keeping fallback decisions and unsupported primitive types 
   first contact-only Newton canary consuming CPD-like primitive proposals.
 - [Newton drop/settle record](records/2026-05-14-newton-drop-settle.md):
   first named task-level Newton smoke diagnostic consuming the CPD-like collision package.
+- [Newton sphere-rain record](records/2026-05-15-newton-sphere-rain.md):
+  second named task-level Newton smoke diagnostic using a contact-density proxy over the capped
+  bed CPD-like collision package.
+- [Franka CPD-like smoke record](records/2026-05-15-franka-cpd-like-smoke.md):
+  Franka/simple robot USD-open and capped geometry-only CPD-like smoke evidence.
+- [CPD-like component-merge gate record](records/2026-05-15-cpd-like-component-merge-gate.md):
+  opt-in disconnected-component merge gate and merge-cost reporting evidence.
+- [Three-slice final verification record](records/2026-05-15-three-slice-final-verification.md):
+  final verification for sphere-rain, Franka smoke, and component-merge gate.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 - [Environment normalization design](superpowers/specs/2026-05-14-environment-normalization-design.md):
@@ -56,6 +65,8 @@ or asset class while keeping fallback decisions and unsupported primitive types 
 
 - `configs/deepdive/mvp.yaml`: DeepDive-facing dry-run MVP config.
 - `configs/experiments/phase0_baseline.yaml`: Phase 0 proof-point config scaffold.
+- `configs/experiments/cpd_like_component_merge_gate.yaml`: opt-in CPD-like component-merge gate
+  smoke config.
 - `scripts/env/readiness_check.py`: local environment-readiness JSON checker.
 - `experiments/registry.yaml`: experiment registry and claim-support status.
 - `assets/`, `reports/`, and `archive/`: artifact boundaries; large/generated outputs stay out
@@ -70,7 +81,10 @@ Additional current evidence: executable environment-readiness diagnostics can re
 gaps, source provenance, and the current clean local env `smoke_passed` status. The CPD-like
 geometry path can produce a restricted primitive proposal smoke report. The Newton contact canary
 can confirm representative primitive ingestion and contact pipeline output. The Newton drop/settle
-diagnostic can run one named task smoke for the capped bed CPD-like collision package. These
-evidence layers are not benchmark, broad collision-quality, or CPD reproduction evidence.
+and sphere-rain diagnostics can run two named task smokes for the capped bed CPD-like collision
+package. The Franka/simple robot smoke can open a second asset class and run capped first-mesh
+geometry-only proposals. The CPD-like component-merge gate can report disconnected-component
+merge candidates and normalized excess-volume accounting. These evidence layers are not benchmark,
+collision-quality, whole-robot quality, real contact-stress, or CPD reproduction evidence.
 
 Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, no CPD reproduction claim, and no complete replacement of convex decomposition.

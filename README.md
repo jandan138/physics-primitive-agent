@@ -11,10 +11,16 @@ This repository is a proposal/bootstrap for a DeepDive-first Newton primitive co
 compiler. It now includes a geometry-only CPD-like face-merge smoke path over USD meshes, plus
 config dry-runs, USD asset-open smoke diagnostics, Newton source diagnostics, and environment
 readiness checks. It also includes a contact-only Newton canary for representative mapped primitive
-types. See `docs/reference/cpd-like-face-merge-explainer.md` for the plain-language boundary
-between the current baseline and a full CPD paper reproduction. The clean local Newton Python
-environment has recorded readiness evidence, but the repository does not yet run task-level Newton
-simulation probes, produce benchmark results, or implement a production collision compiler.
+types, plus named drop/settle and sphere-rain contact-density proxy Newton task smokes for the
+capped bed CPD-like package. A separate Franka/simple robot smoke opens the local Franka USD and
+runs capped first-mesh CPD-like geometry proposals. An opt-in CPD-like component-merge gate now
+reports disconnected-component merge candidates and normalized excess-volume accounting while
+remaining below full CPD reproduction. See
+`docs/reference/cpd-like-face-merge-explainer.md` for the
+plain-language boundary between the current baseline and a full CPD paper reproduction. The clean
+local Newton Python environment has recorded readiness evidence, but the repository does not yet
+produce benchmark results, broad asset/task evidence, whole-robot collider-quality evidence, real
+contact-stress measurement, or a production collision compiler.
 
 ## Strategic Framing
 
@@ -92,7 +98,11 @@ current basis for project framing, claim boundaries, and future implementation p
 ## Current Non-Goals
 
 - No production mesh-processing or collision-compiler implementation.
-- No task-level Newton simulation probe execution yet; the next implementation target is a small
-  drop/settle diagnostic probe.
+- No broad task-level Newton simulation coverage yet; current task smokes are limited to the
+  recorded capped bed drop/settle and sphere-rain contact-density proxy diagnostics.
+- No whole-robot collider-quality or articulated-dynamics evidence; the Franka path is import and
+  capped first-mesh geometry smoke only.
+- No full CPD paper reproduction; the component-merge gate is a restricted CPD-like baseline
+  extension.
 - No generated collision artifact pipeline.
 - No claim of production readiness.

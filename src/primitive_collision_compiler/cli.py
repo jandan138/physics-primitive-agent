@@ -1,6 +1,7 @@
 import argparse
 import contextlib
 import json
+import math
 import os
 import sys
 from pathlib import Path
@@ -18,6 +19,11 @@ from primitive_collision_compiler.newton.drop_settle import (
     run_newton_drop_settle,
 )
 from primitive_collision_compiler.newton.env import inspect_newton_environment
+from primitive_collision_compiler.newton.sphere_rain import (
+    SPHERE_RAIN_CLAIM_BOUNDARY,
+    SphereRainOptions,
+    run_newton_sphere_rain,
+)
 
 
 def build_parser():
@@ -43,6 +49,11 @@ def build_parser():
         "--run-newton-drop-settle",
         action="store_true",
         help="run CPD-like geometry plus the Newton drop/settle task smoke",
+    )
+    parser.add_argument(
+        "--run-newton-sphere-rain",
+        action="store_true",
+        help="run CPD-like geometry plus the Newton sphere-rain contact-density proxy smoke",
     )
     return parser
 
@@ -125,6 +136,7 @@ def main(argv=None):
             cpd_like_section = {}
         try:
             primitive_subset = _cpd_like_primitive_subset(cpd_like_section)
+            component_merge_options = _cpd_like_component_merge_options(cpd_like_section)
             max_source_faces = _positive_int(cpd_like_section.get("max_source_faces"), default=256)
             source_path = _cpd_like_source_path(config, cpd_like_section)
         except ValueError as exc:
@@ -136,12 +148,13 @@ def main(argv=None):
                 mesh,
                 max_primitives=config.max_primitives,
                 primitive_subset=primitive_subset,
+                **component_merge_options,
             )
         except (USDMeshLoadError, ValueError) as exc:
             print(
                 json.dumps(
                     {
-                        "stage": "cpd_like_face_merge",
+                        "stage": _cpd_like_stage(component_merge_options["component_merge"]),
                         "status": "dependency_gap"
                         if "dependency_gap" in str(exc)
                         else "smoke_failed",
@@ -279,6 +292,62 @@ def main(argv=None):
         print("npc-compile: --run-newton-drop-settle requires --config.", file=sys.stderr)
         return 2
 
+    if args.run_newton_sphere_rain and args.config:
+        try:
+            config = load_compile_config(args.config)
+            cpd_like_section = config.protocol.get("cpd_like", {})
+            if not isinstance(cpd_like_section, dict):
+                cpd_like_section = {}
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError("--run-newton-sphere-rain requires config key newton.source_dir")
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            diagnostic_options = _newton_sphere_rain_options(diagnostic_section)
+            cpd_like_report, source_path, max_source_faces = _run_cpd_like_report(config)
+            package = package_from_cpd_like_report(
+                cpd_like_report,
+                asset_id=config.asset_id or Path(config.asset_path).stem,
+                source_path=source_path,
+                claim_boundary=cpd_like_section.get(
+                    "claim_boundary",
+                    "internal_baseline_not_reproduction_claim",
+                ),
+                max_source_faces=max_source_faces,
+            )
+            with contextlib.redirect_stdout(sys.stderr):
+                report = run_newton_sphere_rain(
+                    package,
+                    source_dir=source_dir,
+                    device=diagnostic_options["device"],
+                    options=diagnostic_options["options"],
+                    claim_boundary=diagnostic_options["claim_boundary"],
+                )
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "newton_sphere_rain",
+                        "status": _newton_sphere_rain_error_status(str(exc)),
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+
+        print(json.dumps(report.to_dict(), sort_keys=True))
+        return 0 if report.status == "smoke_passed" else 2
+
+    if args.run_newton_sphere_rain:
+        print("npc-compile: --run-newton-sphere-rain requires --config.", file=sys.stderr)
+        return 2
+
     if args.dry_run and args.config:
         try:
             config = load_compile_config(args.config)
@@ -319,6 +388,7 @@ def _run_cpd_like_report(config):
     if not isinstance(cpd_like_section, dict):
         cpd_like_section = {}
     primitive_subset = _cpd_like_primitive_subset(cpd_like_section)
+    component_merge_options = _cpd_like_component_merge_options(cpd_like_section)
     max_source_faces = _positive_int(cpd_like_section.get("max_source_faces"), default=256)
     source_path = _cpd_like_source_path(config, cpd_like_section)
     mesh = load_first_mesh(source_path, max_faces=max_source_faces)
@@ -326,6 +396,7 @@ def _run_cpd_like_report(config):
         mesh,
         max_primitives=config.max_primitives,
         primitive_subset=primitive_subset,
+        **component_merge_options,
     )
     return report, source_path, max_source_faces
 
@@ -338,6 +409,23 @@ def _cpd_like_primitive_subset(cpd_like_section):
     if not result or any(not item for item in result):
         raise ValueError("cpd_like.primitive_subset must be a list of strings")
     return result
+
+
+def _cpd_like_component_merge_options(cpd_like_section):
+    return {
+        "component_merge": str(cpd_like_section.get("component_merge", "topology_only")),
+        "excess_volume_threshold_fraction": _optional_float_value(
+            cpd_like_section.get("excess_volume_threshold_fraction"),
+            "cpd_like.excess_volume_threshold_fraction",
+        ),
+        "report_merge_trace": str(cpd_like_section.get("report_merge_trace", "summary")),
+    }
+
+
+def _cpd_like_stage(component_merge):
+    if component_merge == "virtual_pairwise":
+        return "cpd_like_component_merge_gate"
+    return "cpd_like_face_merge"
 
 
 def _cpd_like_source_path(config, cpd_like_section):
@@ -361,7 +449,7 @@ def _positive_int(value, default):
         return default
     try:
         result = int(value)
-    except (TypeError, ValueError) as exc:
+    except (OverflowError, TypeError, ValueError) as exc:
         raise ValueError("cpd_like.max_source_faces must be an integer") from exc
     if result < 1:
         raise ValueError("cpd_like.max_source_faces must be at least 1")
@@ -438,10 +526,84 @@ def _newton_drop_settle_options(section):
     }
 
 
+def _newton_sphere_rain_options(section):
+    probe_type = str(section.get("probe_type", "sphere_rain"))
+    if probe_type != "sphere_rain":
+        raise ValueError("newton_diagnostic.probe_type must be sphere_rain for --run-newton-sphere-rain")
+    sphere_rain_section = section.get("sphere_rain", {})
+    if sphere_rain_section is None:
+        sphere_rain_section = {}
+    if not isinstance(sphere_rain_section, dict):
+        raise ValueError("newton_diagnostic.sphere_rain must be a mapping")
+    options = SphereRainOptions(
+        sphere_count_x=_int_value(
+            sphere_rain_section.get("sphere_count_x", 3),
+            "newton_diagnostic.sphere_rain.sphere_count_x",
+        ),
+        sphere_count_y=_int_value(
+            sphere_rain_section.get("sphere_count_y", 3),
+            "newton_diagnostic.sphere_rain.sphere_count_y",
+        ),
+        sphere_radius_m=_float_value(
+            sphere_rain_section.get("sphere_radius_m", 0.5),
+            "newton_diagnostic.sphere_rain.sphere_radius_m",
+        ),
+        spawn_height_m=_float_value(
+            sphere_rain_section.get("spawn_height_m", 2.0),
+            "newton_diagnostic.sphere_rain.spawn_height_m",
+        ),
+        grid_spacing_m=_optional_float_value(
+            sphere_rain_section.get("grid_spacing_m"),
+            "newton_diagnostic.sphere_rain.grid_spacing_m",
+        ),
+        frames=_int_value(
+            sphere_rain_section.get("frames", 240),
+            "newton_diagnostic.sphere_rain.frames",
+        ),
+        substeps=_int_value(
+            sphere_rain_section.get("substeps", 4),
+            "newton_diagnostic.sphere_rain.substeps",
+        ),
+        frame_dt_seconds=_float_value(
+            sphere_rain_section.get("frame_dt_seconds", 1.0 / 60.0),
+            "newton_diagnostic.sphere_rain.frame_dt_seconds",
+        ),
+        iterations=_int_value(
+            sphere_rain_section.get("iterations", 4),
+            "newton_diagnostic.sphere_rain.iterations",
+        ),
+        gravity_mps2=_float_value(
+            sphere_rain_section.get("gravity_mps2", -9.81),
+            "newton_diagnostic.sphere_rain.gravity_mps2",
+        ),
+        friction=_float_value(
+            sphere_rain_section.get("friction", 0.5),
+            "newton_diagnostic.sphere_rain.friction",
+        ),
+        min_contact_density=_float_value(
+            sphere_rain_section.get("min_contact_density", 0.05),
+            "newton_diagnostic.sphere_rain.min_contact_density",
+        ),
+        require_final_contact=_bool_value(
+            sphere_rain_section.get("require_final_contact", False),
+            "newton_diagnostic.sphere_rain.require_final_contact",
+        ),
+        rigid_contact_max=_int_value(
+            sphere_rain_section.get("rigid_contact_max", 4096),
+            "newton_diagnostic.sphere_rain.rigid_contact_max",
+        ),
+    )
+    return {
+        "device": str(section.get("device", "cpu")),
+        "claim_boundary": str(section.get("claim_boundary", SPHERE_RAIN_CLAIM_BOUNDARY)),
+        "options": options,
+    }
+
+
 def _int_value(value, key):
     try:
         result = int(value)
-    except (TypeError, ValueError) as exc:
+    except (OverflowError, TypeError, ValueError) as exc:
         raise ValueError(f"{key} must be an integer") from exc
     return result
 
@@ -451,7 +613,27 @@ def _float_value(value, key):
         result = float(value)
     except (TypeError, ValueError) as exc:
         raise ValueError(f"{key} must be a number") from exc
+    if not math.isfinite(result):
+        raise ValueError(f"{key} must be finite")
     return result
+
+
+def _optional_float_value(value, key):
+    if value in (None, ""):
+        return None
+    return _float_value(value, key)
+
+
+def _bool_value(value, key):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        lowered = value.lower()
+        if lowered in {"true", "yes", "1"}:
+            return True
+        if lowered in {"false", "no", "0"}:
+            return False
+    raise ValueError(f"{key} must be a boolean")
 
 
 def _newton_contact_error_status(message):
@@ -465,6 +647,16 @@ def _newton_contact_error_status(message):
 
 
 def _newton_drop_settle_error_status(message):
+    if (
+        "dependency_gap" in message
+        or "newton.source_dir" in message
+        or "unset environment variable" in message
+    ):
+        return "dependency_gap"
+    return "runtime_failure"
+
+
+def _newton_sphere_rain_error_status(message):
     if (
         "dependency_gap" in message
         or "newton.source_dir" in message

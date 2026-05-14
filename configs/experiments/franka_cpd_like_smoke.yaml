@@ -1,0 +1,32 @@
+asset:
+  id: franka_robot_cpd_like_smoke
+  path: assets/manifests/franka_usd_smoke_assets.yaml
+task:
+  primary: robot_usd_import_and_cpd_like_smoke
+compile:
+  method: cpd_like_baseline
+  max_primitives: 16
+  allowed_fallback:
+    - convex_hull
+  verify:
+    - usd_open
+    - cpd_like_geometry
+  keep_visual: false
+cpd_like:
+  paper: Convex Primitive Decomposition for Collision Detection
+  asset_manifest: assets/manifests/franka_usd_smoke_assets.yaml
+  asset_role: franka_import_smoke
+  primitive_subset:
+    - sphere
+    - capsule
+    - box
+  unsupported_primitives:
+    - capped_cylinder
+    - frustum
+    - trapezoidal_prism
+  max_source_faces: 128
+  decomposition_stage: cpd_like_face_merge_smoke
+  claim_boundary: robot_asset_import_smoke_not_collision_quality
+report:
+  output_dir: reports/generated/franka_cpd_like_smoke
+  evidence_level: franka_cpd_like_geometry_smoke
