@@ -50,7 +50,10 @@ npc-compile --config configs/experiments/cpd_like_baseline.yaml --check-assets
 ```
 
 The command reads the `asset.path` manifest from the config and prints JSON with one report per
-manifest asset. It returns exit `0` only when every report status is `smoke_passed`.
+manifest asset. For the CPD-like baseline config, the seed object remains in `asset.path`, so the
+manifest path lives in `cpd_like.asset_manifest`. The CLI prefers `cpd_like.asset_manifest` and
+falls back to `asset.path` for temporary manifest-only configs. It returns exit `0` only when every
+report status is `smoke_passed`.
 
 ## Status Contract
 

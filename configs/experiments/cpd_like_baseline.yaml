@@ -13,6 +13,7 @@ compile:
   keep_visual: false
 cpd_like:
   paper: Convex Primitive Decomposition for Collision Detection
+  asset_manifest: assets/manifests/cpd_like_smoke_assets.yaml
   primitive_subset:
     - sphere
     - capsule

@@ -18,6 +18,8 @@ def load_asset_manifest(path: str | Path) -> list[dict[str, Any]]:
     except yaml.YAMLError as exc:
         raise ValueError(f"could not parse asset manifest: {manifest_path}: {exc}") from exc
 
+    if not isinstance(data, dict):
+        raise ValueError("asset manifest must be a mapping")
     assets = data.get("assets", [])
     if not isinstance(assets, list):
         raise ValueError("asset manifest key assets must be a list")

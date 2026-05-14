@@ -59,7 +59,7 @@ def main(argv=None):
     if args.check_assets and args.config:
         try:
             config = load_compile_config(args.config)
-            assets = load_asset_manifest(config.asset_path)
+            assets = load_asset_manifest(_asset_manifest_path(config))
         except ValueError as exc:
             print(f"npc-compile: {exc}", file=sys.stderr)
             return 2
@@ -110,6 +110,15 @@ def main(argv=None):
 
     print("npc-compile: non-dry-run compilation is not implemented yet.", file=sys.stderr)
     return 2
+
+
+def _asset_manifest_path(config):
+    cpd_like_section = config.protocol.get("cpd_like", {})
+    if isinstance(cpd_like_section, dict):
+        asset_manifest = cpd_like_section.get("asset_manifest")
+        if asset_manifest:
+            return str(asset_manifest)
+    return config.asset_path
 
 
 if __name__ == "__main__":

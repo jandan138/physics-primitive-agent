@@ -140,3 +140,34 @@ def test_check_assets_emits_manifest_reports(tmp_path, capsys):
     assert payload["status"] == "smoke_passed"
     assert payload["reports"][0]["role"] == "fixture_asset"
     assert payload["reports"][0]["metadata"]["default_prim"] == "/Root"
+
+
+def test_check_assets_prefers_cpd_like_manifest_over_seed_asset(tmp_path, capsys):
+    seed_asset_path = tmp_path / "seed.usda"
+    manifest_asset_path = tmp_path / "manifest_asset.usda"
+    _write_tiny_usd(seed_asset_path)
+    _write_tiny_usd(manifest_asset_path)
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump({"assets": [{"role": "manifest_asset", "path": str(manifest_asset_path)}]}),
+        encoding="utf-8",
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                f"  path: {seed_asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "cpd_like:",
+                f"  asset_manifest: {manifest_path}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--check-assets"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert [report["role"] for report in payload["reports"]] == ["manifest_asset"]

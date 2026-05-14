@@ -16,7 +16,8 @@
 - Create `src/primitive_collision_compiler/assets/usd_smoke.py`: manifest parsing and USD stage smoke checks.
 - Modify `src/primitive_collision_compiler/reports/schema.py`: add `AssetSmokeReport`.
 - Modify `src/primitive_collision_compiler/reports/__init__.py`: export `AssetSmokeReport`.
-- Modify `src/primitive_collision_compiler/cli.py`: add `--check-assets`.
+- Modify `src/primitive_collision_compiler/cli.py`: add `--check-assets` and prefer
+  `cpd_like.asset_manifest` over the seed `asset.path`.
 - Add `tests/test_usd_smoke.py`: hermetic USD smoke tests.
 - Modify `tests/test_cli.py`: CLI asset-smoke tests using temporary manifests.
 - Create `docs/records/2026-05-14-newton-usd-smoke.md`: durable record.
@@ -374,7 +375,7 @@ Add handling before dry-run:
     if args.check_assets and args.config:
         try:
             config = load_compile_config(args.config)
-            assets = load_asset_manifest(config.asset_path)
+            assets = load_asset_manifest(_asset_manifest_path(config))
         except ValueError as exc:
             print(f"npc-compile: {exc}", file=sys.stderr)
             return 2
@@ -396,6 +397,18 @@ Add handling before dry-run:
     if args.check_assets:
         print("npc-compile: --check-assets requires --config.", file=sys.stderr)
         return 2
+```
+
+Add helper:
+
+```python
+def _asset_manifest_path(config):
+    cpd_like_section = config.protocol.get("cpd_like", {})
+    if isinstance(cpd_like_section, dict):
+        asset_manifest = cpd_like_section.get("asset_manifest")
+        if asset_manifest:
+            return str(asset_manifest)
+    return config.asset_path
 ```
 
 - [ ] **Step 4: Run test to verify it passes**

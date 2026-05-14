@@ -16,6 +16,7 @@ def test_cpd_like_baseline_preserves_newton_and_cpd_sections():
     assert config.verify == ("newton_import",)
     assert config.keep_visual is False
     assert config.protocol["newton"]["source_dir"] == "/cpfs/user/zhuzihou/dev/newton"
+    assert config.protocol["cpd_like"]["asset_manifest"] == "assets/manifests/cpd_like_smoke_assets.yaml"
     assert config.protocol["cpd_like"]["primitive_subset"] == ["sphere", "capsule", "box"]
     assert config.protocol["cpd_like"]["claim_boundary"] == "internal_baseline_not_reproduction_claim"
     assert config.protocol["report"]["output_dir"] == "reports/generated/cpd_like_baseline"
