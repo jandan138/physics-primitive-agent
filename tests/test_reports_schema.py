@@ -3,6 +3,7 @@ from primitive_collision_compiler.reports.schema import (
     EnvironmentReport,
     NewtonContactCanary,
     NewtonDiagnosticReport,
+    NewtonDropSettleRun,
     NewtonShapeMapping,
 )
 
@@ -96,3 +97,52 @@ def test_newton_diagnostic_report_serializes_contact_canary_and_environment():
     assert payload["environment"]["status"] == "smoke_passed"
     assert payload["contact_canaries"][0]["contact_count"] == 1
     assert payload["metrics"] == {}
+
+
+def test_newton_diagnostic_report_serializes_drop_settle_run():
+    run = NewtonDropSettleRun(
+        run_id="seed0",
+        status="smoke_passed",
+        primitive_ids=("box",),
+        completed_steps=16,
+        initial_height=0.25,
+        final_height=0.0,
+        min_height=0.0,
+        final_linear_velocity=(0.0, 0.0, 0.0),
+        max_contact_count=1,
+        final_contact_count=1,
+        finite_state=True,
+        descended=True,
+        contact_observed=True,
+        failure_labels=(),
+    )
+    report = NewtonDiagnosticReport(
+        stage="newton_drop_settle",
+        status="smoke_passed",
+        asset_id="asset",
+        package_id="pkg",
+        probe_type="drop_settle",
+        device="cpu",
+        environment=None,
+        primitive_count=1,
+        type_counts={"box": 1},
+        shape_mappings=(),
+        contact_canaries=(),
+        drop_settle_runs=(run,),
+        task_scope="single_asset_drop_settle_static_plane",
+        initial_conditions={"height_m": 0.25},
+        solver={"solver": "xpbd", "frames": 120},
+        claim_boundary="drop_settle_task_smoke_not_collision_quality_or_safety",
+        evidence_level="newton_drop_settle_task_smoke",
+    )
+
+    payload = report.to_dict()
+
+    assert payload["stage"] == "newton_drop_settle"
+    assert payload["probe_type"] == "drop_settle"
+    assert payload["drop_settle_runs"][0]["run_id"] == "seed0"
+    assert payload["drop_settle_runs"][0]["primitive_ids"] == ["box"]
+    assert payload["task_scope"] == "single_asset_drop_settle_static_plane"
+    assert payload["initial_conditions"] == {"height_m": 0.25}
+    assert payload["solver"] == {"solver": "xpbd", "frames": 120}
+    assert payload["evidence_level"] == "newton_drop_settle_task_smoke"
