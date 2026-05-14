@@ -5,6 +5,8 @@
 Goal: make the project measurable before claiming research progress.
 
 - Finalize DeepDive claim boundaries and support request.
+- Normalize the Newton runtime environment and record readiness from the selected Python
+  executable.
 - Prepare 5-10 provenance-clear assets.
 - Reproduce 2-3 simple baselines: bounding box or sphere, single convex hull, and CoACD or V-HACD when available.
 - Build 2-3 Newton probes: drop, stack or slide, and sphere-rain/contact stress.
@@ -52,7 +54,8 @@ The roadmap supports AI model physical safety constraints by improving one execu
 
 ## Narrow First Milestone
 
-The immediate milestone is Phase 0 into Phase 1: non-LLM primitive baseline plus Newton diagnostic checker.
+The immediate milestone is Phase 0 into Phase 1: clean Newton environment readiness, non-LLM
+primitive baseline, and Newton diagnostic checker.
 
 ## Current Non-Goals
 

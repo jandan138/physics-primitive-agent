@@ -74,6 +74,13 @@ Generated readiness reports belong under `reports/generated/` or another explici
 `NPC_OUTPUT_DIR`. Do not commit generated report directories, experiment run directories, full logs,
 environment directories, raw or generated 3D assets, videos, or credentials.
 
+## Current Local Observation
+
+The latest merged `master` readiness record is
+[2026-05-14 Environment Readiness Master Verification](../records/2026-05-14-environment-readiness-master-verification.md).
+It records status `dependency_gap` for the active Isaac/DSW Python path and local Newton source.
+Treat that as the baseline to improve, not as Newton simulation readiness.
+
 ## Status Meaning
 
 - `smoke_passed`: the selected readiness scope passed.

@@ -43,3 +43,18 @@ Proposed | In progress | Complete | Failed | Superseded
 - Link claims to records before using them in DeepDive updates.
 - Record failures and fallback decisions; do not only record successful runs.
 - Keep large logs and generated artifacts outside git and link their manifest path instead.
+
+## Current Record Index
+
+- [2026-05-14 Project Bootstrap](2026-05-14-project-bootstrap.md): DeepDive-first repository
+  bootstrap.
+- [2026-05-14 CPD-Like Newton Source And Assets](2026-05-14-cpd-like-newton-source-and-assets.md):
+  Newton source and initial asset choices.
+- [2026-05-14 CPD-Like Newton Slice](2026-05-14-cpd-like-newton-slice.md): CPD-like
+  planning slice.
+- [2026-05-14 Newton USD Smoke](2026-05-14-newton-usd-smoke.md): USD asset-open smoke
+  diagnostics.
+- [2026-05-14 Environment Normalization](2026-05-14-environment-normalization.md): Phase 1
+  environment-readiness checker, docs, and tests.
+- [2026-05-14 Environment Readiness Master Verification](2026-05-14-environment-readiness-master-verification.md):
+  post-merge `master` readiness status and verification evidence.

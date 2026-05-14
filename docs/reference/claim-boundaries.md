@@ -12,8 +12,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   failures that mesh-only or visual-only asset review would miss.
 - The Physical Intelligence Center story is that AI models need physical safety constraints;
   physics engines provide an executable diagnostic layer for those constraints.
-- The current code defines installable package contracts, config loading, and dry-run reporting
-  only.
+- The current code defines installable package contracts, config loading, dry-run reporting, USD
+  asset-open smoke diagnostics, Newton source import diagnostics, and environment-readiness
+  diagnostics.
+- The current local environment-readiness report can be described as `dependency_gap` evidence.
 
 ## Claims Requiring Phase 0 Evidence
 
@@ -24,6 +26,8 @@ Use these only after a dated record links them to Phase 0 assets, configs, logs,
 - A baseline comparison includes primitive count, fallback ratio, step time, contact count, and
   penetration or jitter measurements.
 - A generated collision package is simulation-checked for a named task in a named environment.
+- A clean Python/Newton environment has passed readiness checks for a named source checkout and
+  hardware environment.
 
 ## Claims Requiring Phase 1 Or Phase 2 Evidence
 
@@ -43,6 +47,8 @@ Use these only after broader benchmark records exist.
 - Do not claim the method is proven safe.
 - Do not claim the method fully replaces convex decomposition, SDFs, or human review.
 - Do not claim benchmark superiority before the benchmark record exists.
+- Do not treat environment-readiness diagnostics as Newton simulation checker results.
+- Do not claim CPD reproduction before implementation and dated experiment records exist.
 
 ## Wording Rules
 

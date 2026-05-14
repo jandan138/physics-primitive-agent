@@ -1,8 +1,8 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It does not yet contain primitive fitting, Newton checker execution, benchmark results, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, and local environment-readiness diagnostics. It does not yet contain primitive fitting, Newton simulation probe execution, benchmark results, or LLM/VLM research code.
 
-Current next action: submit the DeepDive application package, then use the first 0-4 week milestone to build a non-LLM primitive baseline plus Newton diagnostic checker before considering LLM/VLM components.
+Current next action: create the external clean Python 3.10 Newton environment, resolve the current readiness `dependency_gap`, then use the first 0-4 week milestone to build a non-LLM primitive baseline plus Newton diagnostic checker before considering LLM/VLM components.
 
 ## DeepDive Package
 
@@ -26,13 +26,20 @@ Current next action: submit the DeepDive application package, then use the first
 
 - [Temporary source documents](tmp/): quarantined source intake used during bootstrap; not
   canonical reviewer-facing claims.
+- [Environment readiness operations](operations/environment.md): local runtime contract, required
+  variables, readiness command, status meanings, and artifact policy.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
+- [Environment normalization design](superpowers/specs/2026-05-14-environment-normalization-design.md):
+  Phase 1 environment-readiness scope and claim boundary.
+- [Environment normalization plan](superpowers/plans/2026-05-14-environment-normalization.md):
+  TDD implementation plan for the readiness checker and docs.
 
 ## Configs And Artifacts
 
 - `configs/deepdive/mvp.yaml`: DeepDive-facing dry-run MVP config.
 - `configs/experiments/phase0_baseline.yaml`: Phase 0 proof-point config scaffold.
+- `scripts/env/readiness_check.py`: local environment-readiness JSON checker.
 - `experiments/registry.yaml`: experiment registry and claim-support status.
 - `assets/`, `reports/`, and `archive/`: artifact boundaries; large/generated outputs stay out
   of git.
@@ -42,4 +49,6 @@ Current next action: submit the DeepDive application package, then use the first
 
 Safe current claim: proposal for primitive-first, Newton-checker-planned, fallback-aware collision asset compilation.
 
-Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, and no complete replacement of convex decomposition.
+Additional current evidence: executable environment-readiness diagnostics can record dependency gaps and source provenance. This is not Newton simulation evidence.
+
+Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, no CPD reproduction claim, and no complete replacement of convex decomposition.

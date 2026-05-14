@@ -9,20 +9,26 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The first milestone is a non-LLM primitive baseline plus Newton diagnostic checker.
 - LLM/VLM should be deferred until the non-LLM baseline shows value.
 - The proposal requires explicit fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.
+- The current executable surface can report config dry-runs, USD asset-open smoke diagnostics,
+  Newton source import diagnostics, and environment-readiness diagnostics.
+- The current local environment-readiness evidence is `dependency_gap`, not `smoke_passed`.
 
 ## Current Unsupported Claims
 
 - Primitive fitting works.
-- Newton checker results exist.
+- Newton simulation checker results exist.
 - The method beats CoACD, V-HACD, CPD-like decomposition, manual primitive colliders, or Newton-native approximate mesh modes.
 - The approach improves robot policy training, real robot behavior, or deployment safety.
 - LLM/VLM improves primitive generation.
 - The compiler can replace convex decomposition.
+- CPD reproduction has been implemented or evaluated.
+- Environment-readiness diagnostics imply Newton simulation readiness.
 
 ## Future Evidence Needed
 
 For the 0-4 week proof point:
 
+- clean Python/Newton environment readiness report with status `smoke_passed`;
 - asset list with source, license, scale, and hashes;
 - baseline parameters and versions;
 - Newton version, solver settings, hardware, and deterministic seeds;
@@ -43,7 +49,9 @@ Physical intelligence requires model outputs to be checked against physical cons
 
 ## Narrow First Milestone
 
-Build a non-LLM primitive baseline and Newton diagnostic checker before adding LLM/VLM. Report failures and fallback behavior as first-class evidence.
+First resolve the clean Newton runtime readiness gap. Then build a non-LLM primitive baseline and
+Newton diagnostic checker before adding LLM/VLM. Report failures and fallback behavior as
+first-class evidence.
 
 ## Current Non-Goals
 

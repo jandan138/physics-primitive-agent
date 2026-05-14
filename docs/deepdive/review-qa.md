@@ -72,6 +72,12 @@ No. The nuanced claim is primitive-first and fallback-aware. Convex decompositio
 
 Newton is the target execution layer for the first diagnostic checker. The project uses Newton tasks, metrics, solver settings, and native approximation modes to make collision proxy quality observable.
 
+**Is the Newton environment ready now?**
+
+Not yet. The repository now has an environment-readiness checker that records Python provenance,
+Newton source state, module imports, GPU visibility, and output writability. The current local
+status is `dependency_gap`, which is useful setup evidence but not Newton simulation evidence.
+
 **What would make you stop?**
 
 Stop or narrow if primitive count exceeds CoACD hull count without runtime/task benefit, fallback dominates, the Newton checker is unstable, precision tasks are incorrectly accepted as primitive-only, or LLM/VLM adds no measurable value after the baseline.
@@ -80,6 +86,7 @@ Stop or narrow if primitive count exceeds CoACD hull count without runtime/task 
 
 Strategic story: physics engines are executable diagnostic layers for AI model physical safety constraints, and collision proxies are one of their critical inputs.
 
-Narrow first milestone: non-LLM primitive baseline plus Newton diagnostic checker.
+Narrow first milestone: clean Newton environment readiness, non-LLM primitive baseline, and Newton
+diagnostic checker.
 
 Current non-goals: safety guarantee, real-world transfer, deployment readiness, benchmark superiority, complete replacement of convex decomposition, and LLM/VLM claims before baseline evidence.

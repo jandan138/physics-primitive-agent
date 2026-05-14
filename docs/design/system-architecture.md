@@ -1,6 +1,17 @@
 # System Architecture
 
-Current implementation status: only documentation and a package skeleton exist today. The components below describe the intended architecture, not a completed compiler.
+Current implementation status: documentation, package skeleton, config dry-run reporting, USD
+asset-open smoke diagnostics, Newton source import diagnostics, and environment-readiness
+diagnostics exist today. The components below describe the intended compiler architecture, not a
+completed compiler.
+
+## Environment Readiness And Source Provenance
+
+Records the Python executable, interpreter realpath, module provenance, Newton source checkout,
+GPU visibility, setup-script fingerprint, output directory writability, and repository diagnostic
+status before any Newton simulation claim. This layer is implemented as a diagnostic checker, not as
+an environment installer. The current local readiness state is expected to remain `dependency_gap`
+until the clean external Newton Python environment is created and dependencies resolve.
 
 ## Geometry Preprocessor
 
@@ -32,7 +43,9 @@ Writes collision packages and reports with primitives, fallback regions, task la
 
 ## First Milestone
 
-Only the Geometry Preprocessor subset, non-LLM Primitive Proposal Bank, minimal Constrained Optimizer, Newton Checker, and Export/Report are needed for the first 0-4 week proof point.
+First clear the environment-readiness `dependency_gap`. Then only the Geometry Preprocessor subset,
+non-LLM Primitive Proposal Bank, minimal Constrained Optimizer, Newton Checker, and Export/Report
+are needed for the first 0-4 week proof point.
 
 ## Current Non-Goals
 
