@@ -16,6 +16,8 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run a geometry-only CPD-like face-merge smoke path that
   extracts a USD mesh, fits restricted `box`/`sphere`/`capsule` primitive candidates, greedily
   merges adjacent face groups by weighted excess volume, and emits a JSON diagnostic report.
+  The plain-language explanation is in
+  [CPD-like face-merge explainer](../reference/cpd-like-face-merge-explainer.md).
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.
@@ -34,6 +36,7 @@ This file separates current evidence from future claims. See [message-map.md](me
 - LLM/VLM improves primitive generation.
 - The compiler can replace convex decomposition.
 - Full CPD paper reproduction has been implemented or evaluated.
+- The face-merge baseline is the CPD paper algorithm.
 - Environment-readiness diagnostics imply Newton simulation readiness.
 
 ## Future Evidence Needed

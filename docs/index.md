@@ -22,6 +22,9 @@ diagnostic probe while keeping fallback decisions and unsupported primitive type
 - [Research Roadmap](design/research-roadmap.md): Phase 0 through Phase 4 route.
 - [Evaluation Plan](design/evaluation-plan.md): baselines, tasks, metrics, reporting, phase gates, and no-go criteria.
 - [Benchmark Protocol](design/benchmark-protocol.md): asset categories, license policy, normalization, splits, task templates, and failure taxonomy.
+- [CPD-like face-merge explainer](reference/cpd-like-face-merge-explainer.md):
+  plain-language explanation of the current geometry-only baseline and why it is not a full CPD
+  paper reproduction.
 
 ## Source Intake And Planning
 
@@ -33,6 +36,8 @@ diagnostic probe while keeping fallback decisions and unsupported primitive type
   current clean local Python/Newton environment readiness evidence.
 - [Geometry-only CPD-like smoke record](records/2026-05-14-cpd-like-geometry-smoke-slice.md):
   capped bed USD primitive proposal smoke evidence.
+- [CPD-like face-merge explainer record](records/2026-05-14-cpd-like-face-merge-explainer.md):
+  documentation clarification for the current baseline's role in the CPD paper story.
 - [Current CPD-like status and Newton probe next step](records/2026-05-14-current-cpd-like-status-and-newton-probe-next-step.md):
   separates environment readiness, geometry-only evidence, and the unimplemented Newton simulation
   probe layer.

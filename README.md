@@ -11,9 +11,10 @@ This repository is a proposal/bootstrap for a DeepDive-first Newton primitive co
 compiler. It now includes a geometry-only CPD-like face-merge smoke path over USD meshes, plus
 config dry-runs, USD asset-open smoke diagnostics, Newton source diagnostics, and environment
 readiness checks. It also includes a contact-only Newton canary for representative mapped primitive
-types. The clean local Newton Python environment has recorded readiness evidence, but the
-repository does not yet run task-level Newton simulation probes, produce benchmark results, or
-implement a production collision compiler.
+types. See `docs/reference/cpd-like-face-merge-explainer.md` for the plain-language boundary
+between the current baseline and a full CPD paper reproduction. The clean local Newton Python
+environment has recorded readiness evidence, but the repository does not yet run task-level Newton
+simulation probes, produce benchmark results, or implement a production collision compiler.
 
 ## Strategic Framing
 
@@ -38,8 +39,9 @@ Do not claim that this repository currently:
 - Performs complete production mesh processing.
 - Produces production-ready Newton collision primitives.
 - Provides simulation-verified results. Use "simulation-checked" only when a dated record links a
-  generated package to a named Newton diagnostic probe, settings, asset, environment, and report.
-  Until then use "geometry-only", "environment-readiness", or "Newton-checker-planned".
+  generated package to a named task-level Newton diagnostic probe, settings, asset, environment,
+  and report. Contact-only canary records do not qualify. Until then use "geometry-only",
+  "contact-only Newton canary", "environment-readiness", or "Newton-checker-planned".
 
 ## Repository Layout
 
