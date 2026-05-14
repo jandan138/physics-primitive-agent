@@ -27,6 +27,7 @@ def test_required_path_validation_flags_missing_reference_docs(tmp_path: Path):
 
     assert any("docs/reference/claim-boundaries.md" in issue for issue in issues)
     assert any("AGENTS.md" in issue for issue in issues)
+    assert any("assets/manifests/phase0_assets.yaml" in issue for issue in issues)
 
 
 def test_local_markdown_link_validation_flags_missing_target(tmp_path: Path):

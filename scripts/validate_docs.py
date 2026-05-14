@@ -57,6 +57,7 @@ SCOPING_MARKERS = (
 REQUIRED_PATHS = (
     "AGENTS.md",
     "README.md",
+    "assets/manifests/phase0_assets.yaml",
     "configs/deepdive/mvp.yaml",
     "configs/experiments/phase0_baseline.yaml",
     "docs/index.md",
@@ -77,11 +78,19 @@ REQUIRED_PATHS = (
 )
 
 SCAN_PATHS = (
+    Path("AGENTS.md"),
+    Path("CONTRIBUTING.md"),
     Path("README.md"),
+    Path("archive"),
+    Path("assets"),
     Path("docs/deepdive"),
     Path("docs/design"),
+    Path("docs/records"),
     Path("docs/reference"),
+    Path("docs/superpowers"),
     Path("docs/index.md"),
+    Path("experiments"),
+    Path("reports"),
 )
 
 MARKDOWN_LINK_RE = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")

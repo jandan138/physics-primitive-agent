@@ -1,0 +1,31 @@
+assets:
+  - id: rigid_prop_01
+    role: rigid_prop
+    path: assets/raw/phase0/rigid_prop_01.usda
+    provenance_status: required_before_run
+    source_policy: internal_or_permissive
+    task_labels: [drop]
+  - id: stackable_01
+    role: stackable
+    path: assets/raw/phase0/stackable_01.usda
+    provenance_status: required_before_run
+    source_policy: internal_or_permissive
+    task_labels: [drop, stack_or_slide]
+  - id: contact_affordance_01
+    role: contact_affordance
+    path: assets/raw/phase0/contact_affordance_01.usda
+    provenance_status: required_before_run
+    source_policy: internal_or_permissive
+    task_labels: [drop, sphere_rain]
+  - id: container_01
+    role: container
+    path: assets/raw/phase0/container_01.usda
+    provenance_status: required_before_run
+    source_policy: internal_or_permissive
+    task_labels: [drop, sphere_rain]
+  - id: precision_negative_control_01
+    role: precision_negative_control
+    path: assets/raw/phase0/precision_negative_control_01.usda
+    provenance_status: required_before_run
+    source_policy: internal_or_permissive
+    task_labels: [precision_rejection]

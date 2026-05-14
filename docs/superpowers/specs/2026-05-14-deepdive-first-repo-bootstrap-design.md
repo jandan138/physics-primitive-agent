@@ -252,7 +252,7 @@ The repository must maintain strict claim boundaries:
 
 All DeepDive materials should phrase the work as a pre-research proposal with a practical first milestone: non-LLM baseline plus Newton verifier.
 
-Leadership-facing language should connect the work to AI model physical safety constraints, but should not inflate current evidence into safety guarantees.
+Leadership-facing language should connect the work to AI model physical safety constraints. Do not claim a safety guarantee from current evidence.
 
 The term `simulation-checked` is preferred in current materials. If `simulation-verified` is used, it must be defined narrowly: specific Newton checks passed under named assumptions, tasks, metrics, and versions. It does not mean collision correctness, real-world safety, certification, or absence of unsafe behavior.
 

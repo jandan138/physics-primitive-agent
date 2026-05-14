@@ -22,6 +22,15 @@ def test_config_dry_run_emits_json_report(capsys):
     assert report["task"] == "grasping"
 
 
+def test_config_dry_run_uses_configured_asset_id(capsys):
+    config_path = Path(__file__).resolve().parents[1] / "configs" / "deepdive" / "mvp.yaml"
+
+    assert cli.main(["--config", str(config_path), "--dry-run"]) == 0
+
+    report = json.loads(capsys.readouterr().out)
+    assert report["asset_id"] == "handle_gap_mvp"
+
+
 def test_config_rejects_scalar_allowed_fallback(tmp_path, capsys):
     config_path = tmp_path / "bad.yaml"
     config_path.write_text(

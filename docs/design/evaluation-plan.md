@@ -74,6 +74,7 @@ Required 0-4 week metrics:
 | generation failure rate | failed outputs divided by attempted asset-task pairs | compiler report |
 | step time | median simulation step wall time over the recorded probe duration | Newton run log |
 | contact count | p95 active contact count over the recorded probe duration | Newton run log |
+| displacement | final support or slide displacement for stack_or_slide probes | Newton run log |
 | penetration or jitter | max penetration depth if available, otherwise rest-state position jitter | Newton run log |
 
 ## Later Or If-Instrumented Metrics

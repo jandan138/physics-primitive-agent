@@ -25,18 +25,87 @@ compile:
     - precision_rejection
   keep_visual: true
 phase0_defaults:
-  assets: 5-10 provenance-clear assets
+  asset_manifest: assets/manifests/phase0_assets.yaml
   seeds: 3
   duration_seconds: 2
-  sphere_rain:
-    sphere_count: 32
-    sphere_radius_m: 0.025
+  baselines:
+    - id: bounding_primitive
+      method: bbox_or_sphere
+      required: true
+      status: specified
+    - id: single_convex_hull
+      method: single_convex_hull
+      required: true
+      status: specified
+    - id: coacd_or_vhacd_if_available
+      method: coacd_or_vhacd
+      required: false
+      fallback_if_unavailable: record_dependency_gap
+      status: best_effort
+  probes:
+    drop:
+      initial_conditions:
+        height_m: 0.25
+        plane: static
+        initial_velocity_mps: [0.0, 0.0, 0.0]
+      solver:
+        engine: newton
+        settings: default_recorded
+        duration_seconds: 2
+        seeds: 3
+      metrics:
+        - step_time
+        - contact_count_p95
+        - penetration_or_jitter
+      pass_condition: complete_and_label_failures
+    stack_or_slide:
+      initial_conditions:
+        support: static_plane_or_box
+        lateral_velocity_mps: 0.1
+      solver:
+        engine: newton
+        settings: default_recorded
+        duration_seconds: 2
+        seeds: 3
+      metrics:
+        - displacement
+        - contact_count_p95
+        - penetration_or_jitter
+      pass_condition: complete_and_label_support_or_slide_failures
+    sphere_rain:
+      initial_conditions:
+        sphere_count: 32
+        sphere_radius_m: 0.025
+        spawn_pattern: fixed_grid_or_seeded_random
+      solver:
+        engine: newton
+        settings: default_recorded
+        duration_seconds: 2
+        seeds: 3
+      metrics:
+        - step_time
+        - contact_count_p95
+        - penetration_or_jitter
+      pass_condition: complete_and_label_blocked_openings_or_contact_stress
+    precision_rejection:
+      initial_conditions:
+        asset_role: precision_negative_control
+        simulation_required: false
+      solver:
+        engine: newton
+        settings: optional_if_task_configured
+        duration_seconds: 0
+        seeds: 1
+      metrics:
+        - rejection_or_fallback_decision
+      pass_condition: reject_or_fallback
   required_metrics:
     - primitive_or_hull_count
     - fallback_ratio
     - generation_failure_rate
     - step_time
     - contact_count_p95
+    - displacement
     - penetration_or_jitter
 report:
   output_dir: reports/generated/phase0_baseline

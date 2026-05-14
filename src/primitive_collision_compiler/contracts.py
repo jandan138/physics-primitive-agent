@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 
@@ -8,11 +8,13 @@ from typing import Any
 class CompileConfig:
     asset_path: str
     task: str
+    asset_id: str = ""
     method: str = "primitive_first"
     max_primitives: int = 16
     allowed_fallback: tuple[str, ...] = ("coacd", "sdf")
     verify: tuple[str, ...] = ("drop", "stack", "sphere_rain")
     keep_visual: bool = True
+    protocol: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

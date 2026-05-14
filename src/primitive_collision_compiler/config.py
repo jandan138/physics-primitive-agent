@@ -26,6 +26,7 @@ def load_compile_config(path: str | Path) -> CompileConfig:
         raise ValueError("compile config must be a mapping")
 
     asset_path = _nested_required(data, ("asset", "path"), "missing required config key: asset.path")
+    asset_id = _nested_optional(data, ("asset", "id")) or Path(str(asset_path)).stem
     task = _nested_required(data, ("task", "primary"), "missing required config key: task.primary")
     compile_section = data.get("compile", {})
     if compile_section is None:
@@ -44,11 +45,13 @@ def load_compile_config(path: str | Path) -> CompileConfig:
     return CompileConfig(
         asset_path=str(asset_path),
         task=str(task),
+        asset_id=str(asset_id),
         method=str(compile_section.get("method", "primitive_first")),
         max_primitives=int(compile_section.get("max_primitives", 16)),
         allowed_fallback=allowed_fallback,
         verify=verify,
         keep_visual=bool(compile_section.get("keep_visual", True)),
+        protocol=_protocol_sections(data),
     )
 
 
@@ -62,6 +65,16 @@ def _nested_required(data: dict[str, Any], keys: tuple[str, str], message: str) 
     return value
 
 
+def _nested_optional(data: dict[str, Any], keys: tuple[str, str]) -> Any:
+    section = data.get(keys[0])
+    if not isinstance(section, dict):
+        return None
+    value = section.get(keys[1])
+    if value in (None, ""):
+        return None
+    return value
+
+
 def _string_tuple(value: Any, message: str) -> tuple[str, ...]:
     if isinstance(value, str) or not isinstance(value, (list, tuple)):
         raise ValueError(message)
@@ -70,3 +83,11 @@ def _string_tuple(value: Any, message: str) -> tuple[str, ...]:
     if not result or any(not item for item in result):
         raise ValueError(message)
     return result
+
+
+def _protocol_sections(data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        key: data[key]
+        for key in ("phase0_defaults", "report")
+        if key in data and data[key] is not None
+    }

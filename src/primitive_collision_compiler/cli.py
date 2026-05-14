@@ -38,7 +38,7 @@ def main(argv=None):
             print(f"npc-compile: {exc}", file=sys.stderr)
             return 2
 
-        asset_id = Path(config.asset_path).stem
+        asset_id = config.asset_id or Path(config.asset_path).stem
         report = CompileReport(
             asset_id=asset_id,
             task=config.task,
