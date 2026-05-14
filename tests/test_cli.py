@@ -1,6 +1,9 @@
 import json
 from pathlib import Path
 
+import yaml
+from pxr import Usd, UsdGeom
+
 from primitive_collision_compiler import cli
 
 FIXTURE_CONFIG = Path(__file__).parent / "fixtures" / "dry_run_mvp.yaml"
@@ -20,6 +23,14 @@ def _write_newton_check_config(path: Path, source_dir: Path):
         ),
         encoding="utf-8",
     )
+
+
+def _write_tiny_usd(path: Path):
+    stage = Usd.Stage.CreateNew(str(path))
+    UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
+    root = stage.DefinePrim("/Root", "Xform")
+    stage.SetDefaultPrim(root)
+    stage.GetRootLayer().Save()
 
 
 def test_help_mentions_project(capsys):
@@ -99,3 +110,33 @@ def test_check_newton_returns_error_for_missing_source(tmp_path, capsys):
     report = json.loads(capsys.readouterr().out)
     assert report["status"] == "missing_source"
     assert report["source_dir"] == str(missing_source)
+
+
+def test_check_assets_emits_manifest_reports(tmp_path, capsys):
+    asset_path = tmp_path / "asset.usda"
+    _write_tiny_usd(asset_path)
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump({"assets": [{"role": "fixture_asset", "path": str(asset_path)}]}),
+        encoding="utf-8",
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                f"  path: {manifest_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--check-assets"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "asset_usd_open"
+    assert payload["status"] == "smoke_passed"
+    assert payload["reports"][0]["role"] == "fixture_asset"
+    assert payload["reports"][0]["metadata"]["default_prim"] == "/Root"

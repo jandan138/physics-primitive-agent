@@ -3,6 +3,7 @@ import json
 import sys
 from pathlib import Path
 
+from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
 from primitive_collision_compiler.config import load_compile_config
 from primitive_collision_compiler.contracts import CompileReport
 from primitive_collision_compiler.newton.env import inspect_newton_environment
@@ -16,6 +17,7 @@ def build_parser():
     parser.add_argument("--config", type=Path, help="path to a compile configuration YAML file")
     parser.add_argument("--dry-run", action="store_true", help="validate config and emit a report")
     parser.add_argument("--check-newton", action="store_true", help="emit Newton environment diagnostics")
+    parser.add_argument("--check-assets", action="store_true", help="emit USD asset smoke diagnostics")
     return parser
 
 
@@ -52,6 +54,36 @@ def main(argv=None):
 
     if args.check_newton:
         print("npc-compile: --check-newton requires --config.", file=sys.stderr)
+        return 2
+
+    if args.check_assets and args.config:
+        try:
+            config = load_compile_config(args.config)
+            assets = load_asset_manifest(config.asset_path)
+        except ValueError as exc:
+            print(f"npc-compile: {exc}", file=sys.stderr)
+            return 2
+
+        reports = [inspect_usd_asset(asset) for asset in assets]
+        status = (
+            "smoke_passed"
+            if reports and all(report.status == "smoke_passed" for report in reports)
+            else "smoke_failed"
+        )
+        print(
+            json.dumps(
+                {
+                    "stage": "asset_usd_open",
+                    "status": status,
+                    "reports": [report.to_dict() for report in reports],
+                },
+                sort_keys=True,
+            )
+        )
+        return 0 if status == "smoke_passed" else 2
+
+    if args.check_assets:
+        print("npc-compile: --check-assets requires --config.", file=sys.stderr)
         return 2
 
     if args.dry_run and args.config:
