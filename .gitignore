@@ -1,0 +1,30 @@
+.worktrees
+.worktrees/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+build/
+dist/
+*.egg-info/
+
+# Local secrets and machine-specific state
+.env
+.env.*
+!.env.example
+
+# Heavy/generated project artifacts
+assets/raw/
+assets/generated/
+reports/generated/
+experiments/runs/
+*.mp4
+*.mov
+*.obj
+*.stl
+*.glb
+*.usd
+*.usda
+*.usdc
