@@ -16,7 +16,8 @@ Complete for the first contact-only Newton canary.
   overlapping probe sphere per emitted primitive type.
 - Hardened the contact smoke after review: the CLI preserves JSON-only stdout, Newton runtime
   imports are checked against the configured source checkout, invalid non-finite shape descriptors
-  are rejected before runtime, and the report records representative-only canary scope metrics.
+  or left-handed axes are rejected before runtime, mapping-gap reports remain JSON-safe, and the
+  report records representative-only canary scope metrics.
 - Added CLI support:
 
 ```bash
@@ -25,7 +26,7 @@ npc-compile --config configs/experiments/cpd_like_baseline.yaml --run-newton-con
 
 ## Verification
 
-- `python -m pytest -q`: exit 0, 90 passed.
+- `python -m pytest -q`: exit 0, 91 passed.
 - `python scripts/validate_docs.py`: exit 0.
 - `git diff --check`: exit 0.
 - Clean-env contact smoke:

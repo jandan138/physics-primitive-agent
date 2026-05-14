@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Any
 
 
@@ -68,9 +69,9 @@ class NewtonShapeMapping:
             "kind": self.kind,
             "status": self.status,
             "detail": self.detail,
-            "center": list(self.center),
-            "axes": [list(axis) for axis in self.axes],
-            "dimensions": dict(self.dimensions),
+            "center": _json_safe(list(self.center)),
+            "axes": _json_safe([list(axis) for axis in self.axes]),
+            "dimensions": _json_safe(dict(self.dimensions)),
         }
 
 
@@ -136,3 +137,13 @@ class NewtonDiagnosticReport:
             "fallback_reason": self.fallback_reason,
             "evidence_level": self.evidence_level,
         }
+
+
+def _json_safe(value: object) -> object:
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, list | tuple):
+        return [_json_safe(item) for item in value]
+    return value

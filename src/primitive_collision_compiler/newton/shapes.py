@@ -132,7 +132,16 @@ def _validate_axes(axes: object) -> str:
             )
             if abs(dot) > 1e-4:
                 return "axes must contain three finite orthonormal vectors"
+    if abs(_determinant3(rows) - 1.0) > 1e-4:
+        return "axes must contain three finite right-handed orthonormal vectors"
     return ""
+
+
+def _determinant3(rows: list[tuple[float, float, float]]) -> float:
+    a, b, c = rows[0]
+    d, e, f = rows[1]
+    g, h, i = rows[2]
+    return a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
 
 
 def _gap(

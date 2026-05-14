@@ -1,3 +1,4 @@
+import json
 import math
 
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
@@ -77,3 +78,24 @@ def test_map_package_shapes_rejects_nonfinite_values_and_bad_axes():
     assert "finite" in mappings[0].detail
     assert "center" in mappings[1].detail
     assert "axes" in mappings[2].detail
+    json.dumps([mapping.to_dict() for mapping in mappings], allow_nan=False)
+
+
+def test_map_package_shapes_rejects_left_handed_axes():
+    package = CollisionPackage(
+        package_id="pkg",
+        asset_id="asset",
+        primitives=(
+            PrimitiveSpec(
+                primitive_id="left-handed",
+                kind="box",
+                axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, -1.0)),
+                dimensions={"half_extents": [1.0, 1.0, 1.0]},
+            ),
+        ),
+    )
+
+    mappings = map_package_shapes(package)
+
+    assert mappings[0].status == "mapping_gap"
+    assert "axes" in mappings[0].detail
