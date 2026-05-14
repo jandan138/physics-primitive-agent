@@ -71,6 +71,9 @@ make docs-check
 make validate
 ```
 
+At this stage `docs-check` uses a lightweight placeholder validator. Full claim-boundary
+linting is part of the later documentation-governance bootstrap task.
+
 ## DeepDive Navigation
 
 DeepDive source notes and bootstrap records live under `docs/`. These materials are the
@@ -79,6 +82,6 @@ current basis for project framing, claim boundaries, and future implementation p
 ## Current Non-Goals
 
 - No real mesh processing implementation.
-- No source package implementation.
+- No real compiler implementation beyond command-surface stubs.
 - No generated collision artifact pipeline.
 - No claim of production readiness.

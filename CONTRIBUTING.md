@@ -4,8 +4,8 @@
 
 - `make install`: install the project in editable development mode with development tools.
 - `make test`: run pytest.
-- `make validate`: run documentation validation and pytest.
-- `make docs-check`: run documentation validation.
+- `make validate`: run the current documentation validator and pytest.
+- `make docs-check`: run the current documentation validator.
 
 Direct command equivalents:
 
@@ -31,9 +31,9 @@ small, reviewable fixture or documentation artifact.
 
 ## Source Layout
 
-Source code will live under `src/primitive_collision_compiler/`. Tests will live under
-`tests/` once implementation tasks begin. Do not add source packages or tests until the
-bootstrap task that owns them.
+Source code lives under `src/primitive_collision_compiler/`. Early bootstrap code is limited
+to command-surface stubs and typed contracts; real compiler behavior must wait for the task
+that owns it. Tests live under `tests/`.
 
 ## Documentation Records
 
