@@ -1,0 +1,10 @@
+asset:
+  path: assets/example.usda
+task:
+  primary: grasping
+compile:
+  method: primitive_first
+  max_primitives: 16
+  allowed_fallback:
+    - coacd
+    - sdf
