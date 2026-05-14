@@ -1,9 +1,12 @@
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
 from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
+from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
+from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError, load_first_mesh
 from primitive_collision_compiler.config import load_compile_config
 from primitive_collision_compiler.contracts import CompileReport
 from primitive_collision_compiler.newton.env import inspect_newton_environment
@@ -18,6 +21,11 @@ def build_parser():
     parser.add_argument("--dry-run", action="store_true", help="validate config and emit a report")
     parser.add_argument("--check-newton", action="store_true", help="emit Newton environment diagnostics")
     parser.add_argument("--check-assets", action="store_true", help="emit USD asset smoke diagnostics")
+    parser.add_argument(
+        "--run-cpd-like",
+        action="store_true",
+        help="run the geometry-only CPD-like face-merge smoke path",
+    )
     return parser
 
 
@@ -47,6 +55,7 @@ def main(argv=None):
         if not source_dir:
             print("npc-compile: --check-newton requires config key newton.source_dir.", file=sys.stderr)
             return 2
+        source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
 
         report = inspect_newton_environment(source_dir)
         print(json.dumps(report.to_dict(), sort_keys=True))
@@ -86,6 +95,61 @@ def main(argv=None):
         print("npc-compile: --check-assets requires --config.", file=sys.stderr)
         return 2
 
+    if args.run_cpd_like and args.config:
+        try:
+            config = load_compile_config(args.config)
+        except ValueError as exc:
+            print(f"npc-compile: {exc}", file=sys.stderr)
+            return 2
+
+        cpd_like_section = config.protocol.get("cpd_like", {})
+        if not isinstance(cpd_like_section, dict):
+            cpd_like_section = {}
+        try:
+            primitive_subset = _cpd_like_primitive_subset(cpd_like_section)
+            max_source_faces = _positive_int(cpd_like_section.get("max_source_faces"), default=256)
+            source_path = _cpd_like_source_path(config, cpd_like_section)
+        except ValueError as exc:
+            print(f"npc-compile: {exc}", file=sys.stderr)
+            return 2
+        try:
+            mesh = load_first_mesh(source_path, max_faces=max_source_faces)
+            report = decompose_mesh(
+                mesh,
+                max_primitives=config.max_primitives,
+                primitive_subset=primitive_subset,
+            )
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "cpd_like_face_merge",
+                        "status": "dependency_gap"
+                        if "dependency_gap" in str(exc)
+                        else "smoke_failed",
+                        "asset_id": config.asset_id or Path(config.asset_path).stem,
+                        "source_path": source_path,
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+
+        payload = report.to_dict()
+        payload["asset_id"] = config.asset_id or Path(config.asset_path).stem
+        payload["source_path"] = source_path
+        payload["claim_boundary"] = cpd_like_section.get(
+            "claim_boundary",
+            "internal_baseline_not_reproduction_claim",
+        )
+        print(json.dumps(payload, sort_keys=True))
+        return 0 if report.status == "smoke_passed" else 2
+
+    if args.run_cpd_like:
+        print("npc-compile: --run-cpd-like requires --config.", file=sys.stderr)
+        return 2
+
     if args.dry_run and args.config:
         try:
             config = load_compile_config(args.config)
@@ -119,6 +183,51 @@ def _asset_manifest_path(config):
         if asset_manifest:
             return str(asset_manifest)
     return config.asset_path
+
+
+def _cpd_like_primitive_subset(cpd_like_section):
+    value = cpd_like_section.get("primitive_subset", ("box", "sphere", "capsule"))
+    if isinstance(value, str) or not isinstance(value, (list, tuple)):
+        raise ValueError("cpd_like.primitive_subset must be a list of strings")
+    result = tuple(str(item) for item in value)
+    if not result or any(not item for item in result):
+        raise ValueError("cpd_like.primitive_subset must be a list of strings")
+    return result
+
+
+def _cpd_like_source_path(config, cpd_like_section):
+    asset_role = cpd_like_section.get("asset_role")
+    asset_manifest = cpd_like_section.get("asset_manifest")
+    if asset_role:
+        manifest_path = asset_manifest or config.asset_path
+        assets = load_asset_manifest(manifest_path)
+        for asset in assets:
+            if asset.get("role") == asset_role:
+                path = asset.get("path")
+                if not path:
+                    raise ValueError(f"asset role {asset_role!r} has no path")
+                return str(path)
+        raise ValueError(f"asset role {asset_role!r} not found in manifest: {manifest_path}")
+    return config.asset_path
+
+
+def _positive_int(value, default):
+    if value in (None, ""):
+        return default
+    try:
+        result = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("cpd_like.max_source_faces must be an integer") from exc
+    if result < 1:
+        raise ValueError("cpd_like.max_source_faces must be at least 1")
+    return result
+
+
+def _expand_env_path(value, key):
+    expanded = os.path.expandvars(value)
+    if "$" in expanded:
+        raise ValueError(f"{key} references an unset environment variable: {value}")
+    return expanded
 
 
 if __name__ == "__main__":

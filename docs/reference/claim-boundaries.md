@@ -15,6 +15,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The current code defines installable package contracts, config loading, dry-run reporting, USD
   asset-open smoke diagnostics, Newton source import diagnostics, and environment-readiness
   diagnostics.
+- The current code can run a geometry-only CPD-like face-merge primitive proposal smoke path for
+  a restricted primitive subset, when tied to a dated record and capped asset/config settings.
 - The current clean local Python/Newton environment-readiness report can be described as
   `smoke_passed` evidence for the named environment path, Newton source checkout, and hardware
   environment in the dated record.
@@ -50,7 +52,8 @@ Use these only after broader benchmark records exist.
 - Do not claim the method fully replaces convex decomposition, SDFs, or human review.
 - Do not claim benchmark superiority before the benchmark record exists.
 - Do not treat environment-readiness diagnostics as Newton simulation checker results.
-- Do not claim CPD reproduction before implementation and dated experiment records exist.
+- Do not claim full CPD paper reproduction before paper-scope primitive coverage, benchmark
+  settings, and dated experiment records exist.
 
 ## Wording Rules
 

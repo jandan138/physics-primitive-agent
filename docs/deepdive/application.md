@@ -35,8 +35,9 @@ Current repository state:
 
 - project framing and bootstrap documents exist;
 - a minimal Python package skeleton and dry-run CLI exist;
+- a geometry-only CPD-like face-merge smoke path exists for restricted
+  `box`/`sphere`/`capsule` primitive proposals;
 - DeepDive application materials are being organized;
-- no primitive fitting implementation exists today;
 - no Newton checker results exist today;
 - no benchmark metrics exist today.
 

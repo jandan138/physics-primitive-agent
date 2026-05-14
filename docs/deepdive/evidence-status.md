@@ -11,19 +11,24 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The proposal requires explicit fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.
 - The current executable surface can report config dry-runs, USD asset-open smoke diagnostics,
   Newton source import diagnostics, and environment-readiness diagnostics.
+- The current executable surface can run a geometry-only CPD-like face-merge smoke path that
+  extracts a USD mesh, fits restricted `box`/`sphere`/`capsule` primitive candidates, greedily
+  merges adjacent face groups by weighted excess volume, and emits a JSON diagnostic report.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
+- The 2026-05-14 CPD-like bed smoke record reports `smoke_passed` for the first 256 extracted bed
+  mesh triangles, reduced to 32 restricted primitives, using the clean Newton Python environment.
 
 ## Current Unsupported Claims
 
-- Primitive fitting works.
+- General primitive fitting quality across arbitrary assets has not been evaluated.
 - Newton simulation checker results exist.
 - The method beats CoACD, V-HACD, CPD-like decomposition, manual primitive colliders, or Newton-native approximate mesh modes.
 - The approach improves robot policy training, real robot behavior, or deployment safety.
 - LLM/VLM improves primitive generation.
 - The compiler can replace convex decomposition.
-- CPD reproduction has been implemented or evaluated.
+- Full CPD paper reproduction has been implemented or evaluated.
 - Environment-readiness diagnostics imply Newton simulation readiness.
 
 ## Future Evidence Needed
