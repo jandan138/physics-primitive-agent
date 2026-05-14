@@ -88,8 +88,9 @@ For each run:
    package bottom-center anchor.
 6. Place the body so the package bottom starts `height_m` above the static plane.
 7. Simulate fixed `frames * substeps` with `SolverXPBD`.
-8. Record finite-state status, initial/final body height, initial/final vertical velocity, maximum
-   contact count, final contact count, contact-observed flag, descent flag, and failure labels.
+8. Record finite-state status, initial/final body height, initial/final vertical velocity, estimated
+   support height, maximum contact count, final contact count, contact-observed flag, descent flag,
+   and failure labels.
 
 Default smoke settings:
 
@@ -102,6 +103,7 @@ Default smoke settings:
 - `height_m: 0.25`
 - `gravity_mps2: -9.81`
 - `ground_height_m: 0.0`
+- `max_floor_breach_m: 0.05`
 
 ## Status Semantics
 
@@ -112,7 +114,7 @@ Default smoke settings:
   shapes.
 - `dependency_gap`: source or Python dependency readiness prevents the Newton runtime import.
 - `runtime_failure`: Newton imports but the probe crashes, produces non-finite state, does not
-  descend, or observes no contacts.
+  descend, observes no contacts, or breaches the recorded support-height floor tolerance.
 
 The status name `smoke_passed` means the diagnostic executed and returned basic expected signals. It
 does not mean the collision proxy is high quality, stable for downstream tasks, safe, or benchmarked.

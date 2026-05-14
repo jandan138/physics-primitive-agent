@@ -69,3 +69,5 @@ Proposed | In progress | Complete | Failed | Superseded
   Newton simulation probe layer.
 - [2026-05-14 Newton Contact Smoke](2026-05-14-newton-contact-smoke.md): first contact-only
   Newton canary consuming CPD-like primitive proposals.
+- [2026-05-14 Newton Drop/Settle](2026-05-14-newton-drop-settle.md): first named task-level
+  Newton smoke diagnostic consuming the CPD-like collision package.

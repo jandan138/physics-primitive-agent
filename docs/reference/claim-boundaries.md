@@ -19,6 +19,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   a restricted primitive subset, when tied to a dated record and capped asset/config settings.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
+- The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
+  capped bed CPD-like collision package under the recorded config and environment. This is not
+  collision quality validation, benchmark evidence, or CPD paper reproduction.
 - The current clean local Python/Newton environment-readiness report can be described as
   `smoke_passed` evidence for the named environment path, Newton source checkout, and hardware
   environment in the dated record.
@@ -31,7 +34,8 @@ Use these only after a dated record links them to Phase 0 assets, configs, logs,
 - Newton checker probes have found or ruled out specific failure modes for specific assets.
 - A baseline comparison includes primitive count, fallback ratio, step time, contact count, and
   penetration or jitter measurements.
-- A generated collision package is simulation-checked for a named task in a named environment.
+- A generated collision package is simulation-checked for a named task in a named environment,
+  beyond the single recorded bed drop/settle smoke.
 - A DLC-worker or experiment-specific Python/Newton environment has passed readiness checks for a
   named source checkout and hardware environment.
 
@@ -60,9 +64,9 @@ Use these only after broader benchmark records exist.
 ## Wording Rules
 
 - Use "simulation-checked" only for artifacts with a named task-level Newton diagnostic record.
-  Contact-only canary records do not qualify. For current CPD-like output, use
-  "geometry-only CPD-like primitive proposal smoke", "contact-only Newton canary", or
-  "Newton-checker-planned".
+  Contact-only canary records do not qualify. For the single recorded bed drop/settle smoke, prefer
+  "named drop/settle smoke diagnostic" unless reviewer context specifically needs the
+  "simulation-checked" term.
 - Use "simulation-verified" only after a specific verification standard is documented.
 - Say "measure whether" instead of "prove whether" for research questions.
 - Say "fallback-aware" instead of "fallback-free" unless a record shows zero fallback.

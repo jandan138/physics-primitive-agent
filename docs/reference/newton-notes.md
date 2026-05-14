@@ -14,6 +14,9 @@ experiment records.
 - Newton source is expected as an external sibling checkout, not vendored into this repository.
 - The current clean local Python/Newton readiness state is `smoke_passed`; this is environment and
   provenance evidence, not an algorithm or simulation result.
+- The first named task-level Newton smoke diagnostic is `newton_drop_settle` for the capped bed
+  CPD-like collision package. It is diagnostic evidence for one recorded asset/config/environment,
+  not collision quality validation.
 
 ## Environment Readiness Before Newton Claims
 
@@ -28,6 +31,8 @@ Before any Newton simulation claim, record:
 ## Phase 0 Probe Shape
 
 - Drop: measure whether an asset settles with plausible contacts and bounded penetration.
+- Drop/settle status now uses estimated support height, not only body-origin height, for
+  ground-plane breach decisions.
 - Stack or slide: expose coarse collider overhangs, missing support, and solver jitter.
 - Sphere rain or contact stress: stress-test dense contact regions and hidden holes.
 - Precision rejection: record when no safe primitive approximation is found and fallback is used.

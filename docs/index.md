@@ -1,9 +1,9 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, and a contact-only Newton canary. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. It does not yet contain task-level Newton simulation probe execution, benchmark results, full CPD paper reproduction, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, a contact-only Newton canary, and the first named Newton drop/settle task smoke. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact plus support-height metrics. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, or LLM/VLM research code.
 
-Current next action: expand the contact-only Newton canary into the first task-level Newton
-diagnostic probe while keeping fallback decisions and unsupported primitive types explicit.
+Current next action: review the drop/settle slice, then add one more narrow Newton diagnostic probe
+or asset class while keeping fallback decisions and unsupported primitive types explicit.
 
 ## DeepDive Package
 
@@ -43,6 +43,8 @@ diagnostic probe while keeping fallback decisions and unsupported primitive type
   probe layer.
 - [Newton contact smoke record](records/2026-05-14-newton-contact-smoke.md):
   first contact-only Newton canary consuming CPD-like primitive proposals.
+- [Newton drop/settle record](records/2026-05-14-newton-drop-settle.md):
+  first named task-level Newton smoke diagnostic consuming the CPD-like collision package.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 - [Environment normalization design](superpowers/specs/2026-05-14-environment-normalization-design.md):
@@ -67,7 +69,8 @@ Safe current claim: proposal for primitive-first, Newton-checker-planned, fallba
 Additional current evidence: executable environment-readiness diagnostics can record dependency
 gaps, source provenance, and the current clean local env `smoke_passed` status. The CPD-like
 geometry path can produce a restricted primitive proposal smoke report. The Newton contact canary
-can confirm representative primitive ingestion and contact pipeline output. These evidence layers
-are not task-level Newton simulation evidence.
+can confirm representative primitive ingestion and contact pipeline output. The Newton drop/settle
+diagnostic can run one named task smoke for the capped bed CPD-like collision package. These
+evidence layers are not benchmark, broad collision-quality, or CPD reproduction evidence.
 
 Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, no CPD reproduction claim, and no complete replacement of convex decomposition.

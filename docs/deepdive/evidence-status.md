@@ -21,16 +21,23 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.
+- The current executable surface can run `newton_drop_settle`, a named task-level Newton smoke
+  diagnostic over the capped bed CPD-like collision package, with explicit solver settings,
+  support-height metrics, and failure labels.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
 - The 2026-05-14 CPD-like bed smoke record reports `smoke_passed` for the first 256 extracted bed
   mesh triangles, reduced to 32 restricted primitives, using the clean Newton Python environment.
+- The 2026-05-14 Newton drop/settle record reports `smoke_passed` for the capped bed CPD-like
+  collision package in the clean Newton Python environment, with all 32 primitives mapped and no
+  floor-breach failure label under the recorded `0.05m` support-height tolerance.
 
 ## Current Unsupported Claims
 
 - General primitive fitting quality across arbitrary assets has not been evaluated.
-- Task-level Newton simulation checker results exist for CPD-like primitive proposals.
+- Task-level Newton diagnostic evidence exists beyond the single recorded capped bed drop/settle
+  smoke.
 - The method beats CoACD, V-HACD, CPD-like decomposition, manual primitive colliders, or Newton-native approximate mesh modes.
 - The approach improves robot policy training, real robot behavior, or deployment safety.
 - LLM/VLM improves primitive generation.
@@ -66,9 +73,10 @@ Physical intelligence requires model outputs to be checked against physical cons
 ## Narrow First Milestone
 
 The first local clean Newton runtime readiness gap is resolved, a geometry-only CPD-like primitive
-proposal smoke path exists, and a contact-only Newton canary exists. Next expand from contact
-canary evidence to a task-level Newton diagnostic probe before adding LLM/VLM. Report failures and
-fallback behavior as first-class evidence.
+proposal smoke path exists, a contact-only Newton canary exists, and the first named drop/settle
+task smoke exists for the capped bed asset. Next broaden the diagnostic suite one narrow probe or
+asset class at a time before adding LLM/VLM. Report failures and fallback behavior as first-class
+evidence.
 
 ## Current Non-Goals
 
