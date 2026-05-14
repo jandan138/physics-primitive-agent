@@ -10,8 +10,9 @@ completed compiler.
 Records the Python executable, interpreter realpath, module provenance, Newton source checkout,
 GPU visibility, setup-script fingerprint, output directory writability, and repository diagnostic
 status before any Newton simulation claim. This layer is implemented as a diagnostic checker, not as
-an environment installer. The current local readiness state is expected to remain `dependency_gap`
-until the clean external Newton Python environment is created and dependencies resolve.
+an environment installer. The current clean local Python/Newton readiness state is `smoke_passed`
+for the named conda environment and Newton source checkout, but this is still not Newton simulation
+readiness.
 
 ## Geometry Preprocessor
 
@@ -43,9 +44,9 @@ Writes collision packages and reports with primitives, fallback regions, task la
 
 ## First Milestone
 
-First clear the environment-readiness `dependency_gap`. Then only the Geometry Preprocessor subset,
-non-LLM Primitive Proposal Bank, minimal Constrained Optimizer, Newton Checker, and Export/Report
-are needed for the first 0-4 week proof point.
+With the first clean local environment-readiness record in place, only the Geometry Preprocessor
+subset, non-LLM Primitive Proposal Bank, minimal Constrained Optimizer, Newton Checker, and
+Export/Report are needed for the first 0-4 week proof point.
 
 ## Current Non-Goals
 

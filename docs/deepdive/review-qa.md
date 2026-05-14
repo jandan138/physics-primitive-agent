@@ -74,9 +74,10 @@ Newton is the target execution layer for the first diagnostic checker. The proje
 
 **Is the Newton environment ready now?**
 
-Not yet. The repository now has an environment-readiness checker that records Python provenance,
-Newton source state, module imports, GPU visibility, and output writability. The current local
-status is `dependency_gap`, which is useful setup evidence but not Newton simulation evidence.
+For local development readiness, yes in a narrow sense. The clean external Python 3.10 environment
+has a dated readiness record with status `smoke_passed`; it covers Python provenance, Newton source
+state, module imports, GPU visibility, output writability, and `npc-compile --check-newton`. It is
+not Newton simulation evidence.
 
 **What would make you stop?**
 

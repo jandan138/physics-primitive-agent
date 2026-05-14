@@ -11,7 +11,9 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The proposal requires explicit fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.
 - The current executable surface can report config dry-runs, USD asset-open smoke diagnostics,
   Newton source import diagnostics, and environment-readiness diagnostics.
-- The current local environment-readiness evidence is `dependency_gap`, not `smoke_passed`.
+- The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
+  `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
+  `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
 
 ## Current Unsupported Claims
 
@@ -28,7 +30,8 @@ This file separates current evidence from future claims. See [message-map.md](me
 
 For the 0-4 week proof point:
 
-- clean Python/Newton environment readiness report with status `smoke_passed`;
+- per-run or DLC-worker readiness report with status `smoke_passed` from the selected worker
+  Python;
 - asset list with source, license, scale, and hashes;
 - baseline parameters and versions;
 - Newton version, solver settings, hardware, and deterministic seeds;
@@ -49,9 +52,9 @@ Physical intelligence requires model outputs to be checked against physical cons
 
 ## Narrow First Milestone
 
-First resolve the clean Newton runtime readiness gap. Then build a non-LLM primitive baseline and
-Newton diagnostic checker before adding LLM/VLM. Report failures and fallback behavior as
-first-class evidence.
+The first local clean Newton runtime readiness gap is resolved. Next build a non-LLM primitive
+baseline and Newton diagnostic checker before adding LLM/VLM. Report failures and fallback behavior
+as first-class evidence.
 
 ## Current Non-Goals
 

@@ -15,7 +15,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The current code defines installable package contracts, config loading, dry-run reporting, USD
   asset-open smoke diagnostics, Newton source import diagnostics, and environment-readiness
   diagnostics.
-- The current local environment-readiness report can be described as `dependency_gap` evidence.
+- The current clean local Python/Newton environment-readiness report can be described as
+  `smoke_passed` evidence for the named environment path, Newton source checkout, and hardware
+  environment in the dated record.
 
 ## Claims Requiring Phase 0 Evidence
 
@@ -26,8 +28,8 @@ Use these only after a dated record links them to Phase 0 assets, configs, logs,
 - A baseline comparison includes primitive count, fallback ratio, step time, contact count, and
   penetration or jitter measurements.
 - A generated collision package is simulation-checked for a named task in a named environment.
-- A clean Python/Newton environment has passed readiness checks for a named source checkout and
-  hardware environment.
+- A DLC-worker or experiment-specific Python/Newton environment has passed readiness checks for a
+  named source checkout and hardware environment.
 
 ## Claims Requiring Phase 1 Or Phase 2 Evidence
 

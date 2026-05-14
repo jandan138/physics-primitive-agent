@@ -2,7 +2,9 @@
 
 Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, and local environment-readiness diagnostics. It does not yet contain primitive fitting, Newton simulation probe execution, benchmark results, or LLM/VLM research code.
 
-Current next action: create the external clean Python 3.10 Newton environment, resolve the current readiness `dependency_gap`, then use the first 0-4 week milestone to build a non-LLM primitive baseline plus Newton diagnostic checker before considering LLM/VLM components.
+Current next action: use the clean Python 3.10 Newton environment readiness record to start the
+first 0-4 week milestone: a non-LLM primitive baseline plus Newton diagnostic checker before
+considering LLM/VLM components.
 
 ## DeepDive Package
 
@@ -49,6 +51,8 @@ Current next action: create the external clean Python 3.10 Newton environment, r
 
 Safe current claim: proposal for primitive-first, Newton-checker-planned, fallback-aware collision asset compilation.
 
-Additional current evidence: executable environment-readiness diagnostics can record dependency gaps and source provenance. This is not Newton simulation evidence.
+Additional current evidence: executable environment-readiness diagnostics can record dependency
+gaps, source provenance, and the current clean local env `smoke_passed` status. This is not Newton
+simulation evidence.
 
 Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, no CPD reproduction claim, and no complete replacement of convex decomposition.

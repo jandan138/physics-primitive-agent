@@ -58,3 +58,5 @@ Proposed | In progress | Complete | Failed | Superseded
   environment-readiness checker, docs, and tests.
 - [2026-05-14 Environment Readiness Master Verification](2026-05-14-environment-readiness-master-verification.md):
   post-merge `master` readiness status and verification evidence.
+- [2026-05-14 Clean Newton Environment Readiness](2026-05-14-clean-newton-environment-readiness.md):
+  clean external conda environment creation and `smoke_passed` readiness evidence.

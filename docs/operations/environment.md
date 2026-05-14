@@ -36,18 +36,24 @@ export NPC_WORKER_SETUP_SCRIPT=/path/to/worker_setup.sh
 The readiness checker records the setup script path, realpath, SHA-256, mtime, and size. Phase 1
 does not source the setup script and does not run compiler smoke commands through it.
 
-## Future Environment Installation
+## Environment Installation
 
-The Phase 1 checker does not create or mutate environments. When a clean environment is created,
-the intended first dependency shape is:
+The Phase 1 checker does not create or mutate environments. The current local environment was
+created outside the repository with conda and then populated with the project package and Newton
+importer dependencies:
 
 ```bash
-python -m pip install -e ".[dev]"
-python -m pip install -e "/cpfs/user/zhuzihou/dev/newton[importers]" --extra-index-url https://pypi.nvidia.com/
+python -m pip install -e "/cpfs/user/zhuzihou/dev/physics-primitive-agent[dev]"
+python -m pip install -e "/cpfs/user/zhuzihou/dev/newton[importers]" \
+  --extra-index-url https://pypi.nvidia.com/
 ```
 
 Do not downgrade or modify the ambient Isaac/DSW Python to satisfy Newton. Keep the canonical
 runtime outside this repository so future DLC workers can point at the same interpreter path.
+
+Large wheels such as `warp-lang` may fail from interrupted downloads. Treat that as a network
+download failure first, not as a dependency-version conclusion. The successful local install used
+`warp-lang==1.13.0` with pip resume retries before re-running the Newton importer install.
 
 `uv` is optional after Phase 1. It can help lock dependencies later, but it does not replace the
 readiness checks for mount visibility, interpreter realpaths, module provenance, GPU visibility, or
@@ -76,10 +82,16 @@ environment directories, raw or generated 3D assets, videos, or credentials.
 
 ## Current Local Observation
 
-The latest merged `master` readiness record is
-[2026-05-14 Environment Readiness Master Verification](../records/2026-05-14-environment-readiness-master-verification.md).
-It records status `dependency_gap` for the active Isaac/DSW Python path and local Newton source.
-Treat that as the baseline to improve, not as Newton simulation readiness.
+The current clean-env readiness record is
+[2026-05-14 Clean Newton Environment Readiness](../records/2026-05-14-clean-newton-environment-readiness.md).
+It records status `smoke_passed` for
+`/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
+`96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
+
+The earlier
+[2026-05-14 Environment Readiness Master Verification](../records/2026-05-14-environment-readiness-master-verification.md)
+remains historical evidence for the active ambient Isaac/DSW Python path, where readiness was
+`dependency_gap`. Neither record is Newton simulation readiness.
 
 ## Status Meaning
 

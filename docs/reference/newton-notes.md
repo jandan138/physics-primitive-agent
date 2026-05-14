@@ -12,8 +12,8 @@ experiment records.
 - Newton checks should be treated as diagnostic probes over named tasks, not broad safety
   certification.
 - Newton source is expected as an external sibling checkout, not vendored into this repository.
-- The current local readiness state is `dependency_gap`; this is dependency evidence, not an
-  algorithm or simulation result.
+- The current clean local Python/Newton readiness state is `smoke_passed`; this is environment and
+  provenance evidence, not an algorithm or simulation result.
 
 ## Environment Readiness Before Newton Claims
 
