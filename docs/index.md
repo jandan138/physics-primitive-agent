@@ -2,8 +2,9 @@
 
 Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps all 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: run full verification and final review over the combined sphere-rain, Franka,
-and component-merge-gate slice.
+Current next action: move from CPD-like infrastructure toward the paper core by adding a
+paper-aligned offline objective report, small inspectable synthetic cases, and comparison records
+before strengthening Newton task probes or claiming collision quality.
 
 ## DeepDive Package
 
@@ -25,6 +26,9 @@ and component-merge-gate slice.
 - [CPD-like face-merge explainer](reference/cpd-like-face-merge-explainer.md):
   plain-language explanation of the current geometry-only baseline and why it is not a full CPD
   paper reproduction.
+- [CPD paper story status](reference/cpd-paper-story-status.md):
+  plain-language map from the paper's reproduction story to the repository's current workbench
+  status and next slices.
 
 ## Source Intake And Planning
 
@@ -54,6 +58,8 @@ and component-merge-gate slice.
   opt-in disconnected-component merge gate and merge-cost reporting evidence.
 - [Three-slice final verification record](records/2026-05-15-three-slice-final-verification.md):
   final verification for sphere-rain, Franka smoke, and component-merge gate.
+- [CPD paper story status docs record](records/2026-05-15-cpd-paper-story-status-docs.md):
+  documentation update that clarifies where the repository sits in the full CPD paper story.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 - [Environment normalization design](superpowers/specs/2026-05-14-environment-normalization-design.md):

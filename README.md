@@ -17,10 +17,11 @@ runs capped first-mesh CPD-like geometry proposals. An opt-in CPD-like component
 reports disconnected-component merge candidates and normalized excess-volume accounting while
 remaining below full CPD reproduction. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
-plain-language boundary between the current baseline and a full CPD paper reproduction. The clean
-local Newton Python environment has recorded readiness evidence, but the repository does not yet
-produce benchmark results, broad asset/task evidence, whole-robot collider-quality evidence, real
-contact-stress measurement, or a production collision compiler.
+plain-language boundary between the current baseline and a full CPD paper reproduction. See
+`docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper
+story. The clean local Newton Python environment has recorded readiness evidence, but the
+repository does not yet produce benchmark results, broad asset/task evidence, whole-robot
+collider-quality evidence, real contact-stress measurement, or a production collision compiler.
 
 ## Strategic Framing
 

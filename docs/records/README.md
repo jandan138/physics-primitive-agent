@@ -81,3 +81,6 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Three-Slice Final Verification](2026-05-15-three-slice-final-verification.md):
   final verification and review-fix record for sphere-rain, Franka smoke, and component-merge
   gate.
+- [2026-05-15 CPD Paper Story Status Docs](2026-05-15-cpd-paper-story-status-docs.md):
+  documentation update that maps the current CPD-like workbench onto the full CPD paper
+  reproduction story.

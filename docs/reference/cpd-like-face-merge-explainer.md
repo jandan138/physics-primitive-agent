@@ -3,6 +3,9 @@
 This page explains the current geometry-only CPD-like baseline in plain terms. It is a reader aid,
 not new evidence and not a claim that the CPD paper has been reproduced.
 
+For the broader paper-story map, see
+[CPD paper story status](cpd-paper-story-status.md).
+
 ## Plain Summary
 
 The current baseline takes a mesh, groups nearby connected faces with simple geometric rules, and
@@ -133,6 +136,8 @@ Avoid:
 ## Next Step
 
 The next useful step is not to strengthen the claim on this baseline. The repository now has the
-second asset-class smoke and the small CPD-like component-merge gate. Paper-faithful CPD
-decomposition work should still avoid full reproduction claims until primitive coverage,
-benchmark settings, and dated experiment records exist.
+second asset-class smoke and the small CPD-like component-merge gate. The next paper-story slice
+should add a paper-aligned offline objective report and inspectable synthetic cases before changing
+Newton probes or making any collision-quality claim. Paper-faithful CPD decomposition work should
+still avoid full reproduction claims until primitive coverage, benchmark settings, and dated
+experiment records exist.
