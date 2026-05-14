@@ -521,7 +521,7 @@ Run:
 python -m pytest -q
 python scripts/validate_docs.py
 git diff --check
-python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton
+PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton
 ```
 
 Expected: tests pass; docs validate; whitespace check passes; CLI returns JSON with `stage` equal to `newton_import`.
