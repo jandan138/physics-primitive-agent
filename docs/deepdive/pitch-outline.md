@@ -42,10 +42,11 @@ Time: 3-4 minutes.
 - Dry-run package contracts exist.
 - Geometry-only CPD-like face-merge primitive proposal smoke exists.
 - Contact-only Newton canary smoke exists for representative mapped primitive types.
+- One named Newton drop/settle task smoke exists for the capped bed CPD-like collision package.
 - DeepDive docs define claim boundaries.
 - Current status is proposal/bootstrap only.
-- No task-level Newton diagnostic probe results, benchmark metrics, or full CPD paper
-  reproduction exist yet.
+- No broad asset/task Newton diagnostic suite, benchmark metrics, or full CPD paper reproduction
+  exists yet.
 
 ## 5. Next Milestones
 

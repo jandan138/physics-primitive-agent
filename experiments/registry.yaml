@@ -8,10 +8,11 @@ experiments:
     claims_supported:
       - bootstrap proposal only
   - id: newton-drop-settle-bed-smoke
-    status: planned
+    status: complete
     config: configs/experiments/newton_drop_settle.yaml
     record: docs/records/2026-05-14-newton-drop-settle.md
     purpose: >
       Run the first task-level Newton drop/settle smoke over the CPD-like bed collision package.
     claims_supported:
-      - planned task-level smoke only until the dated record exists
+      - named capped-bed drop/settle task smoke only
+      - no benchmark, broad asset/task, collision-quality, or CPD reproduction claim

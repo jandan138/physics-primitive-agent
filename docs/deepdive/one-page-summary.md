@@ -33,9 +33,10 @@ LLM/VLM is deferred until the non-LLM baseline demonstrates value.
 - Proposal and project bootstrap.
 - Minimal package, dry-run CLI, geometry-only CPD-like face-merge smoke path, and
   contact-only Newton canary exist.
+- One named Newton drop/settle task smoke exists for the capped bed CPD-like collision package.
 - DeepDive documentation defines scope and evidence boundaries.
-- No task-level Newton diagnostic probe results, benchmark metrics, or full CPD paper
-  reproduction exist yet.
+- No broad asset/task Newton diagnostic suite, benchmark metrics, or full CPD paper reproduction
+  exists yet.
 
 ## Support Requested
 

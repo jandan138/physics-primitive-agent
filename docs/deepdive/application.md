@@ -38,9 +38,9 @@ Current repository state:
 - a geometry-only CPD-like face-merge smoke path exists for restricted
   `box`/`sphere`/`capsule` primitive proposals;
 - a contact-only Newton canary smoke path exists for representative mapped primitive types;
+- one named Newton drop/settle task smoke exists for the capped bed CPD-like collision package;
 - DeepDive application materials are being organized;
-- no task-level Newton diagnostic probe results exist today;
-- no benchmark metrics exist today.
+- no broad asset/task Newton diagnostic suite or benchmark metrics exist today.
 
 The current evidence supports a project proposal and milestone plan, not research conclusions.
 

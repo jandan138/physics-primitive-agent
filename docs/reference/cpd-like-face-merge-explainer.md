@@ -22,11 +22,11 @@ The CPD paper story can be read as four layers:
 3. Feed those primitives to a collision detection or physics-engine path.
 4. Evaluate collision quality, speed, failure cases, and baseline comparisons.
 
-The repository is currently between layers 2 and 3:
+The repository has reached a narrow slice of layer 3:
 
 - Layer 1 is partially in place: the smoke path can extract a capped USD mesh.
 - Layer 2 exists only as a simple CPD-like baseline, not the paper algorithm.
-- Layer 3 has a contact-only Newton canary, not a task-level simulation checker.
+- Layer 3 has a contact-only Newton canary and one named capped-bed drop/settle task smoke.
 - Layer 4 has not started.
 
 ## What Face-Merge Means
@@ -54,6 +54,7 @@ This baseline is useful because it exercises the pipeline that a real CPD reprod
 - conversion into a `CollisionPackage`;
 - Newton-independent shape mapping;
 - contact-only Newton canary execution;
+- one named Newton drop/settle task smoke;
 - JSON reports and dated evidence records.
 
 Without this plumbing, a later paper-faithful CPD implementation would be hard to test, hard to
@@ -69,6 +70,8 @@ For the current capped bed smoke:
 - output: 32 restricted primitive proposals, all currently boxes;
 - Newton contact smoke: 32 mapped box descriptors and one representative box contact canary;
 - observed representative contact count: 1.
+- Newton drop/settle smoke: all 32 proposals mapped into one compound package body, dropped on a
+  static plane, with support-height and contact metrics recorded.
 
 This proves the pipeline can produce and ingest a simple primitive proposal report. It does not
 prove the proposals are good collision geometry.
@@ -80,7 +83,8 @@ Do not use the current face-merge baseline to claim:
 - full CPD paper reproduction;
 - paper-scope primitive coverage;
 - collision quality;
-- task-level Newton simulation success;
+- broad task-level Newton simulation success beyond the single recorded capped-bed drop/settle
+  smoke;
 - benchmark superiority over CoACD, V-HACD, convex hulls, manual colliders, or Newton-native
   approximate mesh modes;
 - deployment readiness or safety certification.
@@ -92,6 +96,7 @@ Use:
 - "geometry-only CPD-like face-merge primitive proposal smoke";
 - "CPD-inspired restricted primitive baseline";
 - "primitive proposals consumed by a contact-only Newton canary";
+- "one named capped-bed drop/settle smoke";
 - "not a full CPD paper reproduction";
 - "not collision-quality evidence."
 
@@ -99,13 +104,14 @@ Avoid:
 
 - "CPD reproduced";
 - "collision package validated";
-- "simulation-checked";
+- "simulation-checked" without naming the exact task record;
 - "benchmark result";
 - "safe collider."
 
 ## Next Step
 
 The next useful step is not to strengthen the claim on this baseline. The next useful step is to add
-a task-level Newton diagnostic probe, such as a small drop or settle test with explicit solver
-settings, timestep, seed, and metrics. After that, paper-faithful CPD decomposition work will have a
-clearer evaluation harness.
+one more narrow Newton diagnostic probe or asset class, such as sphere-rain/contact stress or a
+stack/slide task with explicit solver settings, timestep, seed, and metrics. Paper-faithful CPD
+decomposition work should still wait for this evaluation harness to broaden beyond one capped bed
+smoke.
