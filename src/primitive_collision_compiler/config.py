@@ -9,7 +9,19 @@ from primitive_collision_compiler.contracts import CompileConfig
 
 
 def load_compile_config(path: str | Path) -> CompileConfig:
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+    config_path = Path(path)
+    if not config_path.exists():
+        raise ValueError(f"config file not found: {config_path}")
+
+    try:
+        raw_text = config_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise ValueError(f"could not read config file: {config_path}: {exc}") from exc
+
+    try:
+        data = yaml.safe_load(raw_text) or {}
+    except yaml.YAMLError as exc:
+        raise ValueError(f"could not parse config file: {config_path}: {exc}") from exc
     if not isinstance(data, dict):
         raise ValueError("compile config must be a mapping")
 
@@ -21,13 +33,22 @@ def load_compile_config(path: str | Path) -> CompileConfig:
     if not isinstance(compile_section, dict):
         raise ValueError("compile config key compile must be a mapping")
 
-    allowed_fallback = compile_section.get("allowed_fallback", ("coacd", "sdf"))
+    allowed_fallback = _string_tuple(
+        compile_section.get("allowed_fallback", ("coacd", "sdf")),
+        "compile.allowed_fallback must be a list of strings",
+    )
+    verify = _string_tuple(
+        compile_section.get("verify", ("drop", "stack", "sphere_rain")),
+        "compile.verify must be a list of strings",
+    )
     return CompileConfig(
         asset_path=str(asset_path),
         task=str(task),
         method=str(compile_section.get("method", "primitive_first")),
         max_primitives=int(compile_section.get("max_primitives", 16)),
-        allowed_fallback=tuple(str(item) for item in allowed_fallback),
+        allowed_fallback=allowed_fallback,
+        verify=verify,
+        keep_visual=bool(compile_section.get("keep_visual", True)),
     )
 
 
@@ -39,3 +60,13 @@ def _nested_required(data: dict[str, Any], keys: tuple[str, str], message: str) 
     if value in (None, ""):
         raise ValueError(message)
     return value
+
+
+def _string_tuple(value: Any, message: str) -> tuple[str, ...]:
+    if isinstance(value, str) or not isinstance(value, (list, tuple)):
+        raise ValueError(message)
+
+    result = tuple(str(item) for item in value)
+    if not result or any(not item for item in result):
+        raise ValueError(message)
+    return result

@@ -32,7 +32,12 @@ def main(argv=None):
         return 0
 
     if args.dry_run and args.config:
-        config = load_compile_config(args.config)
+        try:
+            config = load_compile_config(args.config)
+        except ValueError as exc:
+            print(f"npc-compile: {exc}", file=sys.stderr)
+            return 2
+
         asset_id = Path(config.asset_path).stem
         report = CompileReport(
             asset_id=asset_id,
@@ -45,11 +50,11 @@ def main(argv=None):
         return 0
 
     if args.dry_run:
-        parser.exit(2, "npc-compile: --dry-run requires --config.\n")
+        print("npc-compile: --dry-run requires --config.", file=sys.stderr)
+        return 2
 
-    parser.exit(2, "npc-compile: non-dry-run compilation is not implemented yet.\n")
-
-    return 0
+    print("npc-compile: non-dry-run compilation is not implemented yet.", file=sys.stderr)
+    return 2
 
 
 if __name__ == "__main__":

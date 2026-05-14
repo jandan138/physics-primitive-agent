@@ -30,12 +30,7 @@ def test_cli_help_mentions_project(capsys):
 def test_cli_rejects_non_dry_run_compile(capsys):
     cli = importlib.import_module("primitive_collision_compiler.cli")
 
-    try:
-        cli.main(["--config", "tests/fixtures/dry_run_mvp.yaml"])
-    except SystemExit as exc:
-        assert exc.code == 2
-    else:
-        raise AssertionError("non-dry-run compilation should exit")
+    assert cli.main(["--config", "tests/fixtures/dry_run_mvp.yaml"]) == 2
 
     error = capsys.readouterr().err
     assert "non-dry-run compilation is not implemented yet" in error
