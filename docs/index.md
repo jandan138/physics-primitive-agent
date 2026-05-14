@@ -1,6 +1,6 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, and a geometry-only CPD-like face-merge primitive proposal smoke path. It does not yet contain Newton simulation probe execution, benchmark results, full CPD paper reproduction, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, and a geometry-only CPD-like face-merge primitive proposal smoke path. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. It does not yet contain Newton simulation probe execution, benchmark results, full CPD paper reproduction, or LLM/VLM research code.
 
 Current next action: connect the geometry-only CPD-like primitive proposal output to the first
 Newton diagnostic probe while keeping fallback decisions and unsupported primitive types explicit.
@@ -51,7 +51,8 @@ Newton diagnostic probe while keeping fallback decisions and unsupported primiti
 Safe current claim: proposal for primitive-first, Newton-checker-planned, fallback-aware collision asset compilation.
 
 Additional current evidence: executable environment-readiness diagnostics can record dependency
-gaps, source provenance, and the current clean local env `smoke_passed` status. This is not Newton
-simulation evidence.
+gaps, source provenance, and the current clean local env `smoke_passed` status. The CPD-like
+geometry path can produce a restricted primitive proposal smoke report. Neither evidence layer is
+Newton simulation evidence.
 
 Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, no CPD reproduction claim, and no complete replacement of convex decomposition.

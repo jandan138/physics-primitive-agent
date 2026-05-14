@@ -6,7 +6,7 @@
 
 ## Status
 
-Complete
+Complete; partially superseded by later clean-environment and geometry-only CPD-like records.
 
 ## Decision
 
@@ -60,6 +60,13 @@ Newton source is expected at `/cpfs/user/zhuzihou/dev/newton`.
 
 The `dependency_gap` status is an acceptable current result because this slice only records source
 availability and Python import readiness. It is not a CPD reproduction result.
+
+Later clean-environment work resolved this local dependency gap for the recommended Python
+environment. See
+[2026-05-14 Clean Newton Environment Readiness](2026-05-14-clean-newton-environment-readiness.md)
+and [2026-05-14 CPD Reproduction Slice](2026-05-14-cpd-reproduction-slice.md) for current
+`smoke_passed` evidence. This historical record still does not represent Newton simulation probe
+evidence.
 
 ## Next Action
 

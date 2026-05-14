@@ -23,7 +23,7 @@ This file separates current evidence from future claims. See [message-map.md](me
 ## Current Unsupported Claims
 
 - General primitive fitting quality across arbitrary assets has not been evaluated.
-- Newton simulation checker results exist.
+- Newton simulation checker results exist for CPD-like primitive proposals.
 - The method beats CoACD, V-HACD, CPD-like decomposition, manual primitive colliders, or Newton-native approximate mesh modes.
 - The approach improves robot policy training, real robot behavior, or deployment safety.
 - LLM/VLM improves primitive generation.
@@ -57,9 +57,10 @@ Physical intelligence requires model outputs to be checked against physical cons
 
 ## Narrow First Milestone
 
-The first local clean Newton runtime readiness gap is resolved. Next build a non-LLM primitive
-baseline and Newton diagnostic checker before adding LLM/VLM. Report failures and fallback behavior
-as first-class evidence.
+The first local clean Newton runtime readiness gap is resolved, and a geometry-only CPD-like
+primitive proposal smoke path exists. Next connect that proposal output to a named Newton
+diagnostic checker before adding LLM/VLM. Report failures and fallback behavior as first-class
+evidence.
 
 ## Current Non-Goals
 
