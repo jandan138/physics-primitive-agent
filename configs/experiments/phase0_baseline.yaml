@@ -1,0 +1,43 @@
+asset:
+  path: assets/manifests/phase0_assets.yaml
+  id: phase0_asset_manifest
+  provenance: planned_manifest
+task:
+  primary: phase0_diagnostic
+  probes:
+    - drop
+    - stack_or_slide
+    - sphere_rain
+    - precision_rejection
+compile:
+  method: primitive_first
+  max_primitives: 16
+  allowed_fallback:
+    - coacd
+    - vhacd
+    - sdf
+    - convex_mesh
+    - manual_review
+  verify:
+    - drop
+    - stack_or_slide
+    - sphere_rain
+    - precision_rejection
+  keep_visual: true
+phase0_defaults:
+  assets: 5-10 provenance-clear assets
+  seeds: 3
+  duration_seconds: 2
+  sphere_rain:
+    sphere_count: 32
+    sphere_radius_m: 0.025
+  required_metrics:
+    - primitive_or_hull_count
+    - fallback_ratio
+    - generation_failure_rate
+    - step_time
+    - contact_count_p95
+    - penetration_or_jitter
+report:
+  output_dir: reports/generated/phase0_baseline
+  record_template: docs/records/README.md

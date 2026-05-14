@@ -1,0 +1,26 @@
+asset:
+  path: assets/examples/handle_gap.usda
+  id: handle_gap_mvp
+  provenance: planned_internal_or_permissive_example
+task:
+  primary: grasping
+  probes:
+    - drop
+    - stack_or_slide
+    - sphere_rain
+compile:
+  method: primitive_first
+  max_primitives: 16
+  allowed_fallback:
+    - coacd
+    - vhacd
+    - sdf
+    - manual_review
+  verify:
+    - drop
+    - stack_or_slide
+    - sphere_rain
+  keep_visual: true
+report:
+  evidence_status: proposal_config_only
+  claim_boundary: docs/reference/claim-boundaries.md

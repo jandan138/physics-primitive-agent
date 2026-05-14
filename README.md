@@ -40,9 +40,12 @@ Do not claim that this repository currently:
 ## Repository Layout
 
 - `docs/`: research notes, source records, and bootstrap planning materials.
+- `configs/`: DeepDive and Phase 0 config examples.
 - `scripts/`: repository maintenance and validation commands.
 - `src/primitive_collision_compiler/`: command-surface stubs for the future package.
 - `tests/`: bootstrap tests for currently advertised command surfaces.
+- `assets/`, `experiments/`, `reports/`, `archive/`: artifact boundaries and registries.
+- `AGENTS.md`: rules for future agentic work in this repository.
 - `pyproject.toml`: project metadata, packaging configuration, pytest configuration, and
   Ruff configuration.
 - `requirements.txt`: editable development install entry point.

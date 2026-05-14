@@ -29,6 +29,15 @@ Current next action: submit the DeepDive application package, then use the first
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 
+## Configs And Artifacts
+
+- `configs/deepdive/mvp.yaml`: DeepDive-facing dry-run MVP config.
+- `configs/experiments/phase0_baseline.yaml`: Phase 0 proof-point config scaffold.
+- `experiments/registry.yaml`: experiment registry and claim-support status.
+- `assets/`, `reports/`, and `archive/`: artifact boundaries; large/generated outputs stay out
+  of git.
+- `AGENTS.md`: repo-local rules for future agentic work.
+
 ## Claim Boundary
 
 Safe current claim: proposal for primitive-first, Newton-checker-planned, fallback-aware collision asset compilation.

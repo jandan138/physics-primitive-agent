@@ -55,7 +55,10 @@ SCOPING_MARKERS = (
 )
 
 REQUIRED_PATHS = (
+    "AGENTS.md",
     "README.md",
+    "configs/deepdive/mvp.yaml",
+    "configs/experiments/phase0_baseline.yaml",
     "docs/index.md",
     "docs/deepdive/message-map.md",
     "docs/deepdive/application.md",

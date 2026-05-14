@@ -24,6 +24,7 @@ In progress
 
 - DeepDive package: `docs/deepdive/`
 - Design package: `docs/design/`
+- Config examples: `configs/deepdive/mvp.yaml`, `configs/experiments/phase0_baseline.yaml`
 - Claim boundaries: `docs/reference/claim-boundaries.md`
 - Implementation plan: `docs/superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md`
 
