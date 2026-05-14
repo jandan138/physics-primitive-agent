@@ -56,3 +56,15 @@ def test_missing_config_reports_clean_error(capsys):
     captured = capsys.readouterr()
     assert "missing.yaml" in captured.err
     assert "Traceback" not in captured.err
+
+
+def test_check_newton_emits_environment_report(capsys):
+    config_path = Path(__file__).resolve().parents[1] / "configs" / "experiments" / "cpd_like_baseline.yaml"
+
+    assert cli.main(["--config", str(config_path), "--check-newton"]) == 0
+
+    report = json.loads(capsys.readouterr().out)
+    assert report["stage"] == "newton_import"
+    assert report["source_dir"] == "/cpfs/user/zhuzihou/dev/newton"
+    assert report["status"] in {"dependency_gap", "import_error", "smoke_passed"}
+    assert any(check["name"] == "newton_import" for check in report["checks"])
