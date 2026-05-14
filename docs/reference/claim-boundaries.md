@@ -59,8 +59,9 @@ Use these only after broader benchmark records exist.
 
 ## Wording Rules
 
-- Use "simulation-checked" only for artifacts with a named Newton diagnostic record. For current
-  CPD-like output, use "geometry-only CPD-like primitive proposal smoke" or
+- Use "simulation-checked" only for artifacts with a named task-level Newton diagnostic record.
+  Contact-only canary records do not qualify. For current CPD-like output, use
+  "geometry-only CPD-like primitive proposal smoke", "contact-only Newton canary", or
   "Newton-checker-planned".
 - Use "simulation-verified" only after a specific verification standard is documented.
 - Say "measure whether" instead of "prove whether" for research questions.
