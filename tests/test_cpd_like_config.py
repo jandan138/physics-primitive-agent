@@ -14,9 +14,11 @@ def test_cpd_like_baseline_preserves_newton_and_cpd_sections():
     assert config.method == "cpd_like_baseline"
     assert config.max_primitives == 32
     assert config.allowed_fallback == ("convex_hull",)
-    assert config.verify == ("newton_import",)
+    assert config.verify == ("newton_import", "newton_contact_smoke")
     assert config.keep_visual is False
     assert config.protocol["newton"]["source_dir"] == "$NEWTON_SOURCE_DIR"
+    assert config.protocol["newton_diagnostic"]["probe_type"] == "contact_canary"
+    assert config.protocol["newton_diagnostic"]["device"] == "cpu"
     assert config.protocol["cpd_like"]["asset_manifest"] == "assets/manifests/cpd_like_smoke_assets.yaml"
     assert config.protocol["cpd_like"]["asset_role"] == "bed_dev_smoke"
     assert config.protocol["cpd_like"]["primitive_subset"] == ["sphere", "capsule", "box"]
@@ -29,7 +31,7 @@ def test_cpd_like_baseline_preserves_newton_and_cpd_sections():
     ]
     assert config.protocol["cpd_like"]["claim_boundary"] == "internal_baseline_not_reproduction_claim"
     assert config.protocol["report"]["output_dir"] == "reports/generated/cpd_like_baseline"
-    assert config.protocol["report"]["evidence_level"] == "geometry_only_cpd_like_smoke"
+    assert config.protocol["report"]["evidence_level"] == "newton_contact_canary_smoke"
 
 
 def test_smoke_asset_manifest_records_paths_without_committing_assets():

@@ -289,6 +289,63 @@ def test_cli_run_cpd_like_emits_report_for_tiny_usd(tmp_path, capsys):
     assert payload["primitive_count"] == 1
 
 
+def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    asset_path = tmp_path / "quad.usda"
+    stage = Usd.Stage.CreateNew(str(asset_path))
+    mesh = UsdGeom.Mesh.Define(stage, "/Quad")
+    mesh.CreatePointsAttr([(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)])
+    mesh.CreateFaceVertexCountsAttr([4])
+    mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3])
+    stage.GetRootLayer().Save()
+    source_dir = tmp_path / "newton-source"
+    source_dir.mkdir()
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: tiny_quad",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "  allowed_fallback:",
+                "    - convex_hull",
+                "  verify:",
+                "    - newton_contact_smoke",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "    - sphere",
+                "    - capsule",
+                "  max_source_faces: 8",
+                "newton:",
+                f"  source_dir: {source_dir}",
+                "newton_diagnostic:",
+                "  probe_type: contact_canary",
+                "  device: cpu",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = cli.main(["--config", str(config_path), "--run-newton-contact-smoke"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code in {0, 2}
+    assert payload["stage"] == "newton_contact_smoke"
+    assert payload["asset_id"] == "tiny_quad"
+    assert payload["package_id"] == "tiny_quad:cpd_like_face_merge"
+    assert payload["probe_type"] == "contact_canary"
+    assert payload["status"] in {"smoke_passed", "dependency_gap", "mapping_gap", "runtime_failure"}
+    assert payload["primitive_count"] == 1
+    assert payload["claim_boundary"] == "contact_canary_only_not_collision_quality"
+
+
 def test_cli_run_cpd_like_resolves_manifest_asset_role(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

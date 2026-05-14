@@ -6,9 +6,11 @@ from pathlib import Path
 
 from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
 from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
+from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
 from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError, load_first_mesh
 from primitive_collision_compiler.config import load_compile_config
 from primitive_collision_compiler.contracts import CompileReport
+from primitive_collision_compiler.newton.diagnostics import run_newton_contact_smoke
 from primitive_collision_compiler.newton.env import inspect_newton_environment
 
 
@@ -25,6 +27,11 @@ def build_parser():
         "--run-cpd-like",
         action="store_true",
         help="run the geometry-only CPD-like face-merge smoke path",
+    )
+    parser.add_argument(
+        "--run-newton-contact-smoke",
+        action="store_true",
+        help="run CPD-like geometry plus the Newton contact-only canary smoke",
     )
     return parser
 
@@ -150,6 +157,66 @@ def main(argv=None):
         print("npc-compile: --run-cpd-like requires --config.", file=sys.stderr)
         return 2
 
+    if args.run_newton_contact_smoke and args.config:
+        try:
+            config = load_compile_config(args.config)
+            cpd_like_report, source_path, max_source_faces = _run_cpd_like_report(config)
+            cpd_like_section = config.protocol.get("cpd_like", {})
+            if not isinstance(cpd_like_section, dict):
+                cpd_like_section = {}
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError("--run-newton-contact-smoke requires config key newton.source_dir")
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            package = package_from_cpd_like_report(
+                cpd_like_report,
+                asset_id=config.asset_id or Path(config.asset_path).stem,
+                source_path=source_path,
+                claim_boundary=cpd_like_section.get(
+                    "claim_boundary",
+                    "internal_baseline_not_reproduction_claim",
+                ),
+                max_source_faces=max_source_faces,
+            )
+            report = run_newton_contact_smoke(
+                package,
+                source_dir=source_dir,
+                device=str(diagnostic_section.get("device", "cpu")),
+                claim_boundary=str(
+                    diagnostic_section.get(
+                        "claim_boundary",
+                        "contact_canary_only_not_collision_quality",
+                    )
+                ),
+            )
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "newton_contact_smoke",
+                        "status": "dependency_gap"
+                        if "dependency_gap" in str(exc)
+                        else "smoke_failed",
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+
+        print(json.dumps(report.to_dict(), sort_keys=True))
+        return 0 if report.status == "smoke_passed" else 2
+
+    if args.run_newton_contact_smoke:
+        print("npc-compile: --run-newton-contact-smoke requires --config.", file=sys.stderr)
+        return 2
+
     if args.dry_run and args.config:
         try:
             config = load_compile_config(args.config)
@@ -183,6 +250,22 @@ def _asset_manifest_path(config):
         if asset_manifest:
             return str(asset_manifest)
     return config.asset_path
+
+
+def _run_cpd_like_report(config):
+    cpd_like_section = config.protocol.get("cpd_like", {})
+    if not isinstance(cpd_like_section, dict):
+        cpd_like_section = {}
+    primitive_subset = _cpd_like_primitive_subset(cpd_like_section)
+    max_source_faces = _positive_int(cpd_like_section.get("max_source_faces"), default=256)
+    source_path = _cpd_like_source_path(config, cpd_like_section)
+    mesh = load_first_mesh(source_path, max_faces=max_source_faces)
+    report = decompose_mesh(
+        mesh,
+        max_primitives=config.max_primitives,
+        primitive_subset=primitive_subset,
+    )
+    return report, source_path, max_source_faces
 
 
 def _cpd_like_primitive_subset(cpd_like_section):

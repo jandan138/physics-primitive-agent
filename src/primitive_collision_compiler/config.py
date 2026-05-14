@@ -88,6 +88,6 @@ def _string_tuple(value: Any, message: str) -> tuple[str, ...]:
 def _protocol_sections(data: dict[str, Any]) -> dict[str, Any]:
     return {
         key: data[key]
-        for key in ("phase0_defaults", "report", "cpd_like", "newton")
+        for key in ("phase0_defaults", "report", "cpd_like", "newton", "newton_diagnostic")
         if key in data and data[key] is not None
     }
