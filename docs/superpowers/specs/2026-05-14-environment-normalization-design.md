@@ -129,7 +129,8 @@ The checker should inspect:
 - whether `pxr` and `warp` resolve under the canonical environment rather than an ambient
   interpreter prefix;
 - GPU and CUDA visibility from `nvidia-smi` when available;
-- compiler visibility and a small C/C++ compile smoke when a setup script is configured;
+- setup-script fingerprinting only in Phase 1; sourcing setup scripts and C/C++ compile smoke are
+  deferred until an explicit allowlist or opt-in execution mode exists;
 - `NPC_OUTPUT_DIR` real path, writability, free space, inode availability, and ability to write and
   fsync a tiny file;
 - existing repository diagnostics: `npc-compile --check-newton` and, when requested,

@@ -342,7 +342,8 @@ Extend `readiness.py` with:
 - `inspect_output_dir(output_dir)`: creates the directory, writes `.readiness-write-test`, fsyncs it, removes it, records disk free bytes and inode count when available.
 - `inspect_setup_script(path_or_none)`: records path, realpath, SHA-256, size, and mtime, never contents.
 - `inspect_gpu_visibility()`: calls `nvidia-smi --query-gpu=name,driver_version --format=csv,noheader`; missing `nvidia-smi` is a `dependency_gap`, not a crash.
-- `run_repository_diagnostic(env, name, args)`: runs existing repository diagnostics with `PYTHONPATH=$NPC_CODE_ROOT/src:$NPC_CODE_ROOT:$PYTHONPATH` and captures JSON status when available.
+- `run_repository_diagnostic(env, name, args)`: runs existing repository diagnostics with a deliberate
+  `PYTHONPATH=$NPC_CODE_ROOT/src:$NPC_CODE_ROOT` and captures JSON status when available.
 - `run_readiness_check(env, include_assets=False)`: aggregates all checks and applies `pick_report_status()`.
 
 - [ ] **Step 4: Run the tests and verify GREEN**
