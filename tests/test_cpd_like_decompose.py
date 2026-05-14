@@ -42,6 +42,26 @@ def test_fit_best_primitive_serializes_box_dimensions():
     assert len(payload["dimensions"]["half_extents"]) == 3
 
 
+def test_capsule_fitting_uses_translated_group_center():
+    mesh = TriangleMesh(
+        points=np.array(
+            [
+                [0.0, 10.0, 0.0],
+                [4.0, 10.0, 0.0],
+                [4.0, 10.1, 0.0],
+                [0.0, 10.1, 0.0],
+            ]
+        ),
+        faces=np.array([[0, 1, 2], [0, 2, 3]]),
+    )
+
+    fit = fit_best_primitive(mesh, frozenset({0, 1}), ("capsule",))
+
+    assert fit.primitive_type == "capsule"
+    assert fit.contains_assigned_points is True
+    assert fit.dimensions["radius"] < 0.11
+
+
 def test_decompose_mesh_merges_adjacent_square_to_requested_count():
     report = decompose_mesh(
         _square_mesh(),

@@ -173,7 +173,9 @@ def _fit_capsule(
     projection_min = float(projections.min())
     projection_max = float(projections.max())
     segment_center_projection = (projection_min + projection_max) * 0.5
-    center = axis * segment_center_projection
+    centroid = points.mean(axis=0)
+    perpendicular_center = centroid - axis * float(centroid @ axis)
+    center = perpendicular_center + axis * segment_center_projection
     axial_offsets = np.outer(projections - segment_center_projection, axis)
     radial_vectors = points - center - axial_offsets
     radial_distances = np.linalg.norm(radial_vectors, axis=1)

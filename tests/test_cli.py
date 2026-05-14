@@ -298,3 +298,54 @@ def test_cli_run_cpd_like_reports_clean_error_for_bad_subset(tmp_path, capsys):
     captured = capsys.readouterr()
     assert "cpd_like.primitive_subset must be a list of strings" in captured.err
     assert "Traceback" not in captured.err
+
+
+def test_cli_run_cpd_like_reports_clean_error_for_bad_face_cap(tmp_path, capsys):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: bad_face_cap",
+                "  path: missing.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "cpd_like:",
+                "  max_source_faces:",
+                "    - 4",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like"]) == 2
+
+    captured = capsys.readouterr()
+    assert "cpd_like.max_source_faces must be an integer" in captured.err
+    assert "Traceback" not in captured.err
+
+
+def test_cli_run_cpd_like_returns_json_for_invalid_usd(tmp_path, capsys):
+    asset_path = tmp_path / "invalid.usda"
+    asset_path.write_text("not a usd file", encoding="utf-8")
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: invalid_usd",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_face_merge"
+    assert payload["status"] == "smoke_failed"
+    assert payload["asset_id"] == "invalid_usd"
+    assert "usd_open_failed" in payload["fallback_reason"]

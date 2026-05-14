@@ -195,7 +195,10 @@ def _cpd_like_primitive_subset(cpd_like_section):
 def _positive_int(value, default):
     if value in (None, ""):
         return default
-    result = int(value)
+    try:
+        result = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError("cpd_like.max_source_faces must be an integer") from exc
     if result < 1:
         raise ValueError("cpd_like.max_source_faces must be at least 1")
     return result

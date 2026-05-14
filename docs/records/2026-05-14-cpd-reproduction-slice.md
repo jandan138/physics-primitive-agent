@@ -22,8 +22,8 @@ adjacent face-group merges, and excess-volume scoring, but it is not a full pape
 - Unsupported paper primitives recorded as `capped_cylinder`, `frustum`, and
   `trapezoidal_prism`.
 - Deterministic greedy merge of adjacent face groups by weighted excess volume.
-- Lazy USD mesh extraction from the first `UsdGeom.Mesh`, with polygon fan triangulation and a
-  `max_source_faces` cap.
+- Lazy USD mesh extraction from the first `UsdGeom.Mesh`, with inherited local-to-world transform
+  application, polygon fan triangulation, and a `max_source_faces` cap.
 - CLI surface:
 
 ```bash
@@ -51,14 +51,14 @@ Result:
 - primitive subset: `sphere`, `capsule`, `box`
 - unsupported primitives recorded: `capped_cylinder`, `frustum`, `trapezoidal_prism`
 - fallback reason: none
-- total weighted volume: `1029168.6040661116`
+- total weighted volume: `580.1540625716117`
 
 The command emitted a JSON report to stdout. No generated USD, raw asset, large log, video, or run
 directory was committed.
 
 ## Verification
 
-- `python -m pytest -q`: 66 passed.
+- `python -m pytest -q`: 71 passed.
 - `python scripts/validate_docs.py`: passed.
 - `git diff --check`: passed.
 - Clean-env real asset smoke command above: exit 0, status `smoke_passed`.

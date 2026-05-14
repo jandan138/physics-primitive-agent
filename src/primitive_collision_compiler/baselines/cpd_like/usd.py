@@ -17,7 +17,7 @@ def load_first_mesh(path: str | Path, max_faces: int | None = None) -> TriangleM
         raise USDMeshLoadError("max_faces must be at least 1")
 
     try:
-        from pxr import Usd, UsdGeom
+        from pxr import Gf, Usd, UsdGeom
     except ModuleNotFoundError as exc:
         raise USDMeshLoadError(f"pxr_usd_dependency_gap: {exc}") from exc
 
@@ -25,7 +25,10 @@ def load_first_mesh(path: str | Path, max_faces: int | None = None) -> TriangleM
     if not asset_path.exists():
         raise USDMeshLoadError(f"asset_missing: {asset_path}")
 
-    stage = Usd.Stage.Open(str(asset_path))
+    try:
+        stage = Usd.Stage.Open(str(asset_path))
+    except Exception as exc:
+        raise USDMeshLoadError(f"usd_open_failed: {type(exc).__name__}: {exc}") from exc
     if stage is None:
         raise USDMeshLoadError(f"usd_open_failed: {asset_path}")
 
@@ -33,12 +36,23 @@ def load_first_mesh(path: str | Path, max_faces: int | None = None) -> TriangleM
         if not prim.IsA(UsdGeom.Mesh):
             continue
         mesh = UsdGeom.Mesh(prim)
-        return _mesh_to_triangle_mesh(mesh, max_faces=max_faces)
+        transform = UsdGeom.XformCache().GetLocalToWorldTransform(prim)
+        try:
+            return _mesh_to_triangle_mesh(mesh, max_faces=max_faces, transform=transform, gf=Gf)
+        except USDMeshLoadError:
+            raise
+        except Exception as exc:
+            raise USDMeshLoadError(f"usd_mesh_topology_error: {type(exc).__name__}: {exc}") from exc
 
     raise USDMeshLoadError("no_usd_mesh_found")
 
 
-def _mesh_to_triangle_mesh(mesh: Any, max_faces: int | None) -> TriangleMesh:
+def _mesh_to_triangle_mesh(
+    mesh: Any,
+    max_faces: int | None,
+    transform: Any,
+    gf: Any,
+) -> TriangleMesh:
     points_attr = mesh.GetPointsAttr().Get()
     counts_attr = mesh.GetFaceVertexCountsAttr().Get()
     indices_attr = mesh.GetFaceVertexIndicesAttr().Get()
@@ -46,11 +60,15 @@ def _mesh_to_triangle_mesh(mesh: Any, max_faces: int | None) -> TriangleMesh:
         raise USDMeshLoadError("usd_mesh_missing_required_topology")
 
     points = np.asarray([[float(coord) for coord in point] for point in points_attr], dtype=np.float64)
+    points = _apply_transform(points, transform, gf)
     counts = [int(count) for count in counts_attr]
     indices = [int(index) for index in indices_attr]
     triangles: list[tuple[int, int, int]] = []
     cursor = 0
+    capped = False
     for count in counts:
+        if cursor + count > len(indices):
+            raise USDMeshLoadError("usd_mesh_topology_error: face indices shorter than counts")
         face_indices = indices[cursor : cursor + count]
         cursor += count
         if count < 3:
@@ -59,10 +77,26 @@ def _mesh_to_triangle_mesh(mesh: Any, max_faces: int | None) -> TriangleMesh:
         for offset in range(1, count - 1):
             triangles.append((anchor, face_indices[offset], face_indices[offset + 1]))
             if max_faces is not None and len(triangles) >= max_faces:
+                capped = True
                 break
         if max_faces is not None and len(triangles) >= max_faces:
+            capped = True
             break
 
+    if not capped and cursor != len(indices):
+        raise USDMeshLoadError("usd_mesh_topology_error: unused face indices")
     if not triangles:
         raise USDMeshLoadError("usd_mesh_has_no_triangulatable_faces")
     return TriangleMesh(points=points, faces=np.asarray(triangles, dtype=np.int64))
+
+
+def _apply_transform(
+    points: np.ndarray,
+    transform: Any,
+    gf: Any,
+) -> np.ndarray:
+    transformed = [
+        transform.Transform(gf.Vec3d(float(point[0]), float(point[1]), float(point[2])))
+        for point in points
+    ]
+    return np.asarray([[float(coord) for coord in point] for point in transformed], dtype=np.float64)

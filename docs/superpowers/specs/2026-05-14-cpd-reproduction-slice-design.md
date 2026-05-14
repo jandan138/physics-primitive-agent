@@ -64,6 +64,7 @@ Supported inputs:
 The USD extractor must:
 
 - import `pxr` lazily so non-USD environments can still import the package;
+- apply inherited USD local-to-world transforms before fitting primitives;
 - triangulate polygon faces by fan triangulation;
 - limit extracted faces with a config-controlled cap for smoke runs;
 - report clean dependency gaps or mesh absence instead of tracebacks.

@@ -17,7 +17,7 @@
 - Create `src/primitive_collision_compiler/baselines/cpd_like/__init__.py`: exported CPD-like baseline API.
 - Create `src/primitive_collision_compiler/baselines/cpd_like/primitives.py`: restricted enclosing primitive fitting for `box`, `sphere`, and `capsule`.
 - Create `src/primitive_collision_compiler/baselines/cpd_like/decompose.py`: greedy adjacent-face merge loop and report dataclasses.
-- Create `src/primitive_collision_compiler/baselines/cpd_like/usd.py`: lazy USD mesh extraction and face cap handling.
+- Create `src/primitive_collision_compiler/baselines/cpd_like/usd.py`: lazy USD mesh extraction, inherited transform application, and face cap handling.
 - Modify `src/primitive_collision_compiler/cli.py`: add `--run-cpd-like`.
 - Modify `configs/experiments/cpd_like_baseline.yaml`: move `decomposition_stage` to `cpd_like_face_merge_smoke`, add `max_source_faces`, and record unsupported primitives.
 - Modify `pyproject.toml`: add NumPy as a runtime dependency.
@@ -281,8 +281,9 @@ Expected: fail because USD extraction and `--run-cpd-like` are not implemented.
 
 - [ ] **Step 3: Implement USD extraction and CLI**
 
-Implement lazy USD imports, first-mesh traversal, fan triangulation, face cap, JSON report emission,
-and clean exit code `2` for dependency gaps or invalid mesh.
+Implement lazy USD imports, first-mesh traversal, inherited local-to-world transform application,
+fan triangulation, face cap, JSON report emission, and clean exit code `2` for dependency gaps or
+invalid mesh.
 
 - [ ] **Step 4: Run green tests**
 
