@@ -71,8 +71,8 @@ The script always prints JSON to stdout. It returns `0` only when the selected r
 status `smoke_passed`; dependency gaps return nonzero while still producing a report.
 
 Generated readiness reports belong under `reports/generated/` or another explicit
-`NPC_OUTPUT_DIR`. Do not commit generated report directories, full logs, environment directories, raw
-USD assets, or credentials.
+`NPC_OUTPUT_DIR`. Do not commit generated report directories, experiment run directories, full logs,
+environment directories, raw or generated 3D assets, videos, or credentials.
 
 ## Status Meaning
 
