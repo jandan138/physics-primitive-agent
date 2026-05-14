@@ -34,32 +34,35 @@ def inspect_newton_environment(source_dir: str | Path) -> EnvironmentReport:
 
 def _inspect_import(source_path: Path, checks: list[EnvironmentCheck]) -> str:
     source_str = str(source_path)
-    inserted = source_str not in sys.path
-    had_newton = "newton" in sys.modules
-    if inserted:
-        sys.path.insert(0, source_str)
+    source_resolved = source_path.resolve()
+    original_modules = _snapshot_newton_modules()
+    _clear_newton_modules()
+    sys.path.insert(0, source_str)
 
     try:
-        importlib.import_module("newton")
+        module = importlib.import_module("newton")
     except ModuleNotFoundError as exc:
         checks.append(EnvironmentCheck("newton_import", "dependency_gap", str(exc)))
-        if not had_newton:
-            sys.modules.pop("newton", None)
         return "dependency_gap"
     except Exception as exc:
         checks.append(EnvironmentCheck("newton_import", "import_error", f"{type(exc).__name__}: {exc}"))
-        if not had_newton:
-            sys.modules.pop("newton", None)
         return "import_error"
-    finally:
-        if inserted:
-            try:
-                sys.path.remove(source_str)
-            except ValueError:
-                pass
+    else:
+        module_file = getattr(module, "__file__", None)
+        if not module_file or not _is_relative_to(Path(module_file), source_resolved):
+            detail = f"newton resolved outside source_dir: {module_file}"
+            checks.append(EnvironmentCheck("newton_import", "import_error", detail))
+            return "import_error"
 
-    checks.append(EnvironmentCheck("newton_import", "smoke_passed", "import newton succeeded"))
-    return "smoke_passed"
+        checks.append(EnvironmentCheck("newton_import", "smoke_passed", "import newton succeeded"))
+        return "smoke_passed"
+    finally:
+        try:
+            sys.path.remove(source_str)
+        except ValueError:
+            pass
+        _clear_newton_modules()
+        sys.modules.update(original_modules)
 
 
 def _git_commit(source_path: Path) -> str | None:
@@ -73,3 +76,25 @@ def _git_commit(source_path: Path) -> str | None:
     except (OSError, subprocess.CalledProcessError):
         return None
     return result.stdout.strip() or None
+
+
+def _snapshot_newton_modules() -> dict[str, object]:
+    return {
+        name: module
+        for name, module in sys.modules.items()
+        if name == "newton" or name.startswith("newton.")
+    }
+
+
+def _clear_newton_modules():
+    for name in list(sys.modules):
+        if name == "newton" or name.startswith("newton."):
+            sys.modules.pop(name, None)
+
+
+def _is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.resolve().relative_to(parent)
+    except ValueError:
+        return False
+    return True

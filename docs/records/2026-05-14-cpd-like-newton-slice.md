@@ -1,16 +1,48 @@
 # 2026-05-14 CPD-Like Newton Slice
 
+## Date
+
+2026-05-14
+
+## Status
+
+Complete
+
 ## Decision
 
 Add a minimal CPD-like baseline execution slice before implementing decomposition logic.
 
-## What This Enables
+## Changes
 
 - Load a CPD-like baseline config through the existing compiler config path.
 - Track smoke asset paths, sizes, and hashes without committing raw USD assets.
 - Inspect the locally installed Newton source checkout and emit a JSON environment report.
+- Keep generated report output under the ignored `reports/generated/cpd_like_baseline/` path.
 
-## Current Evidence Boundary
+## Verification
+
+- `python -m pytest -q`: exit 0.
+- `python scripts/validate_docs.py`: exit 0.
+- `git diff --check`: exit 0.
+- `PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton`: exit 0, status `dependency_gap`.
+
+The active Python environment currently has an editable install pointing at
+`/cpfs/user/zhuzihou/dev/physics-primitive-agent`, not this feature worktree. Until the worktree is
+installed, run manual CLI checks with explicit source precedence:
+
+```bash
+PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton
+```
+
+## Artifacts
+
+- Config: `configs/experiments/cpd_like_baseline.yaml`
+- Manifest: `assets/manifests/cpd_like_smoke_assets.yaml`
+- Newton diagnostic CLI: `npc-compile --config <config> --check-newton`
+- Generated report target: `reports/generated/cpd_like_baseline/` (ignored)
+- Raw USD assets: not committed; referenced only by manifest path and hash.
+
+## Claim Impact
 
 - This is environment and config evidence only.
 - It does not show CPD reproduction.
@@ -29,17 +61,7 @@ Newton source is expected at `/cpfs/user/zhuzihou/dev/newton`.
 The `dependency_gap` status is an acceptable current result because this slice only records source
 availability and Python import readiness. It is not a CPD reproduction result.
 
-## Local Verification Note
-
-The active Python environment currently has an editable install pointing at
-`/cpfs/user/zhuzihou/dev/physics-primitive-agent`, not this feature worktree. Until the worktree is
-installed, run manual CLI checks with explicit source precedence:
-
-```bash
-PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton
-```
-
-## Next Work
+## Next Action
 
 - Install Newton Python dependencies in a reproducible environment.
 - Add USD import smoke checks for the bed and Franka assets.

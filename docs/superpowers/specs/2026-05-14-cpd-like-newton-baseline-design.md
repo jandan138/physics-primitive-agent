@@ -137,14 +137,14 @@ docs/records/
   YYYY-MM-DD-cpd-like-run-001.md
 
 reports/
-  cpd_like_baseline/
-    README.md
+  README.md
   generated/
     cpd_like_baseline/
 ```
 
-Committed summaries live under `reports/cpd_like_baseline/`. Large generated tables, logs, and run
-artifacts live under `reports/generated/cpd_like_baseline/` and are not committed.
+Committed summaries stay as concise Markdown under `reports/` and link to dated records. Large
+generated tables, logs, and run artifacts live under `reports/generated/cpd_like_baseline/` and are
+not committed.
 
 ## Data Contracts
 

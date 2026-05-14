@@ -6,6 +6,22 @@ from primitive_collision_compiler import cli
 FIXTURE_CONFIG = Path(__file__).parent / "fixtures" / "dry_run_mvp.yaml"
 
 
+def _write_newton_check_config(path: Path, source_dir: Path):
+    path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "newton:",
+                f"  source_dir: {source_dir}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
 def test_help_mentions_project(capsys):
     assert cli.main(["--help"]) == 0
 
@@ -58,13 +74,28 @@ def test_missing_config_reports_clean_error(capsys):
     assert "Traceback" not in captured.err
 
 
-def test_check_newton_emits_environment_report(capsys):
-    config_path = Path(__file__).resolve().parents[1] / "configs" / "experiments" / "cpd_like_baseline.yaml"
+def test_check_newton_emits_environment_report(tmp_path, capsys):
+    source_dir = tmp_path / "newton-source"
+    source_dir.mkdir()
+    config_path = tmp_path / "newton_check.yaml"
+    _write_newton_check_config(config_path, source_dir)
 
     assert cli.main(["--config", str(config_path), "--check-newton"]) == 0
 
     report = json.loads(capsys.readouterr().out)
     assert report["stage"] == "newton_import"
-    assert report["source_dir"] == "/cpfs/user/zhuzihou/dev/newton"
-    assert report["status"] in {"dependency_gap", "import_error", "smoke_passed"}
+    assert report["source_dir"] == str(source_dir)
+    assert report["status"] == "dependency_gap"
     assert any(check["name"] == "newton_import" for check in report["checks"])
+
+
+def test_check_newton_returns_error_for_missing_source(tmp_path, capsys):
+    config_path = tmp_path / "newton_check.yaml"
+    missing_source = tmp_path / "missing-newton"
+    _write_newton_check_config(config_path, missing_source)
+
+    assert cli.main(["--config", str(config_path), "--check-newton"]) == 2
+
+    report = json.loads(capsys.readouterr().out)
+    assert report["status"] == "missing_source"
+    assert report["source_dir"] == str(missing_source)

@@ -48,7 +48,7 @@ def main(argv=None):
 
         report = inspect_newton_environment(source_dir)
         print(json.dumps(report.to_dict(), sort_keys=True))
-        return 0
+        return 2 if report.status == "missing_source" else 0
 
     if args.check_newton:
         print("npc-compile: --check-newton requires --config.", file=sys.stderr)

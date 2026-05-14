@@ -1,6 +1,6 @@
 # CPD-Like Newton Slice Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build the first executable Newton-facing proof slice for the CPD-like baseline: reproducible config intake, smoke asset manifests, environment diagnostics, and JSON report scaffolding.
 
@@ -29,7 +29,7 @@
 - Modify: `src/primitive_collision_compiler/config.py`
 - Test: `tests/test_cpd_like_config.py`
 
-- [ ] **Step 1: Write the failing config test**
+- [x] **Step 1: Write the failing config test**
 
 ```python
 from pathlib import Path
@@ -65,13 +65,13 @@ def test_smoke_asset_manifest_records_paths_without_committing_assets():
     assert roles["franka_import_smoke"]["include_in_cpd_like_aggregate"] is False
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest tests/test_cpd_like_config.py -q`
 
 Expected: FAIL because `configs/experiments/cpd_like_baseline.yaml` does not exist.
 
-- [ ] **Step 3: Write minimal config, manifest, and config loader change**
+- [x] **Step 3: Write minimal config, manifest, and config loader change**
 
 Create `configs/experiments/cpd_like_baseline.yaml`:
 
@@ -102,7 +102,7 @@ newton:
   expected_remote: https://github.com/newton-physics/newton.git
   runtime_stage: source_import_check
 report:
-  output_dir: reports/cpd_like_baseline
+  output_dir: reports/generated/cpd_like_baseline
   evidence_level: environment_and_config_only
 ```
 
@@ -136,13 +136,13 @@ def _protocol_sections(data: dict[str, Any]) -> dict[str, Any]:
     }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `python -m pytest tests/test_cpd_like_config.py -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -158,7 +158,7 @@ git commit -m "feat: add cpd-like baseline config"
 - Create: `src/primitive_collision_compiler/reports/schema.py`
 - Test: `tests/test_reports_schema.py`
 
-- [ ] **Step 1: Write the failing report schema test**
+- [x] **Step 1: Write the failing report schema test**
 
 ```python
 from primitive_collision_compiler.reports.schema import EnvironmentCheck, EnvironmentReport
@@ -189,13 +189,13 @@ def test_environment_report_serializes_dependency_gap():
     assert payload["checks"][0]["detail"] == "No module named 'warp'"
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest tests/test_reports_schema.py -q`
 
 Expected: FAIL because `primitive_collision_compiler.reports` does not exist.
 
-- [ ] **Step 3: Write minimal report schema**
+- [x] **Step 3: Write minimal report schema**
 
 Create `src/primitive_collision_compiler/reports/__init__.py`:
 
@@ -241,13 +241,13 @@ class EnvironmentReport:
         }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `python -m pytest tests/test_reports_schema.py -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -263,7 +263,7 @@ git commit -m "feat: add environment report schema"
 - Create: `src/primitive_collision_compiler/newton/env.py`
 - Test: `tests/test_newton_env.py`
 
-- [ ] **Step 1: Write the failing Newton diagnostic tests**
+- [x] **Step 1: Write the failing Newton diagnostic tests**
 
 ```python
 from pathlib import Path
@@ -293,13 +293,13 @@ def test_inspect_newton_environment_records_git_commit_for_source_dir():
     assert any(check.name == "newton_import" for check in report.checks)
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest tests/test_newton_env.py -q`
 
 Expected: FAIL because `primitive_collision_compiler.newton` does not exist.
 
-- [ ] **Step 3: Write minimal Newton diagnostic**
+- [x] **Step 3: Write minimal Newton diagnostic**
 
 Create `src/primitive_collision_compiler/newton/__init__.py`:
 
@@ -376,13 +376,13 @@ def _git_commit(source_path: Path) -> str | None:
     return result.stdout.strip() or None
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `python -m pytest tests/test_newton_env.py -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -397,7 +397,7 @@ git commit -m "feat: add newton environment diagnostic"
 - Modify: `src/primitive_collision_compiler/cli.py`
 - Test: `tests/test_cli.py`
 
-- [ ] **Step 1: Write the failing CLI test**
+- [x] **Step 1: Write the failing CLI test**
 
 Append to `tests/test_cli.py`:
 
@@ -414,13 +414,13 @@ def test_check_newton_emits_environment_report(capsys):
     assert any(check["name"] == "newton_import" for check in report["checks"])
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest tests/test_cli.py::test_check_newton_emits_environment_report -q`
 
 Expected: FAIL because `--check-newton` is not recognized.
 
-- [ ] **Step 3: Add CLI support**
+- [x] **Step 3: Add CLI support**
 
 Modify `src/primitive_collision_compiler/cli.py`:
 
@@ -457,13 +457,13 @@ Add command handling before dry-run handling:
         return 2
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `python -m pytest tests/test_cli.py::test_check_newton_emits_environment_report -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -477,7 +477,7 @@ git commit -m "feat: expose newton environment check"
 **Files:**
 - Create: `docs/records/2026-05-14-cpd-like-newton-slice.md`
 
-- [ ] **Step 1: Add durable record**
+- [x] **Step 1: Add durable record**
 
 Create `docs/records/2026-05-14-cpd-like-newton-slice.md`:
 
@@ -513,7 +513,7 @@ acceptable current result when Python dependencies such as Warp are not installe
 - Implement a restricted primitive proposal/evaluation loop only after import smoke checks pass.
 ```
 
-- [ ] **Step 2: Run full verification**
+- [x] **Step 2: Run full verification**
 
 Run:
 
@@ -526,7 +526,7 @@ PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/exper
 
 Expected: tests pass; docs validate; whitespace check passes; CLI returns JSON with `stage` equal to `newton_import`.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 Run:
 
