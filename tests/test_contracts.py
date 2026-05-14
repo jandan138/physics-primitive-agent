@@ -14,4 +14,3 @@ def test_compile_report_marks_dry_run_not_compiled():
 
     assert report["status"] == "dry_run"
     assert report["compiled"] is False
-
