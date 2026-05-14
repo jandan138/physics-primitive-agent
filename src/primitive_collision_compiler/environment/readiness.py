@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Mapping
@@ -36,17 +37,7 @@ def pick_report_status(statuses: list[str] | tuple[str, ...]) -> str:
 def build_configuration_report(env: Mapping[str, str], *, scope: str = "local") -> dict[str, object]:
     checks = []
     for name in REQUIRED_ENV_VARS:
-        value = env.get(name, "")
-        if value:
-            checks.append({"name": name, "status": "found", "detail": value})
-        else:
-            checks.append(
-                {
-                    "name": name,
-                    "status": "configuration_error",
-                    "detail": "required variable is not set",
-                }
-            )
+        checks.append(_configuration_check(name, env.get(name, "")))
 
     return {
         "stage": "environment_readiness",
@@ -93,11 +84,7 @@ def run_readiness_check(
     setup_script = inspect_setup_script(env.get("NPC_WORKER_SETUP_SCRIPT"))
     gpu = inspect_gpu_visibility()
     repository_diagnostics = {
-        "check_newton": run_repository_diagnostic(
-            env,
-            "check_newton",
-            ["--config", "configs/experiments/cpd_like_baseline.yaml", "--check-newton"],
-        )
+        "check_newton": run_newton_repository_diagnostic(env)
     }
     if include_assets:
         repository_diagnostics["check_assets"] = run_repository_diagnostic(
@@ -168,7 +155,8 @@ def inspect_newton_source(source_dir: str) -> dict[str, object]:
     commit = _git_output(source_path, ["rev-parse", "HEAD"])
     dirty_output = _git_output(source_path, ["status", "--porcelain"])
     submodules = _git_output(source_path, ["submodule", "status", "--recursive"])
-    status = "smoke_passed" if commit else "dependency_gap"
+    submodule_lines = submodules.splitlines() if submodules else []
+    status = _newton_source_status(commit, dirty_output, submodule_lines)
 
     return {
         "status": status,
@@ -179,7 +167,7 @@ def inspect_newton_source(source_dir: str) -> dict[str, object]:
         "branch": branch,
         "commit": commit,
         "dirty": bool(dirty_output) if dirty_output is not None else None,
-        "submodules": submodules.splitlines() if submodules else [],
+        "submodules": submodule_lines,
     }
 
 
@@ -349,6 +337,30 @@ def run_repository_diagnostic(
     }
 
 
+def run_newton_repository_diagnostic(env: Mapping[str, str]) -> dict[str, object]:
+    output_dir = env.get("NPC_OUTPUT_DIR") or tempfile.gettempdir()
+    temp_parent = Path(output_dir)
+    try:
+        temp_parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="newton-check-", dir=temp_parent) as temp_dir:
+            config_path = Path(temp_dir) / "newton_check.yaml"
+            config_path.write_text(
+                _newton_check_config_text(str(env["NEWTON_SOURCE_DIR"])),
+                encoding="utf-8",
+            )
+            return run_repository_diagnostic(
+                env,
+                "check_newton",
+                ["--config", str(config_path), "--check-newton"],
+            )
+    except (KeyError, OSError) as exc:
+        return {
+            "status": "configuration_error",
+            "name": "check_newton",
+            "detail": f"{type(exc).__name__}: {exc}",
+        }
+
+
 def inspect_python_environment(
     python_executable: str,
     *,
@@ -421,9 +433,11 @@ def inspect_python_environment(
 
     modules = payload.get("modules", {})
     _annotate_python_expectations(payload, env_root=env_root, newton_source_dir=newton_source_dir)
-    payload["status"] = pick_report_status(
-        [module.get("status", "runtime_failure") for module in modules.values()]
-    )
+    statuses = [module.get("status", "runtime_failure") for module in modules.values()]
+    alignment = payload.get("environment_alignment")
+    if isinstance(alignment, dict):
+        statuses.append(str(alignment["status"]))
+    payload["status"] = pick_report_status(statuses)
     return payload
 
 
@@ -433,6 +447,64 @@ def _normalize_readiness_status(status: str) -> str:
     if status in _STATUS_ORDER:
         return status
     return "runtime_failure"
+
+
+def _configuration_check(name: str, value: str) -> dict[str, str]:
+    if not value:
+        return {
+            "name": name,
+            "status": "configuration_error",
+            "detail": "required variable is not set",
+        }
+
+    path = Path(value)
+    if name in {"NPC_ENV_ROOT", "NPC_CODE_ROOT"} and not path.is_dir():
+        return {
+            "name": name,
+            "status": "configuration_error",
+            "detail": "path is not an existing directory",
+        }
+    if name == "NPC_PYTHON":
+        if not path.exists():
+            return {"name": name, "status": "configuration_error", "detail": "path does not exist"}
+        if not path.is_file():
+            return {"name": name, "status": "configuration_error", "detail": "path is not a file"}
+    if name == "NPC_OUTPUT_DIR" and path.exists() and not path.is_dir():
+        return {
+            "name": name,
+            "status": "configuration_error",
+            "detail": "path exists and is not a directory",
+        }
+
+    return {"name": name, "status": "found", "detail": value}
+
+
+def _newton_source_status(
+    commit: str | None, dirty_output: str | None, submodule_lines: list[str]
+) -> str:
+    if not commit:
+        return "dependency_gap"
+    if dirty_output is None:
+        return "runtime_failure"
+    if dirty_output:
+        return "configuration_error"
+    if any(line and line[0] in "-+U" for line in submodule_lines):
+        return "configuration_error"
+    return "smoke_passed"
+
+
+def _newton_check_config_text(source_dir: str) -> str:
+    return "\n".join(
+        [
+            "asset:",
+            "  path: assets/example.usda",
+            "task:",
+            "  primary: collision_proxy_diagnostic",
+            "newton:",
+            f"  source_dir: {source_dir}",
+            "",
+        ]
+    )
 
 
 def _git_output(source_path: Path, args: list[str]) -> str | None:
@@ -512,9 +584,14 @@ def _annotate_python_expectations(
         realpath = payload.get("realpath")
         prefix = payload.get("prefix")
         payload["environment_alignment"] = {
+            "status": "smoke_passed",
             "python_under_env_root": _path_is_relative_to(realpath, env_root_path),
             "prefix_under_env_root": _path_is_relative_to(prefix, env_root_path),
         }
+        if not payload["environment_alignment"]["python_under_env_root"]:
+            payload["environment_alignment"]["status"] = "configuration_error"
+        if not payload["environment_alignment"]["prefix_under_env_root"]:
+            payload["environment_alignment"]["status"] = "configuration_error"
         for name in ("warp", "pxr_usd"):
             module = modules.get(name)
             if isinstance(module, dict) and module.get("status") == "smoke_passed":

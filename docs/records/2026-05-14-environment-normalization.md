@@ -23,7 +23,8 @@ Complete
 
 ## Verification
 
-- `python -m pytest tests/test_environment_readiness.py -q`: exit 0, 11 passed.
+- `python -m pytest tests/test_environment_readiness.py -q`: exit 0, 17 passed.
+- `python -m pytest -q`: exit 0, 54 passed.
 - `python scripts/validate_docs.py`: exit 0.
 - `git diff --check`: exit 0.
 
