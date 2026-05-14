@@ -1,6 +1,6 @@
 # Newton USD Smoke Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Add a claim-safe USD asset-open smoke diagnostic for the CPD-like seed assets.
 
@@ -29,7 +29,7 @@
 - Modify: `src/primitive_collision_compiler/reports/__init__.py`
 - Test: `tests/test_usd_smoke.py`
 
-- [ ] **Step 1: Write the failing report test**
+- [x] **Step 1: Write the failing report test**
 
 Add to `tests/test_usd_smoke.py`:
 
@@ -56,13 +56,13 @@ def test_asset_smoke_report_serializes_metadata_and_checks():
     assert payload["checks"][0]["name"] == "usd_open"
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest tests/test_usd_smoke.py::test_asset_smoke_report_serializes_metadata_and_checks -q`
 
 Expected: FAIL because `AssetSmokeReport` does not exist.
 
-- [ ] **Step 3: Add minimal report dataclass**
+- [x] **Step 3: Add minimal report dataclass**
 
 Add to `src/primitive_collision_compiler/reports/schema.py`:
 
@@ -95,13 +95,13 @@ from primitive_collision_compiler.reports.schema import AssetSmokeReport, Enviro
 __all__ = ["AssetSmokeReport", "EnvironmentCheck", "EnvironmentReport"]
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `python -m pytest tests/test_usd_smoke.py::test_asset_smoke_report_serializes_metadata_and_checks -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -117,7 +117,7 @@ git commit -m "feat: add asset smoke report schema"
 - Create: `src/primitive_collision_compiler/assets/usd_smoke.py`
 - Test: `tests/test_usd_smoke.py`
 
-- [ ] **Step 1: Write failing USD smoke tests**
+- [x] **Step 1: Write failing USD smoke tests**
 
 Append to `tests/test_usd_smoke.py`:
 
@@ -193,13 +193,13 @@ def test_inspect_usd_asset_reports_missing_asset(tmp_path):
     assert report.checks[0].name == "asset_path"
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `python -m pytest tests/test_usd_smoke.py -q`
 
 Expected: FAIL because `primitive_collision_compiler.assets` does not exist.
 
-- [ ] **Step 3: Add USD smoke implementation**
+- [x] **Step 3: Add USD smoke implementation**
 
 Create `src/primitive_collision_compiler/assets/__init__.py`:
 
@@ -281,13 +281,13 @@ def _stage_metadata(stage: Any, usd_geom: Any) -> dict[str, object]:
     }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `python -m pytest tests/test_usd_smoke.py -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -302,7 +302,7 @@ git commit -m "feat: add usd asset smoke checks"
 - Modify: `src/primitive_collision_compiler/cli.py`
 - Test: `tests/test_cli.py`
 
-- [ ] **Step 1: Write failing CLI tests**
+- [x] **Step 1: Write failing CLI tests**
 
 Append to `tests/test_cli.py`:
 
@@ -349,13 +349,13 @@ def test_check_assets_emits_manifest_reports(tmp_path, capsys):
     assert payload["reports"][0]["metadata"]["default_prim"] == "/Root"
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `python -m pytest tests/test_cli.py::test_check_assets_emits_manifest_reports -q`
 
 Expected: FAIL because `--check-assets` is not recognized.
 
-- [ ] **Step 3: Add CLI support**
+- [x] **Step 3: Add CLI support**
 
 Modify `src/primitive_collision_compiler/cli.py`:
 
@@ -411,13 +411,13 @@ def _asset_manifest_path(config):
     return config.asset_path
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `python -m pytest tests/test_cli.py::test_check_assets_emits_manifest_reports -q`
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run:
 
@@ -431,7 +431,7 @@ git commit -m "feat: expose usd asset smoke cli"
 **Files:**
 - Create: `docs/records/2026-05-14-newton-usd-smoke.md`
 
-- [ ] **Step 1: Add durable record**
+- [x] **Step 1: Add durable record**
 
 Create `docs/records/2026-05-14-newton-usd-smoke.md`:
 
@@ -479,7 +479,7 @@ Complete
 - After Newton imports cleanly, add the first runtime asset import smoke check.
 ```
 
-- [ ] **Step 2: Run full verification**
+- [x] **Step 2: Run full verification**
 
 Run:
 
@@ -493,7 +493,7 @@ python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like
 
 Expected: tests pass; docs validate; whitespace check passes; asset smoke returns `smoke_passed`; Newton check returns `dependency_gap` until `warp` is installed.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 Run:
 
