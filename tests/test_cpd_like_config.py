@@ -18,8 +18,16 @@ def test_cpd_like_baseline_preserves_newton_and_cpd_sections():
     assert config.protocol["newton"]["source_dir"] == "/cpfs/user/zhuzihou/dev/newton"
     assert config.protocol["cpd_like"]["asset_manifest"] == "assets/manifests/cpd_like_smoke_assets.yaml"
     assert config.protocol["cpd_like"]["primitive_subset"] == ["sphere", "capsule", "box"]
+    assert config.protocol["cpd_like"]["decomposition_stage"] == "cpd_like_face_merge_smoke"
+    assert config.protocol["cpd_like"]["max_source_faces"] == 256
+    assert config.protocol["cpd_like"]["unsupported_primitives"] == [
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
     assert config.protocol["cpd_like"]["claim_boundary"] == "internal_baseline_not_reproduction_claim"
     assert config.protocol["report"]["output_dir"] == "reports/generated/cpd_like_baseline"
+    assert config.protocol["report"]["evidence_level"] == "geometry_only_cpd_like_smoke"
 
 
 def test_smoke_asset_manifest_records_paths_without_committing_assets():
@@ -34,3 +42,9 @@ def test_smoke_asset_manifest_records_paths_without_committing_assets():
     )
     assert roles["franka_import_smoke"]["path"] == "/cpfs/user/zhuzihou/assets/zzh-grscenes/robots/franka/franka.usd"
     assert roles["franka_import_smoke"]["include_in_cpd_like_aggregate"] is False
+
+
+def test_cpd_like_runtime_dependencies_include_numpy():
+    pyproject = Path("pyproject.toml").read_text(encoding="utf-8")
+
+    assert '"numpy>=1.26"' in pyproject
