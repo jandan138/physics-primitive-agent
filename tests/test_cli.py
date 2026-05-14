@@ -405,6 +405,123 @@ def test_cli_run_newton_contact_smoke_keeps_stdout_json_only(tmp_path, capsys, m
     assert "Warp 1.13.0 initialized:" in captured.err
 
 
+def test_cli_run_newton_drop_settle_emits_report_for_tiny_usd(tmp_path, capsys):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    asset_path = tmp_path / "quad.usda"
+    stage = Usd.Stage.CreateNew(str(asset_path))
+    mesh = UsdGeom.Mesh.Define(stage, "/Quad")
+    mesh.CreatePointsAttr([(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)])
+    mesh.CreateFaceVertexCountsAttr([4])
+    mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3])
+    stage.GetRootLayer().Save()
+    source_dir = tmp_path / "newton-source"
+    source_dir.mkdir()
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: tiny_quad",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "  allowed_fallback:",
+                "    - convex_hull",
+                "  verify:",
+                "    - newton_drop_settle",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "    - sphere",
+                "    - capsule",
+                "  max_source_faces: 8",
+                "newton:",
+                f"  source_dir: {source_dir}",
+                "newton_diagnostic:",
+                "  probe_type: drop_settle",
+                "  device: cpu",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = cli.main(["--config", str(config_path), "--run-newton-drop-settle"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code in {0, 2}
+    assert payload["stage"] == "newton_drop_settle"
+    assert payload["asset_id"] == "tiny_quad"
+    assert payload["package_id"] == "tiny_quad:cpd_like_face_merge"
+    assert payload["probe_type"] == "drop_settle"
+    assert payload["status"] in {"smoke_passed", "dependency_gap", "mapping_gap", "runtime_failure"}
+    assert payload["primitive_count"] == 1
+    assert payload["claim_boundary"] == "drop_settle_task_smoke_not_collision_quality_or_safety"
+
+
+def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, monkeypatch):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: noisy_asset",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  probe_type: drop_settle",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "_run_cpd_like_report",
+        lambda config: (object(), "assets/example.usda", 8),
+    )
+    monkeypatch.setattr(
+        cli,
+        "package_from_cpd_like_report",
+        lambda *args, **kwargs: CollisionPackage("noisy_asset"),
+    )
+
+    def noisy_drop_settle(*args, **kwargs):
+        print("Warp 1.13.0 initialized:")
+        return NewtonDiagnosticReport(
+            stage="newton_drop_settle",
+            status="smoke_passed",
+            asset_id="noisy_asset",
+            package_id="noisy_asset:pkg",
+            probe_type="drop_settle",
+            device="cpu",
+            environment=None,
+            primitive_count=0,
+            type_counts={},
+            shape_mappings=(),
+            contact_canaries=(),
+            drop_settle_runs=(),
+            task_scope="single_asset_drop_settle_static_plane",
+            claim_boundary="drop_settle_task_smoke_not_collision_quality_or_safety",
+            evidence_level="newton_drop_settle_task_smoke",
+        )
+
+    monkeypatch.setattr(cli, "run_newton_drop_settle", noisy_drop_settle)
+
+    assert cli.main(["--config", str(config_path), "--run-newton-drop-settle"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "newton_drop_settle"
+    assert captured.out.startswith("{")
+    assert "Warp 1.13.0 initialized:" in captured.err
+
+
 def test_cli_run_newton_contact_smoke_rejects_unsupported_probe_type(tmp_path, capsys, monkeypatch):
     config_path = tmp_path / "config.yaml"
     config_path.write_text(

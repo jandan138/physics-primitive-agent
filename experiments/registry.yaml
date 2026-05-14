@@ -7,3 +7,11 @@ experiments:
       Define the first 0-4 week diagnostic proof point for primitive collision contracts.
     claims_supported:
       - bootstrap proposal only
+  - id: newton-drop-settle-bed-smoke
+    status: planned
+    config: configs/experiments/newton_drop_settle.yaml
+    record: docs/records/2026-05-14-newton-drop-settle.md
+    purpose: >
+      Run the first task-level Newton drop/settle smoke over the CPD-like bed collision package.
+    claims_supported:
+      - planned task-level smoke only until the dated record exists

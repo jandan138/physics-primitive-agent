@@ -59,3 +59,22 @@ def test_cpd_like_baseline_config_keeps_machine_paths_in_manifest_not_config():
 
     assert "/cpfs/user/" not in config_text
     assert "$NEWTON_SOURCE_DIR" in config_text
+
+
+def test_newton_drop_settle_config_owns_probe_parameters():
+    config_path = Path("configs/experiments/newton_drop_settle.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "grscenes_bed_0a85b986_drop_settle"
+    assert config.verify == ("newton_drop_settle",)
+    assert config.protocol["newton"]["source_dir"] == "$NEWTON_SOURCE_DIR"
+    assert config.protocol["newton_diagnostic"]["probe_type"] == "drop_settle"
+    assert config.protocol["newton_diagnostic"]["device"] == "cpu"
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "drop_settle_task_smoke_not_collision_quality_or_safety"
+    )
+    assert config.protocol["newton_diagnostic"]["drop_settle"]["frames"] == 120
+    assert config.protocol["newton_diagnostic"]["drop_settle"]["substeps"] == 8
+    assert config.protocol["newton_diagnostic"]["drop_settle"]["height_m"] == 0.25
+    assert config.protocol["report"]["evidence_level"] == "newton_drop_settle_task_smoke"
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")

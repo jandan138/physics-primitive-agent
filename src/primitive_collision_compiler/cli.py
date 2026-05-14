@@ -12,6 +12,11 @@ from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError
 from primitive_collision_compiler.config import load_compile_config
 from primitive_collision_compiler.contracts import CompileReport
 from primitive_collision_compiler.newton.diagnostics import run_newton_contact_smoke
+from primitive_collision_compiler.newton.drop_settle import (
+    DROP_SETTLE_CLAIM_BOUNDARY,
+    DropSettleOptions,
+    run_newton_drop_settle,
+)
 from primitive_collision_compiler.newton.env import inspect_newton_environment
 
 
@@ -33,6 +38,11 @@ def build_parser():
         "--run-newton-contact-smoke",
         action="store_true",
         help="run CPD-like geometry plus the Newton contact-only canary smoke",
+    )
+    parser.add_argument(
+        "--run-newton-drop-settle",
+        action="store_true",
+        help="run CPD-like geometry plus the Newton drop/settle task smoke",
     )
     return parser
 
@@ -213,6 +223,62 @@ def main(argv=None):
         print("npc-compile: --run-newton-contact-smoke requires --config.", file=sys.stderr)
         return 2
 
+    if args.run_newton_drop_settle and args.config:
+        try:
+            config = load_compile_config(args.config)
+            cpd_like_section = config.protocol.get("cpd_like", {})
+            if not isinstance(cpd_like_section, dict):
+                cpd_like_section = {}
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError("--run-newton-drop-settle requires config key newton.source_dir")
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            diagnostic_options = _newton_drop_settle_options(diagnostic_section)
+            cpd_like_report, source_path, max_source_faces = _run_cpd_like_report(config)
+            package = package_from_cpd_like_report(
+                cpd_like_report,
+                asset_id=config.asset_id or Path(config.asset_path).stem,
+                source_path=source_path,
+                claim_boundary=cpd_like_section.get(
+                    "claim_boundary",
+                    "internal_baseline_not_reproduction_claim",
+                ),
+                max_source_faces=max_source_faces,
+            )
+            with contextlib.redirect_stdout(sys.stderr):
+                report = run_newton_drop_settle(
+                    package,
+                    source_dir=source_dir,
+                    device=diagnostic_options["device"],
+                    options=diagnostic_options["options"],
+                    claim_boundary=diagnostic_options["claim_boundary"],
+                )
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "newton_drop_settle",
+                        "status": _newton_contact_error_status(str(exc)),
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+
+        print(json.dumps(report.to_dict(), sort_keys=True))
+        return 0 if report.status == "smoke_passed" else 2
+
+    if args.run_newton_drop_settle:
+        print("npc-compile: --run-newton-drop-settle requires --config.", file=sys.stderr)
+        return 2
+
     if args.dry_run and args.config:
         try:
             config = load_compile_config(args.config)
@@ -323,11 +389,60 @@ def _newton_diagnostic_options(section):
     }
 
 
+def _newton_drop_settle_options(section):
+    probe_type = str(section.get("probe_type", "drop_settle"))
+    if probe_type != "drop_settle":
+        raise ValueError("newton_diagnostic.probe_type must be drop_settle for --run-newton-drop-settle")
+    drop_section = section.get("drop_settle", {})
+    if drop_section is None:
+        drop_section = {}
+    if not isinstance(drop_section, dict):
+        raise ValueError("newton_diagnostic.drop_settle must be a mapping")
+    options = DropSettleOptions(
+        height_m=_float_value(drop_section.get("height_m", 0.25), "newton_diagnostic.drop_settle.height_m"),
+        frames=_int_value(drop_section.get("frames", 120), "newton_diagnostic.drop_settle.frames"),
+        substeps=_int_value(drop_section.get("substeps", 8), "newton_diagnostic.drop_settle.substeps"),
+        frame_dt_seconds=_float_value(
+            drop_section.get("frame_dt_seconds", 1.0 / 60.0),
+            "newton_diagnostic.drop_settle.frame_dt_seconds",
+        ),
+        iterations=_int_value(
+            drop_section.get("iterations", 2),
+            "newton_diagnostic.drop_settle.iterations",
+        ),
+        gravity_mps2=_float_value(
+            drop_section.get("gravity_mps2", -9.81),
+            "newton_diagnostic.drop_settle.gravity_mps2",
+        ),
+        ground_height_m=_float_value(
+            drop_section.get("ground_height_m", 0.0),
+            "newton_diagnostic.drop_settle.ground_height_m",
+        ),
+        friction=_float_value(
+            drop_section.get("friction", 0.5),
+            "newton_diagnostic.drop_settle.friction",
+        ),
+    )
+    return {
+        "device": str(section.get("device", "cpu")),
+        "claim_boundary": str(section.get("claim_boundary", DROP_SETTLE_CLAIM_BOUNDARY)),
+        "options": options,
+    }
+
+
 def _int_value(value, key):
     try:
         result = int(value)
     except (TypeError, ValueError) as exc:
         raise ValueError(f"{key} must be an integer") from exc
+    return result
+
+
+def _float_value(value, key):
+    try:
+        result = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{key} must be a number") from exc
     return result
 
 
