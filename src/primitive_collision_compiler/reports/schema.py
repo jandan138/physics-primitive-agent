@@ -109,6 +109,8 @@ class NewtonDropSettleRun:
     descended: bool
     contact_observed: bool
     failure_labels: tuple[str, ...]
+    final_support_height: float | None = None
+    min_support_height: float | None = None
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -126,6 +128,8 @@ class NewtonDropSettleRun:
             "descended": self.descended,
             "contact_observed": self.contact_observed,
             "failure_labels": list(self.failure_labels),
+            "final_support_height": _json_safe(self.final_support_height),
+            "min_support_height": _json_safe(self.min_support_height),
         }
 
 

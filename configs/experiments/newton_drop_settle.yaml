@@ -43,6 +43,7 @@ newton_diagnostic:
     gravity_mps2: -9.81
     ground_height_m: 0.0
     friction: 0.5
+    max_floor_breach_m: 0.05
 report:
   output_dir: reports/generated/newton_drop_settle
   evidence_level: newton_drop_settle_task_smoke

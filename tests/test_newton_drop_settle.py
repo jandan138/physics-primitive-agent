@@ -107,3 +107,26 @@ def test_evaluate_drop_settle_trace_reports_smoke_passed_for_descent_and_contact
     assert run.descended is True
     assert run.contact_observed is True
     assert run.failure_labels == ()
+
+
+def test_evaluate_drop_settle_trace_reports_floor_breach_from_support_height():
+    run = evaluate_drop_settle_trace(
+        primitive_ids=("box",),
+        completed_steps=16,
+        initial_height=0.25,
+        final_height=0.02,
+        min_height=0.01,
+        final_linear_velocity=(0.0, 0.0, 0.0),
+        max_contact_count=2,
+        final_contact_count=1,
+        finite_state=True,
+        final_support_height=-0.02,
+        min_support_height=-0.20,
+        min_allowed_support_height=-0.05,
+    )
+
+    assert run.status == "runtime_failure"
+    assert run.contact_observed is True
+    assert "floor_breach" in run.failure_labels
+    assert run.final_support_height == -0.02
+    assert run.min_support_height == -0.20

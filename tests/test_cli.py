@@ -476,6 +476,8 @@ def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, mon
                 f"  source_dir: {tmp_path / 'newton'}",
                 "newton_diagnostic:",
                 "  probe_type: drop_settle",
+                "  drop_settle:",
+                "    max_floor_breach_m: 0.125",
             ]
         ),
         encoding="utf-8",
@@ -491,7 +493,10 @@ def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, mon
         lambda *args, **kwargs: CollisionPackage("noisy_asset"),
     )
 
+    captured_options = {}
+
     def noisy_drop_settle(*args, **kwargs):
+        captured_options["max_floor_breach_m"] = kwargs["options"].max_floor_breach_m
         print("Warp 1.13.0 initialized:")
         return NewtonDiagnosticReport(
             stage="newton_drop_settle",
@@ -520,6 +525,7 @@ def test_cli_run_newton_drop_settle_keeps_stdout_json_only(tmp_path, capsys, mon
     assert payload["stage"] == "newton_drop_settle"
     assert captured.out.startswith("{")
     assert "Warp 1.13.0 initialized:" in captured.err
+    assert captured_options["max_floor_breach_m"] == 0.125
 
 
 def test_cli_run_newton_contact_smoke_rejects_unsupported_probe_type(tmp_path, capsys, monkeypatch):

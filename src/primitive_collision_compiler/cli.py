@@ -422,6 +422,10 @@ def _newton_drop_settle_options(section):
             drop_section.get("friction", 0.5),
             "newton_diagnostic.drop_settle.friction",
         ),
+        max_floor_breach_m=_float_value(
+            drop_section.get("max_floor_breach_m", 0.05),
+            "newton_diagnostic.drop_settle.max_floor_breach_m",
+        ),
     )
     return {
         "device": str(section.get("device", "cpu")),

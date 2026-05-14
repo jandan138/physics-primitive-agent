@@ -39,6 +39,7 @@ class DropSettleOptions:
     ground_height_m: float = 0.0
     friction: float = 0.5
     min_descent_m: float = 1.0e-5
+    max_floor_breach_m: float = 0.05
 
     def __post_init__(self) -> None:
         _positive_int(self.frames, "frames")
@@ -48,6 +49,7 @@ class DropSettleOptions:
         _non_negative_float(self.height_m, "height_m")
         _non_negative_float(self.friction, "friction")
         _non_negative_float(self.min_descent_m, "min_descent_m")
+        _non_negative_float(self.max_floor_breach_m, "max_floor_breach_m")
 
     @property
     def step_dt_seconds(self) -> float:
@@ -75,6 +77,7 @@ class DropSettleOptions:
             "ground_height_m": self.ground_height_m,
             "initial_velocity_mps": [0.0, 0.0, 0.0],
             "body_orientation": "identity",
+            "max_floor_breach_m": self.max_floor_breach_m,
         }
 
 
@@ -187,6 +190,9 @@ def evaluate_drop_settle_trace(
     final_contact_count: int,
     finite_state: bool,
     min_descent_m: float = 1.0e-5,
+    final_support_height: float | None = None,
+    min_support_height: float | None = None,
+    min_allowed_support_height: float | None = None,
     run_id: str = "seed0",
 ) -> NewtonDropSettleRun:
     descended = bool(final_height < initial_height - min_descent_m)
@@ -198,6 +204,12 @@ def evaluate_drop_settle_trace(
         labels.append("no_descent")
     if not contact_observed:
         labels.append("no_contact_observed")
+    if (
+        min_support_height is not None
+        and min_allowed_support_height is not None
+        and min_support_height < min_allowed_support_height
+    ):
+        labels.append("floor_breach")
     status = "smoke_passed" if not labels else "runtime_failure"
     return NewtonDropSettleRun(
         run_id=run_id,
@@ -214,6 +226,8 @@ def evaluate_drop_settle_trace(
         descended=descended,
         contact_observed=contact_observed,
         failure_labels=tuple(labels),
+        final_support_height=None if final_support_height is None else float(final_support_height),
+        min_support_height=None if min_support_height is None else float(min_support_height),
     )
 
 
@@ -259,8 +273,11 @@ def _run_drop_settle(
         contacts = model.contacts()
 
         initial_height = float(state_0.body_q.numpy()[body, 2])
+        initial_support_height = _estimated_support_height(mappings, anchor, state_0.body_q.numpy()[body])
         final_height = initial_height
         min_height = initial_height
+        final_support_height = initial_support_height
+        min_support_height = initial_support_height
         final_linear_velocity = (0.0, 0.0, 0.0)
         max_contact_count = 0
         completed_steps = 0
@@ -281,6 +298,8 @@ def _run_drop_settle(
                 body_qd = state_0.body_qd.numpy()
                 final_height = float(body_q[body, 2])
                 min_height = min(min_height, final_height)
+                final_support_height = _estimated_support_height(mappings, anchor, body_q[body])
+                min_support_height = min(min_support_height, final_support_height)
                 final_linear_velocity = tuple(float(value) for value in body_qd[body, :3])
                 if not np.all(np.isfinite(body_q)) or not np.all(np.isfinite(body_qd)):
                     finite_state = False
@@ -303,6 +322,9 @@ def _run_drop_settle(
         final_contact_count=final_contact_count,
         finite_state=finite_state,
         min_descent_m=options.min_descent_m,
+        final_support_height=final_support_height,
+        min_support_height=min_support_height,
+        min_allowed_support_height=options.ground_height_m - options.max_floor_breach_m,
     )
 
 
@@ -373,6 +395,57 @@ def _world_half_extents(mapping: NewtonShapeMapping) -> np.ndarray:
         half_extents = np.asarray(dimensions["half_extents"], dtype=float)
         return np.abs(axes) @ half_extents
     raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
+
+
+def _estimated_support_height(
+    mappings: tuple[NewtonShapeMapping, ...],
+    anchor: tuple[float, float, float],
+    body_q: np.ndarray,
+) -> float:
+    body_position = np.asarray(body_q[:3], dtype=float)
+    body_rotation = _quat_to_matrix(np.asarray(body_q[3:7], dtype=float))
+    min_height = float("inf")
+    for mapping in mappings:
+        local_center = np.asarray(
+            [mapping.center[index] - anchor[index] for index in range(3)],
+            dtype=float,
+        )
+        world_center = body_position + body_rotation @ local_center
+        world_axes = body_rotation @ _axes_matrix(mapping)
+        support_height = float(world_center[2] - _support_extent_z(mapping, world_axes))
+        min_height = min(min_height, support_height)
+    return min_height
+
+
+def _support_extent_z(mapping: NewtonShapeMapping, world_axes: np.ndarray) -> float:
+    dimensions = mapping.dimensions
+    if mapping.kind == "sphere":
+        return float(dimensions["radius"])
+    if mapping.kind == "capsule":
+        radius = float(dimensions["radius"])
+        half_height = float(dimensions["half_height"])
+        axis_index = int(dimensions.get("axis_index", 2))
+        return abs(float(world_axes[2, axis_index])) * half_height + radius
+    if mapping.kind == "box":
+        half_extents = np.asarray(dimensions["half_extents"], dtype=float)
+        return float(np.abs(world_axes[2, :]) @ half_extents)
+    raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
+
+
+def _quat_to_matrix(quat: np.ndarray) -> np.ndarray:
+    qx, qy, qz, qw = (float(value) for value in quat)
+    norm = (qx * qx + qy * qy + qz * qz + qw * qw) ** 0.5
+    if norm == 0.0:
+        return np.eye(3, dtype=float)
+    qx, qy, qz, qw = (qx / norm, qy / norm, qz / norm, qw / norm)
+    return np.array(
+        [
+            [1.0 - 2.0 * (qy * qy + qz * qz), 2.0 * (qx * qy - qz * qw), 2.0 * (qx * qz + qy * qw)],
+            [2.0 * (qx * qy + qz * qw), 1.0 - 2.0 * (qx * qx + qz * qz), 2.0 * (qy * qz - qx * qw)],
+            [2.0 * (qx * qz - qy * qw), 2.0 * (qy * qz + qx * qw), 1.0 - 2.0 * (qx * qx + qy * qy)],
+        ],
+        dtype=float,
+    )
 
 
 def _axes_matrix(mapping: NewtonShapeMapping) -> np.ndarray:
