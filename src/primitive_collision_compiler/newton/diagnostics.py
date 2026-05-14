@@ -10,7 +10,12 @@ from typing import Any
 import numpy as np
 
 from primitive_collision_compiler.contracts import CollisionPackage
-from primitive_collision_compiler.newton.env import inspect_newton_environment
+from primitive_collision_compiler.newton.env import (
+    _clear_newton_modules,
+    _is_relative_to,
+    _snapshot_newton_modules,
+    inspect_newton_environment,
+)
 from primitive_collision_compiler.newton.shapes import map_package_shapes
 from primitive_collision_compiler.reports.schema import (
     EnvironmentCheck,
@@ -48,7 +53,7 @@ def run_newton_contact_smoke(
 
     environment = inspect_newton_environment(source_dir)
     if environment.status != "smoke_passed":
-        status = "dependency_gap" if environment.status in {"missing_source", "dependency_gap"} else environment.status
+        status = _status_from_environment(environment.status)
         return _report(
             package,
             status=status,
@@ -90,7 +95,11 @@ def run_newton_contact_smoke(
                 detail=f"{type(exc).__name__}: {exc}",
             ),
         )
-    status = "smoke_passed" if canaries and all(c.status == "smoke_passed" for c in canaries) else "runtime_failure"
+    status = (
+        "smoke_passed"
+        if canaries and all(c.status == "smoke_passed" for c in canaries)
+        else "runtime_failure"
+    )
     return _report(
         package,
         status=status,
@@ -121,18 +130,44 @@ class _Runtime:
 def _import_newton_runtime(source_dir: str) -> _Runtime:
     source_path = Path(source_dir)
     source_str = str(source_path)
+    source_resolved = source_path.resolve()
     inserted = False
+    original_modules = _snapshot_newton_modules()
+    _clear_newton_modules()
+    if not source_path.exists():
+        environment = _runtime_environment(
+            source_dir,
+            "dependency_gap",
+            "source_dir does not exist",
+        )
+        _restore_newton_modules(original_modules)
+        return _Runtime("dependency_gap", environment)
     if source_path.exists():
         sys.path.insert(0, source_str)
         inserted = True
     try:
         warp = importlib.import_module("warp")
         newton = importlib.import_module("newton")
+        module_file = getattr(newton, "__file__", None)
+        if not module_file or not _is_relative_to(Path(module_file), source_resolved):
+            _restore_newton_modules(original_modules)
+            environment = _runtime_environment(
+                source_dir,
+                "runtime_failure",
+                f"newton runtime resolved outside source_dir: {module_file}",
+            )
+            return _Runtime("runtime_failure", environment)
     except ModuleNotFoundError as exc:
+        _restore_newton_modules(original_modules)
         environment = _runtime_environment(source_dir, "dependency_gap", str(exc))
         return _Runtime("dependency_gap", environment)
     except Exception as exc:
-        environment = _runtime_environment(source_dir, "runtime_failure", f"{type(exc).__name__}: {exc}")
+        _restore_newton_modules(original_modules)
+        environment = _runtime_environment(
+            source_dir,
+            "runtime_failure",
+            f"{type(exc).__name__}: {exc}",
+        )
         return _Runtime("runtime_failure", environment)
     finally:
         if inserted:
@@ -159,6 +194,19 @@ def _runtime_environment(source_dir: str, status: str, detail: str) -> Environme
     )
 
 
+def _restore_newton_modules(modules: dict[str, object]) -> None:
+    _clear_newton_modules()
+    sys.modules.update(modules)
+
+
+def _status_from_environment(status: str) -> str:
+    if status in {"missing_source", "dependency_gap"}:
+        return "dependency_gap"
+    if status == "import_error":
+        return "runtime_failure"
+    return status
+
+
 def _representative_mappings(
     mappings: tuple[NewtonShapeMapping, ...],
 ) -> tuple[NewtonShapeMapping, ...]:
@@ -175,12 +223,20 @@ def _run_contact_canary(
     device: str,
 ) -> NewtonContactCanary:
     if newton is None or wp is None:
-        return NewtonContactCanary(mapping.primitive_id, mapping.kind, "dependency_gap", 0, "newton runtime missing")
+        return NewtonContactCanary(
+            mapping.primitive_id,
+            mapping.kind,
+            "dependency_gap",
+            0,
+            "newton runtime missing",
+        )
 
     with wp.ScopedDevice(device):
         builder = newton.ModelBuilder(gravity=0.0)
         _add_static_shape(builder, mapping, wp)
-        probe_body = builder.add_body(xform=wp.transform(_wp_vec3(wp, mapping.center), wp.quat_identity()))
+        probe_body = builder.add_body(
+            xform=wp.transform(_wp_vec3(wp, mapping.center), wp.quat_identity())
+        )
         builder.add_shape_sphere(body=probe_body, radius=_probe_radius(mapping))
         model = builder.finalize(device=device)
         pipeline = newton.CollisionPipeline(model)
@@ -190,7 +246,11 @@ def _run_contact_canary(
         contact_count = int(contacts.rigid_contact_count.numpy()[0])
 
     status = "smoke_passed" if contact_count > 0 else "runtime_failure"
-    detail = "contact produced" if contact_count > 0 else "no contact produced"
+    detail = (
+        "representative contact canary produced; not full package coverage"
+        if contact_count > 0
+        else "representative contact canary produced no contact"
+    )
     return NewtonContactCanary(mapping.primitive_id, mapping.kind, status, contact_count, detail)
 
 
@@ -268,6 +328,7 @@ def _report(
         shape_mappings=mappings,
         contact_canaries=canaries,
         claim_boundary=claim_boundary,
+        metrics=_contact_smoke_metrics(mappings, canaries),
         fallback_reason=fallback_reason,
     )
 
@@ -285,3 +346,17 @@ def _normalize(vector: np.ndarray) -> np.ndarray:
 
 def _tuple(vector: np.ndarray) -> tuple[float, float, float]:
     return (float(vector[0]), float(vector[1]), float(vector[2]))
+
+
+def _contact_smoke_metrics(
+    mappings: tuple[NewtonShapeMapping, ...],
+    canaries: tuple[NewtonContactCanary, ...],
+) -> dict[str, object]:
+    mapped = tuple(mapping for mapping in mappings if mapping.status == "mapped")
+    return {
+        "contact_canary_scope": "one_representative_per_mapped_type",
+        "full_package_contact_coverage": False,
+        "mapped_primitive_count": len(mapped),
+        "mapped_type_count": len({mapping.kind for mapping in mapped}),
+        "representative_canary_count": len(canaries),
+    }

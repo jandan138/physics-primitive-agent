@@ -1,4 +1,5 @@
 import argparse
+import contextlib
 import json
 import os
 import sys
@@ -160,7 +161,6 @@ def main(argv=None):
     if args.run_newton_contact_smoke and args.config:
         try:
             config = load_compile_config(args.config)
-            cpd_like_report, source_path, max_source_faces = _run_cpd_like_report(config)
             cpd_like_section = config.protocol.get("cpd_like", {})
             if not isinstance(cpd_like_section, dict):
                 cpd_like_section = {}
@@ -174,6 +174,8 @@ def main(argv=None):
             diagnostic_section = config.protocol.get("newton_diagnostic", {})
             if not isinstance(diagnostic_section, dict):
                 diagnostic_section = {}
+            diagnostic_options = _newton_diagnostic_options(diagnostic_section)
+            cpd_like_report, source_path, max_source_faces = _run_cpd_like_report(config)
             package = package_from_cpd_like_report(
                 cpd_like_report,
                 asset_id=config.asset_id or Path(config.asset_path).stem,
@@ -184,25 +186,19 @@ def main(argv=None):
                 ),
                 max_source_faces=max_source_faces,
             )
-            report = run_newton_contact_smoke(
-                package,
-                source_dir=source_dir,
-                device=str(diagnostic_section.get("device", "cpu")),
-                claim_boundary=str(
-                    diagnostic_section.get(
-                        "claim_boundary",
-                        "contact_canary_only_not_collision_quality",
-                    )
-                ),
-            )
+            with contextlib.redirect_stdout(sys.stderr):
+                report = run_newton_contact_smoke(
+                    package,
+                    source_dir=source_dir,
+                    device=diagnostic_options["device"],
+                    claim_boundary=diagnostic_options["claim_boundary"],
+                )
         except (USDMeshLoadError, ValueError) as exc:
             print(
                 json.dumps(
                     {
                         "stage": "newton_contact_smoke",
-                        "status": "dependency_gap"
-                        if "dependency_gap" in str(exc)
-                        else "smoke_failed",
+                        "status": _newton_contact_error_status(str(exc)),
                         "fallback_reason": str(exc),
                     },
                     sort_keys=True,
@@ -304,6 +300,45 @@ def _positive_int(value, default):
     if result < 1:
         raise ValueError("cpd_like.max_source_faces must be at least 1")
     return result
+
+
+def _newton_diagnostic_options(section):
+    probe_type = str(section.get("probe_type", "contact_canary"))
+    if probe_type != "contact_canary":
+        raise ValueError("newton_diagnostic.probe_type currently supports only contact_canary")
+    max_canaries = _int_value(
+        section.get("max_canaries_per_type", 1),
+        "newton_diagnostic.max_canaries_per_type",
+    )
+    if max_canaries != 1:
+        raise ValueError("newton_diagnostic.max_canaries_per_type currently supports only 1")
+    return {
+        "device": str(section.get("device", "cpu")),
+        "claim_boundary": str(
+            section.get(
+                "claim_boundary",
+                "contact_canary_only_not_collision_quality",
+            )
+        ),
+    }
+
+
+def _int_value(value, key):
+    try:
+        result = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{key} must be an integer") from exc
+    return result
+
+
+def _newton_contact_error_status(message):
+    if (
+        "dependency_gap" in message
+        or "newton.source_dir" in message
+        or "unset environment variable" in message
+    ):
+        return "dependency_gap"
+    return "smoke_failed"
 
 
 def _expand_env_path(value, key):

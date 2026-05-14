@@ -66,6 +66,8 @@ class FallbackSpec:
 @dataclass(frozen=True)
 class CollisionPackage:
     asset_id: str
+    primitives: tuple[PrimitiveSpec, ...] = ()
+    fallback: FallbackSpec | None = None
     package_id: str = ""
     source_path: str = ""
     source_sha256: str = ""
@@ -78,8 +80,6 @@ class CollisionPackage:
     max_source_faces: int | None = None
     primitive_subset: tuple[str, ...] = ()
     unsupported_primitives: tuple[str, ...] = ()
-    primitives: tuple[PrimitiveSpec, ...] = ()
-    fallback: FallbackSpec | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {

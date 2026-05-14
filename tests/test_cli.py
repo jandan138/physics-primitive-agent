@@ -5,6 +5,8 @@ import pytest
 import yaml
 
 from primitive_collision_compiler import cli
+from primitive_collision_compiler.contracts import CollisionPackage
+from primitive_collision_compiler.reports.schema import NewtonDiagnosticReport
 
 FIXTURE_CONFIG = Path(__file__).parent / "fixtures" / "dry_run_mvp.yaml"
 
@@ -344,6 +346,95 @@ def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys
     assert payload["status"] in {"smoke_passed", "dependency_gap", "mapping_gap", "runtime_failure"}
     assert payload["primitive_count"] == 1
     assert payload["claim_boundary"] == "contact_canary_only_not_collision_quality"
+
+
+def test_cli_run_newton_contact_smoke_keeps_stdout_json_only(tmp_path, capsys, monkeypatch):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: noisy_asset",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  probe_type: contact_canary",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "_run_cpd_like_report",
+        lambda config: (object(), "assets/example.usda", 8),
+    )
+    monkeypatch.setattr(
+        cli,
+        "package_from_cpd_like_report",
+        lambda *args, **kwargs: CollisionPackage("noisy_asset"),
+    )
+
+    def noisy_contact_smoke(*args, **kwargs):
+        print("Warp 1.13.0 initialized:")
+        return NewtonDiagnosticReport(
+            stage="newton_contact_smoke",
+            status="smoke_passed",
+            asset_id="noisy_asset",
+            package_id="noisy_asset:pkg",
+            probe_type="contact_canary",
+            device="cpu",
+            environment=None,
+            primitive_count=0,
+            type_counts={},
+            shape_mappings=(),
+            contact_canaries=(),
+            claim_boundary="contact_canary_only_not_collision_quality",
+        )
+
+    monkeypatch.setattr(cli, "run_newton_contact_smoke", noisy_contact_smoke)
+
+    assert cli.main(["--config", str(config_path), "--run-newton-contact-smoke"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "newton_contact_smoke"
+    assert captured.out.startswith("{")
+    assert "Warp 1.13.0 initialized:" in captured.err
+
+
+def test_cli_run_newton_contact_smoke_rejects_unsupported_probe_type(tmp_path, capsys, monkeypatch):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: bad_probe",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  probe_type: drop",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "_run_cpd_like_report",
+        lambda config: (object(), "assets/example.usda", 8),
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-newton-contact-smoke"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "newton_contact_smoke"
+    assert payload["status"] == "smoke_failed"
+    assert "newton_diagnostic.probe_type" in payload["fallback_reason"]
 
 
 def test_cli_run_cpd_like_resolves_manifest_asset_role(tmp_path, capsys):

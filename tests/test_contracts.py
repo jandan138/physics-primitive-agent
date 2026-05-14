@@ -1,4 +1,10 @@
-from primitive_collision_compiler.contracts import CompileConfig, CompileReport
+from primitive_collision_compiler.contracts import (
+    CollisionPackage,
+    CompileConfig,
+    CompileReport,
+    FallbackSpec,
+    PrimitiveSpec,
+)
 
 
 def test_compile_config_defaults_are_conservative():
@@ -14,3 +20,15 @@ def test_compile_report_marks_dry_run_not_compiled():
 
     assert report["status"] == "dry_run"
     assert report["compiled"] is False
+
+
+def test_collision_package_preserves_legacy_positional_construction():
+    primitive = PrimitiveSpec("box")
+    fallback = FallbackSpec("convex_hull", "unsupported primitive")
+
+    package = CollisionPackage("asset", (primitive,), fallback)
+
+    assert package.asset_id == "asset"
+    assert package.primitives == (primitive,)
+    assert package.fallback == fallback
+    assert package.package_id == ""

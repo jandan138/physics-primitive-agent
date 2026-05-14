@@ -14,6 +14,9 @@ Complete for the first contact-only Newton canary.
 - Added Newton-independent shape mapping for `box`, `sphere`, and `capsule`.
 - Added `newton_contact_smoke`, a contact-only Newton canary that runs one representative
   overlapping probe sphere per emitted primitive type.
+- Hardened the contact smoke after review: the CLI preserves JSON-only stdout, Newton runtime
+  imports are checked against the configured source checkout, invalid non-finite shape descriptors
+  are rejected before runtime, and the report records representative-only canary scope metrics.
 - Added CLI support:
 
 ```bash
@@ -22,7 +25,7 @@ npc-compile --config configs/experiments/cpd_like_baseline.yaml --run-newton-con
 
 ## Verification
 
-- `python -m pytest -q`: exit 0, 83 passed.
+- `python -m pytest -q`: exit 0, 90 passed.
 - `python scripts/validate_docs.py`: exit 0.
 - `git diff --check`: exit 0.
 - Clean-env contact smoke:
@@ -49,6 +52,9 @@ Observed clean-env result:
 - shape status counts: `mapped: 32`
 - representative contact canaries: one `box` canary
 - representative box contact count: `1`
+- contact canary scope metric: `one_representative_per_mapped_type`
+- full package contact coverage metric: `false`
+- stdout behavior: one JSON line on stdout; Warp initialization and kernel logs on stderr
 
 ## Artifacts
 

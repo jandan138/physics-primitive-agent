@@ -1,3 +1,5 @@
+import math
+
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.newton.shapes import map_package_shapes
 
@@ -42,3 +44,36 @@ def test_map_package_shapes_reports_mapping_gap_for_bad_dimensions():
 
     assert mappings[0].status == "mapping_gap"
     assert "radius" in mappings[0].detail
+
+
+def test_map_package_shapes_rejects_nonfinite_values_and_bad_axes():
+    package = CollisionPackage(
+        package_id="pkg",
+        asset_id="asset",
+        primitives=(
+            PrimitiveSpec(
+                primitive_id="bad-dimension",
+                kind="box",
+                dimensions={"half_extents": [1.0, math.inf, 3.0]},
+            ),
+            PrimitiveSpec(
+                primitive_id="bad-center",
+                kind="sphere",
+                center=(0.0, math.nan, 0.0),
+                dimensions={"radius": 0.5},
+            ),
+            PrimitiveSpec(
+                primitive_id="bad-axes",
+                kind="capsule",
+                axes=((1.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0)),
+                dimensions={"radius": 0.25, "half_height": 1.0, "axis_index": 2},
+            ),
+        ),
+    )
+
+    mappings = map_package_shapes(package)
+
+    assert [mapping.status for mapping in mappings] == ["mapping_gap", "mapping_gap", "mapping_gap"]
+    assert "finite" in mappings[0].detail
+    assert "center" in mappings[1].detail
+    assert "axes" in mappings[2].detail
