@@ -29,3 +29,23 @@ class EnvironmentReport:
             "source_commit": self.source_commit,
             "checks": [check.to_dict() for check in self.checks],
         }
+
+
+@dataclass(frozen=True)
+class AssetSmokeReport:
+    stage: str
+    status: str
+    role: str
+    path: str
+    checks: tuple[EnvironmentCheck, ...]
+    metadata: dict[str, object]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "stage": self.stage,
+            "status": self.status,
+            "role": self.role,
+            "path": self.path,
+            "checks": [check.to_dict() for check in self.checks],
+            "metadata": self.metadata,
+        }
