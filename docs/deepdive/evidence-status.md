@@ -5,7 +5,9 @@ This file separates current evidence from future claims. See [message-map.md](me
 ## Current Supported Claims
 
 - The repository is a DeepDive-first bootstrap for a Newton Primitive Collision Compiler proposal.
-- The safe project framing is primitive-first, simulation-checked, fallback-aware collision asset compilation.
+- The safe intended framing is primitive-first, Newton-checker-planned, fallback-aware collision
+  asset compilation; current executable evidence is config/USD/env diagnostics plus a
+  geometry-only CPD-like smoke path.
 - The first milestone is a non-LLM primitive baseline plus Newton diagnostic checker.
 - LLM/VLM should be deferred until the non-LLM baseline shows value.
 - The proposal requires explicit fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.

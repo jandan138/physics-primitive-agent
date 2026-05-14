@@ -29,6 +29,13 @@ Newton diagnostic probe while keeping fallback decisions and unsupported primiti
   canonical reviewer-facing claims.
 - [Environment readiness operations](operations/environment.md): local runtime contract, required
   variables, readiness command, status meanings, and artifact policy.
+- [Clean Newton environment readiness record](records/2026-05-14-clean-newton-environment-readiness.md):
+  current clean local Python/Newton environment readiness evidence.
+- [Geometry-only CPD-like smoke record](records/2026-05-14-cpd-like-geometry-smoke-slice.md):
+  capped bed USD primitive proposal smoke evidence.
+- [Current CPD-like status and Newton probe next step](records/2026-05-14-current-cpd-like-status-and-newton-probe-next-step.md):
+  separates environment readiness, geometry-only evidence, and the unimplemented Newton simulation
+  probe layer.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 - [Environment normalization design](superpowers/specs/2026-05-14-environment-normalization-design.md):

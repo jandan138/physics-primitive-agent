@@ -6,7 +6,8 @@
 
 ## Status
 
-In progress
+Complete; historical bootstrap record superseded for current status by the clean environment,
+CPD-like geometry smoke, and current Newton-probe-next-step records.
 
 ## Changes
 
@@ -35,4 +36,5 @@ In progress
 
 ## Next Action
 
-- Complete config examples, agent rules, and final verification for the bootstrap branch.
+- Historical next action completed. Current next action is the first named Newton diagnostic probe
+  consuming the geometry-only primitive proposal output.

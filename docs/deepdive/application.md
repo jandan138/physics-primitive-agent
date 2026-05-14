@@ -6,7 +6,7 @@ AI systems for physical intelligence increasingly generate scenes, assets, and r
 
 Concrete failure scenario: an imported or AI-generated asset may look correct, but its collision proxy can leave a handle hollow in the render mesh and blocked in physics, or allow a gripper to pass through a surface. A downstream model can then select a grasp or path through a visible opening while the physics proxy creates a false pass/fail in simulation. Newton can expose that false clearance or unstable contact only if the proxy is represented, checked, and reported as an explicit artifact.
 
-The project asks whether we can build a Newton Primitive Collision Compiler: a primitive-first, simulation-checked, fallback-aware tool that turns visual assets into editable collision proxies, checks them in Newton, and records when existing methods such as CoACD, SDF, hydroelastic, or manual review are still required.
+The project asks whether we can build a Newton Primitive Collision Compiler: a primitive-first, Newton-diagnostic-checked, fallback-aware tool that turns visual assets into editable collision proxies, checks them in Newton, and records when existing methods such as CoACD, SDF, hydroelastic, or manual review are still required.
 
 The immediate DeepDive goal is not to claim a finished compiler. It is to get review and support for a narrow first milestone that can quickly measure whether the non-LLM baseline has value.
 

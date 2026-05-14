@@ -10,13 +10,13 @@ Collision geometry is one of the hidden contracts behind that diagnostic layer. 
 
 ## Technical Thesis
 
-Build a primitive-first, simulation-checked, fallback-aware collision asset compiler for Newton. The compiler should prefer editable primitive compounds when they are sufficient for the task, use Newton checks to catch behavioral failures, and fall back locally to CoACD, SDF, hydroelastic, convex mesh, or manual review when primitive proxies are not adequate.
+Build a primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compiler for Newton. The compiler should prefer editable primitive compounds when they are sufficient for the task, use Newton checks to catch behavioral failures, and fall back locally to CoACD, SDF, hydroelastic, convex mesh, or manual review when primitive proxies are not adequate.
 
 The thesis is not that primitives replace convex decomposition. The thesis is that primitives should be attempted first when the task and asset permit it, while the system preserves a measured fallback path.
 
 ## Safe One-Liner
 
-Newton Primitive Collision Compiler is a proposal for primitive-first, simulation-checked, fallback-aware collision asset compilation: generate editable primitive proxies, check task behavior in Newton, and fall back when primitives are not enough.
+Newton Primitive Collision Compiler is a proposal for primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compilation: generate editable primitive proxies, check task behavior in Newton, and fall back when primitives are not enough.
 
 ## Unsafe Claims
 

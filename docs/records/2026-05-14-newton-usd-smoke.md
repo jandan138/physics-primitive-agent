@@ -50,5 +50,5 @@ checkout without that prefix.
 
 ## Next Action
 
-- Resolve Newton `warp` dependency in a reproducible environment.
-- After Newton imports cleanly, add the first runtime asset import smoke check.
+- Historical next action superseded by clean-environment readiness. Current next action is the first
+  named Newton diagnostic probe consuming the geometry-only primitive proposal output.

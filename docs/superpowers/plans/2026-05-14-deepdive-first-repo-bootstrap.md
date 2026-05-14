@@ -1,5 +1,7 @@
 # DeepDive-First Repo Bootstrap Implementation Plan
 
+Status: Historical implementation plan. Current evidence is recorded in `docs/records/`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a complete DeepDive-first repository skeleton for the Newton Primitive Collision Compiler proposal while keeping research implementation explicitly out of scope.

@@ -1,4 +1,4 @@
-# 2026-05-14 CPD Reproduction Slice
+# 2026-05-14 CPD-Like Geometry Smoke Slice
 
 ## Date
 

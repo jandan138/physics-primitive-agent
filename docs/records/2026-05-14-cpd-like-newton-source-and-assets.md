@@ -6,7 +6,7 @@
 
 ## Status
 
-Proposed
+Complete; historical source and smoke-asset intake.
 
 ## Changes
 
@@ -48,5 +48,6 @@ Proposed
 
 ## Next Action
 
-- Resolve Newton source checkout or package installation.
-- Add a dedicated CPD-like baseline config and asset manifest fields before implementation.
+- Historical next action superseded. Newton source and clean Python/Newton import readiness later
+  passed in the clean environment record; current next action is the first named Newton diagnostic
+  probe consuming the geometry-only primitive proposal output.

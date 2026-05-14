@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The project proposes a Newton Primitive Collision Compiler: a primitive-first, simulation-checked, fallback-aware collision asset compiler. The current repository exists to support a DeepDive application and to define the first implementation milestone.
+The project proposes a Newton Primitive Collision Compiler: a primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compiler. The current repository exists to support a DeepDive application and to define the first implementation milestone.
 
 ## In Scope
 

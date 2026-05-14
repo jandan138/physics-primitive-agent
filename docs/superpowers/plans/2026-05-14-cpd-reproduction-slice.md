@@ -1,4 +1,7 @@
-# CPD Reproduction Slice Implementation Plan
+# CPD-Like Geometry Smoke Slice Implementation Plan
+
+Status: Historical implementation plan. Current evidence is recorded in
+`docs/records/2026-05-14-cpd-like-geometry-smoke-slice.md`.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -22,7 +25,8 @@
 - Modify `configs/experiments/cpd_like_baseline.yaml`: move `decomposition_stage` to `cpd_like_face_merge_smoke`, add `max_source_faces`, and record unsupported primitives.
 - Modify `pyproject.toml`: add NumPy as a runtime dependency.
 - Add tests in `tests/test_cpd_like_geometry.py`, `tests/test_cpd_like_decompose.py`, `tests/test_cpd_like_usd.py`, and `tests/test_cli.py`.
-- Add `docs/records/2026-05-14-cpd-reproduction-slice.md`: durable record after implementation and verification.
+- Add `docs/records/2026-05-14-cpd-like-geometry-smoke-slice.md`: durable record after
+  implementation and verification.
 
 ## Task 1: Geometry Mesh And Adjacency
 
@@ -296,7 +300,7 @@ Expected: pass.
 **Files:**
 - Modify: `pyproject.toml`
 - Modify: `docs/deepdive/evidence-status.md`
-- Create: `docs/records/2026-05-14-cpd-reproduction-slice.md`
+- Create: `docs/records/2026-05-14-cpd-like-geometry-smoke-slice.md`
 
 - [ ] **Step 1: Add NumPy dependency and config ownership**
 
@@ -329,6 +333,6 @@ slice and does not run Newton simulation probes.
 Run:
 
 ```bash
-git add pyproject.toml configs/experiments/cpd_like_baseline.yaml docs/deepdive/evidence-status.md docs/records/2026-05-14-cpd-reproduction-slice.md
+git add pyproject.toml configs/experiments/cpd_like_baseline.yaml docs/deepdive/evidence-status.md docs/records/2026-05-14-cpd-like-geometry-smoke-slice.md
 git commit -m "docs: record cpd reproduction slice"
 ```

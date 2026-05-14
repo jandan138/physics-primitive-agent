@@ -1,6 +1,9 @@
-# CPD Reproduction Slice Design
+# CPD-Like Geometry Smoke Slice Design
 
 Date: 2026-05-14
+
+Status: Historical design artifact. Current evidence is recorded in
+`docs/records/2026-05-14-cpd-like-geometry-smoke-slice.md`.
 
 ## Goal
 

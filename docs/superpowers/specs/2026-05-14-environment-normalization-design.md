@@ -1,5 +1,9 @@
 # Environment Normalization Design
 
+Status: Historical environment-normalization design. The ambient Python dependency gap described
+here was later superseded for Newton work by the clean external Python environment readiness
+record.
+
 ## Purpose
 
 This design defines the first environment-normalization slice for the Newton Primitive Collision

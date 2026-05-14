@@ -17,9 +17,9 @@ production collision compiler.
 ## Strategic Framing
 
 The project intends to explore whether primitive collision representations can be compiled
-from research-backed descriptions, source notes, and simulation-checked records before
-committing to a production mesh-processing implementation. The bootstrap phase keeps claims
-narrow so the repository can separate documented intent from executable behavior.
+from research-backed descriptions, source notes, and Newton-diagnostic-checker-planned records
+before committing to a production mesh-processing implementation. The bootstrap phase keeps
+claims narrow so the repository can separate documented intent from executable behavior.
 
 ## Safe Claim
 
@@ -27,7 +27,7 @@ Use this framing for current work:
 
 The Newton Primitive Collision Compiler is a bootstrap-stage proposal for a DeepDive-first
 future workflow that intends to explore Newton primitive collision artifacts from documented,
-reviewed, and simulation-checked inputs.
+reviewed, and Newton-diagnostic-checker-planned inputs.
 
 ## Unsafe Claim
 
@@ -36,9 +36,9 @@ Do not claim that this repository currently:
 - Implements a finished collision compiler.
 - Performs complete production mesh processing.
 - Produces production-ready Newton collision primitives.
-- Provides simulation-verified results. In this repository, simulation-checked means records
-  have been checked against planned or documented simulation evidence; simulation-verified
-  would imply a stronger validation standard that is not established here.
+- Provides simulation-verified results. Use "simulation-checked" only when a dated record links a
+  generated package to a named Newton diagnostic probe, settings, asset, environment, and report.
+  Until then use "geometry-only", "environment-readiness", or "Newton-checker-planned".
 
 ## Repository Layout
 

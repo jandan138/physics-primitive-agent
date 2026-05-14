@@ -1,5 +1,8 @@
 # Environment Normalization Implementation Plan
 
+Status: Historical implementation plan. Current evidence is recorded in
+`docs/records/2026-05-14-clean-newton-environment-readiness.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a Phase 1 local environment-readiness checker that records the Python/Newton/USD/GPU/output state needed before Newton CPD reproduction work, without installing packages or claiming compiler capability.

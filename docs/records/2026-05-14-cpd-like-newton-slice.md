@@ -64,7 +64,7 @@ availability and Python import readiness. It is not a CPD reproduction result.
 Later clean-environment work resolved this local dependency gap for the recommended Python
 environment. See
 [2026-05-14 Clean Newton Environment Readiness](2026-05-14-clean-newton-environment-readiness.md)
-and [2026-05-14 CPD Reproduction Slice](2026-05-14-cpd-reproduction-slice.md) for current
+and [2026-05-14 CPD-Like Geometry Smoke Slice](2026-05-14-cpd-like-geometry-smoke-slice.md) for current
 `smoke_passed` evidence. This historical record still does not represent Newton simulation probe
 evidence.
 

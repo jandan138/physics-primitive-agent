@@ -60,7 +60,7 @@ Proposed | In progress | Complete | Failed | Superseded
   post-merge `master` readiness status and verification evidence.
 - [2026-05-14 Clean Newton Environment Readiness](2026-05-14-clean-newton-environment-readiness.md):
   clean external conda environment creation and `smoke_passed` readiness evidence.
-- [2026-05-14 CPD Reproduction Slice](2026-05-14-cpd-reproduction-slice.md): geometry-only
+- [2026-05-14 CPD-Like Geometry Smoke Slice](2026-05-14-cpd-like-geometry-smoke-slice.md): geometry-only
   CPD-like face-merge primitive proposal smoke evidence.
 - [2026-05-14 Current CPD-Like Status And Newton Probe Next Step](2026-05-14-current-cpd-like-status-and-newton-probe-next-step.md):
   separates clean environment readiness, geometry-only CPD-like evidence, and the unimplemented

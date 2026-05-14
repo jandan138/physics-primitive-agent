@@ -60,7 +60,6 @@ Observed summary:
 
 ## Next Action
 
-- Create the external clean Python 3.10 environment.
-- Install this repository and Newton importers into that environment.
-- Re-run readiness and require `smoke_passed` before using the environment for Newton simulation
-  probes.
+- Historical next action superseded by
+  [2026-05-14 Clean Newton Environment Readiness](2026-05-14-clean-newton-environment-readiness.md).
+  Current next action is the first named Newton diagnostic probe.

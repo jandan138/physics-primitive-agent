@@ -57,7 +57,7 @@ Unsupported wording:
 - CPD-like config: `configs/experiments/cpd_like_baseline.yaml`
 - Smoke asset manifest: `assets/manifests/cpd_like_smoke_assets.yaml`
 - Geometry-only CPD-like record:
-  `docs/records/2026-05-14-cpd-reproduction-slice.md`
+  `docs/records/2026-05-14-cpd-like-geometry-smoke-slice.md`
 - Clean environment record:
   `docs/records/2026-05-14-clean-newton-environment-readiness.md`
 

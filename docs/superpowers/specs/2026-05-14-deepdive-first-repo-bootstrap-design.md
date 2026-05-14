@@ -2,6 +2,9 @@
 
 Date: 2026-05-14
 
+Status: Historical bootstrap design. Current evidence and claim boundaries are in
+`docs/records/` and `docs/reference/claim-boundaries.md`.
+
 ## Goal
 
 Turn `physics-primitive-agent` from a two-document research note directory into a clean, durable project repository that supports the immediate DeepDive application while leaving a disciplined path for later research and engineering.
@@ -41,7 +44,9 @@ The strategic framing is:
 - A physics engine is the executable diagnostic layer for those constraints: under specified simulator assumptions, test scenarios, and metrics, it can help surface candidate penetrations, unstable contacts, unsafe force-transfer patterns, false collision-clearance assumptions, and task-level physical failures before expensive physical trials or deployment decisions.
 - Collision geometry is one of the lowest-level safety interfaces between AI-generated worlds, robot policies, and simulation. If the collision proxy is wrong, downstream policy training, evaluation, and safety claims become untrustworthy.
 - For example, an under-conservative collision proxy can let a policy learn motions that pass through objects; an over-conservative proxy can reject valid grasps or navigation paths. In both cases, the model may look capable in simulation while the physical interpretation is wrong.
-- A primitive-first, simulation-checked, fallback-aware collision compiler is therefore not just an asset conversion tool. It is one concrete infrastructure component for detecting collision-proxy failures in physical-intelligence workflows.
+- A primitive-first, Newton-diagnostic-checked, fallback-aware collision compiler is therefore not
+  just an asset conversion tool. It is one concrete infrastructure component for detecting
+  collision-proxy failures in physical-intelligence workflows.
 
 This story should be used in `docs/deepdive/application.md`, `docs/deepdive/one-page-summary.md`, and `docs/deepdive/pitch-outline.md` so leaders can understand why the project matters strategically.
 
@@ -244,8 +249,9 @@ These files are documentation and future run inputs. They should avoid large or 
 The repository must maintain strict claim boundaries:
 
 - Current status: proposal and project bootstrap.
-- No implemented primitive fitting.
-- No Newton verifier results.
+- Historical status at bootstrap time: no implemented primitive fitting and no Newton diagnostic
+  checker results. Current status now includes a geometry-only CPD-like primitive proposal smoke
+  path, but still no Newton simulation probe evidence.
 - No benchmark metrics.
 - No LLM/VLM ablation evidence.
 - No physical-safety guarantee, real-world transfer guarantee, deployment readiness, complete false-negative detection, benchmark superiority, or primitive-only sufficiency claim.
@@ -254,7 +260,9 @@ All DeepDive materials should phrase the work as a pre-research proposal with a 
 
 Leadership-facing language should connect the work to AI model physical safety constraints. Do not claim a safety guarantee from current evidence.
 
-The term `simulation-checked` is preferred in current materials. If `simulation-verified` is used, it must be defined narrowly: specific Newton checks passed under named assumptions, tasks, metrics, and versions. It does not mean collision correctness, real-world safety, certification, or absence of unsafe behavior.
+Historical wording used `simulation-checked` broadly. Current claim boundaries use
+`simulation-checked` only when a dated record links a generated package to a named Newton
+diagnostic probe, settings, asset, environment, and report.
 
 Generated collision packages should be treated as safety-affecting artifacts. Every future `CollisionPackage` remains untrusted until validated, must carry provenance, and must not be used for robot deployment, policy-training safety claims, or safety certification without independent review.
 
@@ -277,7 +285,8 @@ The README should say:
 
 - The project proposes a Newton Primitive Collision Compiler.
 - The current goal is DeepDive application and project bootstrap.
-- The recommended technical claim is primitive-first, simulation-checked, fallback-aware collision asset compilation.
+- Current recommended technical wording is primitive-first, Newton-checker-planned, fallback-aware
+  collision asset compilation until named Newton diagnostic probe records exist.
 - The unsafe claim is complete replacement of convex decomposition.
 - Quick start is limited to installing the package and running skeleton validation/tests.
 

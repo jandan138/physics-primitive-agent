@@ -6,8 +6,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 ## Allowed Current Claims
 
 - The repository is a DeepDive-first proposal and bootstrap, not a completed compiler.
-- The intended direction is primitive-first, simulation-checked, fallback-aware collision asset
-  generation for Newton workflows.
+- The intended direction is primitive-first, Newton-checker-planned, fallback-aware collision
+  asset generation for Newton workflows until named Newton diagnostic probe records exist.
 - The first proof point is diagnostic: measure whether primitive collision contracts expose
   failures that mesh-only or visual-only asset review would miss.
 - The Physical Intelligence Center story is that AI models need physical safety constraints;
@@ -57,7 +57,9 @@ Use these only after broader benchmark records exist.
 
 ## Wording Rules
 
-- Prefer "simulation-checked" for current and planned artifacts.
+- Use "simulation-checked" only for artifacts with a named Newton diagnostic record. For current
+  CPD-like output, use "geometry-only CPD-like primitive proposal smoke" or
+  "Newton-checker-planned".
 - Use "simulation-verified" only after a specific verification standard is documented.
 - Say "measure whether" instead of "prove whether" for research questions.
 - Say "fallback-aware" instead of "fallback-free" unless a record shows zero fallback.

@@ -172,8 +172,8 @@ The first implementation should be a vertical slice, not a full benchmark.
 Minimum useful slice:
 
 - 2-3 provenance-clear assets;
-- restricted primitive set: box, sphere, capsule, cylinder;
-- explicit unsupported list: frustum and trapezoidal prism;
+- implemented smoke primitive set: box, sphere, capsule;
+- explicit unsupported list: capped cylinder, frustum, and trapezoidal prism;
 - one Newton probe first, preferably drop or sphere-rain/contact stress;
 - one paired report comparing CPD-like, bounding box or sphere, and single convex hull;
 - dependency-gap reporting for CoACD/V-HACD if unavailable.
@@ -206,7 +206,8 @@ Allowed wording:
 
 - "CPD-like primitive decomposition baseline adapted for Newton diagnostic probes."
 - "Newton-native restricted primitive subset baseline."
-- "Simulation-checked under named Newton probes, settings, assets, and records."
+- "Geometry-only CPD-like primitive proposal smoke" until a named Newton diagnostic probe record
+  exists.
 - "Dependency gap recorded for unavailable optional baselines."
 
 Avoid:

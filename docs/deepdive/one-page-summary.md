@@ -2,7 +2,7 @@
 
 ## Project
 
-Newton Primitive Collision Compiler: a primitive-first, simulation-checked, fallback-aware collision asset compiler proposal for Newton.
+Newton Primitive Collision Compiler: a primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compiler proposal for Newton.
 
 ## Why It Matters
 

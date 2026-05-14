@@ -19,7 +19,7 @@ Time: 4-5 minutes.
 - Physical Intelligence Center needs AI models that respect physical safety constraints.
 - Physics engines are executable diagnostic layers under named assumptions, tasks, metrics, and versions.
 - Wrong collision proxies can create false confidence or false failures.
-- This project focuses on one concrete infrastructure layer: primitive-first, simulation-checked, fallback-aware collision asset compilation.
+- This project focuses on one concrete infrastructure layer: primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compilation.
 
 ## 3. Technical Route
 

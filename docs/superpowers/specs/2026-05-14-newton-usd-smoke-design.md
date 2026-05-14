@@ -1,5 +1,8 @@
 # Newton USD Smoke Design
 
+Status: Historical USD-smoke design. The local Newton dependency gap described here was later
+superseded by the clean Newton environment readiness record.
+
 ## Purpose
 
 The next proof slice should turn the current Newton dependency diagnostic into a broader smoke

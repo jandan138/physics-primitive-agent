@@ -46,7 +46,6 @@ Complete
 
 ## Next Action
 
-- Create the external clean Python 3.10 environment when ready.
-- Install this repository and Newton importers into that environment.
-- Run the readiness checker from the clean environment and compare the report against the current
-  ambient Isaac/DSW Python evidence.
+- Historical next action superseded by
+  [2026-05-14 Clean Newton Environment Readiness](2026-05-14-clean-newton-environment-readiness.md).
+  Current next action is the first named Newton diagnostic probe.
