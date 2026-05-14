@@ -71,8 +71,8 @@ make docs-check
 make validate
 ```
 
-At this stage `docs-check` uses a lightweight placeholder validator. Full claim-boundary
-linting is part of the later documentation-governance bootstrap task.
+At this stage `docs-check` enforces required governance docs, claim-boundary linting, and local
+Markdown link checks.
 
 ## DeepDive Navigation
 

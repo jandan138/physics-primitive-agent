@@ -20,11 +20,11 @@ The first milestone should establish a non-LLM baseline. Without that baseline, 
 
 **Question: What will you compare against?**
 
-Baselines include bounding box, bounding sphere, single convex hull, V-HACD, CoACD, CPD-like primitive decomposition when available, manual primitive colliders where available, SDF/hydroelastic oracle where appropriate, original triangle mesh where valid, and Newton-native `approximate_meshes()` modes.
+For the first 0-4 weeks, compare against 2-3 baselines: bounding box or sphere, single convex hull, and CoACD or V-HACD when available. The later candidate matrix includes CPD-like primitive decomposition when available, manual primitive colliders where available, SDF/hydroelastic reference comparison where task-valid, original triangle mesh where valid, VisACD when available, and Newton-native `approximate_meshes()` modes.
 
 **Question: What metrics matter?**
 
-Metrics include step time, narrowphase time, broadphase pair count, contact count p95, penetration, jitter, contact normal error, task success, primitive/hull count, fallback surface ratio, generation failure rate, and human edit time.
+The required 0-4 week metrics are primitive or hull count, fallback ratio, generation failure rate, step time, contact count, and one penetration or jitter signal. Later metrics can add narrowphase time, broadphase pair count, contact normal error, task success, fallback surface ratio, and human edit time when instrumentation exists.
 
 **Question: How do you avoid benchmark overclaiming?**
 
@@ -48,7 +48,7 @@ Failure should be explicit. The system should say which task failed, which regio
 
 **Question: What value can be delivered in four weeks?**
 
-The 0-4 week milestone can deliver evidence: a non-LLM primitive baseline, a Newton checker/verifier harness, baseline comparisons on a small asset set, and clear failure/fallback reports. That is enough to decide whether the project deserves broader support.
+The 0-4 week milestone can deliver evidence: a non-LLM primitive baseline, a Newton diagnostic checker harness, baseline comparisons on a small asset set, and clear failure/fallback reports. That is enough to decide whether the project deserves broader support.
 
 **Question: What is the strategic value if it works?**
 
@@ -70,7 +70,7 @@ No. The nuanced claim is primitive-first and fallback-aware. Convex decompositio
 
 **Why Newton specifically?**
 
-Newton is the target execution layer for the first checker/verifier. The project uses Newton tasks, metrics, solver settings, and native approximation modes to make collision proxy quality observable.
+Newton is the target execution layer for the first diagnostic checker. The project uses Newton tasks, metrics, solver settings, and native approximation modes to make collision proxy quality observable.
 
 **What would make you stop?**
 
@@ -80,6 +80,6 @@ Stop or narrow if primitive count exceeds CoACD hull count without runtime/task 
 
 Strategic story: physics engines are executable diagnostic layers for AI model physical safety constraints, and collision proxies are one of their critical inputs.
 
-Narrow first milestone: non-LLM primitive baseline plus Newton checker/verifier.
+Narrow first milestone: non-LLM primitive baseline plus Newton diagnostic checker.
 
 Current non-goals: safety guarantee, real-world transfer, deployment readiness, benchmark superiority, complete replacement of convex decomposition, and LLM/VLM claims before baseline evidence.

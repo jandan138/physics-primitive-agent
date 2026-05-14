@@ -6,7 +6,7 @@ This file separates current evidence from future claims. See [message-map.md](me
 
 - The repository is a DeepDive-first bootstrap for a Newton Primitive Collision Compiler proposal.
 - The safe project framing is primitive-first, simulation-checked, fallback-aware collision asset compilation.
-- The first milestone is a non-LLM primitive baseline plus Newton checker/verifier.
+- The first milestone is a non-LLM primitive baseline plus Newton diagnostic checker.
 - LLM/VLM should be deferred until the non-LLM baseline shows value.
 - The proposal requires explicit fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.
 
@@ -43,7 +43,7 @@ Physical intelligence requires model outputs to be checked against physical cons
 
 ## Narrow First Milestone
 
-Build a non-LLM primitive baseline and Newton checker/verifier before adding LLM/VLM. Report failures and fallback behavior as first-class evidence.
+Build a non-LLM primitive baseline and Newton diagnostic checker before adding LLM/VLM. Report failures and fallback behavior as first-class evidence.
 
 ## Current Non-Goals
 

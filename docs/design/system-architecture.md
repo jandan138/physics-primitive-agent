@@ -20,7 +20,7 @@ Fits primitive parameters while respecting task budgets, scale, containment/cove
 
 ## Newton Checker
 
-Runs simulation probes in Newton under recorded assumptions: version, solver settings, hardware, seeds, task templates, and metric definitions. It records runtime, contact behavior, penetration, jitter, task success, and failure traces. The checker/verifier is a diagnostic layer, not proof of real-world safety.
+Runs simulation probes in Newton under recorded assumptions: version, solver settings, hardware, seeds, task templates, and metric definitions. It records runtime, contact behavior, penetration, jitter, task success, and failure traces. The checker is a diagnostic layer, not proof of real-world safety.
 
 ## Repair/Fallback
 

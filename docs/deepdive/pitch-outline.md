@@ -76,6 +76,6 @@ Time: 2-4 minutes.
 
 Canonical wording: [message-map.md](message-map.md).
 
-Narrow first milestone: non-LLM primitive baseline plus Newton checker/verifier.
+Narrow first milestone: non-LLM primitive baseline plus Newton diagnostic checker.
 
 Current non-goals: safety guarantee, real-world transfer, deployment readiness, benchmark superiority, complete replacement of convex decomposition, and LLM/VLM claims before baseline evidence.

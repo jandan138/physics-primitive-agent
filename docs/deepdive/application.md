@@ -4,7 +4,7 @@
 
 AI systems for physical intelligence increasingly generate scenes, assets, and robot behaviors. Those outputs become meaningful only when they can be tested against physical constraints. Today, collision geometry is often treated as a low-level asset conversion detail, but it is actually a hidden contract between model output, simulator behavior, and downstream robotics evaluation.
 
-Concrete failure scenario: an imported or AI-generated asset may look correct, but its collision proxy can leave a handle hollow in the render mesh and blocked in physics, or allow a gripper to pass through a surface. Newton can expose that false clearance or unstable contact only if the proxy is represented, checked, and reported as an explicit artifact.
+Concrete failure scenario: an imported or AI-generated asset may look correct, but its collision proxy can leave a handle hollow in the render mesh and blocked in physics, or allow a gripper to pass through a surface. A downstream model can then select a grasp or path through a visible opening while the physics proxy creates a false pass/fail in simulation. Newton can expose that false clearance or unstable contact only if the proxy is represented, checked, and reported as an explicit artifact.
 
 The project asks whether we can build a Newton Primitive Collision Compiler: a primitive-first, simulation-checked, fallback-aware tool that turns visual assets into editable collision proxies, checks them in Newton, and records when existing methods such as CoACD, SDF, hydroelastic, or manual review are still required.
 
@@ -14,7 +14,7 @@ The immediate DeepDive goal is not to claim a finished compiler. It is to get re
 
 Physical Intelligence Center needs models that respect physical safety constraints, not only models that produce plausible actions or assets. Physics engines matter because they act as executable diagnostic layers: under specified assumptions, tasks, metrics, solver settings, and versions, they can surface candidate penetrations, unstable contacts, false clearance assumptions, and task-level physical failures.
 
-Collision geometry is a low-level safety interface. If a proxy is too loose, a policy can appear to move through an object. If it is too conservative, valid grasps, stacks, or paths may fail. A collision compiler that checks and reports this boundary supports safer physical-intelligence workflows without claiming to guarantee safety.
+Collision geometry is a low-level safety interface. If a proxy is too loose, a policy can appear to move through an object. If it is too conservative, valid grasps, stacks, or paths may fail. A collision compiler that checks and reports this boundary supports safer physical-intelligence workflows without claiming safety certification.
 
 ## Core Technical Route
 
@@ -23,7 +23,7 @@ The proposed route is:
 1. Geometry preprocessing prepares mesh, scale, regions, and provenance.
 2. A non-LLM primitive proposal baseline produces boxes, spheres, capsules, cylinders, cones, or ellipsoids under a primitive budget.
 3. A constrained optimizer fits primitive parameters while respecting task-specific budgets and basic geometry constraints.
-4. A Newton checker/verifier runs task probes and records contact behavior, penetration, jitter, time, and failure modes.
+4. A Newton diagnostic checker runs task probes and records contact behavior, penetration, jitter, time, and failure modes.
 5. A repair/fallback stage splits, merges, adjusts, rejects, or falls back locally to existing collision representations.
 6. Export/report writes collision packages with provenance, metrics, fallback reasons, and unsupported regions.
 
@@ -44,13 +44,14 @@ The current evidence supports a project proposal and milestone plan, not researc
 
 ## 0-4 Week Milestone
 
-The first milestone is a non-LLM primitive baseline plus Newton checker/verifier:
+The first milestone is a non-LLM primitive baseline plus Newton diagnostic checker:
 
 - select 5-10 simple, licensed/provenance-clear assets;
 - normalize scale and task labels;
 - generate simple primitive proposals with a fixed budget;
 - compare against 2-3 baselines: bounding box or sphere, single convex hull, and CoACD or V-HACD when available;
 - run 2-3 Newton probes first: drop, stack or slide, and sphere-rain/contact stress;
+- include one negative-control precision asset only to test rejection or fallback, not primitive-only success;
 - report primitive count, fallback surface ratio, generation failure rate, step time, contact count, and one penetration or jitter signal;
 - decide whether the baseline justifies Phase 1.
 

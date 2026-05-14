@@ -17,11 +17,11 @@ Use [message-map.md](message-map.md) as the canonical message source. Other Deep
 
 Physical intelligence needs AI models that respect physical safety constraints. Physics engines matter because they provide executable diagnostic layers: under specified simulator assumptions, tasks, and metrics, they can expose candidate collision-proxy failures before expensive physical trials or deployment decisions.
 
-Collision geometry is a low-level safety interface. If the collision proxy is under-conservative, a policy can appear to move through objects; if it is over-conservative, valid grasps or paths may be rejected. The project frames collision asset compilation as infrastructure for finding those errors, not as a safety guarantee.
+Collision geometry is a low-level safety interface. If the collision proxy is under-conservative, a policy can appear to move through objects; if it is over-conservative, valid grasps or paths may be rejected. The project frames collision asset compilation as infrastructure for finding those errors, not as safety certification.
 
 ## Narrow First Milestone
 
-The first 0-4 week proof point is a non-LLM primitive baseline plus Newton checker/verifier:
+The first 0-4 week proof point is a non-LLM primitive baseline plus Newton diagnostic checker:
 
 - generate simple primitive proposals for a small asset set;
 - run Newton checks for named tasks and metrics;

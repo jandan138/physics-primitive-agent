@@ -2,7 +2,7 @@
 
 Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It does not yet contain primitive fitting, Newton checker execution, benchmark results, or LLM/VLM research code.
 
-Current next action: submit the DeepDive application package, then use the first 0-4 week milestone to build a non-LLM primitive baseline plus Newton checker/verifier before considering LLM/VLM components.
+Current next action: submit the DeepDive application package, then use the first 0-4 week milestone to build a non-LLM primitive baseline plus Newton diagnostic checker before considering LLM/VLM components.
 
 ## DeepDive Package
 
@@ -24,12 +24,13 @@ Current next action: submit the DeepDive application package, then use the first
 
 ## Source Intake And Planning
 
-- [Temporary source documents](tmp/): current source intake used during bootstrap.
+- [Temporary source documents](tmp/): quarantined source intake used during bootstrap; not
+  canonical reviewer-facing claims.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 
 ## Claim Boundary
 
-Safe current claim: primitive-first, simulation-checked, fallback-aware collision asset compiler proposal for Newton.
+Safe current claim: proposal for primitive-first, Newton-checker-planned, fallback-aware collision asset compilation.
 
 Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, and no complete replacement of convex decomposition.

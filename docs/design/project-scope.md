@@ -8,7 +8,7 @@ The project proposes a Newton Primitive Collision Compiler: a primitive-first, s
 
 - DeepDive application and reviewer materials.
 - A non-LLM primitive baseline as the first engineering milestone.
-- Newton checker/verifier design for named tasks and metrics.
+- Newton diagnostic checker design for named tasks and metrics.
 - Baseline comparison against existing collision approximation methods.
 - Explicit fallback to CoACD, V-HACD, SDF, hydroelastic, convex mesh, triangle mesh where valid, or manual review.
 - Provenance, reporting, and claim-boundary discipline.
@@ -28,7 +28,7 @@ The leadership story connects the project to AI model physical safety constraint
 
 ## First Milestone
 
-The first 0-4 week milestone is non-LLM primitive baseline plus Newton checker/verifier. The milestone should measure whether primitive-first compilation is worth expanding before LLM/VLM is introduced.
+The first 0-4 week milestone is non-LLM primitive baseline plus Newton diagnostic checker. The milestone should measure whether primitive-first compilation is worth expanding before LLM/VLM is introduced.
 
 ## Current Non-Goals
 

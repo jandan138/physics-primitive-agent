@@ -22,8 +22,8 @@ Newton Primitive Collision Compiler is a proposal for primitive-first, simulatio
 
 Do not claim:
 
-- physical safety guarantee;
-- real-world transfer guarantee;
+- Do not claim a physical safety guarantee;
+- Do not claim a real-world transfer guarantee;
 - deployment readiness;
 - benchmark superiority;
 - complete replacement of convex decomposition;
@@ -62,6 +62,6 @@ The ask is for milestone-based exploration. If the non-LLM baseline cannot show 
 
 Strategic story: physics engines are executable diagnostic layers for AI model physical safety constraints, and collision proxies are a low-level contract that must be checked.
 
-Narrow first milestone: non-LLM primitive baseline plus Newton checker/verifier in 0-4 weeks.
+Narrow first milestone: non-LLM primitive baseline plus Newton diagnostic checker in 0-4 weeks.
 
 Current non-goals: safety guarantee, real-world transfer, deployment readiness, benchmark superiority, and complete replacement of convex decomposition.

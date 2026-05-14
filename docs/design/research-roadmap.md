@@ -52,7 +52,7 @@ The roadmap supports AI model physical safety constraints by improving one execu
 
 ## Narrow First Milestone
 
-The immediate milestone is Phase 0 into Phase 1: non-LLM primitive baseline plus Newton checker/verifier.
+The immediate milestone is Phase 0 into Phase 1: non-LLM primitive baseline plus Newton diagnostic checker.
 
 ## Current Non-Goals
 

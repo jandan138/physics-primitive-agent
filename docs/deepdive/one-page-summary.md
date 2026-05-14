@@ -21,7 +21,7 @@ The project does not claim that primitives fully replace convex decomposition. C
 0-4 weeks:
 
 - build a non-LLM primitive baseline;
-- build a Newton checker/verifier harness;
+- build a Newton diagnostic checker harness;
 - run 5-10 provenance-clear assets;
 - compare against 2-3 simple/existing baselines;
 - report primitive count, fallback surface ratio, generation failure rate, step time, contact count, and penetration or jitter.

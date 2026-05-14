@@ -1,0 +1,9 @@
+experiments:
+  - id: phase0-deepdive-proof-point
+    status: planned
+    config: configs/experiments/phase0_baseline.yaml
+    record: docs/records/2026-05-14-project-bootstrap.md
+    purpose: >
+      Define the first 0-4 week diagnostic proof point for primitive collision contracts.
+    claims_supported:
+      - bootstrap proposal only
