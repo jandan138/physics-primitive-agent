@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
 import yaml
-from pxr import Usd, UsdGeom
 
 from primitive_collision_compiler import cli
 
@@ -26,6 +26,8 @@ def _write_newton_check_config(path: Path, source_dir: Path):
 
 
 def _write_tiny_usd(path: Path):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
     stage = Usd.Stage.CreateNew(str(path))
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
     root = stage.DefinePrim("/Root", "Xform")
@@ -171,3 +173,57 @@ def test_check_assets_prefers_cpd_like_manifest_over_seed_asset(tmp_path, capsys
 
     payload = json.loads(capsys.readouterr().out)
     assert [report["role"] for report in payload["reports"]] == ["manifest_asset"]
+
+
+def test_check_assets_reports_clean_error_for_malformed_manifest(tmp_path, capsys):
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump({"assets": [{"role": "fixture_asset", "path": "/tmp/a.usda"}, "bad-entry"]}),
+        encoding="utf-8",
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                f"  path: {manifest_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--check-assets"]) == 2
+
+    captured = capsys.readouterr()
+    assert "asset manifest entry 1 must be a mapping" in captured.err
+    assert "Traceback" not in captured.err
+
+
+def test_check_assets_returns_json_for_asset_read_error(tmp_path, capsys):
+    asset_dir = tmp_path / "asset_dir.usd"
+    asset_dir.mkdir()
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump({"assets": [{"role": "fixture_asset", "path": str(asset_dir), "sha256": "abc"}]}),
+        encoding="utf-8",
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                f"  path: {manifest_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--check-assets"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "smoke_failed"
+    assert payload["reports"][0]["status"] == "read_error"

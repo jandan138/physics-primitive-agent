@@ -125,12 +125,14 @@ Append to `tests/test_usd_smoke.py`:
 from pathlib import Path
 
 import yaml
-from pxr import Usd, UsdGeom
+import pytest
 
 from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
 
 
 def _write_tiny_usd(path: Path):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
     stage = Usd.Stage.CreateNew(str(path))
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
     UsdGeom.SetStageMetersPerUnit(stage, 1.0)
@@ -228,7 +230,13 @@ def load_asset_manifest(path: str | Path) -> list[dict[str, Any]]:
     assets = data.get("assets", [])
     if not isinstance(assets, list):
         raise ValueError("asset manifest key assets must be a list")
-    return [dict(asset) for asset in assets if isinstance(asset, dict)]
+
+    normalized_assets: list[dict[str, Any]] = []
+    for index, asset in enumerate(assets):
+        if not isinstance(asset, dict):
+            raise ValueError(f"asset manifest entry {index} must be a mapping")
+        normalized_assets.append(dict(asset))
+    return normalized_assets
 
 
 def inspect_usd_asset(asset: dict[str, Any]) -> AssetSmokeReport:
@@ -307,11 +315,13 @@ git commit -m "feat: add usd asset smoke checks"
 Append to `tests/test_cli.py`:
 
 ```python
-from pxr import Usd, UsdGeom
+import pytest
 import yaml
 
 
 def _write_tiny_usd(path: Path):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
     stage = Usd.Stage.CreateNew(str(path))
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
     root = stage.DefinePrim("/Root", "Xform")
@@ -487,8 +497,8 @@ Run:
 python -m pytest -q
 python scripts/validate_docs.py
 git diff --check
-python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-assets
-python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton
+PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-assets
+PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-newton
 ```
 
 Expected: tests pass; docs validate; whitespace check passes; asset smoke returns `smoke_passed`; Newton check returns `dependency_gap` until `warp` is installed.
@@ -509,3 +519,11 @@ git commit -m "docs: record newton usd smoke slice"
 - Placeholder scan: No incomplete placeholders remain.
 - Type consistency: `AssetSmokeReport`, `EnvironmentCheck`, and CLI JSON keys match across tests and
   implementation tasks.
+
+## Review Hardening
+
+- [x] Manifest entries are validated as mappings; malformed entries fail closed with a clean CLI
+  error instead of being skipped.
+- [x] Asset hash read failures return a structured `read_error` asset report and a failing CLI exit.
+- [x] USD-dependent tests import `pxr.Usd` and `pxr.UsdGeom` only inside USD fixture helpers, so
+  unrelated CLI and manifest tests still collect in environments without USD.

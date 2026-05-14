@@ -36,6 +36,7 @@ The approach has three advantages:
 Add `primitive_collision_compiler.assets.usd_smoke` with two public functions:
 
 - `load_asset_manifest(path)`: parse the existing smoke asset manifest and return asset entries.
+  Reject malformed manifests or non-mapping asset entries instead of silently skipping them.
 - `inspect_usd_asset(asset)`: check path existence, optional SHA-256, `pxr.Usd` availability, USD
   stage open, default prim, prim count, up axis, and meters-per-unit.
 
@@ -49,11 +50,11 @@ Add CLI support:
 npc-compile --config configs/experiments/cpd_like_baseline.yaml --check-assets
 ```
 
-The command reads the `asset.path` manifest from the config and prints JSON with one report per
-manifest asset. For the CPD-like baseline config, the seed object remains in `asset.path`, so the
-manifest path lives in `cpd_like.asset_manifest`. The CLI prefers `cpd_like.asset_manifest` and
-falls back to `asset.path` for temporary manifest-only configs. It returns exit `0` only when every
-report status is `smoke_passed`.
+The command reads the configured smoke manifest and prints JSON with one report per manifest asset.
+For the CPD-like baseline config, the seed object remains in `asset.path`, so the manifest path
+lives in `cpd_like.asset_manifest`. The CLI prefers `cpd_like.asset_manifest` and falls back to
+`asset.path` for temporary manifest-only configs. It returns exit `0` only when every report status
+is `smoke_passed`.
 
 ## Status Contract
 
@@ -61,6 +62,7 @@ report status is `smoke_passed`.
   `Usd.Stage.Open` returns a stage.
 - `missing_asset`: the manifest path points to a missing file.
 - `hash_mismatch`: a provided SHA-256 does not match the file.
+- `read_error`: the file exists but cannot be read for a configured hash check.
 - `dependency_gap`: `pxr.Usd` is unavailable.
 - `usd_open_failed`: USD cannot open the file or raises an exception.
 

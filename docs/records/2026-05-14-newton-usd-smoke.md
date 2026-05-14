@@ -13,11 +13,12 @@ Complete
 - Added USD asset-open smoke diagnostics for the CPD-like smoke manifest.
 - Added `npc-compile --check-assets`.
 - Added `cpd_like.asset_manifest` to keep the bed seed asset path separate from the smoke manifest.
+- Added fail-closed manifest validation and structured asset `read_error` reporting.
 - Kept Newton runtime status separate from USD asset-open status.
 
 ## Verification
 
-- `python -m pytest -q`: exit 0, 33 passed.
+- `python -m pytest -q`: exit 0, 37 passed.
 - `python scripts/validate_docs.py`: exit 0.
 - `git diff --check`: exit 0.
 - `PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --check-assets`: exit 0, status `smoke_passed`.

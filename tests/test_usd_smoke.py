@@ -1,13 +1,15 @@
 from pathlib import Path
 
+import pytest
 import yaml
-from pxr import Usd, UsdGeom
 
 from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
 from primitive_collision_compiler.reports.schema import AssetSmokeReport, EnvironmentCheck
 
 
 def _write_tiny_usd(path: Path):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
     stage = Usd.Stage.CreateNew(str(path))
     UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.z)
     UsdGeom.SetStageMetersPerUnit(stage, 1.0)
@@ -67,6 +69,17 @@ def test_load_asset_manifest_returns_assets(tmp_path):
     ]
 
 
+def test_load_asset_manifest_rejects_malformed_asset_entry(tmp_path):
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump({"assets": [{"role": "fixture_asset", "path": "/tmp/a.usda"}, "bad-entry"]}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="asset manifest entry 1 must be a mapping"):
+        load_asset_manifest(manifest_path)
+
+
 def test_inspect_usd_asset_reports_smoke_passed_for_openable_stage(tmp_path):
     asset_path = tmp_path / "asset.usda"
     _write_tiny_usd(asset_path)
@@ -87,3 +100,13 @@ def test_inspect_usd_asset_reports_missing_asset(tmp_path):
 
     assert report.status == "missing_asset"
     assert report.checks[0].name == "asset_path"
+
+
+def test_inspect_usd_asset_reports_read_error_for_directory_hash(tmp_path):
+    asset_dir = tmp_path / "asset_dir.usd"
+    asset_dir.mkdir()
+
+    report = inspect_usd_asset({"role": "fixture_asset", "path": str(asset_dir), "sha256": "abc"})
+
+    assert report.status == "read_error"
+    assert any(check.name == "sha256" and check.status == "read_error" for check in report.checks)

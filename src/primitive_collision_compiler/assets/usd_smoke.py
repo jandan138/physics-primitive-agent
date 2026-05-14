@@ -23,7 +23,13 @@ def load_asset_manifest(path: str | Path) -> list[dict[str, Any]]:
     assets = data.get("assets", [])
     if not isinstance(assets, list):
         raise ValueError("asset manifest key assets must be a list")
-    return [dict(asset) for asset in assets if isinstance(asset, dict)]
+
+    normalized_assets: list[dict[str, Any]] = []
+    for index, asset in enumerate(assets):
+        if not isinstance(asset, dict):
+            raise ValueError(f"asset manifest entry {index} must be a mapping")
+        normalized_assets.append(dict(asset))
+    return normalized_assets
 
 
 def inspect_usd_asset(asset: dict[str, Any]) -> AssetSmokeReport:
@@ -44,6 +50,8 @@ def inspect_usd_asset(asset: dict[str, Any]) -> AssetSmokeReport:
 
     checks.append(EnvironmentCheck("asset_path", "found", "path exists"))
     hash_status = _check_sha256(asset_path, str(asset.get("sha256", "")), checks)
+    if hash_status == "read_error":
+        return AssetSmokeReport("usd_open", "read_error", role, path, tuple(checks), {})
     if hash_status == "hash_mismatch":
         return AssetSmokeReport("usd_open", "hash_mismatch", role, path, tuple(checks), {})
 
@@ -74,7 +82,12 @@ def _check_sha256(asset_path: Path, expected_sha256: str, checks: list[Environme
         checks.append(EnvironmentCheck("sha256", "not_configured", "manifest has no sha256"))
         return "not_configured"
 
-    actual_sha256 = _sha256_file(asset_path)
+    try:
+        actual_sha256 = _sha256_file(asset_path)
+    except OSError as exc:
+        detail = f"{type(exc).__name__}: {exc}"
+        checks.append(EnvironmentCheck("sha256", "read_error", detail))
+        return "read_error"
     if actual_sha256 != expected_sha256:
         detail = f"expected {expected_sha256}, got {actual_sha256}"
         checks.append(EnvironmentCheck("sha256", "hash_mismatch", detail))
