@@ -1,27 +1,32 @@
 # Newton Primitive Collision Compiler
 
+## Overview
+
+The Newton Primitive Collision Compiler is a bootstrap-stage repository for a future
+DeepDive-first workflow around Newton primitive collision artifacts.
+
 ## Current Status
 
 This repository is a proposal/bootstrap for a DeepDive-first Newton primitive collision
 compiler. It does not implement real mesh processing yet, and the `src/` package and test
-suite are intentionally deferred to later bootstrap tasks.
+suite contain only command-surface stubs for now.
 
 ## Strategic Framing
 
-The project explores whether primitive collision representations can be compiled from
-research-backed descriptions, source notes, and simulation-checked records before committing
-to a production mesh-processing implementation. The bootstrap phase keeps claims narrow so
-the repository can separate documented intent from executable behavior.
+The project intends to explore whether primitive collision representations can be compiled
+from research-backed descriptions, source notes, and simulation-checked records before
+committing to a production mesh-processing implementation. The bootstrap phase keeps claims
+narrow so the repository can separate documented intent from executable behavior.
 
-## Recommended Claim
+## Safe Claim
 
 Use this framing for current work:
 
 The Newton Primitive Collision Compiler is a bootstrap-stage proposal for a DeepDive-first
-workflow that will compile Newton primitive collision artifacts from documented, reviewed,
-and simulation-checked inputs.
+future workflow that intends to explore Newton primitive collision artifacts from documented,
+reviewed, and simulation-checked inputs.
 
-## Unsafe Claims
+## Unsafe Claim
 
 Do not claim that this repository currently:
 
@@ -35,12 +40,13 @@ Do not claim that this repository currently:
 ## Repository Layout
 
 - `docs/`: research notes, source records, and bootstrap planning materials.
+- `scripts/`: repository maintenance and validation commands.
+- `src/primitive_collision_compiler/`: command-surface stubs for the future package.
+- `tests/`: bootstrap tests for currently advertised command surfaces.
 - `pyproject.toml`: project metadata, packaging configuration, pytest configuration, and
   Ruff configuration.
 - `requirements.txt`: editable development install entry point.
 - `Makefile`: common development commands.
-
-Future source code is expected under `src/primitive_collision_compiler/`.
 
 ## Quick Start
 
@@ -65,12 +71,12 @@ make docs-check
 make validate
 ```
 
-## DeepDive Materials
+## DeepDive Navigation
 
 DeepDive source notes and bootstrap records live under `docs/`. These materials are the
 current basis for project framing, claim boundaries, and future implementation plans.
 
-## Non-Goals For Current Bootstrap
+## Current Non-Goals
 
 - No real mesh processing implementation.
 - No source package implementation.
