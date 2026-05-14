@@ -222,6 +222,119 @@ Avoid:
 The current design supports a future implementation plan. It does not itself support any result
 claim.
 
+## Newton Source Strategy
+
+Use official Newton source as a sibling checkout, not as vendored code in this repository.
+
+Preferred source:
+
+```text
+Repo URL: https://github.com/newton-physics/newton
+Local source directory: /cpfs/user/zhuzihou/dev/newton
+Environment variable: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton
+```
+
+The implementation should not import by hardcoded absolute path. Use the installed `newton`
+package when available, and record `NEWTON_SOURCE_DIR` in configs or run records when the source
+checkout is used for editable development.
+
+Newton source, examples, assets, lockfiles, and run outputs must not be copied into this repo. This
+repo owns wrappers, configs, diagnostic records, and reports only.
+
+Required Newton environment fields for any run record:
+
+- `newton.repo_url`;
+- `newton.install_mode`;
+- `newton.source_dir`;
+- `newton.git_tag`;
+- `newton.git_commit`;
+- `newton.package_version`;
+- `python_version`;
+- `os`;
+- `arch`;
+- `gpu_model`;
+- `nvidia_driver`;
+- `cuda_runtime_or_device`;
+- `warp_version`;
+- `device`;
+- `solver`;
+- `contact_or_margin_settings`;
+- `seed`;
+- `headless_or_viewer_mode`.
+
+If source clone or installation fails, record it as a dependency gap. Do not convert dependency
+setup failure into an algorithm result.
+
+## Seed Asset Lanes
+
+The first asset set has two lanes: CPD-like rigid-object smoke assets and Newton import compatibility
+assets. Keep them separate in manifests, reports, and summaries.
+
+### Bed Dev Smoke Asset
+
+The user-provided bed USD is suitable as a first development smoke asset, not as benchmark evidence
+until provenance and normalization metadata are complete.
+
+```text
+asset_id: grscenes_bed_0a85b986de35ccfdec7c686d791fd747
+role: dev_smoke_rigid_object
+raw_path: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets/bed/0a85b986de35ccfdec7c686d791fd747/usd/0a85b986de35ccfdec7c686d791fd747.usd
+file_size: 40M
+sha256: 1bc5a26ddb2551de4ac7acbc13a39d118beda10db503419da65ce82528322265
+known_license_context: GRScenes README advertises cc-by-nc-sa-4.0 for the dataset tree
+benchmark_status: excluded_until_provenance_units_bbox_and_conversion_history_are_recorded
+```
+
+Use it to expose USD import, scale, mesh intake, primitive budget, and Newton contact/probe issues.
+Do not use it as the only headline benchmark asset.
+
+### Robot Import Compatibility Asset
+
+Franka/Panda-style robot USDs are useful for Newton USD/articulation import smoke testing, but they
+should not enter the CPD-like primitive decomposition aggregate in the first phase. Articulated
+robots add link frames, joints, existing collision authoring, self-collision, controllers, and pose
+state, which would confound the rigid-object baseline.
+
+Local candidate:
+
+```text
+asset_id: grscenes_franka_import_smoke
+role: newton_import_compat_smoke
+raw_path: /cpfs/user/zhuzihou/assets/zzh-grscenes/robots/franka/franka.usd
+file_size: 78K
+sha256: 2bfd004928d4157ca2fdca3e79bcfb913b4008eef3ec16f839ad89314141976b
+known_license_context: /cpfs/user/zhuzihou/assets/zzh-grscenes/README.md advertises cc-by-nc-sa-4.0
+dependencies: robots/franka/Props/panda_link*.usd and gripper/link USD references
+benchmark_status: excluded_from_cpd_like_aggregate
+```
+
+Preferred fallback if Franka provenance or references are unclear: create a minimal two-link or
+simple gripper USD fixture with explicit provenance and use it only for import compatibility.
+
+Required asset manifest fields before an asset can support evidence:
+
+- `asset_id`;
+- `category`;
+- `role`;
+- `source_dataset_or_repo`;
+- `license`;
+- `permitted_uses`;
+- `raw_path`;
+- `committed_status`;
+- `sha256`;
+- `file_size`;
+- `usd_format`;
+- `external_dependencies`;
+- `conversion_steps`;
+- `unit_or_meter_scale`;
+- `up_axis`;
+- `bbox_dimensions`;
+- `origin_orientation_normalization`;
+- `mass_inertia_assumption`;
+- `asset_split`;
+- `task_probes`;
+- `baseline_inclusion_or_exclusion_reason`.
+
 ## Non-Conflicts With Later Work
 
 This baseline should make later work cleaner if dependencies stay one-way:
