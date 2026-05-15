@@ -98,6 +98,9 @@ change.
 For a plain-language explanation of this boundary, see
 [CPD objective report alignment](cpd-objective-report-alignment.md).
 
+For a plain-language explanation of the latest Newton-native runtime bundle, see
+[Newton-native primitive bundle explainer](newton-native-primitive-bundle-explainer.md).
+
 ## Is The Objective Report Paper-Consistent?
 
 The short answer is: consistent in design intent, not yet consistent as a paper-faithful

@@ -102,6 +102,8 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Newton Native Primitive Bundle](2026-05-15-newton-native-primitive-bundle.md):
   mapping, builder dispatch, bounds, and clean-env synthetic smoke evidence for the native
   `cylinder`, `cone`, and `ellipsoid` runtime bundle.
+- [2026-05-15 Newton Native Bundle Explainer Docs](2026-05-15-newton-native-bundle-explainer-docs.md):
+  plain-language documentation update for the latest native runtime bundle in the CPD paper story.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

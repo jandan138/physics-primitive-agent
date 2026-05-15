@@ -34,6 +34,9 @@ diagnostic records exist.
 - [CPD objective report alignment](reference/cpd-objective-report-alignment.md):
   plain-language boundary between design-aligned surrogate objective accounting and a
   paper-faithful CPD objective implementation.
+- [Newton-native primitive bundle explainer](reference/newton-native-primitive-bundle-explainer.md):
+  plain-language explanation of what the latest `cylinder`/`cone`/`ellipsoid` runtime diagnostic
+  bundle adds to the CPD paper story, and what it does not claim.
 
 ## Source Intake And Planning
 
@@ -85,6 +88,8 @@ diagnostic records exist.
 - [Newton native primitive bundle record](records/2026-05-15-newton-native-primitive-bundle.md):
   mapping, builder dispatch, bounds, and clean-env synthetic smoke evidence for `cylinder`,
   `cone`, and `ellipsoid`.
+- [Newton native bundle explainer docs record](records/2026-05-15-newton-native-bundle-explainer-docs.md):
+  documentation update that explains the latest native runtime bundle in the CPD paper story.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.
