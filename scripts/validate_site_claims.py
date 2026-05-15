@@ -17,13 +17,19 @@ UNSUPPORTED_PERMISSION_WORDS = (
     "authorized bilingual paper companion",
     "authorized_bilingual_companion",
 )
+STALE_PUBLICATION_GATING_COPY = (
+    "Public full-text expansion should wait for the private permission record"
+)
+PERMISSION_RECORD_GLOB = "docs/records/*cpd-paper-permission*.md"
 
 
-def validate_site_text(path: str, text: str) -> list[str]:
+def validate_site_text(path: str, text: str, has_permission_record: bool = False) -> list[str]:
     issues: list[str] = []
     for phrase in UNSUPPORTED_PERMISSION_WORDS:
         if phrase in text:
             issues.append(f"{path}: permission wording must stay record-pending until evidence is attached")
+    if STALE_PUBLICATION_GATING_COPY in text:
+        issues.append(f"{path}: stale publication gating copy conflicts with current publication state")
     if re.search(r"href=\{?`?[\"']?/paper/", text):
         issues.append(f"{path}: hardcoded root-relative paper href; use BASE_URL-aware links")
     if '"/physics-primitive-agent/' in text or "'/physics-primitive-agent/" in text:
@@ -34,8 +40,14 @@ def validate_site_text(path: str, text: str) -> list[str]:
             issues.append(f"{path}: reproduction status {status!r} requires a dated reproduction record")
     if 'translation=""' in text:
         issues.append(f"{path}: empty draft translation is not allowed in generated paper content")
-    if "paper-assets/" in text and "withheld until the permission record" not in text:
+    if (
+        "paper-assets/" in text
+        and "withheld until the permission record" not in text
+        and not has_permission_record
+    ):
         issues.append(f"{path}: paper asset publication requires attached permission evidence")
+    if "<LatexBlock" in text and "/ control /" in text:
+        issues.append(f"{path}: reader-visible LaTeX control should be omitted from generated content")
     if "site/src/pages/paper" in path and REQUIRED_BANNER not in text and "PaperLayout" not in text:
         issues.append(f"{path}: missing source namespace banner")
     if "PaperBlock" in text and 'sourceNamespace="cpd_paper_source_text"' not in text:
@@ -47,6 +59,7 @@ def validate_site_text(path: str, text: str) -> list[str]:
 
 def validate_site(root: Path) -> list[str]:
     issues: list[str] = []
+    has_permission_record = any(root.glob(PERMISSION_RECORD_GLOB))
     layout_path = root / "site/src/layouts/PaperLayout.astro"
     if layout_path.exists() and REQUIRED_BANNER not in layout_path.read_text(encoding="utf-8"):
         issues.append("site/src/layouts/PaperLayout.astro: missing source namespace banner")
@@ -58,7 +71,13 @@ def validate_site(root: Path) -> list[str]:
             if file_path.suffix not in {".astro", ".mdx", ".json"}:
                 continue
             relative = file_path.relative_to(root).as_posix()
-            issues.extend(validate_site_text(relative, file_path.read_text(encoding="utf-8")))
+            issues.extend(
+                validate_site_text(
+                    relative,
+                    file_path.read_text(encoding="utf-8"),
+                    has_permission_record=has_permission_record,
+                )
+            )
     return issues
 
 

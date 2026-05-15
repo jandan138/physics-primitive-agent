@@ -12,14 +12,21 @@ export async function getStaticPaths() {
 const { section } = Astro.props;
 const modules = import.meta.glob("../../content/paper/*.mdx");
 const modulePath = `../../content/paper/${section.slug}.mdx`;
-const Content = modules[modulePath] ? (await modules[modulePath]()).default : null;
+const loadedModule = modules[modulePath] ? await modules[modulePath]() : null;
+const Content = loadedModule ? loadedModule.default : null;
+const content = loadedModule?.frontmatter ?? {};
+const fallbackDescription = `${section.title} section of the CPD paper companion with source text, draft Chinese translation, and claim-bounded project notes.`;
 const navItems = manifest.sections.map((item) => ({
   href: `paper/${item.slug}/`,
   label: item.title,
 }));
 ---
 
-<PaperLayout title={`${section.title} | CPD Paper Companion`} navItems={navItems}>
+<PaperLayout
+  title={`${section.title} | CPD Paper Companion`}
+  description={content.description || fallbackDescription}
+  navItems={navItems}
+>
   {Content ? <Content /> : (
     <section class="paper-block">
       <h1>{section.title}</h1>

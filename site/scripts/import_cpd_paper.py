@@ -3,6 +3,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 
 SECTION_RE = re.compile(r"^\\section(?:\{\\label\{[^}]+\}([^}]+)\}|\{([^}]+)\})")
@@ -12,7 +15,11 @@ BEGIN_RE = re.compile(r"\\begin\{([^}]+)\}")
 END_RE = re.compile(r"\\end\{([^}]+)\}")
 INPUT_RE = re.compile(r"\\input\{([^}]+)\}")
 IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".pdf")
-P_SEQUENCE_TYPES = {"paragraph", "caption", "latex_control"}
+WEB_IMAGE_EXTENSION = ".webp"
+WEB_IMAGE_MAX_DIMENSION = 1600
+WEB_IMAGE_QUALITY = 78
+P_SEQUENCE_TYPES = {"paragraph", "caption"}
+GRAPHICS_RE = re.compile(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}")
 
 SECTION_TITLES = {
     "abstract": "Abstract",
@@ -45,14 +52,16 @@ def parse_latex_blocks(text: str) -> list[dict[str, str]]:
         if not environment_lines:
             return
         environment_text = "\n".join(environment_lines).strip()
-        blocks.append(
-            {
-                "type": "latex_block",
-                "environment": root_environment,
-                "text": environment_text,
-            }
-        )
-        for caption in extract_captions(environment_text):
+        captions = extract_captions(environment_text)
+        latex_block = {
+            "type": "latex_block",
+            "environment": root_environment,
+            "text": environment_text,
+        }
+        if captions:
+            latex_block["caption"] = " ".join(captions)
+        blocks.append(latex_block)
+        for caption in captions:
             blocks.append(
                 {
                     "type": "caption",
@@ -128,17 +137,81 @@ def parse_latex_blocks(text: str) -> list[dict[str, str]]:
 
 def clean_inline_latex(value: str) -> str:
     value = value.replace("~", " ")
+    value = _replace_href_commands(value)
     value = re.sub(r"\\paragraph\*?\{([^}]+)\}", r"\1:", value)
     value = re.sub(r"\\label\{[^}]+\}", "", value)
+    value = re.sub(r"\\color\{[^}]+\}\s*", "", value)
+    value = re.sub(r"\\url\{([^{}]+)\}", r"\1", value)
     value = re.sub(r"\\(?:short)?cite\{([^}]+)\}", r"[\1]", value)
-    value = re.sub(r"\\ref\{([^}]+)\}", r"ref:\1", value)
-    value = re.sub(r"\\(?:emph|texttt|textbf|textit|mathrm|mathbf|mathbb)\{([^{}]+)\}", r"\1", value)
-    value = re.sub(r"\\num\{([^{}]+)\}", r"\1", value)
-    value = re.sub(r"\\vect\{([^{}]+)\}", r"\1", value)
+    value = re.sub(r"\\(?:auto)?ref\{([^}]+)\}", lambda match: _clean_ref_label(match.group(1)), value)
+    value = re.sub(r"\\eqref\{([^}]+)\}", lambda match: f"Eq. {_clean_ref_label(match.group(1))}", value)
+    previous = None
+    while previous != value:
+        previous = value
+        value = re.sub(
+            r"\\(?:emph|texttt|textbf|textit|text|mathrm|mathbf|mathbb|mathcal|mathsf)\{([^{}]+)\}",
+            r"\1",
+            value,
+        )
+        value = re.sub(r"\\num\{([^{}]+)\}", r"\1", value)
+        value = re.sub(r"\\vect\{([^{}]+)\}", r"\1", value)
     value = re.sub(r"\\(?:ccby|ccbync|cczero)\s*([^.]*)", r"License: \1", value)
     value = value.replace("\\slash", "/")
+    value = value.replace("\\&", "&")
+    value = value.replace("\\_", "_")
+    value = value.replace("\\%", "%")
+    value = value.replace("``", '"').replace("''", '"')
+    replacements = {
+        "\\leq": "<=",
+        "\\geq": ">=",
+        "\\neq": "!=",
+        "\\approx": "~",
+        "\\times": "x",
+        "\\cdot": "*",
+        "\\inR": "in R",
+        "\\infty": "infinity",
+        "\\Delta": "Delta",
+        "\\delta": "delta",
+        "\\alpha": "alpha",
+        "\\beta": "beta",
+        "\\gamma": "gamma",
+        "\\lambda": "lambda",
+        "\\theta": "theta",
+        "\\mu": "mu",
+        "\\sigma": "sigma",
+        "\\pi": "pi",
+        "\\omega": "omega",
+        "\\ell": "ell",
+    }
+    for latex, replacement in replacements.items():
+        value = value.replace(latex, replacement)
+    value = re.sub(r"\bref:[A-Za-z]+:([A-Za-z0-9_.-]+)", r"\1", value)
+    value = re.sub(r"\bref:([A-Za-z0-9_.:-]+)", lambda match: _clean_ref_label(match.group(1)), value)
+    value = re.sub(r"\\([A-Za-z]+)", r"\1", value)
     value = re.sub(r"\s+", " ", value)
     return value.strip()
+
+
+def _replace_href_commands(value: str) -> str:
+    command = "\\href"
+    index = value.find(command)
+    while index != -1:
+        first_start = index + len(command)
+        if first_start >= len(value) or value[first_start] != "{":
+            index = value.find(command, index + len(command))
+            continue
+        _, first_end = _read_balanced_braces(value, first_start)
+        if first_end >= len(value) or value[first_end] != "{":
+            index = value.find(command, first_end)
+            continue
+        label, second_end = _read_balanced_braces(value, first_end)
+        value = f"{value[:index]}{clean_inline_latex(label)}{value[second_end:]}"
+        index = value.find(command, index + len(label))
+    return value
+
+
+def _clean_ref_label(label: str) -> str:
+    return label.split(":")[-1].replace("_", "-")
 
 
 def strip_latex_comment(value: str) -> str:
@@ -165,6 +238,11 @@ def extract_captions(environment_text: str) -> list[str]:
         if caption:
             captions.append(clean_inline_latex(" ".join(caption.splitlines())))
         index = end
+
+
+def extract_graphic_references(environment_text: str) -> list[str]:
+    uncommented = "\n".join(strip_latex_comment(line) for line in environment_text.splitlines())
+    return [match.group(1).strip() for match in GRAPHICS_RE.finditer(uncommented)]
 
 
 def _read_balanced_braces(text: str, open_brace_index: int) -> tuple[str, int]:
@@ -241,6 +319,7 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
         f'slug: "{section["slug"]}"',
         "---",
         'import PaperBlock from "../../components/PaperBlock.astro";',
+        'import FigurePanel from "../../components/FigurePanel.astro";',
         'import LatexBlock from "../../components/LatexBlock.astro";',
         "",
         f"# {section['title']}",
@@ -255,8 +334,8 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
                     "<PaperBlock",
                     f'  id="{paragraph_id}"',
                     f'  section="{escape_attr(str(section["title"]))}"',
-                    f'  original="{escape_attr(str(block["text"]))}"',
-                    f'  translation="{escape_attr(translations.get(paragraph_id, ""))}"',
+                    f'  original="{escape_attr(clean_inline_latex(str(block["text"])))}"',
+                    f'  translation="{escape_attr(clean_inline_latex(translations.get(paragraph_id, "")))}"',
                     '  translationStatus="draft_ai_assisted"',
                     f'  explanationStatus="{block_kind}"',
                     '  reproductionStatus="not_started"',
@@ -272,36 +351,41 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
         elif block["type"] == "latex_block":
             latex_id = str(block["id"])
             label = escape_attr(f'{section["title"]} / {block.get("environment", "latex")} / {latex_id}')
-            lines.extend(
-                [
-                    f'<LatexBlock id="{latex_id}" label="{label}">',
-                    "",
-                    "```latex",
-                    str(block["text"]),
-                    "```",
-                    "",
-                    "</LatexBlock>",
-                    "",
-                ]
-            )
+            images = block.get("images", [])
+            if isinstance(images, list) and images:
+                caption = clean_inline_latex(str(block.get("caption", "Source-paper figure.")))
+                lines.extend(
+                    [
+                        f'<FigurePanel id="{latex_id}-figure"',
+                        f'  title="{label}"',
+                        f'  caption="{escape_attr(caption)}"',
+                        f"  images={{{format_mdx_string_array([str(image) for image in images])}}}",
+                        "/>",
+                        "",
+                    ]
+                )
+            else:
+                lines.extend(
+                    [
+                        f'<LatexBlock id="{latex_id}" label="{label}">',
+                        "",
+                        "```latex",
+                        str(block["text"]),
+                        "```",
+                        "",
+                        "</LatexBlock>",
+                        "",
+                    ]
+                )
         elif block["type"] == "latex_control":
-            latex_id = str(block["id"])
-            label = escape_attr(f'{section["title"]} / control / {latex_id}')
-            lines.extend(
-                [
-                    f'<LatexBlock id="{latex_id}" label="{label}">',
-                    "",
-                    "```latex",
-                    str(block["text"]),
-                    "```",
-                    "",
-                    "</LatexBlock>",
-                    "",
-                ]
-            )
+            continue
         else:
             lines.extend(["```latex", str(block["text"]), "```", ""])
     return "\n".join(lines).rstrip() + "\n"
+
+
+def format_mdx_string_array(values: list[str]) -> str:
+    return json.dumps(values, ensure_ascii=False)
 
 
 def load_translations(path: Path | None) -> dict[str, str]:
@@ -396,7 +480,9 @@ def escape_frontmatter(value: str) -> str:
     return value.replace('"', '\\"')
 
 
-def _section_from_file(source_file: Path) -> dict[str, object]:
+def _section_from_file(
+    source_file: Path, source_root: Path, asset_output: Path | None = None
+) -> dict[str, object]:
     slug = section_slug_for_file(source_file.name)
     blocks = parse_latex_blocks(source_file.read_text(encoding="utf-8"))
     section: dict[str, object] = {
@@ -411,7 +497,72 @@ def _section_from_file(source_file: Path) -> dict[str, object]:
             block["id"] = next(ids)
         elif block["type"] == "latex_block":
             block["id"] = next(latex_ids)
+            _attach_graphic_assets(block, source_root, asset_output)
     return section
+
+
+def _attach_graphic_assets(
+    block: dict[str, object], source_root: Path, asset_output: Path | None
+) -> None:
+    if asset_output is None:
+        return
+    references = extract_graphic_references(str(block["text"]))
+    images: list[str] = []
+    missing: list[str] = []
+    for reference in references:
+        resolved = resolve_asset_reference(source_root, reference)
+        if resolved is None:
+            missing.append(reference)
+            continue
+        images.append(materialize_paper_asset(source_root, resolved, asset_output))
+    if images:
+        block["images"] = images
+    if missing:
+        block["missing_images"] = missing
+
+
+def public_asset_path(source_root: Path, asset_path: Path) -> str:
+    relative = optimized_asset_relative_path(source_root, asset_path)
+    return f"paper-assets/{relative.as_posix()}"
+
+
+def optimized_asset_relative_path(source_root: Path, asset_path: Path) -> Path:
+    return asset_path.relative_to(source_root).with_suffix(WEB_IMAGE_EXTENSION)
+
+
+def materialize_paper_asset(source_root: Path, asset_path: Path, asset_output: Path) -> str:
+    public_relative = optimized_asset_relative_path(source_root, asset_path)
+    target = asset_output / public_relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if asset_path.suffix.lower() == ".pdf":
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            prefix = Path(tmp_dir) / "page"
+            subprocess.run(
+                ["pdftoppm", "-singlefile", "-png", "-r", "120", str(asset_path), str(prefix)],
+                check=True,
+            )
+            optimize_raster_asset(prefix.with_suffix(".png"), target)
+    else:
+        optimize_raster_asset(asset_path, target)
+    return f"paper-assets/{public_relative.as_posix()}"
+
+
+def optimize_raster_asset(source: Path, target: Path) -> None:
+    from PIL import Image, ImageOps
+
+    with Image.open(source) as image:
+        image = ImageOps.exif_transpose(image)
+        image.thumbnail(
+            (WEB_IMAGE_MAX_DIMENSION, WEB_IMAGE_MAX_DIMENSION),
+            Image.Resampling.LANCZOS,
+        )
+        if image.mode in {"RGBA", "LA"}:
+            background = Image.new("RGB", image.size, (255, 255, 255))
+            background.paste(image, mask=image.getchannel("A"))
+            image = background
+        elif image.mode != "RGB":
+            image = image.convert("RGB")
+        image.save(target, "WEBP", quality=WEB_IMAGE_QUALITY, method=6)
 
 
 def _is_standalone_latex_control(line: str) -> bool:
@@ -462,12 +613,14 @@ def _section_files_from_main(source_root: Path) -> list[Path]:
     return section_files
 
 
-def import_sections(source_root: Path) -> list[dict[str, object]]:
+def import_sections(source_root: Path, asset_output: Path | None = None) -> list[dict[str, object]]:
     sections: list[dict[str, object]] = []
     main_file = source_root / "main.tex"
     if main_file.exists():
         sections.append(_abstract_section_from_main(main_file))
-    sections.extend(_section_from_file(path) for path in _section_files_from_main(source_root))
+    sections.extend(
+        _section_from_file(path, source_root, asset_output) for path in _section_files_from_main(source_root)
+    )
     return sections
 
 
@@ -476,10 +629,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--translations", type=Path)
+    parser.add_argument("--asset-output", type=Path)
     args = parser.parse_args(argv)
 
     translations = load_translations(args.translations)
-    sections = import_sections(args.source)
+    if args.asset_output is not None:
+        shutil.rmtree(args.asset_output, ignore_errors=True)
+        args.asset_output.mkdir(parents=True, exist_ok=True)
+    sections = import_sections(args.source, args.asset_output)
     missing = missing_translation_ids(sections, translations)
     if missing:
         preview = ", ".join(missing[:12])

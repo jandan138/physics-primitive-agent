@@ -12,11 +12,19 @@ const navItems = manifest.sections.map((section) => ({
   href: `paper/${section.slug}/`,
   label: section.title,
 }));
+const statusLabels: Record<string, string> = {
+  draft_ai_assisted: "AI-assisted draft; human review pending",
+  user_asserted_permission_record_pending: "User-confirmed permission; evidence record pending",
+  pending_user_supplied_record_or_redacted_summary: "Formal permission artifact pending",
+  permission_record_pending_bilingual_companion_scaffold_not_cpd_reproduction:
+    "Bilingual companion; not a project reproduction claim",
+};
+const statusLabel = (value: string) => statusLabels[value] ?? value.replaceAll("_", " ");
 ---
 
 <PaperLayout
   title="CPD Paper Companion"
-  description="Permission-record-pending bilingual CPD paper companion scaffold"
+  description="Bilingual CPD paper companion with source text, draft Chinese translation, and claim-bounded project notes."
   navItems={navItems}
 >
   <section class="paper-hero">
@@ -24,9 +32,9 @@ const navItems = manifest.sections.map((section) => ({
     <h1>Convex Primitive Decomposition for Collision Detection</h1>
     <p>
       English source text with AI-assisted Chinese draft translation. Translation is not yet
-      human-reviewed. Public full-text expansion should wait for the private permission record or
-      a redacted permission summary. Project reproduction notes are claim-bounded and added only
-      where dated records exist.
+      human-reviewed. Full text and paper figures are published from the user-confirmed source
+      intake while the formal authorization artifact is being attached. Project reproduction notes
+      remain claim-bounded and are added only where dated records exist.
     </p>
     <dl class="paper-meta-grid">
       <div>
@@ -35,15 +43,15 @@ const navItems = manifest.sections.map((section) => ({
       </div>
       <div>
         <dt>Translation</dt>
-        <dd>{manifest.translation_status}</dd>
+        <dd>{statusLabel(manifest.translation_status)}</dd>
       </div>
       <div>
         <dt>Permission</dt>
-        <dd>{manifest.permission_status}</dd>
+        <dd>{statusLabel(manifest.permission_status)}</dd>
       </div>
       <div>
         <dt>Claim Boundary</dt>
-        <dd>{manifest.claim_boundary}</dd>
+        <dd>{statusLabel(manifest.claim_boundary)}</dd>
       </div>
     </dl>
   </section>
@@ -51,7 +59,7 @@ const navItems = manifest.sections.map((section) => ({
     {manifest.sections.map((section) => (
       <a class="paper-section-link" href={withBase(`paper/${section.slug}/`)}>
         <span>{section.title}</span>
-        <small>{manifest.translation_status}</small>
+        <small>{statusLabel(manifest.translation_status)}</small>
       </a>
     ))}
   </section>

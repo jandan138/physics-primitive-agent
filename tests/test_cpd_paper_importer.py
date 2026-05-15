@@ -67,7 +67,7 @@ def test_parser_preserves_standalone_latex_controls_without_translation():
     assert blocks[1]["text"] == "\\newpage"
 
 
-def test_p_sequence_ids_reserve_latex_control_slots():
+def test_p_sequence_ids_skip_latex_control_slots():
     importer = _load_importer()
     section = {
         "slug": "method",
@@ -80,7 +80,7 @@ def test_p_sequence_ids_reserve_latex_control_slots():
 
     ids = importer.paragraph_ids(section)
 
-    assert ids == ["method-p001", "method-p002", "method-p003"]
+    assert ids == ["method-p001", "method-p002"]
 
 
 def test_stable_paragraph_ids_are_slugged_by_section():
@@ -133,7 +133,48 @@ def test_generate_mdx_renders_latex_blocks_with_gate_copy():
     assert "```latex" in mdx
 
 
-def test_generate_mdx_renders_latex_control_without_paper_block():
+def test_generate_mdx_renders_figure_panel_for_graphic_blocks():
+    importer = _load_importer()
+    section = {
+        "slug": "method",
+        "title": "Method",
+        "blocks": [
+            {
+                "type": "latex_block",
+                "id": "method-l001",
+                "environment": "figure",
+                "text": "\\begin{figure}\n\\includegraphics{assets/example}\n\\end{figure}",
+                "images": ["paper-assets/assets/example.jpg"],
+            },
+            {
+                "type": "caption",
+                "id": "method-p001",
+                "text": "A source-paper figure.",
+            },
+        ],
+    }
+
+    mdx = importer.render_section_mdx(section, {"method-p001": "论文图。"})
+
+    assert 'import FigurePanel from "../../components/FigurePanel.astro";' in mdx
+    assert '<FigurePanel id="method-l001-figure"' in mdx
+    assert 'images={["paper-assets/assets/example.jpg"]}' in mdx
+    assert '<LatexBlock id="method-l001"' not in mdx
+
+
+def test_extract_graphic_references_ignores_latex_comments():
+    importer = _load_importer()
+    text = (
+        "\\begin{figure}\n"
+        "% \\includegraphics{assets/commented}\n"
+        "\\includegraphics[width=0.5\\linewidth]{assets/visible}\n"
+        "\\end{figure}"
+    )
+
+    assert importer.extract_graphic_references(text) == ["assets/visible"]
+
+
+def test_generate_mdx_omits_latex_control_from_reader_output():
     importer = _load_importer()
     section = {
         "slug": "method",
@@ -143,8 +184,51 @@ def test_generate_mdx_renders_latex_control_without_paper_block():
 
     mdx = importer.render_section_mdx(section, {})
 
-    assert '<LatexBlock id="method-p002"' in mdx
+    assert "\\setlength" not in mdx
+    assert '<LatexBlock id="method-p002"' not in mdx
     assert "<PaperBlock" not in mdx
+
+
+def test_clean_inline_latex_removes_reader_hostile_tokens():
+    importer = _load_importer()
+
+    cleaned = importer.clean_inline_latex(
+        r"See Fig.~\ref{fig:maze} and \href{https://rapier.rs/}{\color{blue} Rapier}. "
+        r"\ccby Authors. Values satisfy x \leq y and V_i \inR^3. A \& B ``quoted''."
+    )
+
+    assert (
+        cleaned
+        == 'See Fig. maze and Rapier. License: Authors. Values satisfy x <= y and V_i in R^3. A & B "quoted".'
+    )
+
+
+def test_imported_experiment_translation_ids_stay_semantically_aligned():
+    importer = _load_importer()
+    source = REPO_ROOT / "docs" / "tmp" / "papers" / "arXiv-2602.07369v1"
+    translations = importer.load_translations(REPO_ROOT / "site" / "src" / "data" / "translations")
+    sections = importer.import_sections(source)
+    experiments = next(section for section in sections if section["slug"] == "experiments")
+    blocks_by_id = {
+        str(block["id"]): block
+        for block in experiments["blocks"]
+        if importer.is_translatable_block(block)
+    }
+
+    assert "frame duration" in blocks_by_id["experiments-p017"]["text"]
+    assert "帧耗时" in translations["experiments-p017"]
+    assert "1.63" not in translations["experiments-p017"]
+    assert "许可" not in translations["experiments-p017"]
+    assert "maximum allowed volume" in blocks_by_id["experiments-p022"]["text"]
+    assert "允许增加的最大体积" in translations["experiments-p022"]
+    assert "Limiting Excess Volume:" in blocks_by_id["experiments-p023"]["text"]
+    assert "限制额外体积" in translations["experiments-p023"]
+    assert "Timing:" in blocks_by_id["experiments-p024"]["text"]
+    assert "计时" in translations["experiments-p024"]
+    assert "ablate" in blocks_by_id["experiments-p026"]["text"]
+    assert "消融" in translations["experiments-p026"]
+    assert "Coplanar Vertices" in blocks_by_id["experiments-p028"]["text"]
+    assert "共面顶点" in translations["experiments-p028"]
 
 
 def test_asset_resolver_handles_case_mismatch(tmp_path):
@@ -158,6 +242,20 @@ def test_asset_resolver_handles_case_mismatch(tmp_path):
     resolved = importer.resolve_asset_reference(asset_root, "assets/Dungeon_level_coacd")
 
     assert resolved == actual
+
+
+def test_public_asset_paths_use_web_optimized_images():
+    importer = _load_importer()
+    source_root = REPO_ROOT / "docs/tmp/papers/arXiv-2602.07369v1"
+
+    assert (
+        importer.public_asset_path(source_root, source_root / "assets/example.jpg")
+        == "paper-assets/assets/example.webp"
+    )
+    assert (
+        importer.public_asset_path(source_root, source_root / "plots/example.pdf")
+        == "paper-assets/plots/example.webp"
+    )
 
 
 def test_extract_main_tex_abstract():

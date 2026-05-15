@@ -3,6 +3,7 @@ title: "Results And Ablations"
 slug: "experiments"
 ---
 import PaperBlock from "../../components/PaperBlock.astro";
+import FigurePanel from "../../components/FigurePanel.astro";
 import LatexBlock from "../../components/LatexBlock.astro";
 
 # Results And Ablations
@@ -50,8 +51,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p004"
   section="Results And Ablations"
-  original="To demonstrate the usability of our approach in rigid body simulation, our primary metric is in-simulation wall-time benchmarking to validate collider performance and correctness. We caveat that performance of any simulation is heavily dependent on hardware and physics engine, but trends should be similar across systems. To determine if a collision is similar to the input, we manually inspect the behavior, similar to prior work on simulation. Simulation details: We run all methods on a 8-core AMD Ryzen 7800X3D processor with all processing done on the CPU, using \href{https://rapier.rs/}{\color{blue} Rapier}. While most physics engines support boxes, capsules, and spheres, support for cylinders is mixed, and no engines known to the authors support trapezoidal prisms or frustums. Rapier supports cylinders, otherwise they can be discretized and represented as convex hulls, which is the approach we took for trapezoidal prisms and frustums."
-  translation="为展示我们的方法在刚体仿真中的可用性，我们的主要指标是在仿真中的墙钟时间基准测试，用于验证碰撞体性能和正确性。我们说明一点：任何仿真的性能都强烈依赖硬件和物理引擎，但不同系统上的趋势应当相似。为判断碰撞是否与输入相似，我们会像先前仿真工作一样手动检查其行为。仿真细节：我们在 8 核 AMD Ryzen 7800X3D 处理器上运行所有方法，所有处理均在 CPU 上完成，并使用 \href{https://rapier.rs/}{\color{blue} Rapier}。虽然大多数物理引擎支持盒体、胶囊体和球体，但对圆柱体的支持并不一致，并且据作者所知，没有引擎支持梯形棱柱或截头体。Rapier 支持圆柱体；否则它们可以被离散化并表示为凸包，这也是我们对梯形棱柱和截头体采用的方法。"
+  original="To demonstrate the usability of our approach in rigid body simulation, our primary metric is in-simulation wall-time benchmarking to validate collider performance and correctness. We caveat that performance of any simulation is heavily dependent on hardware and physics engine, but trends should be similar across systems. To determine if a collision is similar to the input, we manually inspect the behavior, similar to prior work on simulation. Simulation details: We run all methods on a 8-core AMD Ryzen 7800X3D processor with all processing done on the CPU, using Rapier. While most physics engines support boxes, capsules, and spheres, support for cylinders is mixed, and no engines known to the authors support trapezoidal prisms or frustums. Rapier supports cylinders, otherwise they can be discretized and represented as convex hulls, which is the approach we took for trapezoidal prisms and frustums."
+  translation="为展示我们的方法在刚体仿真中的可用性，我们的主要指标是在仿真中的墙钟时间基准测试，用于验证碰撞体性能和正确性。我们说明一点：任何仿真的性能都强烈依赖硬件和物理引擎，但不同系统上的趋势应当相似。为判断碰撞是否与输入相似，我们会像先前仿真工作一样手动检查其行为。仿真细节：我们在 8 核 AMD Ryzen 7800X3D 处理器上运行所有方法，所有处理均在 CPU 上完成，并使用 Rapier。虽然大多数物理引擎支持盒体、胶囊体和球体，但对圆柱体的支持并不一致，并且据作者所知，没有引擎支持梯形棱柱或截头体。Rapier 支持圆柱体；否则它们可以被离散化并表示为凸包，这也是我们对梯形棱柱和截头体采用的方法。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -59,39 +60,17 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l001" label="Results And Ablations / figure / experiments-l001">
-
-```latex
-\begin{figure}[ht]
-    \centering
-    \setlength{\tabcolsep}{1pt}
-    \begin{tabular}{c c c}
-        Input & Ours & CoACD \\
-        \includegraphics[width=0.3\linewidth]{assets/vera_original} &
-        \includegraphics[width=0.3\linewidth]{assets/vera_ours} &
-        \includegraphics[width=0.3\linewidth]{assets/vera_coacd} \\
-        %& \includegraphics[width=0.24\linewidth]{assets/simulation_vera} \\
-        |F| = 47790 & 298 Prim. & \footnotesize 46 Hulls, |F| = 9774 \\ %& (Ours shown) \\
-        \multicolumn{3}{c}{\tiny 138 Boxes, 146 Cyl., 12 Sph.} \\
-
-        {\footnotesize $\frac{\text{Haus/Cham New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$}
-        & {\footnotesize $0.0112/\num{1.15e-3}$} & {\footnotesize $0.0340/\num{7.10e-3}$} \\
-        \multicolumn{3}{c}{\includegraphics[width=0.9\linewidth]{plots/sim_comp_vera_posed}} \\
-    \end{tabular}
-    \caption{The Robot Vera model, tested in collision simulation by dropping 5000 spheres on top of it. A snapshot of our test simulation is shown on the right, with the model from our approach. Our approach is closer to the input model than CoACD, while having better performance as shown in the plot above. More model comparisons are in Fig.~\ref{fig:additional-sim-times}. \ccby JohnMesplay.}
-    \label{fig:sim-time}
-    %\Description{A chart comparing the duration of each frame for collision detection, for our approach, CoACD and V-HACD. The three approaches are quite similar, our approach is lower than the alternates, except at the tail-end where our approach is higher.}
-    \vspace{0.1em}
-\end{figure}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l001-figure"
+  title="Results And Ablations / figure / experiments-l001"
+  caption="The Robot Vera model, tested in collision simulation by dropping 5000 spheres on top of it. A snapshot of our test simulation is shown on the right, with the model from our approach. Our approach is closer to the input model than CoACD, while having better performance as shown in the plot above. More model comparisons are in Fig. additional-sim-times. License: JohnMesplay."
+  images={["paper-assets/assets/vera_original.webp", "paper-assets/assets/vera_ours.webp", "paper-assets/assets/vera_coacd.webp", "paper-assets/plots/sim_comp_vera_posed.webp"]}
+/>
 
 <PaperBlock
   id="experiments-p005"
   section="Results And Ablations"
-  original="The Robot Vera model, tested in collision simulation by dropping 5000 spheres on top of it. A snapshot of our test simulation is shown on the right, with the model from our approach. Our approach is closer to the input model than CoACD, while having better performance as shown in the plot above. More model comparisons are in Fig. ref:fig:additional-sim-times. License: JohnMesplay."
-  translation="Robot Vera 模型，通过在其顶部落下 5000 个球进行碰撞仿真测试。右侧展示了我们测试仿真的一个快照，其中使用的是我们方法得到的模型。与 CoACD 相比，我们的方法更接近输入模型，同时如上方图所示具有更好的性能。更多模型比较见图 ref:fig:additional-sim-times。许可：JohnMesplay。"
+  original="The Robot Vera model, tested in collision simulation by dropping 5000 spheres on top of it. A snapshot of our test simulation is shown on the right, with the model from our approach. Our approach is closer to the input model than CoACD, while having better performance as shown in the plot above. More model comparisons are in Fig. additional-sim-times. License: JohnMesplay."
+  translation="Robot Vera 模型，通过在其顶部落下 5000 个球进行碰撞仿真测试。右侧展示了我们测试仿真的一个快照，其中使用的是我们方法得到的模型。与 CoACD 相比，我们的方法更接近输入模型，同时如上方图所示具有更好的性能。更多模型比较见图 additional-sim-times。许可：JohnMesplay。"
   translationStatus="draft_ai_assisted"
   explanationStatus="caption"
   reproductionStatus="not_started"
@@ -102,8 +81,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p006"
   section="Results And Ablations"
-  original="We evaluated collision time on 24 meshes such as the robot shown in Fig. ref:fig:sim-time, with more results in Fig. ref:fig:additional-sim-times. When comparing our approach with CoACD and V-HACD on the two key factors of simulation similarity and wall-clock time, our approach has more similar collisions as compared to the input with better performance. For example, for the mesh from Fig. ref:fig:teaser our approach holds spheres inside the stairwell and on platforms. On the other hand, CoACD and V-HACD produce coarse outputs, causing spheres to roll off the mesh. This boosts their performance since there are fewer collisions but with inaccurate behavior. Despite our approach being more similar to the input than CoACD and V-HACD, our approach has better performance, often by at least one to two milliseconds per frame. When dealing with a performance budget of 16 milliseconds per frame (60 fps), that saved time is meaningful, giving more time for other computations."
-  translation="我们在 24 个网格上评估了碰撞时间，例如图 ref:fig:sim-time 所示的机器人；更多结果见图 ref:fig:additional-sim-times。在仿真相似性和墙钟时间这两个关键因素上将我们的方法与 CoACD 和 V-HACD 比较时，我们的方法相对于输入具有更相似的碰撞，并且性能更好。例如，对于图 ref:fig:teaser 中的网格，我们的方法能让球停留在楼梯间和平台上。相比之下，CoACD 和 V-HACD 会产生较粗糙的输出，导致球从网格上滚落。由于碰撞更少，这会提升它们的性能，但行为并不准确。尽管我们的方法比 CoACD 和 V-HACD 更接近输入，我们的方法仍具有更好的性能，通常每帧至少快一到两毫秒。在每帧 16 毫秒（60 fps）的性能预算下，节省的这些时间是有意义的，可以为其他计算留出更多时间。"
+  original="We evaluated collision time on 24 meshes such as the robot shown in Fig. sim-time, with more results in Fig. additional-sim-times. When comparing our approach with CoACD and V-HACD on the two key factors of simulation similarity and wall-clock time, our approach has more similar collisions as compared to the input with better performance. For example, for the mesh from Fig. teaser our approach holds spheres inside the stairwell and on platforms. On the other hand, CoACD and V-HACD produce coarse outputs, causing spheres to roll off the mesh. This boosts their performance since there are fewer collisions but with inaccurate behavior. Despite our approach being more similar to the input than CoACD and V-HACD, our approach has better performance, often by at least one to two milliseconds per frame. When dealing with a performance budget of 16 milliseconds per frame (60 fps), that saved time is meaningful, giving more time for other computations."
+  translation="我们在 24 个网格上评估了碰撞时间，例如图 sim-time 所示的机器人；更多结果见图 additional-sim-times。在仿真相似性和墙钟时间这两个关键因素上将我们的方法与 CoACD 和 V-HACD 比较时，我们的方法相对于输入具有更相似的碰撞，并且性能更好。例如，对于图 teaser 中的网格，我们的方法能让球停留在楼梯间和平台上。相比之下，CoACD 和 V-HACD 会产生较粗糙的输出，导致球从网格上滚落。由于碰撞更少，这会提升它们的性能，但行为并不准确。尽管我们的方法比 CoACD 和 V-HACD 更接近输入，我们的方法仍具有更好的性能，通常每帧至少快一到两毫秒。在每帧 16 毫秒（60 fps）的性能预算下，节省的这些时间是有意义的，可以为其他计算留出更多时间。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -116,8 +95,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p007"
   section="Results And Ablations"
-  original="It is difficult to provide an apples-to-apples comparison of complexity of our approach and CoACD/V-HACD, since their fundamental components are convex hulls with vertices and faces, versus our parametric primitives. Even worse, since capsules, spheres and cylinders do not have a finite number of faces, it is not possible to compare face counts. To demonstrate that we are using fewer resources than CoACD/V-HACD, even though the primitive count is higher than the hull count, we use the lowest common denominator, the number of bytes of each approach. We compute the number of bytes for all methods, showing our approach is less complex, while at the same time is geometrically closer to the input with better simulation wall-clock times. To measure complexity, we count the number of bytes per component as per Tab. ref:tab:memory-costs, with total costs for all models shown in the Appendix, Tab. ref:tab:raw-memory-cost. Note we underestimate the cost of convex hulls by assuming that integers fit in two bytes (uint\_16t), when in some rarer cases it is necessary to use four bytes (uint\_32t). When comparing aggregate statistics on our dataset, convex primitive decomposition, CoACD, and V-HACD uses on average 22523.7, 93809.3, and 68934.1 bytes, and a median of 6362, 76572, and 44592 bytes respectively. Clearly, convex primitive decomposition creates colliders with fewer resources than approximate convex hull decomposition, with better simulation frame durations than convex hulls. Since each primitive is cheaper than each convex hull, even though our approach has a larger number of primitives compared to the number of hulls, overall it is cheaper. Furthermore, even with an equal number of primitives and hulls, we show primitives have lower wall-clock simulation time in Sec. ref:sec:ablate-hull-count, Fig. ref:fig:ident_num_prim_hull."
-  translation="要对我们的方法与 CoACD/V-HACD 的复杂度进行完全对等的比较很困难，因为它们的基本组件是带顶点和面的凸包，而我们使用的是参数化基元。更糟的是，由于胶囊体、球体和圆柱体没有有限数量的面，因此无法比较面数。为展示即使基元数量高于凸包数量，我们使用的资源仍少于 CoACD/V-HACD，我们采用最低共同分母：每种方法的字节数。我们计算所有方法的字节数，显示我们的方法复杂度更低，同时在几何上更接近输入，并且仿真墙钟时间更好。为测量复杂度，我们按照表 ref:tab:memory-costs 统计每个组件的字节数，所有模型的总成本见附录表 ref:tab:raw-memory-cost。注意，我们假设整数能装入两个字节（uint_16t），因此低估了凸包成本；在一些较少见的情况下，需要使用四个字节（uint_32t）。在比较我们数据集上的汇总统计时，凸基元分解、CoACD 和 V-HACD 的平均字节数分别为 22523.7、93809.3 和 68934.1，中位数分别为 6362、76572 和 44592。显然，与近似凸包分解相比，凸基元分解用更少资源创建碰撞体，并且比凸包获得更好的仿真帧时长。由于每个基元比每个凸包更便宜，即使我们的方法的基元数量多于凸包数量，整体上也更便宜。此外，即使基元和凸包数量相同，我们也在第 ref:sec:ablate-hull-count 节、图 ref:fig:ident_num_prim_hull 中展示了基元具有更低的仿真墙钟时间。"
+  original="It is difficult to provide an apples-to-apples comparison of complexity of our approach and CoACD/V-HACD, since their fundamental components are convex hulls with vertices and faces, versus our parametric primitives. Even worse, since capsules, spheres and cylinders do not have a finite number of faces, it is not possible to compare face counts. To demonstrate that we are using fewer resources than CoACD/V-HACD, even though the primitive count is higher than the hull count, we use the lowest common denominator, the number of bytes of each approach. We compute the number of bytes for all methods, showing our approach is less complex, while at the same time is geometrically closer to the input with better simulation wall-clock times. To measure complexity, we count the number of bytes per component as per Tab. memory-costs, with total costs for all models shown in the Appendix, Tab. raw-memory-cost. Note we underestimate the cost of convex hulls by assuming that integers fit in two bytes (uint_16t), when in some rarer cases it is necessary to use four bytes (uint_32t). When comparing aggregate statistics on our dataset, convex primitive decomposition, CoACD, and V-HACD uses on average 22523.7, 93809.3, and 68934.1 bytes, and a median of 6362, 76572, and 44592 bytes respectively. Clearly, convex primitive decomposition creates colliders with fewer resources than approximate convex hull decomposition, with better simulation frame durations than convex hulls. Since each primitive is cheaper than each convex hull, even though our approach has a larger number of primitives compared to the number of hulls, overall it is cheaper. Furthermore, even with an equal number of primitives and hulls, we show primitives have lower wall-clock simulation time in Sec. ablate-hull-count, Fig. ident-num-prim-hull."
+  translation="要对我们的方法与 CoACD/V-HACD 的复杂度进行完全对等的比较很困难，因为它们的基本组件是带顶点和面的凸包，而我们使用的是参数化基元。更糟的是，由于胶囊体、球体和圆柱体没有有限数量的面，因此无法比较面数。为展示即使基元数量高于凸包数量，我们使用的资源仍少于 CoACD/V-HACD，我们采用最低共同分母：每种方法的字节数。我们计算所有方法的字节数，显示我们的方法复杂度更低，同时在几何上更接近输入，并且仿真墙钟时间更好。为测量复杂度，我们按照表 memory-costs 统计每个组件的字节数，所有模型的总成本见附录表 raw-memory-cost。注意，我们假设整数能装入两个字节（uint_16t），因此低估了凸包成本；在一些较少见的情况下，需要使用四个字节（uint_32t）。在比较我们数据集上的汇总统计时，凸基元分解、CoACD 和 V-HACD 的平均字节数分别为 22523.7、93809.3 和 68934.1，中位数分别为 6362、76572 和 44592。显然，与近似凸包分解相比，凸基元分解用更少资源创建碰撞体，并且比凸包获得更好的仿真帧时长。由于每个基元比每个凸包更便宜，即使我们的方法的基元数量多于凸包数量，整体上也更便宜。此外，即使基元和凸包数量相同，我们也在第 ablate-hull-count 节、图 ident_num_prim_hull 中展示了基元具有更低的仿真墙钟时间。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -192,8 +171,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p011"
   section="Results And Ablations"
-  original="We compare our approach's preservation of sharp edges on a fractal shape as compared to CoACD in Fig. ref:fig:fractal. On this model, our approach is two orders of magnitude closer to the input than CoACD, since CoACD rounds the edges of the input shape. We also compare the simulation frame duration, showing that even with a more precise decomposition, our approach is faster."
-  translation="我们在图 ref:fig:fractal 中将我们的方法与 CoACD 比较，展示其在分形形状上保留锐边的能力。在该模型上，我们的方法比 CoACD 更接近输入两个数量级，因为 CoACD 会将输入形状的边缘圆滑化。我们还比较了仿真帧时长，显示即使分解更精确，我们的方法也更快。"
+  original="We compare our approach's preservation of sharp edges on a fractal shape as compared to CoACD in Fig. fractal. On this model, our approach is two orders of magnitude closer to the input than CoACD, since CoACD rounds the edges of the input shape. We also compare the simulation frame duration, showing that even with a more precise decomposition, our approach is faster."
+  translation="我们在图 fractal 中将我们的方法与 CoACD 比较，展示其在分形形状上保留锐边的能力。在该模型上，我们的方法比 CoACD 更接近输入两个数量级，因为 CoACD 会将输入形状的边缘圆滑化。我们还比较了仿真帧时长，显示即使分解更精确，我们的方法也更快。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -201,30 +180,11 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l003" label="Results And Ablations / figure / experiments-l003">
-
-```latex
-\begin{figure}[!h]
-    \centering
-        \setlength{\tabcolsep}{0em}
-    \begin{tabular}{c c c}
-        Input & Convex Prim. Decomp. & CoACD \\
-        \includegraphics[width=0.32\linewidth]{assets/fractal_original} &
-        \includegraphics[width=0.32\linewidth]{assets/fractal_ours} &
-        \includegraphics[width=0.32\linewidth]{assets/fractal_coacd} \\
-        |F| = 8184 & 5456 Boxes & 1126 Hulls {\small (|F| = 53148)} \\
-        {\small $\frac{\text{Haus./Cham. New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$} & \scriptsize $\num{3.34e-5}/\num{3.25e-5}$ &
-        \scriptsize $\num{3.07e-2}/\num{8.02e-3}$ \\
-        \multicolumn{3}{c}{\includegraphics[width=0.9\linewidth]{plots/fractal_high_res.pdf}} \\
-    \end{tabular}
-    \vspace{-1em}
-    \caption{Our approach decomposes the input mesh into a number of primitives which more closely adhere to the input mesh than CoACD, while allowing faster collision detection. Dark regions on the input mesh are due to overlapping non-manifold faces. Frame duration comparisons for simulation of collision with 5000 dropping balls are shown below; our approach has faster simulation than CoACD on all frames. \ccbync Dixbit.}
-    \label{fig:fractal}
-    %\Description{A fractal shape decomposed using our method and CoACD. CoACD's output is more coarse and is not able to as precisely preserve holes in the input compared to our approach.}
-\end{figure}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l003-figure"
+  title="Results And Ablations / figure / experiments-l003"
+  caption="Our approach decomposes the input mesh into a number of primitives which more closely adhere to the input mesh than CoACD, while allowing faster collision detection. Dark regions on the input mesh are due to overlapping non-manifold faces. Frame duration comparisons for simulation of collision with 5000 dropping balls are shown below; our approach has faster simulation than CoACD on all frames. License: nc Dixbit."
+  images={["paper-assets/assets/fractal_original.webp", "paper-assets/assets/fractal_ours.webp", "paper-assets/assets/fractal_coacd.webp", "paper-assets/plots/fractal_high_res.webp"]}
+/>
 
 <PaperBlock
   id="experiments-p012"
@@ -241,8 +201,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p013"
   section="Results And Ablations"
-  original="We also demonstrate our approach's generation of colliders with holes by running on a maze while preserving traversability in Fig. ref:fig:maze. To compare fairly to alternatives, we increase CoACD's resolution from 30 units to 80 units, and set the concavity to its minimum value of $0.01$. For V-HACD, we use the off-the-shelf settings. While CoACD preserves some holes, the gaps are thinned and edges rounded, whereas our approach preserves most holes. V-HACD closes most holes, making it unsuitable for replacing the original mesh. We visualize differences in simulation, by dropping 500 balls in Blender [Blender] (5000 is used in simulation, 500 is only for visualization). The balls pass through our output and the original mostly unfettered, whereas CoACD and V-HACD prevent many from going through."
-  translation="我们还通过在迷宫上运行并在图 ref:fig:maze 中保持可通行性，展示我们的方法能够生成带孔碰撞体。为与替代方法公平比较，我们将 CoACD 的分辨率从 30 单位提高到 80 单位，并将凹度设置为其最小值 $0.01$。对于 V-HACD，我们使用现成设置。虽然 CoACD 保留了一些孔洞，但间隙变薄且边缘被圆滑化；而我们的方法保留了大多数孔洞。V-HACD 会封闭大多数孔洞，使其不适合作为原始网格的替代。我们通过在 Blender [Blender] 中落下 500 个球来可视化仿真差异（仿真中使用 5000 个球，500 个仅用于可视化）。球基本上可以不受阻碍地穿过我们的输出和原始网格，而 CoACD 和 V-HACD 会阻止许多球通过。"
+  original="We also demonstrate our approach's generation of colliders with holes by running on a maze while preserving traversability in Fig. maze. To compare fairly to alternatives, we increase CoACD's resolution from 30 units to 80 units, and set the concavity to its minimum value of $0.01$. For V-HACD, we use the off-the-shelf settings. While CoACD preserves some holes, the gaps are thinned and edges rounded, whereas our approach preserves most holes. V-HACD closes most holes, making it unsuitable for replacing the original mesh. We visualize differences in simulation, by dropping 500 balls in Blender [Blender] (5000 is used in simulation, 500 is only for visualization). The balls pass through our output and the original mostly unfettered, whereas CoACD and V-HACD prevent many from going through."
+  translation="我们还通过在迷宫上运行并在图 maze 中保持可通行性，展示我们的方法能够生成带孔碰撞体。为与替代方法公平比较，我们将 CoACD 的分辨率从 30 单位提高到 80 单位，并将凹度设置为其最小值 $0.01$。对于 V-HACD，我们使用现成设置。虽然 CoACD 保留了一些孔洞，但间隙变薄且边缘被圆滑化；而我们的方法保留了大多数孔洞。V-HACD 会封闭大多数孔洞，使其不适合作为原始网格的替代。我们通过在 Blender [Blender] 中落下 500 个球来可视化仿真差异（仿真中使用 5000 个球，500 个仅用于可视化）。球基本上可以不受阻碍地穿过我们的输出和原始网格，而 CoACD 和 V-HACD 会阻止许多球通过。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -250,35 +210,11 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l004" label="Results And Ablations / figure* / experiments-l004">
-
-```latex
-\begin{figure*}
-    \centering
-    \renewcommand{\arraystretch}{0.0}
-    \begin{tabular}{c c c c}
-        Input & Convex Prim. Decomp. & CoACD & V-HACD \\
-        \includegraphics[width=0.22\linewidth]{assets/maze_original} &
-        \includegraphics[width=0.22\linewidth]{assets/maze_ours} &
-        \includegraphics[width=0.22\linewidth]{assets/maze_coacd} &
-        \includegraphics[width=0.22\linewidth]{assets/maze_vhacd} \\
-
-        \includegraphics[width=0.22\linewidth]{assets/maze_input_anim} &
-        \includegraphics[width=0.22\linewidth]{assets/maze_anim} &
-        \includegraphics[width=0.22\linewidth]{assets/maze_coacd_anim} &
-        \includegraphics[width=0.22\linewidth]{assets/maze_vhacd_anim} \\
-
-        |F| = 37191 & 6982 Boxes & 669 Hulls (|F| = 69962) & 105 Hulls (|F| = 3628) \\
-        $\frac{\text{Haus./Cham. New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$ &
-        $\num{5.72e-4}/\num{4.35e-4}$ & $0.0111/\num{5.524e-3}$ & $0.0163/\num{1.94e-3}$ \\
-    \end{tabular}
-    \caption{Our approach can cleanly preserve holes in the non-manifold, non-watertight input mesh, maintaining its traversability as shown by the number of balls that can pass through in the second row. Prior convex decomposition approaches reduce the size of holes due to voxelization and preprocessing needed to make the mesh manifold and watertight, changing the collision behavior of the output collider. \ccby Talaei-dev.}
-    \label{fig:maze}
-    %\Description{A flat maze with comparisons of our approach to CoACD and V-HACD. Our approach mostly preserves holes in the mesh, whereas CoACD and V-HACD round edges and have large hulls that block passage.}
-\end{figure*}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l004-figure"
+  title="Results And Ablations / figure* / experiments-l004"
+  caption="Our approach can cleanly preserve holes in the non-manifold, non-watertight input mesh, maintaining its traversability as shown by the number of balls that can pass through in the second row. Prior convex decomposition approaches reduce the size of holes due to voxelization and preprocessing needed to make the mesh manifold and watertight, changing the collision behavior of the output collider. License: Talaei-dev."
+  images={["paper-assets/assets/maze_original.webp", "paper-assets/assets/maze_ours.webp", "paper-assets/assets/maze_coacd.webp", "paper-assets/assets/maze_vhacd.webp", "paper-assets/assets/maze_input_anim.webp", "paper-assets/assets/maze_anim.webp", "paper-assets/assets/maze_coacd_anim.webp", "paper-assets/assets/maze_vhacd_anim.webp"]}
+/>
 
 <PaperBlock
   id="experiments-p014"
@@ -292,28 +228,11 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l005" label="Results And Ablations / figure* / experiments-l005">
-
-```latex
-\begin{figure*}
-    \centering
-    \setlength{\tabcolsep}{1pt}
-    \begin{tabular}{c c c c c}
-        Input, $|F| = 17986$  & \tiny Ours (Coarse), 54 Boxes, 5 Cylinders & \tiny Ours (Precise), 536 Boxes, 5 Cylinders & \tiny CoACD, 90 Hulls (|F| = 6984) & \tiny V-HACD, 17 Hulls (|F| = 1298) \\
-        \includegraphics[width=0.19\linewidth]{assets/dungeon_level_original} &
-        \includegraphics[width=0.19\linewidth]{assets/Dungeon_Level_coarse} & \includegraphics[width=0.19\linewidth]{assets/Dungeon_Level_precise} &
-        \includegraphics[width=0.19\linewidth]{assets/Dungeon_level_coacd} &
-        \includegraphics[width=0.19\linewidth]{assets/dungeon_level_vhacd} \\
-        \small $\frac{\text{Hausdorff/Chamfer New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$ &
-        $\num{3.09e-2}/\num{5.47e-3}$ & $\num{3.06e-2}/\num{1.55e-3}$ & $\num{1.67e-2}/\num{5.48e-3}$ & $\num{5.48e-2}/\num{4.83e-3}$ \\
-    \end{tabular}
-    \caption{Our approach can automatically fit colliders for environments at multiple resolutions, while more closely adhering to the input as compared to CoACD and V-HACD, maintaining sharp features such as the boxes, barrels, and chest, and can be edited easily. \ccby Karthik Naidu.}
-    \label{fig:dungeon}
-    %\Description{A level which is decomposed twice by our approach compared to CoACD and V-HACD. Our approach is cleaner than CoACD and V-HACD, which round edges and introduce a number of components which could be merged together.}
-\end{figure*}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l005-figure"
+  title="Results And Ablations / figure* / experiments-l005"
+  caption="Our approach can automatically fit colliders for environments at multiple resolutions, while more closely adhering to the input as compared to CoACD and V-HACD, maintaining sharp features such as the boxes, barrels, and chest, and can be edited easily. License: Karthik Naidu."
+  images={["paper-assets/assets/dungeon_level_original.webp", "paper-assets/assets/Dungeon_Level_coarse.webp", "paper-assets/assets/Dungeon_Level_precise.webp", "paper-assets/assets/Dungeon_Level_coacd.webp", "paper-assets/assets/dungeon_level_vhacd.webp"]}
+/>
 
 <PaperBlock
   id="experiments-p015"
@@ -330,8 +249,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p016"
   section="Results And Ablations"
-  original="We then demonstrate our approach on environments. For game levels, convex decomposition is overkill since floors and walls are replaced with box colliders. Yet, current tools cannot automatically fit boxes, requiring artists to place them and balance trade-offs in precision versus runtime, as some applications need details such as height changes in the floor and others use one box for performance. To reflect the ability to control this trade-off, we show two granularity of output on an environment in Fig. ref:fig:dungeon, and one output on the Bistro [ORCAAmazonBistro] scene in the Appendix, Fig. ref:fig:bistro. Our outputs are visually and quantitatively faithful to the original mesh at both resolutions, and preserve items such as the barrels and boxes in Fig. ref:fig:dungeon, and wine glasses and utensils in Fig. ref:fig:bistro. The variation in the floors and walls show how our approach can be used to tune precision. By comparison, convex decomposition smooths over the props and floor with arbitrary cuts, giving implausible simulation."
-  translation="随后我们在环境上展示我们的方法。对于游戏关卡，凸分解过于复杂，因为地板和墙通常会被盒碰撞体替代。然而，当前工具无法自动拟合盒体，需要美术人员放置它们，并在精度与运行时之间权衡；一些应用需要地板高度变化等细节，另一些应用则为了性能使用一个盒体。为反映控制这种权衡的能力，我们在图 ref:fig:dungeon 中展示了一个环境的两种输出粒度，并在附录图 ref:fig:bistro 中展示了 Bistro [ORCAAmazonBistro] 场景的一个输出。我们的输出在两种分辨率下都在视觉和定量上忠实于原始网格，并保留了图 ref:fig:dungeon 中的木桶和盒子，以及图 ref:fig:bistro 中的酒杯和餐具。地板和墙面的变化展示了我们的方法如何用于调节精度。相比之下，凸分解会用任意切割抹平道具和地板，产生不可信的仿真。"
+  original="We then demonstrate our approach on environments. For game levels, convex decomposition is overkill since floors and walls are replaced with box colliders. Yet, current tools cannot automatically fit boxes, requiring artists to place them and balance trade-offs in precision versus runtime, as some applications need details such as height changes in the floor and others use one box for performance. To reflect the ability to control this trade-off, we show two granularity of output on an environment in Fig. dungeon, and one output on the Bistro [ORCAAmazonBistro] scene in the Appendix, Fig. bistro. Our outputs are visually and quantitatively faithful to the original mesh at both resolutions, and preserve items such as the barrels and boxes in Fig. dungeon, and wine glasses and utensils in Fig. bistro. The variation in the floors and walls show how our approach can be used to tune precision. By comparison, convex decomposition smooths over the props and floor with arbitrary cuts, giving implausible simulation."
+  translation="随后我们在环境上展示我们的方法。对于游戏关卡，凸分解过于复杂，因为地板和墙通常会被盒碰撞体替代。然而，当前工具无法自动拟合盒体，需要美术人员放置它们，并在精度与运行时之间权衡；一些应用需要地板高度变化等细节，另一些应用则为了性能使用一个盒体。为反映控制这种权衡的能力，我们在图 dungeon 中展示了一个环境的两种输出粒度，并在附录图 bistro 中展示了 Bistro [ORCAAmazonBistro] 场景的一个输出。我们的输出在两种分辨率下都在视觉和定量上忠实于原始网格，并保留了图 dungeon 中的木桶和盒子，以及图 bistro 中的酒杯和餐具。地板和墙面的变化展示了我们的方法如何用于调节精度。相比之下，凸分解会用任意切割抹平道具和地板，产生不可信的仿真。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -339,38 +258,17 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-p017" label="Results And Ablations / control / experiments-p017">
-
-```latex
-\setlength{\intextsep}{0pt}
-```
-
-</LatexBlock>
-
-<LatexBlock id="experiments-p018" label="Results And Ablations / control / experiments-p018">
-
-```latex
-\setlength{\columnsep}{0pt}
-```
-
-</LatexBlock>
-
-<LatexBlock id="experiments-l006" label="Results And Ablations / wrapfigure / experiments-l006">
-
-```latex
-\begin{wrapfigure}{r}{0.26\textwidth}
-    \centering
-    \includegraphics[width=0.26\textwidth]{plots/sim-comp-dungeon.pdf}
-\end{wrapfigure}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l006-figure"
+  title="Results And Ablations / wrapfigure / experiments-l006"
+  caption="Source-paper figure."
+  images={["paper-assets/plots/sim-comp-dungeon.webp"]}
+/>
 
 <PaperBlock
-  id="experiments-p019"
+  id="experiments-p017"
   section="Results And Ablations"
-  original="We measure frame duration of simulation of CoACD and our approach from Fig. ref:fig:dungeon shown in the inset. Our coarse and precise meshes both have better performance than CoACD, with better geometric similarity."
-  translation="我们像 [animated_decomp] 一样，通过从碰撞体到输入网格的单向 Hausdorff 和 Chamfer 距离来测量几何相似性。选择这一指标的关键动机是，碰撞体上的每个点都应尽可能接近输入。完整结果见表 ref:tab:distance_comparison。在我们测试的网格中，我们的方法在 44 个网格上取得最低 Hausdorff 距离，并在 43 个网格上取得最低 Chamfer 距离，如表 ref:tab:count1way 所示。在我们的数据集上，凸基元分解、CoACD 和 V-HACD 的平均单向 Hausdorff 距离分别为 0.0445、0.0514 和 0.0710，中位数分别为 0.0346、0.0383 和 0.0593。平均 Chamfer 距离分别为 $\textbf{6.95e-3}, 9.91e-3, 8.82e-3$，中位数分别为 $\textbf{5.40e-3}, 9.41e-3, 7.60e-3$。这表明凸基元分解在字节数衡量的总复杂度更低的情况下，几何形状持续更接近原始模型。这也说明 CoACD 对最大距离的优化是以平均距离为代价的；而我们的方法虽然优化的是体积，但在两个指标上都更接近。"
+  original="We measure frame duration of simulation of CoACD and our approach from Fig. dungeon shown in the inset. Our coarse and precise meshes both have better performance than CoACD, with better geometric similarity."
+  translation="我们测量插图所示 Fig. dungeon 中 CoACD 与我们方法的仿真帧耗时。我们的粗粒度网格和精细网格都比 CoACD 有更好的性能，并且几何相似性也更好。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -381,10 +279,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 ### Distance to Original Mesh
 
 <PaperBlock
-  id="experiments-p020"
+  id="experiments-p018"
   section="Results And Ablations"
-  original="We measure geometric similarity by the one-way Hausdorff and Chamfer distances from the collider to the input mesh, like [animated_decomp]. The key motivation for choosing this metric is that each point on the collider should be as close to the input as possible. Complete results are provided in Tab. ref:tab:distance_comparison. Across our tested meshes, our approach has the lowest Hausdorff distance for 44 meshes, and lowest Chamfer distance for 43, shown in Tab. ref:tab:count1way. The average one-way hausdorff distance on our dataset for convex primitive decomposition, CoACD, and V-HACD are 0.0445, 0.0514, and 0.0710, and median 0.0346, 0.0383, and 0.0593 respectively. The average chamfer distances are $\textbf{6.95e-3}, 9.91e-3, 8.82e-3$, and median $\textbf{5.40e-3}, 9.41e-3, 7.60e-3$ respectively. This shows that convex primitive decomposition consistently has closer geometry to the original, with less total complexity, measured by byte count. This also shows how CoACD's optimization for max distance does so at the cost of average distance, whereas our approach is closer on both metrics, even though it optimizes for volume."
-  translation="与 CoACD [coacd] 和 V-HACD [vhacd] 相比，在我们的数据集上，从生成网格到输入网格的 1-way 距离中，我们的方法有更多较低结果。"
+  original="We measure geometric similarity by the one-way Hausdorff and Chamfer distances from the collider to the input mesh, like [animated_decomp]. The key motivation for choosing this metric is that each point on the collider should be as close to the input as possible. Complete results are provided in Tab. distance-comparison. Across our tested meshes, our approach has the lowest Hausdorff distance for 44 meshes, and lowest Chamfer distance for 43, shown in Tab. count1way. The average one-way hausdorff distance on our dataset for convex primitive decomposition, CoACD, and V-HACD are 0.0445, 0.0514, and 0.0710, and median 0.0346, 0.0383, and 0.0593 respectively. The average chamfer distances are $6.95e-3, 9.91e-3, 8.82e-3$, and median $5.40e-3, 9.41e-3, 7.60e-3$ respectively. This shows that convex primitive decomposition consistently has closer geometry to the original, with less total complexity, measured by byte count. This also shows how CoACD's optimization for max distance does so at the cost of average distance, whereas our approach is closer on both metrics, even though it optimizes for volume."
+  translation="我们像 [animated_decomp] 一样，通过从碰撞体到输入网格的单向 Hausdorff 和 Chamfer 距离来测量几何相似性。选择这一指标的关键动机是，碰撞体上的每个点都应尽可能接近输入。完整结果见表 distance_comparison。在我们测试的网格中，我们的方法在 44 个网格上取得最低 Hausdorff 距离，并在 43 个网格上取得最低 Chamfer 距离，如表 count1way 所示。在我们的数据集上，凸基元分解、CoACD 和 V-HACD 的平均单向 Hausdorff 距离分别为 0.0445、0.0514 和 0.0710，中位数分别为 0.0346、0.0383 和 0.0593。平均 Chamfer 距离分别为 $6.95e-3, 9.91e-3, 8.82e-3$，中位数分别为 $5.40e-3, 9.41e-3, 7.60e-3$。这表明凸基元分解在字节数衡量的总复杂度更低的情况下，几何形状持续更接近原始模型。这也说明 CoACD 对最大距离的优化是以平均距离为代价的；而我们的方法虽然优化的是体积，但在两个指标上都更接近。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -419,9 +317,27 @@ import LatexBlock from "../../components/LatexBlock.astro";
 </LatexBlock>
 
 <PaperBlock
-  id="experiments-p021"
+  id="experiments-p019"
   section="Results And Ablations"
   original="Our approach has more lower 1-way distances on our dataset from the generated mesh to the input mesh as compared to CoACD [coacd] and V-HACD [vhacd]."
+  translation="与 CoACD [coacd] 和 V-HACD [vhacd] 相比，在我们的数据集上，从生成网格到输入网格的 1-way 距离中，我们的方法有更多较低结果。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<FigurePanel id="experiments-l008-figure"
+  title="Results And Ablations / figure* / experiments-l008"
+  caption="We compare our approach at multiple levels of detail for a single mesh, varying only the target number of output primitives. Our approach gracefully degrades from a high-resolution approximation of the input to a lower resolution approximation. At different resolutions, the simulation using our collider still resembles the input mesh. Rigid-body collision time for each resolution is shown in the plot. The more precise meshes are generated faster than coarse meshes, as our approach is bottom up. License: Mikail Karaca."
+  images={["paper-assets/plots/progressive_dojo_sim_time.webp", "paper-assets/assets/dojo_input_anim.webp", "paper-assets/assets/dojo_precise_anim.webp", "paper-assets/assets/dojo_medium_anim.webp", "paper-assets/assets/dojo_coarse_anim.webp", "paper-assets/assets/dojo_coarsest_anim.webp"]}
+/>
+
+<PaperBlock
+  id="experiments-p020"
+  section="Results And Ablations"
+  original="We compare our approach at multiple levels of detail for a single mesh, varying only the target number of output primitives. Our approach gracefully degrades from a high-resolution approximation of the input to a lower resolution approximation. At different resolutions, the simulation using our collider still resembles the input mesh. Rigid-body collision time for each resolution is shown in the plot. The more precise meshes are generated faster than coarse meshes, as our approach is bottom up. License: Mikail Karaca."
   translation="我们在单个网格上以多个细节层级比较我们的方法，只改变目标输出基元数量。我们的方法会从输入的高分辨率近似平滑退化到较低分辨率近似。在不同分辨率下，使用我们碰撞体的仿真仍类似输入网格。每种分辨率的刚体碰撞时间显示在图中。由于我们的方法是自底向上的，较精细的网格生成速度快于粗糙网格。许可：Mikail Karaca。"
   translationStatus="draft_ai_assisted"
   explanationStatus="caption"
@@ -430,41 +346,29 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l008" label="Results And Ablations / figure* / experiments-l008">
+<PaperBlock
+  id="experiments-p021"
+  section="Results And Ablations"
+  original="Level of Detail Collision Objects: To demonstrate our approach for generating different levels of detail for colliders, we create multiple resolutions for one mesh in Fig. level-of-detail-collision, all tested in simulation. At each level our approach maintains the similarity of balls rolling off the roof, demonstrating our approach's versatility. The simulation run-time at each level also shows that varying the resolution provides a way to tune performance versus geometric similarity."
+  translation="细节层级碰撞对象：为展示我们的方法可生成不同细节层级的碰撞体，我们在图 level-of-detail-collision 中为一个网格创建多个分辨率，并全部在仿真中测试。在每个层级上，我们的方法都保持了球从屋顶滚落这一行为的相似性，展示了我们方法的通用性。每个层级的仿真运行时间也显示，改变分辨率提供了一种在性能与几何相似性之间调节的方法。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
 
-```latex
-\begin{figure*}
-    \centering
-    \setlength{\tabcolsep}{0pt}
-    \begin{tabular}{c c c c c}
-        \multicolumn{5}{c}{Level Of Detail Comparison of Our Approach For Simulation} \\
-        Input & \multicolumn{4}{c}{Decreasing Resolution $\rightarrow$} \\
-        \put(0.1\linewidth,0.1\linewidth){\includegraphics[width=0.76\linewidth]{plots/progressive_dojo_sim_time.pdf}}
-        \includegraphics[width=0.19\linewidth]{assets/dojo_input_anim} &
-        \includegraphics[width=0.19\linewidth]{assets/dojo_precise_anim} &
-        \includegraphics[width=0.19\linewidth]{assets/dojo_medium_anim} &
-        \includegraphics[width=0.19\linewidth]{assets/dojo_coarse_anim} &
-        \includegraphics[width=0.19\linewidth]{assets/dojo_coarsest_anim} \\
-        $|F| = 4569$ &
-        \scriptsize 470 Boxes, 1 Cap, 8 Cyl, 4 Prism &
-        292 Boxes, 3 Cyl, 4 Prism &
-        94 Boxes, 6 Prism &
-        19 Boxes, 1 Prism \\
-        Generation Time (sec): & 0.208 & 0.977 & 1.408 & 1.640 \\
-    \end{tabular}
-    \caption{We compare our approach at multiple levels of detail for a single mesh, varying only the target number of output primitives. Our approach gracefully degrades from a high-resolution approximation of the input to a lower resolution approximation. At different resolutions, the simulation using our collider still resembles the input mesh. Rigid-body collision time for each resolution is shown in the plot. The more precise meshes are generated faster than coarse meshes, as our approach is bottom up. \ccby Mikail Karaca.}
-    \label{fig:level-of-detail-collision}
-    %\Description{Multiple levels of details for a single japanese dojo, with balls visualized falling on top of the mesh. Between each level of detail, collision looks relatively similar.}
-\end{figure*}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l009-figure"
+  title="Results And Ablations / figure / experiments-l009"
+  caption="Our approach can be controlled using the maximum allowed volume added when merging two primitives. If merging two primitives together exceeds some (See label above images for this example's values) fraction of the input mesh's axis-aligned bounding box's volume, merging is forbidden. This allows closer adherence to the original mesh. License: jellystuff."
+  images={["paper-assets/assets/cardboard_boxes_original.webp", "paper-assets/assets/cardboard_boxes_mev_1e-2.webp", "paper-assets/assets/cardboard_boxes_mev_1.webp", "paper-assets/assets/cardboard_boxes_mev_1e-4.webp"]}
+/>
 
 <PaperBlock
   id="experiments-p022"
   section="Results And Ablations"
-  original="We compare our approach at multiple levels of detail for a single mesh, varying only the target number of output primitives. Our approach gracefully degrades from a high-resolution approximation of the input to a lower resolution approximation. At different resolutions, the simulation using our collider still resembles the input mesh. Rigid-body collision time for each resolution is shown in the plot. The more precise meshes are generated faster than coarse meshes, as our approach is bottom up. License: Mikail Karaca."
-  translation="细节层级碰撞对象：为展示我们的方法可生成不同细节层级的碰撞体，我们在图 ref:fig:level-of-detail-collision 中为一个网格创建多个分辨率，并全部在仿真中测试。在每个层级上，我们的方法都保持了球从屋顶滚落这一行为的相似性，展示了我们方法的通用性。每个层级的仿真运行时间也显示，改变分辨率提供了一种在性能与几何相似性之间调节的方法。"
+  original="Our approach can be controlled using the maximum allowed volume added when merging two primitives. If merging two primitives together exceeds some (See label above images for this example's values) fraction of the input mesh's axis-aligned bounding box's volume, merging is forbidden. This allows closer adherence to the original mesh. License: jellystuff."
+  translation="我们的方法可以通过合并两个基元时允许增加的最大体积来控制。如果将两个基元合并后超过输入网格轴对齐包围盒体积的某个比例（本示例的数值见图像上方标签），则禁止合并。这使输出能够更贴近原始网格。许可：jellystuff。"
   translationStatus="draft_ai_assisted"
   explanationStatus="caption"
   reproductionStatus="not_started"
@@ -475,8 +379,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p023"
   section="Results And Ablations"
-  original="Level of Detail Collision Objects: To demonstrate our approach for generating different levels of detail for colliders, we create multiple resolutions for one mesh in Fig. ref:fig:level-of-detail-collision, all tested in simulation. At each level our approach maintains the similarity of balls rolling off the roof, demonstrating our approach's versatility. The simulation run-time at each level also shows that varying the resolution provides a way to tune performance versus geometric similarity."
-  translation="我们的方法可以通过合并两个基元时允许增加的最大体积来控制。如果将两个基元合并后超过输入网格轴对齐包围盒体积的某个比例（本示例的数值见图像上方标签），则禁止合并。这使输出能够更贴近原始网格。许可：jellystuff。"
+  original="Limiting Excess Volume: To control how close the collection of primitives should adhere to the the input mesh, users can control the output mesh's adherence to the original using a maximal excess volume. In Fig. variable-excess-volume, the input mesh is a collection of cardboard boxes with flaps in various positions. By limiting the excess volume introduced per collapse, the output has higher geometric similarity, but more primitives. Depending on the user's goal, excess volume can be tuned to balance the trade-off between precision and efficiency."
+  translation="限制额外体积：为控制一组基元应当多接近输入网格，用户可以使用最大额外体积来控制输出网格对原始网格的贴合程度。在图 variable_excess_volume 中，输入网格是一组纸板箱，其折片处于不同位置。通过限制每次塌缩引入的额外体积，输出会具有更高的几何相似性，但基元更多。根据用户目标，可以调节额外体积，以平衡精度和效率之间的权衡。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -484,85 +388,29 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l009" label="Results And Ablations / figure / experiments-l009">
-
-```latex
-\begin{figure}
-    \centering
-    \begin{tabular}{c c}
-        \scriptsize Input & \scriptsize No Max Added Volume \\
-        \small \#Primitives, $\frac{\text{Chamfer New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$  & 13 Boxes,  $\num{2.37e-3}$ \\
-        \includegraphics[width=0.45\linewidth]{assets/cardboard_boxes_original}
-        \put(-0.45\linewidth, -0.15\linewidth){\includegraphics[width=0.45\linewidth]{assets/cardboard_boxes_mev_1e-2}} &
-        \includegraphics[width=0.45\linewidth]{assets/cardboard_boxes_mev_1}
-        \put(-0.45\linewidth, -0.15\linewidth){\includegraphics[width=0.45\linewidth]{assets/cardboard_boxes_mev_1e-4}}\\
-        \scriptsize $\num{1e-2}$ Bounding Volume & \scriptsize $\num{1e-4}$ Bounding Volume \\
-        25 Boxes, 10 Prisms, $\num{2.35e-3}$ & 107 Boxes, $\num{1.21e-7}$ \\
-    \end{tabular}
-    \caption{Our approach can be controlled using the maximum allowed volume added when merging two primitives. If merging two primitives together exceeds some (See label above images for this example's values) fraction of the input mesh's axis-aligned bounding box's volume, merging is forbidden. This allows closer adherence to the original mesh. \ccby jellystuff.}
-    \label{fig:variable_excess_volume}
-    %\Description{A collection of a boxes at various states of opening, decomposed by our approach. The leftmost image is the input, the 2nd from left is a coarse set of boxes which do not preserve any of the openings. The 3rd from the left preserves some larger openings. The final image is with all openings preserved, but with many smaller primitives.}
-    \vspace{-1em}
-\end{figure}
-```
-
-</LatexBlock>
-
 <PaperBlock
   id="experiments-p024"
   section="Results And Ablations"
-  original="Our approach can be controlled using the maximum allowed volume added when merging two primitives. If merging two primitives together exceeds some (See label above images for this example's values) fraction of the input mesh's axis-aligned bounding box's volume, merging is forbidden. This allows closer adherence to the original mesh. License: jellystuff."
-  translation="限制额外体积：为控制一组基元应当多接近输入网格，用户可以使用最大额外体积来控制输出网格对原始网格的贴合程度。在图 ref:fig:variable_excess_volume 中，输入网格是一组纸板箱，其折片处于不同位置。通过限制每次塌缩引入的额外体积，输出会具有更高的几何相似性，但基元更多。根据用户目标，可以调节额外体积，以平衡精度和效率之间的权衡。"
+  original="Timing: Our implementation efficiently decomposes meshes and even though the theoretical time complexity of collapse is at least O($nlog n$) due to reordering the priority queue the wall-clock time scales linearly with the size of the input mesh. We visualize the time to decompose an input mesh in Fig. decomposition-time, with exact time per mesh in Tab. complete-results. For small meshes, our approach completes in under a second. This is acceptable as the approach is designed to process meshes offline. In the worst case, our algorithm may be slow if one primitive repeatedly merges and no others do, as it will have many neighbors and enclose a large number of points with $O(|V|^2)$ complexity. In practice this case does not appear, since it would lead to a high volume error."
+  translation="计时：我们的实现能高效分解网格；尽管理论上由于需要重新排序优先队列，塌缩的时间复杂度至少为 O($nlog n$)，但墙钟时间随输入网格大小线性缩放。我们在图 decomposition_time 中可视化分解输入网格所需时间，每个网格的精确时间见表 complete_results。对于小型网格，我们的方法在一秒内完成。这是可以接受的，因为该方法被设计用于离线处理网格。在最坏情况下，如果一个基元反复合并而其他基元不合并，我们的算法可能会很慢，因为它会拥有许多邻居并包围大量点，复杂度为 $O(|V|^2)$。实践中没有出现这种情况，因为它会导致较高的体积误差。"
   translationStatus="draft_ai_assisted"
-  explanationStatus="caption"
+  explanationStatus="paragraph"
   reproductionStatus="not_started"
   sourceNamespace="cpd_paper_source_text"
   translationProvenance="codex_draft_2026-05-15"
+/>
+
+<FigurePanel id="experiments-l010-figure"
+  title="Results And Ablations / SCfigure / experiments-l010"
+  caption="The wall-clock runtime of our implementation scales linearly with the input mesh's number of faces, which allows our approach to scale, processing meshes with millions of faces. In the worst case, performance may be $O(|V|^2)$ if one primitive contains nearly all vertices, but we never observe this in practice."
+  images={["paper-assets/plots/decomposition_time.webp"]}
 />
 
 <PaperBlock
   id="experiments-p025"
   section="Results And Ablations"
-  original="Limiting Excess Volume: To control how close the collection of primitives should adhere to the the input mesh, users can control the output mesh's adherence to the original using a maximal excess volume. In Fig. ref:fig:variable_excess_volume, the input mesh is a collection of cardboard boxes with flaps in various positions. By limiting the excess volume introduced per collapse, the output has higher geometric similarity, but more primitives. Depending on the user's goal, excess volume can be tuned to balance the trade-off between precision and efficiency."
-  translation="计时：我们的实现能高效分解网格；尽管理论上由于需要重新排序优先队列，塌缩的时间复杂度至少为 O($n\log n$)，但墙钟时间随输入网格大小线性缩放。我们在图 ref:fig:decomposition_time 中可视化分解输入网格所需时间，每个网格的精确时间见表 ref:tab:complete_results。对于小型网格，我们的方法在一秒内完成。这是可以接受的，因为该方法被设计用于离线处理网格。在最坏情况下，如果一个基元反复合并而其他基元不合并，我们的算法可能会很慢，因为它会拥有许多邻居并包围大量点，复杂度为 $O(|V|^2)$。实践中没有出现这种情况，因为它会导致较高的体积误差。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<PaperBlock
-  id="experiments-p026"
-  section="Results And Ablations"
-  original="Timing: Our implementation efficiently decomposes meshes and even though the theoretical time complexity of collapse is at least O($n\log n$) due to reordering the priority queue the wall-clock time scales linearly with the size of the input mesh. We visualize the time to decompose an input mesh in Fig. ref:fig:decomposition_time, with exact time per mesh in Tab. ref:tab:complete_results. For small meshes, our approach completes in under a second. This is acceptable as the approach is designed to process meshes offline. In the worst case, our algorithm may be slow if one primitive repeatedly merges and no others do, as it will have many neighbors and enclose a large number of points with $O(|V|^2)$ complexity. In practice this case does not appear, since it would lead to a high volume error."
-  translation="我们实现的墙钟运行时间随输入网格的面数线性缩放，这使我们的方法能够扩展到处理具有数百万面的网格。在最坏情况下，如果一个基元包含几乎所有顶点，性能可能为 $O(|V|^2)$，但我们在实践中从未观察到这种情况。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<LatexBlock id="experiments-l010" label="Results And Ablations / SCfigure / experiments-l010">
-
-```latex
-\begin{SCfigure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{plots/decomposition_time}
-    \caption{The wall-clock runtime of our implementation scales linearly with the input mesh's number of faces, which allows our approach to scale, processing meshes with millions of faces. In the worst case, performance may be $O(|V|^2)$ if one primitive contains nearly all vertices, but we never observe this in practice.}
-    \label{fig:decomposition_time}
-    %\Description{A scatter plot of our approach comparing the number of faces to time in seconds, with a regression line. Our approach appears linear.}
-\end{SCfigure}
-```
-
-</LatexBlock>
-
-<PaperBlock
-  id="experiments-p027"
-  section="Results And Ablations"
   original="The wall-clock runtime of our implementation scales linearly with the input mesh's number of faces, which allows our approach to scale, processing meshes with millions of faces. In the worst case, performance may be $O(|V|^2)$ if one primitive contains nearly all vertices, but we never observe this in practice."
-  translation="在以下小节中，我们对部分设计选择进行消融。"
+  translation="我们实现的墙钟运行时间随输入网格的面数线性缩放，这使我们的方法能够扩展到处理具有数百万面的网格。在最坏情况下，如果一个基元包含几乎所有顶点，性能可能为 $O(|V|^2)$，但我们在实践中从未观察到这种情况。"
   translationStatus="draft_ai_assisted"
   explanationStatus="caption"
   reproductionStatus="not_started"
@@ -573,10 +421,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 ## Ablations
 
 <PaperBlock
-  id="experiments-p028"
+  id="experiments-p026"
   section="Results And Ablations"
   original="In the following sections, we ablate some of our design choices."
-  translation="比较我们的方法在每个输入面的二次误差中使用和不使用切线权重的结果。没有切线时，基元可能无法正确对齐平面面片，导致如圆柱体所示的更差近似。通过在最长边方向加入一个二次项，基元会更紧密地对齐每个面。许可：Lokomoto。"
+  translation="在以下小节中，我们对部分设计选择进行消融。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -584,39 +432,47 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l011" label="Results And Ablations / figure / experiments-l011">
+<FigurePanel id="experiments-l011-figure"
+  title="Results And Ablations / figure / experiments-l011"
+  caption="Comparison of our approach with and without tangent weights for each input face's quadric. Without tangents, primitives may not properly align with planar faces, resulting in worse approximations as shown by the cylinders. With an added quadric in the longest edge's direction, primitives align more closely with each face. License: Lokomoto."
+  images={["paper-assets/ablations/shirakawago_house_input.webp", "paper-assets/ablations/shirakawago_house_ew_0.webp", "paper-assets/ablations/shirakawago_house_ew_1e-2.webp"]}
+/>
 
-```latex
-\begin{figure}[!htb]
-    \centering
-    \setlength{\tabcolsep}{0em}
-    \begin{tabular}{c c c}
-        % \includegraphics[width=0.33\linewidth]{ablations/input_melon_cubes} &
-        % \includegraphics[width=0.33\linewidth]{ablations/edge_weight_0} &
-        % \includegraphics[width=0.33\linewidth]{ablations/edge_weight_1e-2} \\
-        %  Input & Weight = 0 & Weight = $\num{1e-2}$ \\
-        %  $|F| = 45016$ & 35 Boxes, 3 Cylinders & 38 Boxes \\
-        Input & Weight = 0 & Weight = $\num{1e-2}$ \\
-        \includegraphics[width=0.33\linewidth]{ablations/shirakawago_house_input} &
-        \includegraphics[width=0.33\linewidth]{ablations/shirakawago_house_ew_0} &
-        \includegraphics[width=0.33\linewidth]{ablations/shirakawago_house_ew_1e-2} \\
-        $|F| = 15965$ & \tiny 1272 Boxes, 12 Cap, 116 Cyl, 2 Sph & \tiny 1327 Boxes, 12 Cap, 53 Cyl, 2 Sph \\
-        \scriptsize $\frac{\text{Haus./Chamfer New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$ & \scriptsize $\num{6.33e-2}/\num{5.95e-3}$ & \scriptsize $\num{5.54e-2}/\num{4.38e-3}$ \\
-    \end{tabular}
-    \caption{Comparison of our approach with and without tangent weights for each input face's quadric. Without tangents, primitives may not properly align with planar faces, resulting in worse approximations as shown by the cylinders. With an added quadric in the longest edge's direction, primitives align more closely with each face. \ccby Lokomoto.
-    }
-    \label{fig:ablate-tangent-quadric}
-    %\Description{A triangular house with a large number of quad faces floating on the side of it, representing the hay that is used as a roof. The middle column has some of these represented as a cylinder, and the right column most are represented by boxes.}
-\end{figure}
-```
+<PaperBlock
+  id="experiments-p027"
+  section="Results And Ablations"
+  original="Comparison of our approach with and without tangent weights for each input face's quadric. Without tangents, primitives may not properly align with planar faces, resulting in worse approximations as shown by the cylinders. With an added quadric in the longest edge's direction, primitives align more closely with each face. License: Lokomoto."
+  translation="比较我们的方法在每个输入面的二次误差中使用和不使用切线权重的结果。没有切线时，基元可能无法正确对齐平面面片，导致如圆柱体所示的更差近似。通过在最长边方向加入一个二次项，基元会更紧密地对齐每个面。许可：Lokomoto。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
 
-</LatexBlock>
+<PaperBlock
+  id="experiments-p028"
+  section="Results And Ablations"
+  original="Coplanar Vertices Tangent Quadric: To demonstrate adding a tangent weight from Sec. coplanar-vertices, we visualize outputs with and without tangent edge weights in Fig. ablate-tangent-quadric. Many coplanar faces in the input are converted to cylinders due to ambiguity with no weight, but with edge-weights these primitives more closely align with the input mesh's faces, allowing them to be tighter OBBs."
+  translation="共面顶点切线二次误差：为展示第 coplanar-vertices 节中添加切线权重的作用，我们在图 ablate-tangent-quadric 中可视化了带有和不带有切线边权重的输出。由于没有权重时存在歧义，输入中的许多共面面会被转换为圆柱体；但加入边权重后，这些基元会更紧密地对齐输入网格的面，从而成为更贴合的 OBB。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<FigurePanel id="experiments-l012-figure"
+  title="Results And Ablations / figure / experiments-l012"
+  caption="Comparison of our approach with and without vertex deduplication and the same number of target primitives. The deduplicated model has additional primitives enclosed, leading to a lower final number of primitives. Deduplicating vertices changes the topology of the input mesh, leading to different results. License: &quot;FinBeenWhere?&quot;."
+  images={["paper-assets/ablations/training_dummy_input.webp", "paper-assets/ablations/training_dummy_default.webp", "paper-assets/ablations/training_dummy_no_merging.webp"]}
+/>
 
 <PaperBlock
   id="experiments-p029"
   section="Results And Ablations"
-  original="Comparison of our approach with and without tangent weights for each input face's quadric. Without tangents, primitives may not properly align with planar faces, resulting in worse approximations as shown by the cylinders. With an added quadric in the longest edge's direction, primitives align more closely with each face. License: Lokomoto."
-  translation="共面顶点切线二次误差：为展示第 ref:sec:coplanar-vertices 节中添加切线权重的作用，我们在图 ref:fig:ablate-tangent-quadric 中可视化了带有和不带有切线边权重的输出。由于没有权重时存在歧义，输入中的许多共面面会被转换为圆柱体；但加入边权重后，这些基元会更紧密地对齐输入网格的面，从而成为更贴合的 OBB。"
+  original="Comparison of our approach with and without vertex deduplication and the same number of target primitives. The deduplicated model has additional primitives enclosed, leading to a lower final number of primitives. Deduplicating vertices changes the topology of the input mesh, leading to different results. License: &quot;FinBeenWhere?&quot;."
+  translation="比较我们的方法在使用和不使用顶点去重、且目标基元数量相同的情况下的结果。去重后的模型包含额外被包围的基元，导致最终基元数量更低。顶点去重会改变输入网格的拓扑，从而导致不同结果。许可：&quot;FinBeenWhere?&quot;。"
   translationStatus="draft_ai_assisted"
   explanationStatus="caption"
   reproductionStatus="not_started"
@@ -627,8 +483,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="experiments-p030"
   section="Results And Ablations"
-  original="Coplanar Vertices Tangent Quadric: To demonstrate adding a tangent weight from Sec. ref:sec:coplanar-vertices, we visualize outputs with and without tangent edge weights in Fig. ref:fig:ablate-tangent-quadric. Many coplanar faces in the input are converted to cylinders due to ambiguity with no weight, but with edge-weights these primitives more closely align with the input mesh's faces, allowing them to be tighter OBBs."
-  translation="共面顶点切线二次误差：为展示第 ref:sec:coplanar-vertices 节中添加切线权重的作用，我们在图 ref:fig:ablate-tangent-quadric 中可视化了带有和不带有切线边权重的输出。由于没有权重时存在歧义，输入中的许多共面面会被转换为圆柱体；但加入边权重后，这些基元会更紧密地对齐输入网格的面，从而成为更贴合的 OBB。"
+  original="Vertex Deduplication: We test our approach with and without vertex deduplication in Fig. ablate-vertex-merging. Deduplicating vertices can change results since it increases possible edge collapses. Without deduplicating, components such as barrel hoops are not merged with the body, but other regions such as the hat are preserved differently. For most cases, we find exactly overlapped vertex merging improves the output quality of the result."
+  translation="顶点去重：我们在图 ablate-vertex-merging 中测试了使用和不使用顶点去重的我们的方法。顶点去重会增加可能的边塌缩，因此可能改变结果。不去重时，桶箍等组件不会与桶身合并，但帽子等其他区域会以不同方式保留。对于大多数情况，我们发现合并完全重叠的顶点会改善结果的输出质量。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -636,75 +492,14 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l012" label="Results And Ablations / figure / experiments-l012">
-
-```latex
-\begin{figure}[!htb]
-    \centering
-    \setlength{\tabcolsep}{-1em}
-    \begin{tabular}{c c c}
-        Input & Vertex Dedup. & No Dedup. \\
-        \includegraphics[width=0.35\linewidth]{ablations/training_dummy_input} &
-        \includegraphics[width=0.35\linewidth]{ablations/training_dummy_default} &
-        \includegraphics[width=0.35\linewidth]{ablations/training_dummy_no_merging} \\
-        $|F| = 20816$ & 8 Boxes, 19 Cyl & 18 Boxes, 12 Cyl \\
-    \end{tabular}
-    \caption{Comparison of our approach with and without vertex deduplication and the same number of target primitives. The deduplicated model has additional primitives enclosed, leading to a lower final number of primitives. Deduplicating vertices changes the topology of the input mesh, leading to different results. \ccby ``FinBeenWhere?''.}
-    \label{fig:ablate-vertex-merging}
-    %\Description{A training dummy with a sword in one hand a sign in the other. 2nd from the left is our approach with vertices deduplicated, which is a coarse approximation of the input. In the final column is our approach without vertices deduplicated, which has many more primitives and in some regions more accurately resembles the input.}
-\end{figure}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l013-figure"
+  title="Results And Ablations / figure / experiments-l013"
+  caption="Our approach using per-vertex merging and per-face merging. Per-vertex merging leaves large portions of the input (shown in white) uncovered, whereas merging faces covers the whole surface. License: nc Global Digital Heritage and GDH-Afrika."
+  images={["paper-assets/ablations/input_lekythos.webp", "paper-assets/ablations/lekythos_vertex.webp", "paper-assets/ablations/lekythos_face.webp"]}
+/>
 
 <PaperBlock
   id="experiments-p031"
-  section="Results And Ablations"
-  original="Comparison of our approach with and without vertex deduplication and the same number of target primitives. The deduplicated model has additional primitives enclosed, leading to a lower final number of primitives. Deduplicating vertices changes the topology of the input mesh, leading to different results. License: ``FinBeenWhere?''."
-  translation="比较我们的方法在使用和不使用顶点去重、且目标基元数量相同的情况下的结果。去重后的模型包含额外被包围的基元，导致最终基元数量更低。顶点去重会改变输入网格的拓扑，从而导致不同结果。许可：``FinBeenWhere?''。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="caption"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<PaperBlock
-  id="experiments-p032"
-  section="Results And Ablations"
-  original="Vertex Deduplication: We test our approach with and without vertex deduplication in Fig. ref:fig:ablate-vertex-merging. Deduplicating vertices can change results since it increases possible edge collapses. Without deduplicating, components such as barrel hoops are not merged with the body, but other regions such as the hat are preserved differently. For most cases, we find exactly overlapped vertex merging improves the output quality of the result."
-  translation="顶点去重：我们在图 ref:fig:ablate-vertex-merging 中测试了使用和不使用顶点去重的我们的方法。顶点去重会增加可能的边塌缩，因此可能改变结果。不去重时，桶箍等组件不会与桶身合并，但帽子等其他区域会以不同方式保留。对于大多数情况，我们发现合并完全重叠的顶点会改善结果的输出质量。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<LatexBlock id="experiments-l013" label="Results And Ablations / figure / experiments-l013">
-
-```latex
-\begin{figure}[!htb]
-    \centering
-    \setlength{\tabcolsep}{0.125em}
-    \begin{tabular}{c c c}
-        Input & Vertex Merging & Face Merging \\
-        \includegraphics[width=0.28\linewidth]{ablations/input_lekythos} &
-        \includegraphics[width=0.28\linewidth]{ablations/lekythos_vertex} &
-        \includegraphics[width=0.28\linewidth]{ablations/lekythos_face} \\
-        |F| = 1075 & {\scriptsize 86 Boxes, 1 Cyl, 13 Prisms} & {\scriptsize 62 Boxes, 3 Cyl, 35 Prisms} \\
-    \end{tabular}
-    \caption{Our approach using per-vertex merging and per-face merging. Per-vertex merging leaves large portions of the input (shown in white) uncovered, whereas merging faces covers the whole surface. \ccbync Global Digital Heritage and GDH-Afrika.}
-    \label{fig:ablate-vertex-face-merging}
-    %\Description{Ablation of our approach for merging vertices together versus merging faces together. Left is the input mesh. 2nd from left is vertex merging which leaves large regions of the input mesh peaking through. Right is face-merging, which looks like it has some regions peaking through but this is due to quantization of cylinders.}
-    \vspace{0em}
-\end{figure}
-```
-
-</LatexBlock>
-
-<PaperBlock
-  id="experiments-p033"
   section="Results And Ablations"
   original="Our approach using per-vertex merging and per-face merging. Per-vertex merging leaves large portions of the input (shown in white) uncovered, whereas merging faces covers the whole surface. License: nc Global Digital Heritage and GDH-Afrika."
   translation="我们的方法使用逐顶点合并和逐面合并的结果。逐顶点合并会留下输入的大部分区域（以白色显示）未覆盖，而合并面则覆盖整个表面。许可：nc Global Digital Heritage 和 GDH-Afrika。"
@@ -716,10 +511,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="experiments-p034"
+  id="experiments-p032"
   section="Results And Ablations"
-  original="Vertex vs. Face Merging: To show each vertex must correspond to multiple primitives, we show our approach on a lekythos with primitives per vertex or face in Fig. ref:fig:ablate-vertex-face-merging. Vertex merging leaves much of the input surface uncovered, unsuitable for use as a collider, showing the importance of using faces to represent primitives."
-  translation="顶点合并与面合并：为说明每个顶点必须对应多个基元，我们在图 ref:fig:ablate-vertex-face-merging 中展示了我们的方法在 lekythos 上使用逐顶点或逐面基元的结果。顶点合并会留下大量输入表面未覆盖，不适合作为碰撞体使用，这显示了使用面来表示基元的重要性。"
+  original="Vertex vs. Face Merging: To show each vertex must correspond to multiple primitives, we show our approach on a lekythos with primitives per vertex or face in Fig. ablate-vertex-face-merging. Vertex merging leaves much of the input surface uncovered, unsuitable for use as a collider, showing the importance of using faces to represent primitives."
+  translation="顶点合并与面合并：为说明每个顶点必须对应多个基元，我们在图 ablate-vertex-face-merging 中展示了我们的方法在 lekythos 上使用逐顶点或逐面基元的结果。顶点合并会留下大量输入表面未覆盖，不适合作为碰撞体使用，这显示了使用面来表示基元的重要性。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -727,32 +522,14 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l014" label="Results And Ablations / figure / experiments-l014">
-
-```latex
-\begin{figure}[!htb]
-    \setlength{\tabcolsep}{2pt}
-    \renewcommand{\arraystretch}{0.2}
-    \centering
-    \begin{tabular}{c c c}
-        Input & Ours & CoACD \\
-        \includegraphics[width=0.3\linewidth]{assets/potted_plant_input} &
-        \includegraphics[width=0.3\linewidth]{assets/potted_plant} &
-        \includegraphics[width=0.3\linewidth]{assets/potted_plant_coacd} \\
-        |F| = 4861 & 70 Prim. {\tiny (57 OBB, 7 Cyl, 6 Prism)} & 70 Hull (|F| = 10462) \\
-        \scriptsize $\frac{\text{Haus./Chamfer New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$ & \scriptsize $\num{3.57e-2}/\num{1.26e-2}$ & \scriptsize $\num{5.53e-2}/\num{1.06e-2}$ \\
-        \multicolumn{3}{c}{\includegraphics[width=0.9\linewidth]{plots/potted_plant.pdf}} \\
-    \end{tabular}
-    \caption{Our approach compared to CoACD with an identical number of primitives and convex hulls, and similar geometric similarity. Our approach has faster simulation than CoACD, as the collision with hulls depends on the number of vertices and faces. \ccby Giora.}
-    \label{fig:ident_num_prim_hull}
-    %\Description{3 potted plants, left is a gray mesh, center is boxes, cylinders, and prisms representing the mesh, and right is convex hulls of varying colors. Below, a plot where the blue line representing time of collision detection for primitives is below a blue line indicating the duration of CoACD.}
-\end{figure}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l014-figure"
+  title="Results And Ablations / figure / experiments-l014"
+  caption="Our approach compared to CoACD with an identical number of primitives and convex hulls, and similar geometric similarity. Our approach has faster simulation than CoACD, as the collision with hulls depends on the number of vertices and faces. License: Giora."
+  images={["paper-assets/assets/potted_plant_input.webp", "paper-assets/assets/potted_plant.webp", "paper-assets/assets/potted_plant_coacd.webp", "paper-assets/plots/potted_plant.webp"]}
+/>
 
 <PaperBlock
-  id="experiments-p035"
+  id="experiments-p033"
   section="Results And Ablations"
   original="Our approach compared to CoACD with an identical number of primitives and convex hulls, and similar geometric similarity. Our approach has faster simulation than CoACD, as the collision with hulls depends on the number of vertices and faces. License: Giora."
   translation="将我们的方法与具有相同数量基元和凸包、且几何相似性相近的 CoACD 比较。我们的方法仿真快于 CoACD，因为与凸包的碰撞取决于顶点和面的数量。许可：Giora。"
@@ -764,10 +541,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="experiments-p036"
+  id="experiments-p034"
   section="Results And Ablations"
-  original="Comparing Primitive \&amp; Hull Counts: We show hull and primitive counts do not reflect cost by comparing simulation with an equal number of primitives and hulls in Fig. ref:fig:ident_num_prim_hull. Despite matching counts, primitives are faster in simulation, as the number of hulls masks the number of faces and vertices used in GJK."
-  translation="比较基元与凸包数量：我们在图 ref:fig:ident_num_prim_hull 中通过基元和凸包数量相同的仿真比较，展示凸包数量和基元数量并不能反映成本。尽管数量匹配，基元在仿真中更快，因为凸包数量掩盖了 GJK 中使用的面数和顶点数。"
+  original="Comparing Primitive &amp; Hull Counts: We show hull and primitive counts do not reflect cost by comparing simulation with an equal number of primitives and hulls in Fig. ident-num-prim-hull. Despite matching counts, primitives are faster in simulation, as the number of hulls masks the number of faces and vertices used in GJK."
+  translation="比较基元与凸包数量：我们在图 ident_num_prim_hull 中通过基元和凸包数量相同的仿真比较，展示凸包数量和基元数量并不能反映成本。尽管数量匹配，基元在仿真中更快，因为凸包数量掩盖了 GJK 中使用的面数和顶点数。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -775,40 +552,14 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l015" label="Results And Ablations / figure / experiments-l015">
-
-```latex
-\begin{figure}[!htb]
-    \centering
-    \renewcommand{\arraystretch}{0.5}
-    \begin{tabular}{c c}
-        \multicolumn{2}{c}{Comparison of Weighting Per Primitive Kind} \\
-        Input & Our Weighting \\
-        $|F| =  106464$ & {\scriptsize 221 Boxes, 11 Cap, 126 Cyl, 9 Prism} \\
-        \scriptsize $\frac{\text{Haus./Chamfer New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$ & $\num{9.62e-3}/\num{1.92e-3}$ \\
-        \includegraphics[width=0.48\linewidth]{assets/spider_tank_input}
-        \put(-0.485\linewidth,-0.29\linewidth){\includegraphics[width=0.48\linewidth]{assets/spider_tank_uniform_params}}
-        &
-        \includegraphics[width=0.48\linewidth]{assets/spider_tank_default}
-        \put(-0.485\linewidth, -0.29\linewidth){
-        \includegraphics[width=0.48\linewidth]{assets/spider_tank_diff_params}}
-        \\
-        Uniform(All = 1) & Sph(0.5)/Cap(0.75)/OBB(1) \\
-        {\scriptsize 25 Boxes, 139 Cyl, 201 Prism} & {\scriptsize 147 Boxes, 142 Cap, 66 Spheres} \\
-        $\num{7.33e-3}/\num{2.87e-3}$ & $\num{1.17e-2}/\num{4.01e-3}$ \\
-        \multicolumn{2}{c}{\includegraphics[width=0.9\linewidth]{plots/spider_tank_param_sim}}
-    \end{tabular}
-    \caption{Our approach with different sets of weights. Uniform weighting outputs more isosceles trapezoidal prisms, reducing performance in simulation as shown in the plot. We also compare a weighting which heavily favors spheres (0.5), capsules (0.75), and OBBs (1) with everything else disabled, and observe that this can improve simulation performance but with less geometric similarity. OBBs are shown in green, capsules in orange, cylinders in yellow, prisms in blue, and spheres in light blue. \ccby Adoni.}
-    \label{fig:ablate-primitive-cost}
-    %\Description{Different approximations of an input spider tank.}
-    \vspace{0em}
-\end{figure}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l015-figure"
+  title="Results And Ablations / figure / experiments-l015"
+  caption="Our approach with different sets of weights. Uniform weighting outputs more isosceles trapezoidal prisms, reducing performance in simulation as shown in the plot. We also compare a weighting which heavily favors spheres (0.5), capsules (0.75), and OBBs (1) with everything else disabled, and observe that this can improve simulation performance but with less geometric similarity. OBBs are shown in green, capsules in orange, cylinders in yellow, prisms in blue, and spheres in light blue. License: Adoni."
+  images={["paper-assets/assets/spider_tank_input.webp", "paper-assets/assets/spider_tank_uniform_params.webp", "paper-assets/assets/spider_tank_default.webp", "paper-assets/assets/spider_tank_diff_params.webp", "paper-assets/plots/spider_tank_param_sim.webp"]}
+/>
 
 <PaperBlock
-  id="experiments-p037"
+  id="experiments-p035"
   section="Results And Ablations"
   original="Our approach with different sets of weights. Uniform weighting outputs more isosceles trapezoidal prisms, reducing performance in simulation as shown in the plot. We also compare a weighting which heavily favors spheres (0.5), capsules (0.75), and OBBs (1) with everything else disabled, and observe that this can improve simulation performance but with less geometric similarity. OBBs are shown in green, capsules in orange, cylinders in yellow, prisms in blue, and spheres in light blue. License: Adoni."
   translation="我们的方法使用不同权重集合的结果。均匀权重会输出更多等腰梯形棱柱，如图中所示，这会降低仿真性能。我们还比较了一种强烈偏向球体（0.5）、胶囊体（0.75）和 OBB（1）并禁用其他所有类型的权重设置，观察到这可以提高仿真性能，但几何相似性较低。OBB 以绿色显示，胶囊体以橙色显示，圆柱体以黄色显示，棱柱以蓝色显示，球体以浅蓝色显示。许可：Adoni。"
@@ -820,54 +571,37 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
+  id="experiments-p036"
+  section="Results And Ablations"
+  original="Primitive Variant Cost Ablation: We ablate our set of costs for each variant of primitive, by comparing our weighting to uniform weighting (all weights set to 1) and a weighting with only spheres, capsules, and OBBs in Fig. ablate-primitive-cost. When using uniform weighting, many prisms are output. We also test a weighting that only uses the common primitives, where spheres, capsules and OBBs have weights of 0.5, 0.75, and 1.5 respectively. The output of this weighting is also reasonable, but is coarser in some regions like the legs, compared to our weighting. We plot the simulation time for each weighting, to highlight the trade-off of geometric similarity and simulation performance. As the uniform weighting has prisms that are converted to hulls, it is slower than our weighting. On the other hand, using only directly supported primitives leads to faster simulation time, but with less geometric similarity. Our weighting balances the two approaches."
+  translation="基元变体成本消融：我们通过将我们的权重与均匀权重（所有权重设为 1）以及仅使用球体、胶囊体和 OBB 的权重在图 ablate-primitive-cost 中进行比较，来消融每种基元变体的成本集合。使用均匀权重时，会输出许多棱柱。我们还测试了一种只使用常见基元的权重设置，其中球体、胶囊体和 OBB 的权重分别为 0.5、0.75 和 1.5。该权重设置的输出也合理，但与我们的权重相比，在腿部等一些区域更粗糙。我们绘制了每种权重的仿真时间，以突出几何相似性和仿真性能之间的权衡。由于均匀权重产生的棱柱会转换为凸包，它比我们的权重更慢。另一方面，只使用直接支持的基元会带来更快的仿真时间，但几何相似性较低。我们的权重在两种做法之间取得平衡。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="experiments-p037"
+  section="Results And Ablations"
+  original="Scanned Data: To demonstrate our approach on noisy data, we benchmark our approach on a 3D scan of the Wat Benchamabophit in Fig. ours-scanned-data. This scan contains 999956 faces, with holes on the bottom. Our approach still accurately decomposes the input mesh, and preserves holes even with the high density, while maintaining small features such as columns of the inner gate and chofa on the roof."
+  translation="扫描数据：为展示我们的方法在噪声数据上的表现，我们在图 ours_scanned_data 中对 Wat Benchamabophit 的 3D 扫描运行我们的方法并进行基准测试。该扫描包含 999956 个面，底部有孔。即使在高密度情况下，我们的方法仍能准确分解输入网格，并保留孔洞，同时保持内门柱和屋顶 chofa 等小特征。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<FigurePanel id="experiments-l016-figure"
+  title="Results And Ablations / figure / experiments-l016"
+  caption="Our approach on a noisy scanned 3D model with an open bottom. Despite the input's density, our approach adheres to its structure including small details such as columns and chofa. License: ncsa GoodScan 3D."
+  images={["paper-assets/ablations/wat_benchamapohit_top_input.webp", "paper-assets/ablations/wat_benchamapohit_bot_input.webp", "paper-assets/ablations/wat_benchamapohit_top.webp", "paper-assets/ablations/wat_benchamapohit_bot.webp"]}
+/>
+
+<PaperBlock
   id="experiments-p038"
-  section="Results And Ablations"
-  original="Primitive Variant Cost Ablation: We ablate our set of costs for each variant of primitive, by comparing our weighting to uniform weighting (all weights set to 1) and a weighting with only spheres, capsules, and OBBs in Fig. ref:fig:ablate-primitive-cost. When using uniform weighting, many prisms are output. We also test a weighting that only uses the common primitives, where spheres, capsules and OBBs have weights of 0.5, 0.75, and 1.5 respectively. The output of this weighting is also reasonable, but is coarser in some regions like the legs, compared to our weighting. We plot the simulation time for each weighting, to highlight the trade-off of geometric similarity and simulation performance. As the uniform weighting has prisms that are converted to hulls, it is slower than our weighting. On the other hand, using only directly supported primitives leads to faster simulation time, but with less geometric similarity. Our weighting balances the two approaches."
-  translation="基元变体成本消融：我们通过将我们的权重与均匀权重（所有权重设为 1）以及仅使用球体、胶囊体和 OBB 的权重在图 ref:fig:ablate-primitive-cost 中进行比较，来消融每种基元变体的成本集合。使用均匀权重时，会输出许多棱柱。我们还测试了一种只使用常见基元的权重设置，其中球体、胶囊体和 OBB 的权重分别为 0.5、0.75 和 1.5。该权重设置的输出也合理，但与我们的权重相比，在腿部等一些区域更粗糙。我们绘制了每种权重的仿真时间，以突出几何相似性和仿真性能之间的权衡。由于均匀权重产生的棱柱会转换为凸包，它比我们的权重更慢。另一方面，只使用直接支持的基元会带来更快的仿真时间，但几何相似性较低。我们的权重在两种做法之间取得平衡。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<PaperBlock
-  id="experiments-p039"
-  section="Results And Ablations"
-  original="Scanned Data: To demonstrate our approach on noisy data, we benchmark our approach on a 3D scan of the Wat Benchamabophit in Fig. ref:fig:ours_scanned_data. This scan contains 999956 faces, with holes on the bottom. Our approach still accurately decomposes the input mesh, and preserves holes even with the high density, while maintaining small features such as columns of the inner gate and chofa on the roof."
-  translation="扫描数据：为展示我们的方法在噪声数据上的表现，我们在图 ref:fig:ours_scanned_data 中对 Wat Benchamabophit 的 3D 扫描运行我们的方法并进行基准测试。该扫描包含 999956 个面，底部有孔。即使在高密度情况下，我们的方法仍能准确分解输入网格，并保留孔洞，同时保持内门柱和屋顶 chofa 等小特征。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<LatexBlock id="experiments-l016" label="Results And Ablations / figure / experiments-l016">
-
-```latex
-\begin{figure}[!h]
-    \setlength{\tabcolsep}{0em}
-    \renewcommand{\arraystretch}{0.6}
-    \begin{tabular}{c c}
-        Original & Ours \\
-        \includegraphics[width=0.42\linewidth]{ablations/wat_benchamapohit_top_input}
-        \put(-0.42\linewidth, -0.2\linewidth){\includegraphics[width=0.42\linewidth]{ablations/wat_benchamapohit_bot_input}} &
-        \includegraphics[width=0.42\linewidth]{ablations/wat_benchamapohit_top}
-        \put(-0.42\linewidth, -0.2\linewidth){\includegraphics[width=0.42\linewidth]{ablations/wat_benchamapohit_bot}} \\
-        $|F| = 999956$ & \tiny 1620 Boxes, 55 Cyl, 17 Cap, 8 Prisms, 6 Sph \\
-        $\frac{\text{Haus./Cham. New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$ & $\num{1.64e-2}/\num{1.95e-3}$ \\
-    \end{tabular}
-    \caption{Our approach on a noisy scanned 3D model with an open bottom. Despite the input's density, our approach adheres to its structure including small details such as columns and chofa. \ccbyncsa GoodScan 3D.}
-    \label{fig:ours_scanned_data}
-    %\Description{A scan of a Buddhist temple decomposed into a number of primitives, with a top and bottom view. The input mesh on the left is dense, and consists of a walled area with one wall containing a large temple building. Our approach preserves the coarse shape, and the bottom also contains holes which the original mesh had.}
-\end{figure}
-```
-
-</LatexBlock>
-
-<PaperBlock
-  id="experiments-p040"
   section="Results And Ablations"
   original="Our approach on a noisy scanned 3D model with an open bottom. Despite the input's density, our approach adheres to its structure including small details such as columns and chofa. License: ncsa GoodScan 3D."
   translation="我们的方法用于一个底部开放的噪声扫描 3D 模型。尽管输入密度很高，我们的方法仍贴合其结构，包括柱子和 chofa 等小细节。许可：ncsa GoodScan 3D。"
@@ -879,10 +613,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="experiments-p041"
+  id="experiments-p039"
   section="Results And Ablations"
-  original="Intersecting Primitive Ablation: We ablate the cost function from Eq. ref:eq:exact_cost versus Eq. ref:eq:cost_with_isect in Fig. ref:fig:ablate-isect, by approximating the intersection's volume using dense rejection sampling. We sample points from inside the smaller primitive, and estimate the intersection's volume as the fraction of points contained in the other primitive times the smaller primitive's volume. We do not see significant gains from Eq. ref:eq:cost_with_isect, but sampling even with a small number of points is $30\times$ slower. Since there is little benefit with large cost, we do not use Eq. ref:eq:cost_with_isect."
-  translation="相交基元消融：我们在图 ref:fig:ablate-isect 中通过密集拒绝采样近似相交体积，对式 ref:eq:exact_cost 与式 ref:eq:cost_with_isect 中的成本函数进行消融。我们从较小基元内部采样点，并将被另一个基元包含的点的比例乘以较小基元的体积，以估计相交体积。我们没有看到式 ref:eq:cost_with_isect 带来显著收益，但即使采样点数量很小，采样也会慢 $30\times$。由于收益很小而成本很高，我们不使用式 ref:eq:cost_with_isect。"
+  original="Intersecting Primitive Ablation: We ablate the cost function from Eq. exact-cost versus Eq. cost-with-isect in Fig. ablate-isect, by approximating the intersection's volume using dense rejection sampling. We sample points from inside the smaller primitive, and estimate the intersection's volume as the fraction of points contained in the other primitive times the smaller primitive's volume. We do not see significant gains from Eq. cost-with-isect, but sampling even with a small number of points is $30x$ slower. Since there is little benefit with large cost, we do not use Eq. cost-with-isect."
+  translation="相交基元消融：我们在图 ablate-isect 中通过密集拒绝采样近似相交体积，对式 exact_cost 与式 cost_with_isect 中的成本函数进行消融。我们从较小基元内部采样点，并将被另一个基元包含的点的比例乘以较小基元的体积，以估计相交体积。我们没有看到式 cost_with_isect 带来显著收益，但即使采样点数量很小，采样也会慢 $30x$。由于收益很小而成本很高，我们不使用式 cost_with_isect。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -890,39 +624,17 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l017" label="Results And Ablations / figure / experiments-l017">
-
-```latex
-\begin{figure}
-    \centering
-    \setlength{\tabcolsep}{0.1pt}
-    \begin{tabular}{c c c c}
-        Input & Eq.~\ref{eq:exact_cost} & Eq.~\ref{eq:cost_with_isect} (Dense) & Eq.~\ref{eq:cost_with_isect} (Sparse) \\
-
-        \includegraphics[width=0.24\linewidth]{ablations/speeder_bike_input} &
-        \includegraphics[width=0.24\linewidth]{ablations/speeder_bike} &
-        \includegraphics[width=0.24\linewidth]{ablations/speeder_bike-sv} &
-        \includegraphics[width=0.24\linewidth]{ablations/speeder_bike-sv-sparse} \\
-        {\scriptsize $\frac{\text{$\frac{\text{Haus}}{\text{Cham}}$ New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$} & \tiny $\frac{\num{2.43e-2}}{\num{5.031e-3}}$ & \tiny $\frac{\num{2.39e-2}}{\num{5.019e-3}}$ &
-        \tiny $\frac{\num{2.44e-2}}{\num{5.028e-3}}$ \\
-        \\
-        |F| = 11926 & \tiny \shortstack{235 Boxes, 21 Cyl \\ 1 Cap, 26 Prism, 3 Sph} & \tiny \shortstack{238 Boxes, 20 Cyl \\ 1 Cap, 21 Prism, 3 Sph} & \tiny \shortstack{238 Boxes, 20 Cyl \\ 1 Cap, 22 Prism, 3 Sph} \\
-        Time (sec) & 1.29 & 523.53 & 34.045 \\
-    \end{tabular}
-    \caption{We compare the cost function from Eq.~\ref{eq:exact_cost} with an approximation of Eq.~\ref{eq:cost_with_isect} using rejection sampling. For dense sampling, we sample 1,000,000 points for every pair of primitives, and for sparse sampling we sample 50,000 points. In practice there is little benefit using Eq.~\ref{eq:cost_with_isect}, with no visible improvement, and the cost of computation makes it intractable for real usage. \ccbync Tasha.Lime.}
-    \label{fig:ablate-isect}
-    %\Description{4 speeder bikes, left is the input mesh, which has a seat and a half-cylindrical tank in front of it. In the right 3 columns there are approximations of the speeder bike using primitives.}
-    \vspace{-1em}
-\end{figure}
-```
-
-</LatexBlock>
+<FigurePanel id="experiments-l017-figure"
+  title="Results And Ablations / figure / experiments-l017"
+  caption="We compare the cost function from Eq. exact-cost with an approximation of Eq. cost-with-isect using rejection sampling. For dense sampling, we sample 1,000,000 points for every pair of primitives, and for sparse sampling we sample 50,000 points. In practice there is little benefit using Eq. cost-with-isect, with no visible improvement, and the cost of computation makes it intractable for real usage. License: nc Tasha.Lime."
+  images={["paper-assets/ablations/speeder_bike_input.webp", "paper-assets/ablations/speeder_bike.webp", "paper-assets/ablations/speeder_bike-sv.webp", "paper-assets/ablations/speeder_bike-sv-sparse.webp"]}
+/>
 
 <PaperBlock
-  id="experiments-p042"
+  id="experiments-p040"
   section="Results And Ablations"
-  original="We compare the cost function from Eq. ref:eq:exact_cost with an approximation of Eq. ref:eq:cost_with_isect using rejection sampling. For dense sampling, we sample 1,000,000 points for every pair of primitives, and for sparse sampling we sample 50,000 points. In practice there is little benefit using Eq. ref:eq:cost_with_isect, with no visible improvement, and the cost of computation makes it intractable for real usage. License: nc Tasha.Lime."
-  translation="我们将式 ref:eq:exact_cost 的成本函数与使用拒绝采样得到的式 ref:eq:cost_with_isect 近似进行比较。对于密集采样，我们为每对基元采样 1,000,000 个点；对于稀疏采样，我们采样 50,000 个点。在实践中，使用式 ref:eq:cost_with_isect 收益很小，没有可见改进，而计算成本使其无法用于真实使用。许可：nc Tasha.Lime。"
+  original="We compare the cost function from Eq. exact-cost with an approximation of Eq. cost-with-isect using rejection sampling. For dense sampling, we sample 1,000,000 points for every pair of primitives, and for sparse sampling we sample 50,000 points. In practice there is little benefit using Eq. cost-with-isect, with no visible improvement, and the cost of computation makes it intractable for real usage. License: nc Tasha.Lime."
+  translation="我们将式 exact_cost 的成本函数与使用拒绝采样得到的式 cost_with_isect 近似进行比较。对于密集采样，我们为每对基元采样 1,000,000 个点；对于稀疏采样，我们采样 50,000 个点。在实践中，使用式 cost_with_isect 收益很小，没有可见改进，而计算成本使其无法用于真实使用。许可：nc Tasha.Lime。"
   translationStatus="draft_ai_assisted"
   explanationStatus="caption"
   reproductionStatus="not_started"

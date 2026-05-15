@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from scripts.validate_site_claims import validate_site_text
 
 
@@ -75,3 +77,40 @@ def test_site_validator_rejects_empty_generated_translation():
     )
 
     assert any("empty draft translation is not allowed" in issue for issue in issues)
+
+
+def test_site_validator_rejects_stale_publication_waiting_copy():
+    issues = validate_site_text(
+        "site/src/pages/paper/index.astro",
+        "Public full-text expansion should wait for the private permission record.",
+    )
+
+    assert any("stale publication gating copy" in issue for issue in issues)
+
+
+def test_site_validator_rejects_reader_visible_latex_controls():
+    issues = validate_site_text(
+        "site/src/content/paper/additional-results.mdx",
+        '<LatexBlock id="additional-results-p001" label="Additional Results / control / additional-results-p001">',
+    )
+
+    assert any("reader-visible LaTeX control" in issue for issue in issues)
+
+
+def test_generated_paper_blocks_do_not_expose_raw_ref_tokens():
+    content_root = Path(__file__).resolve().parents[1] / "site/src/content/paper"
+    leaked = [
+        path.name
+        for path in sorted(content_root.glob("*.mdx"))
+        if "ref:" in path.read_text(encoding="utf-8")
+    ]
+
+    assert leaked == []
+
+
+def test_section_route_passes_nonempty_description_to_layout():
+    route = Path(__file__).resolve().parents[1] / "site/src/pages/paper/[slug].astro"
+    text = route.read_text(encoding="utf-8")
+
+    assert "description=" in text
+    assert "content.description" in text
