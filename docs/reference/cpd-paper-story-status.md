@@ -25,12 +25,12 @@ The repository has not reached that full result. It has reached the workbench st
 9. Newton can run narrow smoke diagnostics against the already mapped primitive package.
 10. Records and configs can preserve exactly what was run.
 
-The latest capped-cylinder proxy change is small but important in this story. It responds to the
-expected-failure workbench's primitive-vocabulary gap by adding one opt-in offline proposal proxy
-and recording that the unsupported paper primitive gap can decrease from 3 to 2 in a named report.
-The preceding expected-failure and cost-guided changes remain important: one keeps known
-limitations visible, and one lets AABB-normalized merge-excess influence one opt-in merge choice
-on a toy mesh.
+The latest capped-cylinder proxy change is small but important in this story, but it is not the
+runtime roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by
+adding one opt-in offline proposal proxy and recording that the unsupported paper primitive gap can
+decrease from 3 to 2 in a named report. The runtime roadmap now stays Newton-native first:
+`cylinder`, `cone`, and `ellipsoid` should be added together as a verified native analytic bundle
+before any paper-only primitive is considered for Newton tasks.
 
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
@@ -221,6 +221,26 @@ surface-distance quality, collision quality, or benchmark performance.
 Newton integration is intentionally unchanged. `capped_cylinder` remains a Newton mapping gap until
 a separate Newton mapping and task-level diagnostic record exists.
 
+## What The Newton-Native Policy Changes
+
+The capped-cylinder proxy exposed a useful distinction:
+
+```text
+paper primitive vocabulary != Newton runtime roadmap
+```
+
+For runtime work, the project should prefer primitives that Newton can build and diagnose directly.
+The next runtime bundle should add `cylinder`, `cone`, and `ellipsoid` together on top of the
+already mapped `box`, `sphere`, and `capsule`.
+
+This bundle can be implemented together because the work touches the same surfaces: shape
+validation, Newton builder calls, package bounds, support-height estimates, contact canaries,
+drop/settle, sphere-rain, tests, and records. It should still prove each primitive kind separately.
+
+`frustum` and `trapezoidal_prism` should remain in the offline paper-alignment lane for now. They
+can still appear in `paper_primitive_gap` accounting, but they should not enter Newton task claims
+without a separate mapping and diagnostic record.
+
 ## What Newton Probes Mean Here
 
 Newton probes are downstream diagnostic checks. They answer a narrow question:
@@ -258,9 +278,9 @@ The next paper-story position should be:
 USD assets or synthetic fixtures
 -> CPD-like primitive proposals
 -> objective comparison record
--> targeted primitive-vocabulary or primitive-fit quality improvement
--> richer cost-guided merge or primitive-fit decision
--> Newton task probe only after mapping support and a named diagnostic record
+-> Newton-native analytic primitive bundle mapping
+-> native primitive comparison report
+-> Newton task probe after mapping support and a named diagnostic record
 ```
 
 ## Safe Current Wording
@@ -278,6 +298,9 @@ Use:
 - "expected limitation fixtures";
 - "opt-in offline capped-cylinder geometry proposal proxy";
 - "primitive-vocabulary accounting for a restricted proposal baseline";
+- "Newton-native primitive roadmap";
+- "native analytic primitive bundle";
+- "paper-alignment offline lane";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -291,18 +314,21 @@ Avoid:
 - "validated expected-failure detector";
 - "paper-faithful capped cylinder support";
 - "Newton supports capped cylinders";
+- "Newton supports new native primitive kinds" before a dated diagnostic record exists;
+- "paper primitive vocabulary is runtime-supported";
 - "safe collider";
 - "validated robot collider."
 
 ## Recommended Next Slices
 
-The next slices should move toward the paper core without overclaiming:
+The next slices should move toward runtime usefulness without overclaiming:
 
-1. Select the next primitive-vocabulary or primitive-fit quality target after capped-cylinder.
-2. Add one primitive-fitting or merge-search improvement against a named fixture.
-3. Re-run bed and Franka smoke paths after a named synthetic diagnostic shows a clear difference.
-4. Run Newton drop/settle or sphere-rain only after the relevant primitive kinds are mappable and
-   the mapping has its own diagnostic record.
+1. Write the native analytic primitive bundle implementation plan.
+2. Add `cylinder`, `cone`, and `ellipsoid` mapping and Newton diagnostic construction together.
+3. Compare the native bundle against the current `box`/`sphere`/`capsule` path on synthetic
+   packages before broadening asset claims.
+4. Re-run bed and Franka smokes only after the bundle has mapping tests and a named diagnostic
+   record.
 
 ## Claim Boundary
 

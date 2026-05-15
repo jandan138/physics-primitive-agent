@@ -97,6 +97,8 @@ Proposed | In progress | Complete | Failed | Superseded
   post-merge master verification for the capped-cylinder proxy slice.
 - [2026-05-15 Big Goal 1 Completion Audit](2026-05-15-big-goal-1-completion-audit.md):
   completion audit for the minimal CPD-like diagnostic workbench goal.
+- [2026-05-15 Newton-Native Primitive Policy](2026-05-15-newton-native-primitive-policy.md):
+  policy update that makes runtime primitive expansion Newton-native first.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

@@ -49,6 +49,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   two. This is primitive-vocabulary accounting for a restricted proposal baseline, not
   paper-faithful CPD primitive fitting, Newton support, benchmark evidence, or collision-quality
   validation.
+- The current primitive roadmap is Newton-native first. The next runtime expansion should add
+  `cylinder`, `cone`, and `ellipsoid` as one verified native analytic bundle before considering
+  paper-only primitives such as `frustum` or `trapezoidal_prism` for runtime use. This is a
+  planning claim, not current runtime support for those new primitive kinds.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
@@ -120,6 +124,11 @@ Use these only after broader benchmark records exist.
 - Do not describe the capped-cylinder proxy as paper-faithful capped-cylinder support, CPD
   primitive fitting implementation, Newton capped-cylinder support, collision-quality improvement,
   benchmark evidence, or asset/task improvement.
+- Do not claim Newton runtime support for `cylinder`, `cone`, or `ellipsoid` from this repository's
+  collision package path until mapping, diagnostic construction, tests, and a dated Newton
+  diagnostic record exist.
+- Do not use CPD paper primitive-vocabulary completeness as a runtime support claim. Paper-only
+  primitives remain offline diagnostics unless separately mapped and verified.
 
 ## Wording Rules
 

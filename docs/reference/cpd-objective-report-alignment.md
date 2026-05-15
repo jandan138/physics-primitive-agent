@@ -226,19 +226,25 @@ Newton-mapped primitive set until a separate mapping implementation and diagnost
 
 ## Next Algorithmic Step
 
-The next step is to choose one narrow follow-up after the capped-cylinder proxy: either another
-primitive-vocabulary proxy, a primitive-fit quality fixture, or a merge-search improvement against
-a known expected-failure case.
+The next step should not be another paper-vocabulary proxy. The project should separate runtime
+primitive support from paper-alignment accounting:
+
+- runtime lane: Newton-native analytic primitives first;
+- offline lane: paper primitive gap accounting and CPD-story diagnostics.
+
+The next runtime slice should add `cylinder`, `cone`, and `ellipsoid` together as a native analytic
+bundle. That bundle is more useful than chasing `frustum` or `trapezoidal_prism` because it aligns
+with Newton's builder surface and can be exercised by contact canary, drop/settle, and sphere-rain
+diagnostics.
 
 The recommended order is:
 
-1. Pick one existing expected limitation or primitive-vocabulary gap as the target.
-2. Add one focused primitive-fitting, vocabulary, or merge-search improvement against that target.
-3. Compare old and new outputs with the same objective report.
-4. Re-run the bed and Franka smoke paths only after the synthetic report changes
-   in a named, inspectable way.
-5. Use Newton drop/settle or sphere-rain as downstream diagnostics, not as the
-   primary optimization target.
+1. Keep `capped_cylinder` in the offline paper-alignment lane.
+2. Write a native primitive bundle plan for `cylinder`, `cone`, and `ellipsoid`.
+3. Add mapping, builder calls, bounds, support-height estimates, and per-kind tests together.
+4. Compare old and new native-supported packages with the same objective report.
+5. Use Newton drop/settle or sphere-rain only after the bundle has full mapping coverage and a
+   dated diagnostic record.
 
 That keeps the story disciplined: first improve the decomposition logic under a
 stable report, then ask whether Newton diagnostics reveal new failure modes.
@@ -253,6 +259,9 @@ Use:
 - "design-aligned with the paper story";
 - "focused CPD-like cost-guided merge-search smoke";
 - "opt-in offline capped-cylinder geometry proposal proxy";
+- "Newton-native primitive roadmap";
+- "native analytic primitive bundle";
+- "paper-alignment offline lane";
 - "not a paper-faithful objective implementation";
 - "not collision-quality evidence."
 
@@ -264,6 +273,9 @@ Avoid:
 - "CPD optimizer implemented";
 - "paper-faithful capped cylinder support";
 - "Newton supports capped cylinders";
+- "Newton supports cylinder, cone, or ellipsoid from this compiler path" before a dated diagnostic
+  record exists;
+- "paper primitive vocabulary is runtime-supported";
 - "decomposition quality validated";
 - "collision quality score";
 - "benchmark metric."
