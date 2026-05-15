@@ -20,15 +20,18 @@ Complete.
   component/fallback labels.
 - Added focused synthetic tests for objective math, partial decompositions, finite normalization,
   invalid weights, CLI JSON output, and config claim boundaries.
+- Added review hardening for strict finite JSON output, partial objective CLI behavior,
+  malformed objective config coverage, blocked-merge labels, uncontained primitive labels, and
+  stable report schema keys.
 
 ## Verification
 
-- `python -m pytest tests/test_cpd_like_objective.py -q`: 8 passed.
-- `python -m pytest tests/test_cli.py::test_cli_run_cpd_like_objective_report_emits_json_for_tiny_usd tests/test_cli.py::test_cli_run_cpd_like_objective_report_rejects_malformed_weights tests/test_cpd_like_config.py::test_cpd_like_objective_report_config_is_offline_and_claim_bounded -q`: 3 passed.
-- `python -m pytest tests/test_cpd_like_objective.py tests/test_cli.py tests/test_cpd_like_config.py -q`: 48 passed.
+- `python -m pytest tests/test_cpd_like_objective.py tests/test_cli.py -q -k 'objective_report or objective'`: 20 passed, 28 deselected.
+- `python -m pytest tests/test_cpd_like_objective.py tests/test_cli.py tests/test_cpd_like_config.py -q`: 58 passed.
 - `PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_objective_report.yaml --run-cpd-like-objective-report`: exit 0.
-
-Final full-suite and docs verification are recorded after review fixes.
+- `python -m pytest -q`: 149 passed.
+- `python scripts/validate_docs.py`: passed.
+- `git diff --check`: passed.
 
 ## Smoke Summary
 

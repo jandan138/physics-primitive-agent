@@ -80,7 +80,7 @@ Use these only after broader benchmark records exist.
   settings, and dated experiment records exist.
 - Do not describe the CPD-like component-merge gate as the CPD paper algorithm; it is a restricted
   baseline extension and report-audit slice.
-- Do not describe the offline objective report as a collision-quality score or proof that the
+- Do not describe the offline objective report as a collision-quality metric or proof that the
   decomposition is good; it is diagnostic accounting for future algorithm work.
 
 ## Wording Rules

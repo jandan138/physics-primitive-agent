@@ -29,7 +29,7 @@ The CPD paper story can be read as six layers.
 | --- | --- | --- |
 | 1. Asset input | Can a complex mesh enter the pipeline? | Partially in place through USD-open and capped first-mesh extraction smokes. |
 | 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. |
-| 3. Objective and cost | Can the system score whether a decomposition is good? | Narrowly in place as an offline paper-aligned surrogate objective report. It summarizes primitive budget, volume proxy, merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
+| 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report. It summarizes primitive budget, volume proxy, merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. Current behavior is greedy face/component merging. |
 | 5. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
 | 6. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
@@ -73,7 +73,8 @@ baseline algorithm. It reads a CPD-like decomposition report and emits reviewabl
 - component merge and fallback labels.
 
 This is a paper-aligned surrogate report, not a paper-faithful objective implementation. It gives
-future merge-search and primitive-fitting work a stable scoreboard before those algorithms change.
+future merge-search and primitive-fitting work stable comparison fields before those algorithms
+change.
 
 ## What Newton Probes Mean Here
 

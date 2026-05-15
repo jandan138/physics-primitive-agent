@@ -2,8 +2,9 @@
 
 ## Goal
 
-Add an offline CPD-like objective report that scores the existing CPD-like primitive proposals with
-paper-aligned surrogate terms, without claiming full CPD paper reproduction or collision quality.
+Add an offline CPD-like objective report that summarizes the existing CPD-like primitive proposals
+with paper-aligned surrogate accounting terms, without claiming full CPD paper reproduction or
+collision quality.
 
 ## Context
 
@@ -15,8 +16,8 @@ The repository currently has:
 - collision-package bridging;
 - Newton contact, drop/settle, and sphere-rain smoke diagnostics.
 
-The next CPD paper-story step is not a stronger Newton probe. It is an offline report that explains
-whether the current decomposition is geometrically plausible enough to guide algorithm iteration.
+The next CPD paper-story step is not a stronger Newton probe. It is an offline report that exposes
+stable diagnostic accounting fields for later algorithm iteration.
 
 ## Claim Boundary
 
@@ -47,9 +48,10 @@ The public API is:
 ```python
 @dataclass(frozen=True)
 class CPDLikeObjectiveOptions:
-    objective_family: str = "cpd_paper_aligned_surrogate_v0"
+    objective_version: str = "cpd_paper_aligned_surrogate_v0"
     primitive_type_weights: Mapping[str, float] | None = None
-    claim_boundary: str = "offline_geometry_objective_not_cpd_reproduction_or_collision_quality"
+    claim_boundary: str = "offline_objective_report_not_collision_quality_validation"
+    evidence_level: str = "offline_cpd_like_objective_smoke"
 
 
 @dataclass(frozen=True)
@@ -57,9 +59,12 @@ class CPDLikeObjectiveReport:
     ...
 
 
-def evaluate_cpd_like_objective(
+def build_cpd_like_objective_report(
     decomposition: CPDLikeDecompositionReport,
     *,
+    asset_id: str,
+    source_path: str,
+    max_source_faces: int | None = None,
     options: CPDLikeObjectiveOptions | None = None,
 ) -> CPDLikeObjectiveReport:
     ...
@@ -68,22 +73,24 @@ def evaluate_cpd_like_objective(
 The report emits:
 
 - `stage`: `cpd_like_offline_objective`
-- `status`: `smoke_passed` when the source decomposition passed, otherwise `partial`
-- `objective_family`: `cpd_paper_aligned_surrogate_v0`
+- `status`: `smoke_passed` when the source decomposition passed and no diagnostic failure labels
+  are present, otherwise `partial`
+- `objective_version`: `cpd_paper_aligned_surrogate_v0`
 - `claim_boundary`
-- `source_stage`, `source_status`, `merge_policy`
-- `primitive_count`, `target_primitive_count`, `mesh_face_count`, `mesh_point_count`
+- `evidence_level`
+- `asset_id`, `source_path`, `decomposition_stage`
 - `primitive_budget`: target, actual, over-budget count, within-budget flag
-- `volume_terms`: total primitive volume, weighted primitive volume, AABB normalizer,
+- `geometric_excess_proxy`: total primitive volume, weighted primitive volume, AABB normalizer,
   normalized weighted volume
 - `merge_excess_terms`: accepted merge count, accepted normalized excess sum/max, blocked count
-- `containment_terms`: primitive count containing assigned points, uncontained count,
+- `containment`: primitive count containing assigned points, uncontained count,
   containment ratio
 - `paper_primitive_gap`: supported current primitives and unsupported paper primitives still
   reported by the baseline
-- `component_terms`: initial/final components, topology/virtual/blocked merge counts,
+- `component_accounting`: initial/final components, topology/virtual/blocked merge counts,
   fallback reason
-- `diagnostic_flags`: stable list of strings for downstream comparison and review
+- `failure_labels`: stable list of strings for downstream comparison and review
+- `decomposition`: compact source decomposition summary
 
 ## CLI
 
@@ -99,9 +106,10 @@ report. It does not call Newton.
 Config section:
 
 ```yaml
-cpd_objective:
-  objective_family: cpd_paper_aligned_surrogate_v0
-  claim_boundary: offline_geometry_objective_not_cpd_reproduction_or_collision_quality
+cpd_like_objective:
+  objective_version: cpd_paper_aligned_surrogate_v0
+  claim_boundary: offline_objective_report_not_collision_quality_validation
+  evidence_level: offline_cpd_like_objective_surrogate_smoke
   primitive_type_weights:
     box: 1.0
     sphere: 1.0
@@ -121,10 +129,10 @@ the bed manifest role and component-merge gate settings, and set the report evid
 
 Use TDD:
 
-1. Add unit tests for `evaluate_cpd_like_objective` over a simple square mesh.
+1. Add unit tests for `build_cpd_like_objective_report` over a simple square mesh.
 2. Add unit tests for partial disconnected topology-only decomposition flags.
 3. Add unit tests for primitive weight validation and weighted volume terms.
-4. Add CLI test for a tiny USD and `--run-cpd-objective-report`.
+4. Add CLI test for a tiny USD and `--run-cpd-like-objective-report`.
 5. Add config test that the new experiment config points to the manifest and uses the safe claim
    boundary.
 

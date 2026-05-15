@@ -1,3 +1,4 @@
+from dataclasses import replace
 import math
 
 import numpy as np
@@ -41,7 +42,7 @@ def _disconnected_triangles_mesh() -> TriangleMesh:
     )
 
 
-def test_objective_report_scores_smoke_passed_decomposition():
+def test_objective_report_summarizes_smoke_passed_decomposition():
     decomposition = decompose_mesh(_square_mesh(), max_primitives=1, primitive_subset=("box",))
 
     report = build_cpd_like_objective_report(
@@ -71,6 +72,56 @@ def test_objective_report_scores_smoke_passed_decomposition():
     assert payload["decomposition"]["primitive_count"] == 1
 
 
+def test_objective_report_preserves_stable_schema_keys():
+    decomposition = decompose_mesh(_square_mesh(), max_primitives=1, primitive_subset=("box",))
+
+    payload = build_cpd_like_objective_report(
+        decomposition,
+        asset_id="square",
+        source_path="tests/generated/square.usda",
+        max_source_faces=8,
+    ).to_dict()
+
+    assert set(payload) == {
+        "stage",
+        "status",
+        "asset_id",
+        "source_path",
+        "decomposition_stage",
+        "objective_version",
+        "claim_boundary",
+        "evidence_level",
+        "metrics",
+        "failure_labels",
+        "decomposition",
+    }
+    assert set(payload["metrics"]) == {
+        "primitive_budget",
+        "geometric_excess_proxy",
+        "merge_excess_terms",
+        "containment",
+        "paper_primitive_gap",
+        "component_accounting",
+        "primitive_type_weights",
+    }
+    assert set(payload["metrics"]["primitive_budget"]) == {
+        "primitive_count",
+        "target_primitive_count",
+        "within_budget",
+        "over_budget_count",
+        "primitive_count_pressure",
+    }
+    assert set(payload["metrics"]["geometric_excess_proxy"]) == {
+        "total_primitive_volume",
+        "weighted_primitive_volume",
+        "mesh_aabb_volume",
+        "normalizer_volume",
+        "normalized_total_primitive_volume",
+        "normalized_weighted_primitive_volume",
+        "source_normalized_total_weighted_volume",
+    }
+
+
 def test_objective_report_preserves_partial_decomposition_failure_labels():
     decomposition = decompose_mesh(
         _disconnected_triangles_mesh(),
@@ -96,6 +147,46 @@ def test_objective_report_preserves_partial_decomposition_failure_labels():
         "no_adjacent_clusters_remaining"
     )
     assert payload["metrics"]["component_accounting"]["final_component_count"] == 2
+
+
+def test_objective_report_labels_blocked_component_merge():
+    decomposition = decompose_mesh(
+        _disconnected_triangles_mesh(),
+        max_primitives=1,
+        primitive_subset=("box",),
+        component_merge="virtual_pairwise",
+        excess_volume_threshold_fraction=0.0,
+    )
+
+    report = build_cpd_like_objective_report(
+        decomposition,
+        asset_id="disconnected",
+        source_path="tests/generated/disconnected.usda",
+    )
+    payload = report.to_dict()
+
+    assert payload["status"] == "partial"
+    assert "component_merge_blocked" in payload["failure_labels"]
+    assert payload["metrics"]["component_accounting"]["blocked_merge_count"] == 1
+    assert payload["metrics"]["merge_excess_terms"]["blocked_merge_count"] == 1
+    assert payload["metrics"]["merge_excess_terms"]["blocked_normalized_excess_max"] > 0.0
+
+
+def test_objective_report_labels_uncontained_primitives():
+    decomposition = decompose_mesh(_square_mesh(), max_primitives=1, primitive_subset=("box",))
+    primitive = replace(decomposition.primitives[0], contains_assigned_points=False)
+    decomposition = replace(decomposition, primitives=(primitive,))
+
+    report = build_cpd_like_objective_report(
+        decomposition,
+        asset_id="square",
+        source_path="tests/generated/square.usda",
+    )
+    payload = report.to_dict()
+
+    assert payload["status"] == "partial"
+    assert "uncontained_primitives" in payload["failure_labels"]
+    assert payload["metrics"]["containment"]["uncontained_primitive_count"] == 1
 
 
 def test_objective_report_applies_primitive_type_weights_without_changing_decomposition():

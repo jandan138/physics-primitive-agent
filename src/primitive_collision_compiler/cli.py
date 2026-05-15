@@ -228,7 +228,14 @@ def main(argv=None):
             )
             return 2
 
-        print(json.dumps(report.to_dict(), sort_keys=True))
+        try:
+            print(json.dumps(report.to_dict(), sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                f"npc-compile: cpd_like_objective report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
         return 0 if report.status == "smoke_passed" else 2
 
     if args.run_cpd_like_objective_report:

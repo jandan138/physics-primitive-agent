@@ -37,6 +37,17 @@ def _write_tiny_usd(path: Path):
     stage.GetRootLayer().Save()
 
 
+def _write_mesh_usd(path: Path, points, face_vertex_counts, face_vertex_indices):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    stage = Usd.Stage.CreateNew(str(path))
+    mesh = UsdGeom.Mesh.Define(stage, "/Mesh")
+    mesh.CreatePointsAttr(points)
+    mesh.CreateFaceVertexCountsAttr(face_vertex_counts)
+    mesh.CreateFaceVertexIndicesAttr(face_vertex_indices)
+    stage.GetRootLayer().Save()
+
+
 def test_help_mentions_project(capsys):
     assert cli.main(["--help"]) == 0
 
@@ -400,7 +411,135 @@ def test_cli_run_cpd_like_objective_report_emits_json_for_tiny_usd(tmp_path, cap
     assert captured.err == ""
 
 
-def test_cli_run_cpd_like_objective_report_rejects_malformed_weights(tmp_path, capsys):
+def test_cli_run_cpd_like_objective_report_returns_json_for_partial_decomposition(
+    tmp_path,
+    capsys,
+):
+    asset_path = tmp_path / "disconnected.usda"
+    _write_mesh_usd(
+        asset_path,
+        points=[
+            (0, 0, 0),
+            (1, 0, 0),
+            (0, 1, 0),
+            (4, 0, 0),
+            (5, 0, 0),
+            (4, 1, 0),
+        ],
+        face_vertex_counts=[3, 3],
+        face_vertex_indices=[0, 1, 2, 3, 4, 5],
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: disconnected_objective",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "  max_source_faces: 8",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like-objective-report"]) == 2
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "cpd_like_offline_objective"
+    assert payload["status"] == "partial"
+    assert payload["failure_labels"] == [
+        "source_decomposition_partial",
+        "primitive_budget_not_met",
+        "unmerged_components",
+    ]
+    assert payload["metrics"]["primitive_budget"]["over_budget_count"] == 1
+    assert captured.err == ""
+
+
+def test_cli_run_cpd_like_objective_report_rejects_non_finite_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: non_finite_objective",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    class NonFiniteReport:
+        status = "smoke_passed"
+
+        def to_dict(self):
+            return {
+                "stage": "cpd_like_offline_objective",
+                "status": "smoke_passed",
+                "metrics": {"bad": float("nan")},
+            }
+
+    monkeypatch.setattr(cli, "_run_cpd_like_report", lambda config: (object(), "asset.usda", 8))
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_objective_report",
+        lambda *args, **kwargs: NonFiniteReport(),
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like-objective-report"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "cpd_like_objective report contains non-finite JSON values" in captured.err
+    assert "Traceback" not in captured.err
+
+
+@pytest.mark.parametrize(
+    ("objective_yaml", "message"),
+    [
+        (
+            ["cpd_like_objective: box"],
+            "cpd_like_objective must be a mapping",
+        ),
+        (
+            ["cpd_like_objective:", "  primitive_type_weights: box"],
+            "cpd_like_objective.primitive_type_weights must be a mapping",
+        ),
+        (
+            ["cpd_like_objective:", "  primitive_type_weights:", '    "": 1.0'],
+            "cpd_like_objective.primitive_type_weights keys must be non-empty",
+        ),
+        (
+            ["cpd_like_objective:", "  primitive_type_weights:", "    box: -1.0"],
+            "cpd_like_objective.primitive_type_weights values must be finite non-negative numbers",
+        ),
+        (
+            ["cpd_like_objective:", "  primitive_type_weights:", "    box: .nan"],
+            "cpd_like_objective.primitive_type_weights must be finite",
+        ),
+    ],
+)
+def test_cli_run_cpd_like_objective_report_rejects_malformed_objective_config(
+    tmp_path,
+    capsys,
+    objective_yaml,
+    message,
+):
     config_path = tmp_path / "config.yaml"
     config_path.write_text(
         "\n".join(
@@ -410,8 +549,7 @@ def test_cli_run_cpd_like_objective_report_rejects_malformed_weights(tmp_path, c
                 "  path: assets/example.usda",
                 "task:",
                 "  primary: collision_proxy_diagnostic",
-                "cpd_like_objective:",
-                "  primitive_type_weights: box",
+                *objective_yaml,
             ]
         ),
         encoding="utf-8",
@@ -420,8 +558,48 @@ def test_cli_run_cpd_like_objective_report_rejects_malformed_weights(tmp_path, c
     assert cli.main(["--config", str(config_path), "--run-cpd-like-objective-report"]) == 2
 
     captured = capsys.readouterr()
-    assert "cpd_like_objective.primitive_type_weights must be a mapping" in captured.err
+    assert message in captured.err
     assert "Traceback" not in captured.err
+
+
+def test_cli_run_cpd_like_objective_report_rejects_malformed_cpd_like_config(
+    tmp_path,
+    capsys,
+):
+    asset_path = tmp_path / "quad.usda"
+    _write_mesh_usd(
+        asset_path,
+        points=[(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)],
+        face_vertex_counts=[4],
+        face_vertex_indices=[0, 1, 2, 3],
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: bad_cpd_like",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "  component_merge: unsupported",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like-objective-report"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_offline_objective"
+    assert payload["status"] == "smoke_failed"
+    assert "component_merge must be topology_only or virtual_pairwise" in payload["fallback_reason"]
 
 
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
