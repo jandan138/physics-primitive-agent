@@ -15,7 +15,8 @@ types, plus named drop/settle and sphere-rain contact-density proxy Newton task 
 capped bed CPD-like package. A separate Franka/simple robot smoke opens the local Franka USD and
 runs capped first-mesh CPD-like geometry proposals. An opt-in CPD-like component-merge gate now
 reports disconnected-component merge candidates and normalized excess-volume accounting while
-remaining below full CPD reproduction. See
+remaining below full CPD reproduction. An offline CPD-like objective report now summarizes
+paper-aligned surrogate terms for that baseline without claiming collision quality. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper
@@ -103,7 +104,7 @@ current basis for project framing, claim boundaries, and future implementation p
   recorded capped bed drop/settle and sphere-rain contact-density proxy diagnostics.
 - No whole-robot collider-quality or articulated-dynamics evidence; the Franka path is import and
   capped first-mesh geometry smoke only.
-- No full CPD paper reproduction; the component-merge gate is a restricted CPD-like baseline
-  extension.
+- No full CPD paper reproduction; the component-merge gate and objective report are restricted
+  CPD-like baseline diagnostics.
 - No generated collision artifact pipeline.
 - No claim of production readiness.

@@ -31,6 +31,8 @@ The repository has reached a narrow slice of layer 3:
 - Layer 2 exists only as a simple CPD-like baseline, not the paper algorithm.
 - Layer 2 now has one opt-in extension: a component-merge gate that can try disconnected-component
   pairwise merges after topological adjacency merges are exhausted.
+- Layer 3 now has an offline paper-aligned surrogate objective report over the capped bed
+  CPD-like baseline.
 - Layer 3 has a contact-only Newton canary plus two named capped-bed task smokes: drop/settle and
   sphere-rain contact-density proxy.
 - Layer 4 has not started.
@@ -88,6 +90,9 @@ For the current capped bed smoke:
 - output: 32 restricted primitive proposals, all currently boxes;
 - CPD-like component-merge gate smoke: 256 initial components, 224 topology merges, 0 virtual
   component merges needed, 0 blocked merges, and 32 final components;
+- CPD-like offline objective smoke: 32/32 primitive budget, 32/32 assigned-point containment
+  proxy, accepted normalized merge-excess sum `0.000996148870132146`, and 3 unsupported paper
+  primitive types still outside the baseline;
 - Newton contact smoke: 32 mapped box descriptors and one representative box contact canary;
 - observed representative contact count: 1.
 - Newton drop/settle smoke: all 32 proposals mapped into one compound package body, dropped on a
@@ -122,6 +127,7 @@ Use:
 - "primitive proposals consumed by a contact-only Newton canary";
 - "one named capped-bed drop/settle smoke";
 - "one named capped-bed sphere-rain contact-density proxy smoke";
+- "offline paper-aligned surrogate objective report";
 - "not a full CPD paper reproduction";
 - "not collision-quality evidence."
 
@@ -136,8 +142,8 @@ Avoid:
 ## Next Step
 
 The next useful step is not to strengthen the claim on this baseline. The repository now has the
-second asset-class smoke and the small CPD-like component-merge gate. The next paper-story slice
-should add a paper-aligned offline objective report and inspectable synthetic cases before changing
-Newton probes or making any collision-quality claim. Paper-faithful CPD decomposition work should
-still avoid full reproduction claims until primitive coverage, benchmark settings, and dated
-experiment records exist.
+second asset-class smoke, the small CPD-like component-merge gate, and an offline paper-aligned
+surrogate objective report. The next paper-story slice should add inspectable synthetic cases and
+compare topology-only versus component-merge outputs before changing Newton probes or making any
+collision-quality claim. Paper-faithful CPD decomposition work should still avoid full reproduction
+claims until primitive coverage, benchmark settings, and dated experiment records exist.

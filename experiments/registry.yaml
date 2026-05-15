@@ -46,3 +46,14 @@ experiments:
     claims_supported:
       - geometry-only CPD-like component-merge gate smoke only
       - no collision-quality, benchmark, broad asset/task, or full CPD reproduction claim
+  - id: cpd-like-objective-report-bed-smoke
+    status: complete
+    config: configs/experiments/cpd_like_objective_report.yaml
+    record: docs/records/2026-05-15-cpd-like-objective-report.md
+    purpose: >
+      Run the offline paper-aligned surrogate objective report over the capped bed CPD-like
+      baseline and record primitive budget, volume proxy, merge-excess accounting,
+      assigned-point containment proxy, unsupported paper primitive gaps, and component labels.
+    claims_supported:
+      - offline CPD-like objective diagnostic smoke only
+      - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim

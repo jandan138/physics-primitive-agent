@@ -1,10 +1,10 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps all 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The objective report summarizes primitive budget, volume proxy, merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, and component/fallback labels for that CPD-like output. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps all 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: move from CPD-like infrastructure toward the paper core by adding a
-paper-aligned offline objective report, small inspectable synthetic cases, and comparison records
-before strengthening Newton task probes or claiming collision quality.
+Current next action: add small inspectable synthetic cases and compare topology-only versus
+component-merge outputs with the same offline objective report before strengthening Newton task
+probes or claiming collision quality.
 
 ## DeepDive Package
 
@@ -56,6 +56,8 @@ before strengthening Newton task probes or claiming collision quality.
   Franka/simple robot USD-open and capped geometry-only CPD-like smoke evidence.
 - [CPD-like component-merge gate record](records/2026-05-15-cpd-like-component-merge-gate.md):
   opt-in disconnected-component merge gate and merge-cost reporting evidence.
+- [CPD-like objective report record](records/2026-05-15-cpd-like-objective-report.md):
+  offline paper-aligned surrogate objective report evidence for the capped bed CPD-like baseline.
 - [Three-slice final verification record](records/2026-05-15-three-slice-final-verification.md):
   final verification for sphere-rain, Franka smoke, and component-merge gate.
 - [CPD paper story status docs record](records/2026-05-15-cpd-paper-story-status-docs.md):
@@ -73,6 +75,8 @@ before strengthening Newton task probes or claiming collision quality.
 - `configs/experiments/phase0_baseline.yaml`: Phase 0 proof-point config scaffold.
 - `configs/experiments/cpd_like_component_merge_gate.yaml`: opt-in CPD-like component-merge gate
   smoke config.
+- `configs/experiments/cpd_like_objective_report.yaml`: offline CPD-like objective report smoke
+  config.
 - `scripts/env/readiness_check.py`: local environment-readiness JSON checker.
 - `experiments/registry.yaml`: experiment registry and claim-support status.
 - `assets/`, `reports/`, and `archive/`: artifact boundaries; large/generated outputs stay out
@@ -90,7 +94,9 @@ can confirm representative primitive ingestion and contact pipeline output. The 
 and sphere-rain diagnostics can run two named task smokes for the capped bed CPD-like collision
 package. The Franka/simple robot smoke can open a second asset class and run capped first-mesh
 geometry-only proposals. The CPD-like component-merge gate can report disconnected-component
-merge candidates and normalized excess-volume accounting. These evidence layers are not benchmark,
-collision-quality, whole-robot quality, real contact-stress, or CPD reproduction evidence.
+merge candidates and normalized excess-volume accounting. The offline CPD-like objective report
+can summarize paper-aligned surrogate terms for that baseline. These evidence layers are not
+benchmark, collision-quality, whole-robot quality, real contact-stress, or CPD reproduction
+evidence.
 
 Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, no CPD reproduction claim, and no complete replacement of convex decomposition.

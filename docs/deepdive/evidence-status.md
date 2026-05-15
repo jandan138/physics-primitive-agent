@@ -21,6 +21,11 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run an opt-in geometry-only CPD-like component-merge gate
   that tries disconnected-component pairwise merge candidates after topology adjacency merges are
   exhausted, and reports AABB-normalized excess-volume accounting.
+- The current executable surface can run `cpd_like_offline_objective`, an offline
+  paper-aligned surrogate objective report over the CPD-like baseline. It reports primitive-budget
+  pressure, AABB-normalized volume proxy, merge-excess accounting, assigned-point containment
+  proxy, unsupported paper primitive gaps, and component/fallback labels. This is diagnostic
+  accounting, not collision-quality evidence or full CPD reproduction.
 - The current CPD paper-story position is documented as a reproduction workbench, not as a
   paper-faithful implementation. See
   [CPD paper story status](../reference/cpd-paper-story-status.md).
@@ -54,6 +59,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   geometry-only smoke: 1898 mesh points, 256 capped faces, 32 restricted primitive proposals,
   224 topology merges, 0 virtual component merges, and 0 blocked merges. Focused tests cover the
   virtual disconnected-component merge behavior.
+- The 2026-05-15 CPD-like objective report record reports `smoke_passed` for the capped bed
+  offline objective smoke: 32/32 primitive budget, 32/32 assigned-point containment proxy,
+  accepted normalized merge-excess sum `0.000996148870132146`, normalized weighted primitive
+  volume `0.0009961811821648128`, and 3 unsupported paper primitive types still outside the
+  baseline.
 
 ## Current Unsupported Claims
 
@@ -76,8 +86,6 @@ This file separates current evidence from future claims. See [message-map.md](me
 
 For the 0-4 week proof point:
 
-- paper-aligned offline objective report that separates primitive-count pressure, geometric
-  excess, unsupported regions, and merge or fitting failures;
 - small synthetic meshes with inspectable expected decompositions;
 - per-run or DLC-worker readiness report with status `smoke_passed` from the selected worker
   Python;
@@ -107,9 +115,9 @@ smokes exist for the capped bed asset: drop/settle and sphere-rain contact-densi
 Franka USD-open and first-mesh CPD-like geometry smoke now broadens asset-class intake without
 making robot-quality claims. The first CPD-like algorithmic extension is an opt-in
 component-merge gate with explicit merge-cost reporting, still below full CPD reproduction. Next
-broaden CPD-like algorithm evidence by adding a paper-aligned offline objective report and small
-synthetic inspection cases before changing Newton probes or adding LLM/VLM. Report failures and
-fallback behavior as first-class evidence.
+broaden CPD-like algorithm evidence with small synthetic inspection cases and objective-report
+comparisons before changing Newton probes or adding LLM/VLM. Report failures and fallback behavior
+as first-class evidence.
 
 ## Current Non-Goals
 

@@ -14,8 +14,9 @@ The repository has not reached that full result. It has reached the workbench st
 1. USD assets can be opened and capped meshes can be extracted.
 2. A simple CPD-like face-merge baseline can produce primitive proposals.
 3. Those proposals can be wrapped as a collision package.
-4. Newton can run narrow smoke diagnostics against that package.
-5. Records and configs can preserve exactly what was run.
+4. An offline objective report can summarize paper-aligned surrogate geometry terms.
+5. Newton can run narrow smoke diagnostics against that package.
+6. Records and configs can preserve exactly what was run.
 
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
@@ -28,7 +29,7 @@ The CPD paper story can be read as six layers.
 | --- | --- | --- |
 | 1. Asset input | Can a complex mesh enter the pipeline? | Partially in place through USD-open and capped first-mesh extraction smokes. |
 | 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. |
-| 3. Objective and cost | Can the system score whether a decomposition is good? | Not paper-aligned yet. Current reports contain merge-cost accounting and normalized excess-volume metrics, but not the full paper objective. |
+| 3. Objective and cost | Can the system score whether a decomposition is good? | Narrowly in place as an offline paper-aligned surrogate objective report. It summarizes primitive budget, volume proxy, merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. Current behavior is greedy face/component merging. |
 | 5. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
 | 6. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
@@ -59,6 +60,21 @@ Its value is auditability:
 This is still below paper reproduction. It is a controlled way to start collecting the information
 needed by a future paper-aligned objective.
 
+## What The Offline Objective Report Adds
+
+The offline objective report is the first explicit Layer 3 artifact. It does not change the
+baseline algorithm. It reads a CPD-like decomposition report and emits reviewable terms:
+
+- primitive budget pressure;
+- AABB-normalized primitive volume proxy;
+- accepted and blocked merge excess accounting;
+- assigned-point containment proxy;
+- unsupported paper primitive gaps;
+- component merge and fallback labels.
+
+This is a paper-aligned surrogate report, not a paper-faithful objective implementation. It gives
+future merge-search and primitive-fitting work a stable scoreboard before those algorithms change.
+
 ## What Newton Probes Mean Here
 
 Newton probes are downstream diagnostic checks. They answer a narrow question:
@@ -80,6 +96,7 @@ The current position is:
 ```text
 USD assets
 -> CPD-like primitive proposals
+-> paper-aligned surrogate objective report
 -> collision package
 -> Newton smoke diagnostics
 -> dated records
@@ -90,7 +107,6 @@ The next paper-story position should be:
 ```text
 USD assets
 -> CPD-like primitive proposals
--> paper-aligned objective and offline quality report
 -> improved fitting or merge search
 -> Newton task probe
 -> comparison record
@@ -104,6 +120,7 @@ Use:
 - "geometry-only CPD-like primitive proposal baseline";
 - "paper-story infrastructure for CPD reproduction";
 - "component-merge gate for audit-friendly merge-cost reporting";
+- "paper-aligned surrogate objective report";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -120,12 +137,11 @@ Avoid:
 
 The next slices should move toward the paper core without overclaiming:
 
-1. Define a paper-aligned offline objective report for the current baseline.
-2. Add small synthetic meshes where the expected primitive decomposition is inspectable.
-3. Compare topology-only and component-merge gate outputs using the same report schema.
-4. Add one improved primitive-fitting or merge-search step only after the objective report is
+1. Add small synthetic meshes where the expected primitive decomposition is inspectable.
+2. Compare topology-only and component-merge gate outputs using the same report schema.
+3. Add one improved primitive-fitting or merge-search step only after the objective report is
    stable.
-5. Run Newton drop/settle or sphere-rain only as a downstream diagnostic, not as the primary
+4. Run Newton drop/settle or sphere-rain only as a downstream diagnostic, not as the primary
    optimization target.
 
 ## Claim Boundary
