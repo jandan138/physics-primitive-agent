@@ -4,7 +4,8 @@ This page explains the current geometry-only CPD-like baseline in plain terms. I
 not new evidence and not a claim that the CPD paper has been reproduced.
 
 For the broader paper-story map, see
-[CPD paper story status](cpd-paper-story-status.md).
+[CPD paper story status](cpd-paper-story-status.md). For the objective-report boundary, see
+[CPD objective report alignment](cpd-objective-report-alignment.md).
 
 ## Plain Summary
 
@@ -148,7 +149,9 @@ Avoid:
 The next useful step is not to strengthen the claim on this baseline. The repository now has the
 second asset-class smoke, the small CPD-like component-merge gate, an offline paper-aligned
 surrogate objective report, and deterministic synthetic comparison cases. The next paper-story
-slice should use those cases to guide one focused primitive-fitting or merge-search improvement
-before changing Newton probes or making any collision-quality claim. Paper-faithful CPD
-decomposition work should still avoid full reproduction claims until primitive coverage, benchmark
-settings, and dated experiment records exist.
+slice should turn one report term into a real decision-making cost for a focused primitive-fitting
+or merge-search improvement. That improvement should be compared first on the synthetic cases,
+then re-run on the bed and Franka smoke paths, before changing Newton probes or making any
+collision-quality claim. Paper-faithful CPD decomposition work should still avoid full
+reproduction claims until primitive coverage, benchmark settings, and dated experiment records
+exist.

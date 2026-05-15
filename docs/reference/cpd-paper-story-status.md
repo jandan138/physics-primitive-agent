@@ -77,6 +77,23 @@ This is a paper-aligned surrogate report, not a paper-faithful objective impleme
 future merge-search and primitive-fitting work stable comparison fields before those algorithms
 change.
 
+For a plain-language explanation of this boundary, see
+[CPD objective report alignment](cpd-objective-report-alignment.md).
+
+## Is The Objective Report Paper-Consistent?
+
+The short answer is: consistent in design intent, not yet consistent as a paper-faithful
+mathematical implementation.
+
+The report asks paper-shaped engineering questions: how many primitives were used, how much proxy
+volume was introduced, what the accepted or blocked merges cost, whether assigned points are
+contained under a narrow proxy, which paper primitive types are missing, and which failure labels
+should block stronger interpretation.
+
+It does not yet implement the paper's full objective formula, search procedure, primitive
+vocabulary, containment model, collision-quality evaluation, or benchmark protocol. Treat it as a
+reviewable health check that prepares the repository for paper-aligned algorithm work.
+
 ## What The Synthetic Comparison Adds
 
 The synthetic objective comparison is the first inspectable toy-mesh layer around the objective
@@ -155,10 +172,13 @@ Avoid:
 
 The next slices should move toward the paper core without overclaiming:
 
-1. Add one improved primitive-fitting or merge-search step against the synthetic comparison
-   harness.
-2. Add broader synthetic fixtures only when they expose a specific expected failure mode.
-3. Run Newton drop/settle or sphere-rain only as a downstream diagnostic, not as the primary
+1. Turn the current objective report from a health check into one focused cost used by a small
+   merge-search or primitive-fitting improvement.
+2. Compare the old and new behavior on the existing synthetic fixtures before adding more assets.
+3. Add broader synthetic fixtures only when they expose a specific expected failure mode.
+4. Re-run bed and Franka smoke paths after the synthetic comparison shows a clear diagnostic
+   difference.
+5. Run Newton drop/settle or sphere-rain only as downstream diagnostics, not as the primary
    optimization target.
 
 ## Claim Boundary

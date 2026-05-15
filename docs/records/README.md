@@ -83,6 +83,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 CPD-Like Synthetic Comparison](2026-05-15-cpd-like-synthetic-comparison.md):
   command-only deterministic synthetic objective comparison for topology-only versus
   component-merge accounting.
+- [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
+  documentation clarification for objective-report paper alignment and the next algorithmic
+  sequence.
 - [2026-05-15 Three-Slice Final Verification](2026-05-15-three-slice-final-verification.md):
   final verification and review-fix record for sphere-rain, Franka smoke, and component-merge
   gate.

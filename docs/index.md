@@ -2,8 +2,10 @@
 
 Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report, a synthetic objective comparison over deterministic toy meshes, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The objective report summarizes primitive budget, volume proxy, merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, and component/fallback labels for that CPD-like output. The synthetic comparison reuses the same report on three in-memory fixtures to inspect topology-only versus component-merge accounting. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps all 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: use the synthetic objective comparison to guide one focused primitive-fitting
-or merge-search improvement before strengthening Newton task probes or claiming collision quality.
+Current next action: turn one objective-report term into a decision-making cost for one focused
+primitive-fitting or merge-search improvement, compare old and new behavior on the synthetic
+harness, then re-run bed and Franka smokes before strengthening Newton task probes or claiming
+collision quality.
 
 ## DeepDive Package
 
@@ -28,6 +30,9 @@ or merge-search improvement before strengthening Newton task probes or claiming 
 - [CPD paper story status](reference/cpd-paper-story-status.md):
   plain-language map from the paper's reproduction story to the repository's current workbench
   status and next slices.
+- [CPD objective report alignment](reference/cpd-objective-report-alignment.md):
+  plain-language boundary between design-aligned surrogate objective accounting and a
+  paper-faithful CPD objective implementation.
 
 ## Source Intake And Planning
 
@@ -60,6 +65,9 @@ or merge-search improvement before strengthening Newton task probes or claiming 
 - [CPD-like synthetic comparison record](records/2026-05-15-cpd-like-synthetic-comparison.md):
   command-only deterministic synthetic objective comparison for topology-only versus
   component-merge accounting.
+- [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
+  documentation update that clarifies objective-report paper alignment and the next algorithmic
+  slices.
 - [Three-slice final verification record](records/2026-05-15-three-slice-final-verification.md):
   final verification for sphere-rain, Franka smoke, and component-merge gate.
 - [CPD paper story status docs record](records/2026-05-15-cpd-paper-story-status-docs.md):

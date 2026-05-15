@@ -22,7 +22,9 @@ topology-only versus component-merge accounting without adding benchmark evidenc
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper
-story. The clean local Newton Python environment has recorded readiness evidence, but the
+story. See `docs/reference/cpd-objective-report-alignment.md` for why the objective report is
+design-aligned with the paper story but not yet a paper-faithful objective implementation. The
+clean local Newton Python environment has recorded readiness evidence, but the
 repository does not yet produce benchmark results, broad asset/task evidence, whole-robot
 collider-quality evidence, real contact-stress measurement, or a production collision compiler.
 

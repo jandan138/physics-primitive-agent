@@ -25,7 +25,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   paper-aligned surrogate objective report over the CPD-like baseline. It reports primitive-budget
   pressure, AABB-normalized volume proxy, merge-excess accounting, assigned-point containment
   proxy, unsupported paper primitive gaps, and component/fallback labels. This is diagnostic
-  accounting, not collision-quality evidence or full CPD reproduction.
+  accounting, not collision-quality evidence or full CPD reproduction. The alignment boundary is
+  documented in
+  [CPD objective report alignment](../reference/cpd-objective-report-alignment.md): design-aligned
+  with the paper story, not mathematically paper-faithful.
 - The current executable surface can run `cpd_like_synthetic_objective_comparison`, a command-only
   deterministic synthetic comparison over three in-memory toy meshes. It compares topology-only
   and component-merge objective accounting for inspection. This is not benchmark evidence,
@@ -124,9 +127,10 @@ Franka USD-open and first-mesh CPD-like geometry smoke now broadens asset-class 
 making robot-quality claims. The first CPD-like algorithmic extension is an opt-in
 component-merge gate with explicit merge-cost reporting, still below full CPD reproduction. The
 first synthetic objective comparison now gives deterministic inspection cases for topology-only
-versus component-merge accounting. Next use that harness to guide one focused primitive-fitting or
-merge-search improvement before changing Newton probes or adding LLM/VLM. Report failures and
-fallback behavior as first-class evidence.
+versus component-merge accounting. Next turn one objective-report term into a decision-making cost
+for a focused primitive-fitting or merge-search improvement, compare that change on the synthetic
+harness, then re-run bed and Franka smokes before changing Newton probes or adding LLM/VLM. Report
+failures and fallback behavior as first-class evidence.
 
 ## Current Non-Goals
 
