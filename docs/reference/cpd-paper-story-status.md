@@ -317,6 +317,10 @@ For a more detailed plain-language explanation of why this slice matters but doe
 primitive value, see
 [Real USD native probe in the CPD paper story](real-usd-native-probe-paper-story-explainer.md).
 
+For a step-by-step explanation of the latest candidate-loss diagnosis, controlled cylinder-axis
+update, synthetic rerun, and bed/Franka Newton-gated rerun as one repeatable loop, see
+[CPD latest diagnostic loop explainer](cpd-latest-diagnostic-loop-explainer.md).
+
 For the next algorithmic sequence after local USD mirrors, see
 [CPD next steps after real USD mirrors](cpd-next-steps-after-real-usd-mirrors.md).
 

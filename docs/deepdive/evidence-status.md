@@ -165,6 +165,10 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The same rerun reports candidate-loss diagnosis for capped real USDs: bed has `32` box-selected
   clusters where extension candidates are more expensive under the surrogate; Franka has `29`
   such box-selected clusters and `3` native-extension-selected clusters.
+- The latest diagnostic loop is explained in
+  [CPD latest diagnostic loop explainer](../reference/cpd-latest-diagnostic-loop-explainer.md):
+  candidate-loss diagnosis guides a controlled fitting change, synthetic checks run first, and
+  capped bed/Franka reruns stay behind Newton diagnostic gates.
 - The same rerun reports `smoke_passed` for contact and task gates: all four bed/Franka old/new
   packages passed contact canaries, drop/settle, and sphere-rain. Capped Franka native produced a
   representative `cylinder` canary contact in addition to the representative `box` canary path.

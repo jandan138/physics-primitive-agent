@@ -140,6 +140,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Candidate Loss Diagnosis And Cylinder Axis](2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md):
   controlled cylinder-axis fitting update, synthetic rerun, real-USD candidate-loss diagnosis,
   and bed/Franka Newton-gated rerun.
+- [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
+  documentation update that explains the latest candidate-loss and cylinder-axis slice as a
+  repeatable diagnostic loop in the CPD paper story.
 - [2026-05-15 CPD Paper Companion MVP](2026-05-15-cpd-paper-companion-mvp.md):
   Astro + MDX bilingual paper companion scaffold with source-paper claim namespacing and
   permission-record-pending AI-assisted draft translation status.

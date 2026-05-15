@@ -181,6 +181,7 @@ safety certification.
 
 - [Asset mirror materialization](asset-mirror-materialization.md)
 - [Real USD native probe in the CPD paper story](real-usd-native-probe-paper-story-explainer.md)
+- [CPD latest diagnostic loop explainer](cpd-latest-diagnostic-loop-explainer.md)
 - [Bed and Franka native probe comparison](bed-franka-native-probe-comparison.md)
 - [CPD paper story status](cpd-paper-story-status.md)
 - [Claim boundaries](claim-boundaries.md)

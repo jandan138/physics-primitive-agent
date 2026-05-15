@@ -189,6 +189,7 @@ The next work should move from "the path runs" to "the selection logic is meanin
 ## Related Pages
 
 - [CPD paper story status](cpd-paper-story-status.md)
+- [CPD latest diagnostic loop explainer](cpd-latest-diagnostic-loop-explainer.md)
 - [Bed and Franka native probe comparison](bed-franka-native-probe-comparison.md)
 - [Newton-native fitting comparison](newton-native-fitting-comparison.md)
 - [Claim boundaries](claim-boundaries.md)

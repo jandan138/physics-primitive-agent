@@ -53,6 +53,9 @@ paper-alignment lane until separate mapping and diagnostic records exist.
 - [Real USD native probe in the CPD paper story](reference/real-usd-native-probe-paper-story-explainer.md):
   plain-language explanation of why the latest bed/Franka slice is a downstream diagnostic
   milestone, not native primitive improvement or full CPD reproduction evidence.
+- [CPD latest diagnostic loop explainer](reference/cpd-latest-diagnostic-loop-explainer.md):
+  plain-language explanation of the candidate-loss diagnosis, controlled cylinder-axis fitting
+  update, synthetic checks, and bed/Franka Newton-gated rerun as one repeatable CPD workbench loop.
 - [Asset mirror materialization](reference/asset-mirror-materialization.md):
   guide to the ignored repo-local USD mirrors for bed and Franka, including material/texture
   closure status and claim boundaries.
@@ -146,6 +149,9 @@ paper-alignment lane until separate mapping and diagnostic records exist.
 - [Candidate loss diagnosis and cylinder axis record](records/2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md):
   controlled cylinder-axis fitting update, synthetic rerun, real-USD candidate-loss diagnosis,
   and bed/Franka Newton-gated rerun.
+- [CPD latest diagnostic loop explainer docs record](records/2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
+  documentation update that explains the latest candidate-loss and cylinder-axis slice as a
+  repeatable diagnostic loop in the CPD paper story.
 - [CPD paper companion MVP record](records/2026-05-15-cpd-paper-companion-mvp.md):
   Astro + MDX bilingual CPD paper companion scaffold with source-paper claim namespacing,
   permission-record-pending status, and AI-assisted draft translation status.
