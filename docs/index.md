@@ -39,6 +39,9 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
 - [Newton-native fitting comparison](reference/newton-native-fitting-comparison.md):
   plain-language explanation of the opt-in synthetic comparison where simple native fitters emit
   `cylinder`, `cone`, and `ellipsoid`, while bed and Franka remain next-scope real USD assets.
+- [Bed and Franka native fitting next steps](reference/bed-franka-native-fitting-next-steps.md):
+  execution-order guide for moving from synthetic native fitting to real-USD old/new reports and
+  then Newton contact/task smokes.
 
 ## Source Intake And Planning
 
@@ -94,6 +97,8 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
   documentation update that explains the latest native runtime bundle in the CPD paper story.
 - [Newton native fitting comparison record](records/2026-05-15-newton-native-fitting-comparison.md):
   opt-in synthetic native fitting comparison and bed/Franka next-scope declaration.
+- [Bed Franka native fitting next steps docs record](records/2026-05-15-bed-franka-native-fitting-next-steps-docs.md):
+  documentation update that clarifies the next real-USD old/new comparison sequence.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.

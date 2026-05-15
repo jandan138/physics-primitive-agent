@@ -107,6 +107,8 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Newton Native Fitting Comparison](2026-05-15-newton-native-fitting-comparison.md):
   opt-in synthetic comparison where the six-kind native subset selects `cylinder`, `cone`, and
   `ellipsoid`, with bed and Franka declared as next-scope real USD assets.
+- [2026-05-15 Bed Franka Native Fitting Next Steps Docs](2026-05-15-bed-franka-native-fitting-next-steps-docs.md):
+  documentation update that makes the next real-USD old/new comparison sequence explicit.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

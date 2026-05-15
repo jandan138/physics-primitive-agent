@@ -135,3 +135,6 @@ It does not support:
 4. Then run drop/settle and sphere-rain for the old/new package pair.
 5. Keep all results claim-bounded as diagnostic smoke evidence, not benchmark or collision-quality
    evidence.
+
+For the detailed bed/Franka execution sequence, see
+[Bed And Franka Native Fitting Next Steps](bed-franka-native-fitting-next-steps.md).
