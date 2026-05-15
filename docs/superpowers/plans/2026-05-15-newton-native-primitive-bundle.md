@@ -83,17 +83,21 @@ def test_map_package_shapes_rejects_bad_native_bundle_dimensions():
             PrimitiveSpec(primitive_id="bad-cylinder-radius", kind="cylinder", dimensions={"radius": 0.0, "half_height": 1.0}),
             PrimitiveSpec(primitive_id="bad-cylinder-axis", kind="cylinder", dimensions={"radius": 0.3, "half_height": 1.0, "axis_index": 4}),
             PrimitiveSpec(primitive_id="bad-cone-height", kind="cone", dimensions={"radius": 0.3, "half_height": -1.0}),
+            PrimitiveSpec(primitive_id="bad-capsule-axis-bool", kind="capsule", dimensions={"radius": 0.3, "half_height": 1.0, "axis_index": True}),
+            PrimitiveSpec(primitive_id="bad-cylinder-axis-float", kind="cylinder", dimensions={"radius": 0.3, "half_height": 1.0, "axis_index": 1.0}),
             PrimitiveSpec(primitive_id="bad-ellipsoid-radii", kind="ellipsoid", dimensions={"radii": [0.2, math.inf, 0.6]}),
         ),
     )
 
     mappings = map_package_shapes(package)
 
-    assert [mapping.status for mapping in mappings] == ["mapping_gap"] * 4
+    assert [mapping.status for mapping in mappings] == ["mapping_gap"] * 6
     assert "cylinder radius" in mappings[0].detail
     assert "cylinder axis_index" in mappings[1].detail
     assert "cone half_height" in mappings[2].detail
-    assert "ellipsoid radii" in mappings[3].detail
+    assert "capsule axis_index" in mappings[3].detail
+    assert "cylinder axis_index" in mappings[4].detail
+    assert "ellipsoid radii" in mappings[5].detail
 ```
 
 - [ ] **Step 3: Run RED mapping tests**
@@ -114,7 +118,7 @@ Update `SUPPORTED_NEWTON_SHAPES` and dispatch validation by kind:
 SUPPORTED_NEWTON_SHAPES = ("box", "sphere", "capsule", "cylinder", "cone", "ellipsoid")
 ```
 
-Add helpers:
+Import `Integral` from `numbers`, then add helpers:
 
 ```python
 def _validate_axis_shape(dimensions: dict[str, Any], kind: str) -> str:
@@ -123,7 +127,7 @@ def _validate_axis_shape(dimensions: dict[str, Any], kind: str) -> str:
     if _as_non_negative_float(dimensions.get("half_height")) is None:
         return f"{kind} half_height is required and must be non-negative finite"
     axis_index = dimensions.get("axis_index", 2)
-    if axis_index not in (0, 1, 2):
+    if isinstance(axis_index, bool) or not isinstance(axis_index, Integral) or axis_index not in (0, 1, 2):
         return f"{kind} axis_index must be 0, 1, or 2"
     return ""
 
