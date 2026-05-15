@@ -59,6 +59,16 @@ def fit_best_primitive(
     face_ids: frozenset[int],
     primitive_subset: tuple[str, ...],
 ) -> PrimitiveFit:
+    candidates = fit_primitive_candidates(mesh, face_ids, primitive_subset)
+    best = min(enumerate(candidates), key=lambda item: (item[1].weighted_volume, item[0]))[1]
+    return best
+
+
+def fit_primitive_candidates(
+    mesh: TriangleMesh,
+    face_ids: frozenset[int],
+    primitive_subset: tuple[str, ...],
+) -> tuple[PrimitiveFit, ...]:
     if not face_ids:
         raise ValueError("face_ids must not be empty")
 
@@ -69,17 +79,13 @@ def fit_best_primitive(
 
     points = _assigned_points(mesh, face_ids)
     axes = _candidate_axes(mesh, face_ids)
-    candidates = [
-        (
-            order,
+    unsupported_primitives = _unsupported_paper_primitives_for_subset(requested)
+    return tuple(
+        replace(
             _fit_primitive(primitive, points, axes, tuple(sorted(face_ids))),
+            unsupported_primitives=unsupported_primitives,
         )
-        for order, primitive in enumerate(supported_requested)
-    ]
-    best = min(candidates, key=lambda item: (item[1].weighted_volume, item[0]))[1]
-    return replace(
-        best,
-        unsupported_primitives=_unsupported_paper_primitives_for_subset(requested),
+        for primitive in supported_requested
     )
 
 
@@ -210,7 +216,24 @@ def _fit_cylinder(
     axes: NDArray[np.float64],
     source_faces: tuple[int, ...],
 ) -> PrimitiveFit:
-    axis_index, axis, center, half_height, radius = _axis_span_radial_parameters(points, axes)
+    candidates = tuple(
+        _fit_cylinder_with_axis(points, axes, source_faces, axis_index)
+        for axis_index in range(axes.shape[1])
+    )
+    return min(candidates, key=lambda fit: (fit.weighted_volume, fit.dimensions["axis_index"]))
+
+
+def _fit_cylinder_with_axis(
+    points: NDArray[np.float64],
+    axes: NDArray[np.float64],
+    source_faces: tuple[int, ...],
+    axis_index: int,
+) -> PrimitiveFit:
+    axis, center, half_height, radius = _axis_radial_parameters_for_axis(
+        points,
+        axes,
+        axis_index,
+    )
     volume = float(pi * radius**2 * (half_height * 2.0))
     contains = bool(_cylinder_contains(points, axis, center, half_height, radius))
     return PrimitiveFit(
@@ -218,7 +241,12 @@ def _fit_cylinder(
         source_faces=source_faces,
         center=_vector_to_tuple(center),
         axes=_axes_to_tuple(axes),
-        dimensions={"radius": radius, "half_height": half_height, "axis_index": axis_index},
+        dimensions={
+            "radius": radius,
+            "half_height": half_height,
+            "axis_index": axis_index,
+            "axis_selection": "min_volume_over_candidate_axes",
+        },
         volume=volume,
         weighted_volume=volume,
         contains_assigned_points=contains,
@@ -364,6 +392,19 @@ def _axis_span_radial_parameters(
     local = points @ axes
     spans = local.max(axis=0) - local.min(axis=0)
     axis_index = int(np.argmax(spans))
+    axis, center, half_height, radius = _axis_radial_parameters_for_axis(
+        points,
+        axes,
+        axis_index,
+    )
+    return axis_index, axis, center, half_height, radius
+
+
+def _axis_radial_parameters_for_axis(
+    points: NDArray[np.float64],
+    axes: NDArray[np.float64],
+    axis_index: int,
+) -> tuple[NDArray[np.float64], NDArray[np.float64], float, float]:
     axis = axes[:, axis_index]
     projections = points @ axis
     projection_min = float(projections.min())
@@ -377,7 +418,7 @@ def _axis_span_radial_parameters(
     radial_distances = np.linalg.norm(radial_vectors, axis=1)
     radius = max(float(radial_distances.max(initial=0.0)), MIN_DIMENSION)
     half_height = max((projection_max - projection_min) * 0.5, MIN_DIMENSION)
-    return axis_index, axis, center, half_height, radius
+    return axis, center, half_height, radius
 
 
 def _capsule_contains(

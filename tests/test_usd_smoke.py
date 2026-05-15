@@ -1,9 +1,14 @@
+import hashlib
 from pathlib import Path
 
 import pytest
 import yaml
 
-from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
+from primitive_collision_compiler.assets.usd_smoke import (
+    inspect_usd_asset,
+    load_asset_manifest,
+    resolve_asset_path,
+)
 from primitive_collision_compiler.reports.schema import AssetSmokeReport, EnvironmentCheck
 
 
@@ -110,3 +115,71 @@ def test_inspect_usd_asset_reports_read_error_for_directory_hash(tmp_path):
 
     assert report.status == "read_error"
     assert any(check.name == "sha256" and check.status == "read_error" for check in report.checks)
+
+
+def test_resolve_asset_path_prefers_existing_local_path(tmp_path):
+    source_path = tmp_path / "source.usda"
+    local_path = tmp_path / "local.usda"
+    source_path.write_text("source", encoding="utf-8")
+    local_path.write_text("local", encoding="utf-8")
+
+    resolved = resolve_asset_path(
+        {
+            "role": "fixture_asset",
+            "path": str(source_path),
+            "local_path": str(local_path),
+            "sha256": _sha256(source_path),
+            "local_sha256": _sha256(local_path),
+        }
+    )
+
+    assert resolved.path == str(local_path)
+    assert resolved.path_kind == "local_path"
+    assert resolved.expected_sha256 == _sha256(local_path)
+    assert resolved.source_path == str(source_path)
+
+
+def test_resolve_asset_path_returns_expanded_selected_path(tmp_path, monkeypatch):
+    local_path = tmp_path / "local.usda"
+    local_path.write_text("local", encoding="utf-8")
+    monkeypatch.setenv("PPA_TEST_ASSET_DIR", str(tmp_path))
+
+    resolved = resolve_asset_path(
+        {
+            "role": "fixture_asset",
+            "path": "$PPA_TEST_ASSET_DIR/local.usda",
+            "sha256": _sha256(local_path),
+        }
+    )
+
+    assert resolved.path == str(local_path)
+    assert resolved.configured_path == "$PPA_TEST_ASSET_DIR/local.usda"
+
+
+def test_inspect_usd_asset_reports_resolution_metadata_for_local_path(tmp_path):
+    source_path = tmp_path / "source.usda"
+    local_path = tmp_path / "local.usda"
+    _write_tiny_usd(source_path)
+    _write_tiny_usd(local_path)
+
+    report = inspect_usd_asset(
+        {
+            "role": "fixture_asset",
+            "path": str(source_path),
+            "local_path": str(local_path),
+            "sha256": _sha256(source_path),
+            "local_sha256": _sha256(local_path),
+        }
+    )
+
+    assert report.status == "smoke_passed"
+    assert report.path == str(local_path)
+    assert report.metadata["asset_resolution"]["selected_path_kind"] == "local_path"
+    assert report.metadata["asset_resolution"]["configured_path"] == str(source_path)
+    assert report.metadata["asset_resolution"]["source_path"] == str(source_path)
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    digest.update(path.read_bytes())
+    return digest.hexdigest()

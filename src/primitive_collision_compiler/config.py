@@ -94,6 +94,7 @@ def _protocol_sections(data: dict[str, Any]) -> dict[str, Any]:
             "cpd_like",
             "cpd_like_objective",
             "native_fitting_comparison",
+            "candidate_loss_diagnosis",
             "newton",
             "newton_diagnostic",
         )

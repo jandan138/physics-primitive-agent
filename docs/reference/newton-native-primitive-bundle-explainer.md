@@ -89,8 +89,10 @@ The native comparison config can opt into:
 box, sphere, capsule, cylinder, cone, ellipsoid
 ```
 
-but that opt-in path is currently supported only as a synthetic fitting comparison plus declared
-bed/Franka next scope. It is not yet a completed real-USD old/new comparison.
+that opt-in path now has both a synthetic fitting comparison and a capped bed/Franka real-USD probe
+comparison. In the current real-USD run, bed still selects boxes in both lanes and capped Franka's
+native lane selects `3` cylinders under the surrogate, so it is selection/accounting evidence, not
+native primitive quality evidence.
 
 The offline capped-cylinder proxy remains separate:
 
@@ -175,22 +177,23 @@ This is diagnostic-path evidence only. It is not a collision-quality metric.
 The native-fitting comparison record adds a separate narrow statement:
 
 ```text
-On three deterministic toy meshes, the opt-in six-kind native subset can select cylinder, cone,
-and ellipsoid proposals and map the resulting one-primitive packages through Newton shape mapping.
+On deterministic toy meshes, the opt-in six-kind native subset can select cylinder, cone, and
+ellipsoid proposals and map the resulting one-primitive packages through Newton shape mapping.
 ```
 
-That statement is synthetic fitting evidence only. It is not a completed bed/Franka result.
+That statement is synthetic fitting evidence only. The separate capped bed/Franka real-USD probe
+comparison is selection/accounting and diagnostic-gate evidence; capped Franka selects three
+cylinders, but this is not native primitive quality evidence.
 
 ## Next Steps In The Story
 
 The next work should stay narrow:
 
-1. Run old/new CPD-like objective reports on capped bed and capped Franka meshes.
-2. Compare primitive kind counts, volume proxy, merge-excess accounting, mapping gaps, and failure
-   labels.
-3. If both real USD packages map cleanly, run contact canary first.
-4. Then run drop/settle and sphere-rain for the old/new package pair.
-5. Keep all outputs claim-bounded as diagnostic smoke evidence.
+1. Improve primitive fitting or merge search so real USD meshes can exercise `cylinder`, `cone`, or
+   `ellipsoid` choices.
+2. Add more real-USD fixtures only with explicit face caps, manifests, and dated records.
+3. Keep contact canaries and task smokes gated by full mapping.
+4. Keep all outputs claim-bounded as diagnostic smoke evidence.
 
 The synthetic comparison has now been added. It makes it easier to inspect whether a cylinder,
 cone, or ellipsoid can be selected in controlled cases before interpreting noisy real assets.
@@ -204,7 +207,8 @@ Use:
 - "runtime diagnostic-path support for `cylinder`, `cone`, and `ellipsoid`";
 - "opt-in synthetic native fitting comparison";
 - "CPD-like generator does not emit the new native kinds by default asset configs";
-- "bed and Franka are next-scope real USD assets, not completed native-fitting evidence";
+- "capped bed and capped Franka real-USD native probe comparison";
+- "current bed/Franka old/new lanes selected boxes, not new native kinds";
 - "not collision-quality evidence";
 - "not full CPD paper reproduction."
 

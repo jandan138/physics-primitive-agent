@@ -108,9 +108,82 @@ experiments:
     record: docs/records/2026-05-15-newton-native-fitting-comparison.md
     purpose: >
       Run an opt-in deterministic synthetic comparison between the legacy `box`/`sphere`/`capsule`
-      subset and the six-kind Newton-native subset, while declaring bed and Franka as next-scope
-      real USD assets.
+      subset and the six-kind Newton-native subset, while pointing to the separate bed/Franka
+      real-USD probe comparison config.
     claims_supported:
       - synthetic native primitive fitting comparison only
-      - bed and Franka are next-scope real USD assets, not completed comparison evidence
+      - bed and Franka evidence lives in the separate real-USD probe comparison records
       - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
+  - id: synthetic-native-selection-audit
+    status: complete
+    config: configs/experiments/newton_native_fitting_comparison.yaml
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/newton_native_fitting_comparison.yaml --run-newton-native-fitting-comparison
+    record: docs/records/2026-05-15-synthetic-native-selection-audit.md
+    purpose: >
+      Record candidate weighted-volume audit tables for the deterministic synthetic native fitting
+      fixtures, explaining why the six-kind lane selects cylinder, cone, and ellipsoid under the
+      current surrogate primitive-choice rule.
+    claims_supported:
+      - synthetic native primitive selection audit on toy meshes only
+      - no collision-quality, benchmark, real-USD improvement, paper-faithful optimization, or full CPD reproduction claim
+  - id: bed-franka-native-probe-comparison
+    status: complete
+    config: configs/experiments/bed_franka_native_probe_comparison.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-native-task-comparison
+    record: docs/records/2026-05-15-real-usd-native-task-comparison.md
+    purpose: >
+      Run the final contact-gated drop/settle plus sphere-rain task-smoke comparison for capped
+      bed and capped Franka first-mesh old/new lanes. Offline fitting and contact-canary evidence
+      are recorded separately.
+    claims_supported:
+      - capped bed and capped Franka real-USD diagnostic smoke only
+      - current bed native lane still selects boxes; current Franka native lane selects 29 boxes plus 3 cylinders under the surrogate
+      - no native primitive improvement claim from this selection change
+      - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
+  - id: real-usd-candidate-loss-diagnosis
+    status: complete
+    config: configs/experiments/bed_franka_native_probe_comparison.yaml
+    command: PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-candidate-loss-diagnosis
+    record: docs/records/2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md
+    purpose: >
+      Record per-selected-cluster candidate-loss diagnosis for capped bed and capped Franka
+      first-mesh native lanes after the controlled cylinder-axis fitting update.
+    claims_supported:
+      - real-USD surrogate candidate-loss accounting under capped first-mesh scope only
+      - bed native lane still selects boxes; Franka native lane selects 3 cylinders under the current surrogate
+      - no collision-quality, benchmark, whole-robot collider-quality, paper-faithful optimization, or full CPD reproduction claim
+  - id: real-usd-candidate-audit
+    status: complete
+    config: configs/experiments/bed_franka_native_probe_comparison.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-native-fitting-comparison
+    record: docs/records/2026-05-15-real-usd-candidate-audit.md
+    purpose: >
+      Record per-selected-cluster candidate audit summaries for capped bed and capped Franka
+      first-mesh real-USD old/new lanes.
+    claims_supported:
+      - real-USD candidate accounting under the current surrogate only
+      - superseded for current status by real-usd-candidate-loss-diagnosis after the cylinder-axis update
+      - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
+  - id: real-usd-asset-mirror-materialization
+    status: complete
+    config: configs/experiments/bed_franka_native_probe_comparison.yaml
+    command: PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --materialize-assets
+    record: docs/records/2026-05-15-real-usd-asset-mirror-materialization.md
+    purpose: >
+      Materialize ignored repo-local USD dependency-closure mirrors for the current bed and
+      Franka smoke assets, and record unresolved material dependencies.
+    claims_supported:
+      - asset intake and reproducibility diagnostics for current smoke manifests only
+      - local mirrors remain outside git under assets/raw/mirrors
+      - no license-review, complete visual-material package, collision-quality, benchmark, deployment-readiness, or safety claim
+  - id: franka-asset-mirror-materialization
+    status: complete
+    config: configs/experiments/franka_cpd_like_smoke.yaml
+    command: PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/franka_cpd_like_smoke.yaml --materialize-assets
+    record: docs/records/2026-05-15-real-usd-asset-mirror-materialization.md
+    purpose: >
+      Materialize the ignored repo-local USD layer mirror for the standalone Franka smoke manifest.
+    claims_supported:
+      - asset intake and reproducibility diagnostics for the standalone Franka smoke manifest only
+      - records unresolved OmniPBR.mdl as a material dependency boundary
+      - no complete visual-material package, whole-robot collider-quality, benchmark, deployment-readiness, or safety claim

@@ -16,6 +16,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The current code defines installable package contracts, config loading, dry-run reporting, USD
   asset-open smoke diagnostics, Newton source import diagnostics, and environment-readiness
   diagnostics.
+- The current code can materialize manifest USD assets into ignored repo-local
+  `assets/raw/mirrors/` paths and prefer those local paths at runtime when present. Current bed
+  materialization records the material/texture closure; current Franka materialization records a
+  USD layer mirror with unresolved `OmniPBR.mdl`. This is asset intake and reproducibility
+  diagnostics, not benchmark evidence, collision-quality validation, compiler completeness,
+  complete visual/material packaging, or deployment readiness.
 - The current code can run a geometry-only CPD-like face-merge primitive proposal smoke path for
   a restricted primitive subset, when tied to a dated record and capped asset/config settings.
 - The current code can run an opt-in geometry-only CPD-like component-merge gate that reports
@@ -55,10 +61,34 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   evidence. This is synthetic diagnostic-path evidence, not broad asset evidence or a claim that
   the CPD-like generator emits all six kinds by default.
 - The current code can run an opt-in deterministic synthetic native fitting comparison where the
-  six-kind Newton-native subset selects `cylinder`, `cone`, and `ellipsoid` on three toy meshes
+  six-kind Newton-native subset selects `cylinder`, `cone`, and `ellipsoid` on deterministic toy
+  meshes, including a squat-cylinder fixture that exercises the controlled cylinder-axis search,
   and maps the resulting one-primitive packages through Newton shape mapping. This is synthetic
   fitting evidence, not collision-quality validation, default asset behavior, paper-faithful CPD
   primitive fitting, broad asset evidence, or completed bed/Franka evidence.
+- The current synthetic native fitting comparison can include a candidate weighted-volume audit
+  table that explains why the toy fixtures selected `cylinder`, `cone`, or `ellipsoid` under the
+  current surrogate primitive-choice rule. This is synthetic diagnostic accounting, not a
+  paper-faithful CPD optimizer, real-USD improvement evidence, benchmark evidence, or
+  collision-quality validation.
+- The current code can run a real-USD old/new native fitting diagnostic over capped
+  `bed_dev_smoke` and capped `franka_import_smoke` first-mesh scope. The current dated run keeps
+  bed at `32` boxes in both lanes and changes the Franka native lane to `29` boxes plus `3`
+  cylinders under the current surrogate. This is selection/accounting evidence, not evidence that
+  native primitives improved those assets.
+- The real-USD native fitting diagnostic can include a per-selected-cluster candidate audit
+  summary that reports whether `cylinder`, `cone`, or `ellipsoid` was the cheapest candidate under
+  the current surrogate. This is diagnostic accounting for why the current lanes select their
+  primitives, not a quality metric or native primitive improvement claim.
+- The current code can run a real-USD candidate-loss diagnosis over capped bed and capped Franka
+  native lanes. It reports per-cluster selected primitive ranks, extension-candidate margins,
+  simple cluster geometry hints, and likely surrogate bottleneck labels. This is diagnostic
+  accounting, not collision-quality evidence, benchmark evidence, or a paper-faithful optimizer.
+- The current code can run a gated real-USD Newton probe comparison for capped bed and capped
+  Franka first-mesh packages: full package mapping, contact canary, then drop/settle and
+  sphere-rain only after contact passes. This is named diagnostic smoke evidence under recorded
+  settings, not collision-quality validation, benchmark evidence, or whole-robot Franka collider
+  quality evidence.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
@@ -86,8 +116,7 @@ Use these only after a dated record links them to Phase 0 assets, configs, logs,
 - A baseline comparison includes primitive count, fallback ratio, step time, contact count, and
   penetration or jitter measurements.
 - A generated collision package is simulation-checked for a named task in a named environment,
-  beyond the recorded capped-bed drop/settle and sphere-rain smokes and the synthetic native
-  bundle smoke.
+  beyond the recorded capped-bed, capped-Franka first-mesh, and synthetic native-bundle smokes.
 - A DLC-worker or experiment-specific Python/Newton environment has passed readiness checks for a
   named source checkout and hardware environment.
 
@@ -110,6 +139,8 @@ Use these only after broader benchmark records exist.
 - Do not claim the method fully replaces convex decomposition, SDFs, or human review.
 - Do not claim benchmark superiority before the benchmark record exists.
 - Do not treat environment-readiness diagnostics as Newton simulation checker results.
+- Do not treat asset mirror materialization as dataset licensing review, benchmark evidence,
+  complete visual/material packaging, collision-quality validation, or deployment readiness.
 - Do not claim full CPD paper reproduction before paper-scope primitive coverage, benchmark
   settings, and dated experiment records exist.
 - Do not describe the CPD-like component-merge gate as the CPD paper algorithm; it is a restricted
@@ -132,9 +163,20 @@ Use these only after broader benchmark records exist.
   primitive fitting implementation, Newton capped-cylinder support, collision-quality improvement,
   benchmark evidence, or asset/task improvement.
 - Do not claim broad Newton-native primitive quality for `cylinder`, `cone`, or `ellipsoid`
-  beyond the dated synthetic diagnostic-path and opt-in synthetic fitting records. Do not claim
-  the CPD-like generator emits these kinds by default for normal asset configs. Do not claim bed or
-  Franka native-fitting improvement until real-USD old/new records exist.
+  beyond the dated synthetic diagnostic-path, opt-in synthetic fitting, and capped real-USD
+  diagnostic records. Do not claim the CPD-like generator emits these kinds by default for normal
+  asset configs. Do not claim bed or Franka native-fitting improvement from the current real-USD
+  records; bed still selects boxes, and Franka's 3-cylinder native-lane selection is surrogate
+  accounting, not quality evidence.
+- Do not describe the synthetic native selection audit as a quality metric, paper-faithful
+  optimizer, proof that native primitives are broadly better, real-USD improvement, or collision
+  validation. It is a candidate-cost diagnostic table over toy meshes.
+- Do not describe the real-USD native probe comparison as a benchmark, collision-quality
+  validation, whole-robot Franka collider-quality result, or native primitive improvement result.
+- Do not describe the real-USD candidate audit summary as proof that the selected primitives are
+  good. It is a surrogate candidate-accounting summary over selected clusters.
+- Do not describe the real-USD candidate-loss diagnosis as a quality metric, benchmark result,
+  proof that boxes or cylinders are better, or evidence that the Franka collider is good.
 - Do not use CPD paper primitive-vocabulary completeness as a runtime support claim. Paper-only
   primitives remain offline diagnostics unless separately mapped and verified.
 

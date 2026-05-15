@@ -6,13 +6,28 @@ import os
 import sys
 from pathlib import Path
 
-from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
+from primitive_collision_compiler.assets.materialization import build_asset_materialization_report
+from primitive_collision_compiler.assets.usd_smoke import (
+    inspect_usd_asset,
+    load_asset_manifest,
+    resolve_asset_path,
+)
 from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
 from primitive_collision_compiler.baselines.cpd_like.objective import (
     CPDLikeObjectiveOptions,
     build_cpd_like_objective_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
+from primitive_collision_compiler.baselines.cpd_like.real_usd_comparison import (
+    REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
+    REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL,
+    REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
+    REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
+    build_real_usd_candidate_loss_diagnosis_report,
+    build_real_usd_native_contact_comparison_report,
+    build_real_usd_native_fitting_comparison_report,
+    build_real_usd_native_task_comparison_report,
+)
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
     NEWTON_NATIVE_EXTENDED_SUBSET,
     NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY,
@@ -50,6 +65,11 @@ def build_parser():
     parser.add_argument("--check-newton", action="store_true", help="emit Newton environment diagnostics")
     parser.add_argument("--check-assets", action="store_true", help="emit USD asset smoke diagnostics")
     parser.add_argument(
+        "--materialize-assets",
+        action="store_true",
+        help="copy/localize manifest USD dependency closures into ignored repo-local mirrors",
+    )
+    parser.add_argument(
         "--run-cpd-like",
         action="store_true",
         help="run the geometry-only CPD-like face-merge smoke path",
@@ -81,6 +101,26 @@ def build_parser():
             "run offline synthetic comparison between legacy and six-kind "
             "Newton-native primitive fitting"
         ),
+    )
+    parser.add_argument(
+        "--run-real-usd-native-fitting-comparison",
+        action="store_true",
+        help="run real-USD old/new Newton-native primitive fitting comparison",
+    )
+    parser.add_argument(
+        "--run-real-usd-candidate-loss-diagnosis",
+        action="store_true",
+        help="run real-USD per-cluster candidate-loss diagnosis for native primitive lanes",
+    )
+    parser.add_argument(
+        "--run-real-usd-native-contact-comparison",
+        action="store_true",
+        help="run real-USD old/new Newton contact-canary comparison",
+    )
+    parser.add_argument(
+        "--run-real-usd-native-task-comparison",
+        action="store_true",
+        help="run gated real-USD old/new Newton drop/settle and sphere-rain comparison",
     )
     parser.add_argument(
         "--run-newton-contact-smoke",
@@ -164,6 +204,22 @@ def main(argv=None):
 
     if args.check_assets:
         print("npc-compile: --check-assets requires --config.", file=sys.stderr)
+        return 2
+
+    if args.materialize_assets and args.config:
+        try:
+            config = load_compile_config(args.config)
+            with contextlib.redirect_stdout(sys.stderr):
+                report = build_asset_materialization_report(_asset_manifest_path(config))
+        except ValueError as exc:
+            print(f"npc-compile: {exc}", file=sys.stderr)
+            return 2
+
+        print(json.dumps(report, sort_keys=True))
+        return 2 if report["status"] == "failed" else 0
+
+    if args.materialize_assets:
+        print("npc-compile: --materialize-assets requires --config.", file=sys.stderr)
         return 2
 
     if args.run_cpd_like and args.config:
@@ -330,6 +386,199 @@ def main(argv=None):
             )
             return 2
         return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_real_usd_native_fitting_comparison and args.config:
+        try:
+            report = _run_real_usd_native_fitting_comparison(args.config)
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "cpd_like_real_usd_native_fitting_comparison",
+                        "status": "dependency_gap"
+                        if "dependency_gap" in str(exc)
+                        else "smoke_failed",
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: real_usd_native_fitting_comparison report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_real_usd_native_fitting_comparison:
+        print(
+            "npc-compile: --run-real-usd-native-fitting-comparison requires --config.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if args.run_real_usd_candidate_loss_diagnosis and args.config:
+        try:
+            report = _run_real_usd_candidate_loss_diagnosis(args.config)
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "cpd_like_real_usd_candidate_loss_diagnosis",
+                        "status": "dependency_gap"
+                        if "dependency_gap" in str(exc)
+                        else "smoke_failed",
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: real_usd_candidate_loss_diagnosis report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_real_usd_candidate_loss_diagnosis:
+        print(
+            "npc-compile: --run-real-usd-candidate-loss-diagnosis requires --config.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if args.run_real_usd_native_contact_comparison and args.config:
+        try:
+            config = load_compile_config(args.config)
+            options = _real_usd_native_comparison_options(config)
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError(
+                    "--run-real-usd-native-contact-comparison requires config key newton.source_dir"
+                )
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            diagnostic_options = _newton_diagnostic_options(diagnostic_section)
+            with contextlib.redirect_stdout(sys.stderr):
+                report = build_real_usd_native_contact_comparison_report(
+                    **options,
+                    source_dir=source_dir,
+                    device=diagnostic_options["device"],
+                    claim_boundary=diagnostic_options["claim_boundary"],
+                )
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "newton_real_usd_native_contact_comparison",
+                        "status": _newton_contact_error_status(str(exc)),
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: real_usd_native_contact_comparison report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_real_usd_native_contact_comparison:
+        print(
+            "npc-compile: --run-real-usd-native-contact-comparison requires --config.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if args.run_real_usd_native_task_comparison and args.config:
+        try:
+            config = load_compile_config(args.config)
+            options = _real_usd_native_comparison_options(config)
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError(
+                    "--run-real-usd-native-task-comparison requires config key newton.source_dir"
+                )
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            device = str(diagnostic_section.get("device", "cpu"))
+            task_claim_boundary = str(
+                diagnostic_section.get(
+                    "claim_boundary",
+                    "real_usd_native_task_smoke_not_collision_quality_or_safety",
+                )
+            )
+            drop_options = _newton_drop_settle_options(
+                {**diagnostic_section, "probe_type": "drop_settle"}
+            )["options"]
+            sphere_options = _newton_sphere_rain_options(
+                {**diagnostic_section, "probe_type": "sphere_rain"}
+            )["options"]
+            with contextlib.redirect_stdout(sys.stderr):
+                report = build_real_usd_native_task_comparison_report(
+                    **options,
+                    source_dir=source_dir,
+                    device=device,
+                    drop_settle_options=drop_options,
+                    sphere_rain_options=sphere_options,
+                    claim_boundary=task_claim_boundary,
+                    contact_claim_boundary=task_claim_boundary,
+                )
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "newton_real_usd_native_task_comparison",
+                        "status": _newton_sphere_rain_error_status(str(exc)),
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: real_usd_native_task_comparison report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_real_usd_native_task_comparison:
+        print(
+            "npc-compile: --run-real-usd-native-task-comparison requires --config.",
+            file=sys.stderr,
+        )
+        return 2
 
     if args.run_newton_contact_smoke and args.config:
         try:
@@ -584,6 +833,110 @@ def _run_newton_native_fitting_comparison(config_path):
     )
 
 
+def _run_real_usd_native_fitting_comparison(config_path):
+    config = load_compile_config(config_path)
+    return build_real_usd_native_fitting_comparison_report(
+        **_real_usd_native_comparison_options(config)
+    )
+
+
+def _run_real_usd_candidate_loss_diagnosis(config_path):
+    config = load_compile_config(config_path)
+    return build_real_usd_candidate_loss_diagnosis_report(
+        **_real_usd_candidate_loss_diagnosis_options(config)
+    )
+
+
+def _real_usd_candidate_loss_diagnosis_options(config):
+    options = _real_usd_native_comparison_options(config)
+    comparison_section = config.protocol.get("candidate_loss_diagnosis", {})
+    if comparison_section is None:
+        comparison_section = {}
+    if not isinstance(comparison_section, dict):
+        raise ValueError("candidate_loss_diagnosis must be a mapping")
+    options["objective_options"] = CPDLikeObjectiveOptions(
+        objective_version=str(
+            comparison_section.get(
+                "objective_version",
+                "cpd_paper_aligned_surrogate_v0",
+            )
+        ),
+        claim_boundary=str(
+            comparison_section.get(
+                "claim_boundary",
+                REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
+            )
+        ),
+        evidence_level=str(
+            comparison_section.get(
+                "evidence_level",
+                REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL,
+            )
+        ),
+    )
+    return options
+
+
+def _real_usd_native_comparison_options(config):
+    cpd_like_section = config.protocol.get("cpd_like", {})
+    if not isinstance(cpd_like_section, dict):
+        cpd_like_section = {}
+    comparison_section = config.protocol.get("native_fitting_comparison", {})
+    if comparison_section is None:
+        comparison_section = {}
+    if not isinstance(comparison_section, dict):
+        raise ValueError("native_fitting_comparison must be a mapping")
+
+    manifest_path = str(cpd_like_section.get("asset_manifest") or config.asset_path)
+    roles = _string_tuple_option(
+        cpd_like_section.get("asset_roles")
+        or comparison_section.get("real_usd_roles"),
+        "cpd_like.asset_roles",
+    )
+    legacy_subset = _cpd_like_named_primitive_subset(
+        cpd_like_section,
+        "legacy_primitive_subset",
+        NEWTON_NATIVE_LEGACY_SUBSET,
+    )
+    native_subset = _cpd_like_named_primitive_subset(
+        cpd_like_section,
+        "native_primitive_subset",
+        NEWTON_NATIVE_EXTENDED_SUBSET,
+    )
+    objective_options = CPDLikeObjectiveOptions(
+        objective_version=str(
+            comparison_section.get(
+                "objective_version",
+                "cpd_paper_aligned_surrogate_v0",
+            )
+        ),
+        claim_boundary=str(
+            comparison_section.get(
+                "claim_boundary",
+                REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
+            )
+        ),
+        evidence_level=str(
+            comparison_section.get(
+                "evidence_level",
+                REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
+            )
+        ),
+    )
+    return {
+        "manifest_path": manifest_path,
+        "roles": roles,
+        "max_primitives": config.max_primitives,
+        "legacy_subset": legacy_subset,
+        "native_subset": native_subset,
+        "max_source_faces_by_role": _max_source_faces_by_role(
+            cpd_like_section.get("max_source_faces_by_role")
+        ),
+        "component_merge_options": _cpd_like_component_merge_options(cpd_like_section),
+        "objective_options": objective_options,
+    }
+
+
 def _run_cpd_like_report(config):
     cpd_like_section = config.protocol.get("cpd_like", {})
     if not isinstance(cpd_like_section, dict):
@@ -617,6 +970,32 @@ def _cpd_like_named_primitive_subset(cpd_like_section, key, default):
     result = tuple(str(item) for item in value)
     if not result or any(not item for item in result):
         raise ValueError(f"cpd_like.{key} must be a list of strings")
+    return result
+
+
+def _string_tuple_option(value, key):
+    if isinstance(value, str) or not isinstance(value, (list, tuple)):
+        raise ValueError(f"{key} must be a list of strings")
+    result = tuple(str(item) for item in value)
+    if not result or any(not item for item in result):
+        raise ValueError(f"{key} must be a list of strings")
+    return result
+
+
+def _max_source_faces_by_role(value):
+    if value in (None, ""):
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError("cpd_like.max_source_faces_by_role must be a mapping")
+    result = {}
+    for role, raw_count in value.items():
+        role_name = str(role)
+        if not role_name:
+            raise ValueError("cpd_like.max_source_faces_by_role keys must be non-empty")
+        result[role_name] = _positive_int(
+            raw_count,
+            default=256,
+        )
     return result
 
 
@@ -693,10 +1072,10 @@ def _cpd_like_source_path(config, cpd_like_section):
         assets = load_asset_manifest(manifest_path)
         for asset in assets:
             if asset.get("role") == asset_role:
-                path = asset.get("path")
-                if not path:
+                resolved = resolve_asset_path(asset)
+                if not resolved.path:
                     raise ValueError(f"asset role {asset_role!r} has no path")
-                return str(path)
+                return resolved.path
         raise ValueError(f"asset role {asset_role!r} not found in manifest: {manifest_path}")
     return config.asset_path
 

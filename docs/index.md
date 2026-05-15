@@ -1,11 +1,12 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, a synthetic objective comparison over deterministic toy meshes, a focused CPD-like cost-guided merge-search smoke over one deterministic toy mesh, a deterministic expected-failure synthetic workbench for known CPD-paper gaps, an opt-in offline `capped_cylinder` geometry proposal proxy, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The objective report summarizes primitive budget, volume proxy, raw Eq.4-like and AABB-normalized merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, component/fallback labels, and Eq.4 alignment metadata for that CPD-like output. The synthetic comparison reuses the same report on three in-memory fixtures to inspect topology-only versus component-merge accounting. The cost-guided smoke uses AABB-normalized merge-excess as a decision-making cost and reports old/new diagnostic accounting on `cost_guided_pair_choice`. The expected-failure workbench reports whether expected limitation flags are observed on three known-gap fixtures; `smoke_passed` means those expected limitations were reported, not that the decomposition succeeded. The capped-cylinder proxy has a named offline objective-report smoke where the unsupported paper primitive gap decreases from 3 to 2, with `frustum` and `trapezoidal_prism` still unsupported. The contact canary maps the historical 32 bed proposals to Newton box descriptors and produces one representative box contact; Newton mapping for `capped_cylinder` remains unsupported. The drop/settle smoke maps the historical 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps the historical 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. The Newton-native primitive bundle maps and constructs diagnostic shapes for a synthetic package containing `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison now lets the CPD-like fitter choose simple `cylinder`, `cone`, and `ellipsoid` proposals on three deterministic synthetic meshes and declares bed plus Franka as the next real-USD scope. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries, contact canaries, and gated task smokes; bed still selects boxes in both lanes, while Franka's native lane now selects 29 boxes plus 3 cylinders under the surrogate. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: run the old/new native-fitting comparison on capped bed and capped Franka USD
-meshes under explicit face caps, then use Newton contact canary before broader drop/settle or
-sphere-rain task smokes. Keep `capped_cylinder`, `frustum`, and `trapezoidal_prism` in the
-offline paper-alignment lane until separate mapping and diagnostic records exist.
+Current next action: use the candidate-loss diagnosis to decide the next primitive-fitting or
+merge-search change. The latest controlled cylinder-axis update gives one synthetic improvement
+and changes capped Franka native selection to 3 cylinders, but it is still not collision-quality
+evidence. Keep `capped_cylinder`, `frustum`, and `trapezoidal_prism` in the offline
+paper-alignment lane until separate mapping and diagnostic records exist.
 
 ## DeepDive Package
 
@@ -38,10 +39,26 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
   bundle adds to the CPD paper story, and what it does not claim.
 - [Newton-native fitting comparison](reference/newton-native-fitting-comparison.md):
   plain-language explanation of the opt-in synthetic comparison where simple native fitters emit
-  `cylinder`, `cone`, and `ellipsoid`, while bed and Franka remain next-scope real USD assets.
+  `cylinder`, `cone`, and `ellipsoid`, now with candidate weighted-volume audit tables, with bed
+  and Franka handled by the separate real-USD probe comparison.
+- [Synthetic native selection audit explainer](reference/synthetic-native-selection-audit-explainer.md):
+  field-by-field guide to the candidate weighted-volume table and its claim boundary in the CPD
+  paper story.
 - [Bed and Franka native fitting next steps](reference/bed-franka-native-fitting-next-steps.md):
-  execution-order guide for moving from synthetic native fitting to real-USD old/new reports and
-  then Newton contact/task smokes.
+  historical execution-order guide for the now-completed move from synthetic native fitting to
+  real-USD old/new reports and then Newton contact/task smokes.
+- [Bed and Franka native probe comparison](reference/bed-franka-native-probe-comparison.md):
+  completed real-USD diagnostic-smoke guide for capped bed and capped Franka old/new fitting,
+  contact, and gated task probes.
+- [Real USD native probe in the CPD paper story](reference/real-usd-native-probe-paper-story-explainer.md):
+  plain-language explanation of why the latest bed/Franka slice is a downstream diagnostic
+  milestone, not native primitive improvement or full CPD reproduction evidence.
+- [Asset mirror materialization](reference/asset-mirror-materialization.md):
+  guide to the ignored repo-local USD mirrors for bed and Franka, including material/texture
+  closure status and claim boundaries.
+- [CPD next steps after real USD mirrors](reference/cpd-next-steps-after-real-usd-mirrors.md):
+  plain-language roadmap for locking the current real-USD baseline, diagnosing why boxes still
+  win, and making the next primitive-fitting or merge-search change safely.
 
 ## Source Intake And Planning
 
@@ -96,9 +113,39 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
 - [Newton native bundle explainer docs record](records/2026-05-15-newton-native-bundle-explainer-docs.md):
   documentation update that explains the latest native runtime bundle in the CPD paper story.
 - [Newton native fitting comparison record](records/2026-05-15-newton-native-fitting-comparison.md):
-  opt-in synthetic native fitting comparison and bed/Franka next-scope declaration.
+  opt-in synthetic native fitting comparison and pointer to the bed/Franka probe scope.
+- [Synthetic native selection audit record](records/2026-05-15-synthetic-native-selection-audit.md):
+  candidate weighted-volume audit tables explaining why the six-kind native lane selects
+  `cylinder`, `cone`, and `ellipsoid` on deterministic toy meshes.
+- [Synthetic native selection audit explainer docs record](records/2026-05-15-synthetic-native-selection-audit-explainer-docs.md):
+  documentation update with a field-by-field explanation of the candidate audit table.
 - [Bed Franka native fitting next steps docs record](records/2026-05-15-bed-franka-native-fitting-next-steps-docs.md):
   documentation update that clarifies the next real-USD old/new comparison sequence.
+- [Real USD native fitting comparison record](records/2026-05-15-real-usd-native-fitting-comparison.md):
+  capped bed and capped Franka old/new offline diagnostic report evidence.
+- [Real USD candidate audit record](records/2026-05-15-real-usd-candidate-audit.md):
+  pre-cylinder-axis per-selected-cluster candidate accounting, superseded for current status by
+  the candidate-loss/cylinder-axis record.
+- [Real USD native contact comparison record](records/2026-05-15-real-usd-native-contact-comparison.md):
+  capped bed and capped Franka old/new contact-canary evidence under the clean Newton conda
+  environment.
+- [Real USD native task comparison record](records/2026-05-15-real-usd-native-task-comparison.md):
+  gated drop/settle and sphere-rain task-smoke evidence for the capped bed and capped Franka
+  old/new packages.
+- [Bed Franka native probe completion audit](records/2026-05-15-bed-franka-native-probe-completion-audit.md):
+  final checklist mapping the requested five-step objective to code, configs, reports, records,
+  verification, and review fixes.
+- [Real USD native probe story explainer docs record](records/2026-05-15-real-usd-native-probe-story-explainer-docs.md):
+  documentation update that explains the latest real-USD native probe slice in the CPD paper
+  reproduction story.
+- [Real USD asset mirror materialization record](records/2026-05-15-real-usd-asset-mirror-materialization.md):
+  ignored repo-local mirror materialization for the current bed and Franka smoke USDs.
+- [Real USD mirrors next steps docs record](records/2026-05-15-real-usd-mirrors-next-steps-docs.md):
+  documentation update that expands the asset mirror norm and records the next CPD-like
+  candidate-loss diagnosis sequence.
+- [Candidate loss diagnosis and cylinder axis record](records/2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md):
+  controlled cylinder-axis fitting update, synthetic rerun, real-USD candidate-loss diagnosis,
+  and bed/Franka Newton-gated rerun.
 - [CPD paper companion MVP record](records/2026-05-15-cpd-paper-companion-mvp.md):
   Astro + MDX bilingual CPD paper companion scaffold with source-paper claim namespacing,
   permission-record-pending status, and AI-assisted draft translation status.
@@ -134,8 +181,9 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
   TDD implementation plan for the native `cylinder`, `cone`, and `ellipsoid` runtime bundle.
 - [Newton native fitting comparison plan](superpowers/plans/2026-05-15-newton-native-fitting-comparison.md):
   TDD implementation plan for the opt-in native fitting comparison and bed/Franka scope update.
-- [CPD full text import and translation plan](superpowers/plans/2026-05-15-cpd-full-text-import-translation.md):
-  TDD implementation plan for the full-text CPD paper companion importer and draft translation pass.
+- [Bed Franka native probe completion plan](superpowers/plans/2026-05-15-bed-franka-native-probe-completion.md):
+  TDD implementation plan for the real-USD old/new fitting, contact, and gated task comparison
+  slice.
 
 ## Configs And Artifacts
 
@@ -148,7 +196,9 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
 - `configs/experiments/cpd_like_capped_cylinder_proxy.yaml`: opt-in offline capped-cylinder
   proxy objective-report smoke config.
 - `configs/experiments/newton_native_fitting_comparison.yaml`: opt-in synthetic native fitting
-  comparison config that includes bed and Franka as next-scope real USD roles.
+  comparison config that points to the real-USD probe comparison config.
+- `configs/experiments/bed_franka_native_probe_comparison.yaml`: real-USD capped bed and capped
+  Franka old/new fitting, contact, and gated task-smoke comparison config.
 - `npc-compile --run-cpd-like-synthetic-comparison`: command-only deterministic synthetic
   objective comparison, recorded in `experiments/registry.yaml` without a config file.
 - `npc-compile --run-cpd-like-cost-guided-synthetic-comparison`: command-only deterministic
@@ -158,8 +208,17 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
   file.
 - `npc-compile --config configs/experiments/newton_native_fitting_comparison.yaml
   --run-newton-native-fitting-comparison`: deterministic synthetic old/new comparison for opt-in
-  native `cylinder`, `cone`, and `ellipsoid` fitters, with bed and Franka listed as next-scope
-  real USD roles.
+  native `cylinder`, `cone`, and `ellipsoid` fitters, including candidate audit tables.
+- `npc-compile --config configs/experiments/bed_franka_native_probe_comparison.yaml
+  --run-real-usd-native-fitting-comparison`: capped bed and capped Franka real-USD old/new
+  offline diagnostic report with candidate audit summaries.
+- `npc-compile --config configs/experiments/bed_franka_native_probe_comparison.yaml
+  --run-real-usd-native-contact-comparison`: full-mapping-gated contact canary comparison.
+- `npc-compile --config configs/experiments/bed_franka_native_probe_comparison.yaml
+  --run-real-usd-native-task-comparison`: contact-gated drop/settle and sphere-rain comparison.
+- `npc-compile --config configs/experiments/bed_franka_native_probe_comparison.yaml
+  --materialize-assets`: ignored repo-local USD dependency-closure mirror for the current bed and
+  Franka smoke assets.
 - `scripts/env/readiness_check.py`: local environment-readiness JSON checker.
 - `experiments/registry.yaml`: experiment registry and claim-support status.
 - `assets/`, `reports/`, and `archive/`: artifact boundaries; large/generated outputs stay out
@@ -188,10 +247,13 @@ opt-in offline objective smoke where the unsupported paper primitive gap decreas
 with no Newton mapping or task-level improvement claim.
 The runtime primitive roadmap is Newton-native first: the native `cylinder`, `cone`, and
 `ellipsoid` bundle now has mapping, diagnostic construction, tests, and a dated synthetic runtime
-smoke record. The opt-in native fitting comparison can emit those kinds on three deterministic
-synthetic meshes, but this does not mean they are default asset behavior or real-USD improvement
-evidence. It does not add support for paper-only `capped_cylinder`, `frustum`, or
-`trapezoidal_prism` in Newton runtime.
+smoke record. The opt-in native fitting comparison can emit those kinds on deterministic synthetic
+meshes, but this does not mean they are default asset behavior or real-USD improvement evidence.
+The real-USD bed/Franka probe comparison can run old/new lanes through offline reports, candidate
+diagnostics, contact canaries, and gated task smokes; the current run keeps bed at boxes and changes
+capped Franka's native lane to 3 cylinders under the surrogate, but it still does not prove native
+primitive quality improvement. It does not add support for paper-only
+`capped_cylinder`, `frustum`, or `trapezoidal_prism` in Newton runtime.
 These evidence layers are not benchmark, collision-quality, whole-robot quality, real
 contact-stress, or CPD reproduction evidence.
 

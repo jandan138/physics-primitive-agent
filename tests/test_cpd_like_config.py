@@ -62,7 +62,13 @@ def test_smoke_asset_manifest_records_paths_without_committing_assets():
         roles["bed_dev_smoke"]["sha256"]
         == "1bc5a26ddb2551de4ac7acbc13a39d118beda10db503419da65ce82528322265"
     )
+    assert roles["bed_dev_smoke"]["local_path"].startswith("assets/raw/mirrors/")
+    assert roles["bed_dev_smoke"]["materialization"]["status"] == "materialized"
     assert Path(roles["franka_import_smoke"]["path"]).name == "franka.usd"
+    assert roles["franka_import_smoke"]["local_path"].startswith("assets/raw/mirrors/")
+    assert roles["franka_import_smoke"]["materialization"]["unresolved_dependencies"] == [
+        "OmniPBR.mdl"
+    ]
     assert roles["franka_import_smoke"]["include_in_cpd_like_aggregate"] is False
 
 
@@ -76,6 +82,10 @@ def test_franka_smoke_asset_manifest_records_robot_path_without_committing_asset
         roles["franka_import_smoke"]["sha256"]
         == "2bfd004928d4157ca2fdca3e79bcfb913b4008eef3ec16f839ad89314141976b"
     )
+    assert roles["franka_import_smoke"]["local_path"].startswith("assets/raw/mirrors/")
+    assert roles["franka_import_smoke"]["materialization"]["unresolved_dependencies"] == [
+        "OmniPBR.mdl"
+    ]
     assert roles["franka_import_smoke"]["include_in_cpd_like_aggregate"] is False
 
 
@@ -211,6 +221,7 @@ def test_newton_native_fitting_comparison_config_includes_bed_and_franka_scope()
     assert config.method == "cpd_like_baseline"
     assert config.verify == (
         "synthetic_native_fitting_comparison",
+        "synthetic_native_selection_audit",
         "bed_usd_cpd_like_geometry_scope",
         "franka_usd_cpd_like_geometry_scope",
     )
@@ -238,4 +249,21 @@ def test_newton_native_fitting_comparison_config_includes_bed_and_franka_scope()
     assert config.protocol["native_fitting_comparison"]["claim_boundary"] == (
         "native_fitting_comparison_not_collision_quality_validation"
     )
+    assert config.protocol["native_fitting_comparison"]["selection_audit"] == {
+        "enabled": True,
+        "claim_boundary": "synthetic_selection_audit_not_paper_optimizer_or_collision_quality",
+        "selection_policy": "min_weighted_volume_surrogate_v0",
+    }
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_bed_franka_native_probe_config_includes_candidate_loss_diagnosis():
+    config_path = Path("configs/experiments/bed_franka_native_probe_comparison.yaml")
+    config = load_compile_config(config_path)
+
+    assert "real_usd_candidate_loss_diagnosis" in config.verify
+    assert config.protocol["candidate_loss_diagnosis"] == {
+        "stage": "cpd_like_real_usd_candidate_loss_diagnosis",
+        "claim_boundary": "candidate_loss_diagnosis_not_collision_quality_validation",
+        "evidence_level": "offline_candidate_loss_diagnosis_smoke",
+    }

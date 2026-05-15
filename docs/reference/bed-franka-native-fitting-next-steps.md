@@ -1,13 +1,14 @@
 # Bed And Franka Native Fitting Next Steps
 
-This page turns the current CPD paper story into the next executable slice. It is a planning
-guide for the bed and Franka real-USD scope, not completed experiment evidence.
+This page records the execution sequence that moved the bed and Franka real-USD scope from a
+planned slice to completed diagnostic smoke records. The completed results live in
+[Bed And Franka Native Probe Comparison](bed-franka-native-probe-comparison.md).
 
 ## One-Sentence Summary
 
-The synthetic native-fitting comparison is complete; the next step is to run the same old/new
-comparison on capped bed and capped Franka USD meshes, inspect the offline reports first, and only
-then decide whether the generated packages are ready for Newton contact and task smokes.
+The synthetic native-fitting comparison is complete, and the follow-up real-USD diagnostic path has
+now run on capped bed and capped Franka USD meshes: offline old/new reports, contact canaries, and
+gated drop/settle plus sphere-rain task smokes.
 
 ## Current Starting Point
 
@@ -27,15 +28,15 @@ The completed synthetic cases show:
 - `tapered_cone`: legacy selects `capsule`, native selects `cone`;
 - `ellipsoid_blob`: legacy selects `box`, native selects `ellipsoid`.
 
-The real-USD scope is declared but not run:
+The real-USD scope has now been run:
 
 ```text
 bed_dev_smoke
 franka_import_smoke
 ```
 
-These roles live in `assets/manifests/cpd_like_smoke_assets.yaml`, and the next-scope config is
-`configs/experiments/newton_native_fitting_comparison.yaml`.
+These roles live in `assets/manifests/cpd_like_smoke_assets.yaml`, and the completed probe config
+is `configs/experiments/bed_franka_native_probe_comparison.yaml`.
 
 ## Why This Is The Next Slice
 
@@ -94,11 +95,11 @@ Compare these fields:
 
 This is still an offline diagnostic comparison. It is not a collision-quality metric.
 
-## Recommended Execution Order
+## Completed Execution Order
 
 ### Step 1: Add A Real-USD Old/New Report Runner
 
-Add a config-driven report path that consumes:
+Completed. The config-driven report path consumes:
 
 - `cpd_like.asset_roles`;
 - `cpd_like.legacy_primitive_subset`;
@@ -115,8 +116,7 @@ franka_import_smoke / legacy
 franka_import_smoke / native
 ```
 
-The first implementation should stop at offline objective plus mapping summary. It should not run
-Newton simulation yet.
+The offline implementation stops at objective summaries, package summaries, and mapping summaries.
 
 ### Step 2: Run Offline Bed And Franka Reports
 
@@ -127,7 +127,7 @@ bed_dev_smoke: 256 faces
 franka_import_smoke: 128 faces
 ```
 
-The report should answer:
+Completed. The report answers:
 
 - Did native fitting actually select any `cylinder`, `cone`, or `ellipsoid`?
 - Did primitive count stay within budget?
@@ -135,12 +135,13 @@ The report should answer:
 - Did any primitive produce a Newton mapping gap?
 - Did the old or native path add new failure labels?
 
-If the native path does not select new primitives, that is still useful evidence. It means the
-simple synthetic proxy fitters are not yet useful on that capped real mesh.
+After the controlled cylinder-axis fitting update, the native path still selects boxes for bed but
+selects `3` cylinders for capped Franka. This is useful selection/accounting evidence, but it is
+not native primitive quality or collision-quality improvement evidence.
 
 ### Step 3: Decide Whether Contact Canary Is Allowed
 
-Run Newton contact canary only if:
+Completed. The comparison runs Newton contact canary only if:
 
 - all primitives in the package map to Newton shapes;
 - the package status is not a dependency or mapping gap;
@@ -157,7 +158,7 @@ It does not answer whether the collider is good.
 
 ### Step 4: Run Drop/Settle Or Sphere-Rain Only After Contact Canary
 
-If contact canary is clean, run:
+Completed. After contact canary passed, the comparison ran:
 
 ```text
 old bed package -> drop/settle and sphere-rain
@@ -203,12 +204,11 @@ It still will not mean:
 - whole-robot collider quality;
 - safety certification.
 
-## Recommended Next Commits
+## Completed Records
 
-1. `feat: add real usd native fitting comparison report`
-2. `docs: record bed franka native fitting offline comparison`
-3. `feat: add native fitting contact canary comparison`
-4. `docs: record native fitting newton contact comparison`
+1. [Real USD Native Fitting Comparison](../records/2026-05-15-real-usd-native-fitting-comparison.md)
+2. [Real USD Native Contact Comparison](../records/2026-05-15-real-usd-native-contact-comparison.md)
+3. [Real USD Native Task Comparison](../records/2026-05-15-real-usd-native-task-comparison.md)
 
-Only after those records exist should drop/settle and sphere-rain old/new task comparisons become
-the main focus.
+The next algorithmic focus is improving primitive fitting or merge search so real USD assets can
+exercise native `cylinder`, `cone`, or `ellipsoid` choices before any native primitive value claim.

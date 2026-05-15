@@ -107,8 +107,39 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Newton Native Fitting Comparison](2026-05-15-newton-native-fitting-comparison.md):
   opt-in synthetic comparison where the six-kind native subset selects `cylinder`, `cone`, and
   `ellipsoid`, with bed and Franka declared as next-scope real USD assets.
+- [2026-05-15 Synthetic Native Selection Audit](2026-05-15-synthetic-native-selection-audit.md):
+  candidate weighted-volume audit tables explaining why the six-kind native lane selects
+  `cylinder`, `cone`, and `ellipsoid` on deterministic toy meshes.
+- [2026-05-15 Synthetic Native Selection Audit Explainer Docs](2026-05-15-synthetic-native-selection-audit-explainer-docs.md):
+  field-by-field documentation for the synthetic native selection audit table.
 - [2026-05-15 Bed Franka Native Fitting Next Steps Docs](2026-05-15-bed-franka-native-fitting-next-steps-docs.md):
   documentation update that makes the next real-USD old/new comparison sequence explicit.
+- [2026-05-15 Real USD Native Fitting Comparison](2026-05-15-real-usd-native-fitting-comparison.md):
+  capped bed and capped Franka old/new offline diagnostic report.
+- [2026-05-15 Real USD Candidate Audit](2026-05-15-real-usd-candidate-audit.md):
+  pre-cylinder-axis per-selected-cluster candidate accounting, superseded for current status by
+  the candidate-loss/cylinder-axis record.
+- [2026-05-15 Real USD Native Contact Comparison](2026-05-15-real-usd-native-contact-comparison.md):
+  full-mapping-gated Newton contact canary comparison for the capped bed and capped Franka old/new
+  packages.
+- [2026-05-15 Real USD Native Task Comparison](2026-05-15-real-usd-native-task-comparison.md):
+  contact-gated drop/settle and sphere-rain task-smoke comparison for the capped bed and capped
+  Franka old/new packages.
+- [2026-05-15 Bed Franka Native Probe Completion Audit](2026-05-15-bed-franka-native-probe-completion-audit.md):
+  completion audit mapping the requested five-step real-USD native probe objective to code,
+  configs, reports, records, verification, and review fixes.
+- [2026-05-15 Real USD Native Probe Story Explainer Docs](2026-05-15-real-usd-native-probe-story-explainer-docs.md):
+  plain-language documentation update that explains the latest bed/Franka real-USD native probe
+  slice in the CPD paper reproduction story.
+- [2026-05-15 Real USD Asset Mirror Materialization](2026-05-15-real-usd-asset-mirror-materialization.md):
+  ignored repo-local USD dependency-closure mirrors for the current bed and Franka smoke
+  manifests, including the unresolved Franka `OmniPBR.mdl` boundary.
+- [2026-05-15 Real USD Mirrors Next Steps Docs](2026-05-15-real-usd-mirrors-next-steps-docs.md):
+  documentation update that expands the asset mirror materialization norm and records the next
+  CPD-like candidate-loss diagnosis sequence after local bed/Franka mirrors.
+- [2026-05-15 Candidate Loss Diagnosis And Cylinder Axis](2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md):
+  controlled cylinder-axis fitting update, synthetic rerun, real-USD candidate-loss diagnosis,
+  and bed/Franka Newton-gated rerun.
 - [2026-05-15 CPD Paper Companion MVP](2026-05-15-cpd-paper-companion-mvp.md):
   Astro + MDX bilingual paper companion scaffold with source-paper claim namespacing and
   permission-record-pending AI-assisted draft translation status.

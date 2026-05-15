@@ -14,6 +14,7 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
     build_cpd_like_objective_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
+from primitive_collision_compiler.baselines.cpd_like.primitives import fit_primitive_candidates
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
 from primitive_collision_compiler.newton.shapes import map_package_shapes
 
@@ -42,6 +43,13 @@ NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY = (
 NEWTON_NATIVE_FITTING_COMPARISON_EVIDENCE_LEVEL = (
     "offline_synthetic_native_fitting_comparison_smoke"
 )
+NATIVE_SELECTION_AUDIT_CLAIM_BOUNDARY = (
+    "synthetic_selection_audit_not_paper_optimizer_or_collision_quality"
+)
+NATIVE_SELECTION_POLICY = "min_weighted_volume_surrogate_v0"
+NATIVE_SELECTION_RULE = "min_raw_weighted_primitive_volume_tie_break_by_subset_order"
+NATIVE_SELECTION_COST_NAME = "weighted_primitive_volume"
+NATIVE_SELECTION_COST_UNITS = "source_mesh_volume_units"
 NEWTON_NATIVE_LEGACY_SUBSET = ("box", "sphere", "capsule")
 NEWTON_NATIVE_EXTENDED_SUBSET = (
     "box",
@@ -309,6 +317,12 @@ def _native_fitting_cases() -> tuple[_NativeFittingCase, ...]:
             expected_native_primitive="ellipsoid",
             mesh=_ellipsoid_blob_mesh(),
         ),
+        _NativeFittingCase(
+            case_id="squat_cylinder",
+            description="Short cylinder-like puck where cylinder fitting must choose the short axis.",
+            expected_native_primitive="cylinder",
+            mesh=_squat_cylinder_mesh(),
+        ),
     )
 
 
@@ -463,10 +477,31 @@ def _native_fitting_policy_summary(
     selected_kind = (
         decomposition.primitives[0].primitive_type if decomposition.primitives else ""
     )
+    selected_source_faces = (
+        set(decomposition.primitives[0].source_faces) if decomposition.primitives else set()
+    )
+    candidate_audit = _native_candidate_audit(
+        case.mesh,
+        primitive_subset=primitive_subset,
+        selected_kind=selected_kind,
+        normalizer_volume=float(metrics["geometric_excess_proxy"]["normalizer_volume"]),
+    )
     return {
         "label": label,
         "status": objective["status"],
         "primitive_subset": list(primitive_subset),
+        "selection_policy": NATIVE_SELECTION_POLICY,
+        "selection_rule": NATIVE_SELECTION_RULE,
+        "selection_cost_name": NATIVE_SELECTION_COST_NAME,
+        "selection_cost_units": NATIVE_SELECTION_COST_UNITS,
+        "candidate_audit_scope": "single_primitive_full_mesh_fixture",
+        "candidate_audit_face_count": case.mesh.face_count,
+        "candidate_audit_matches_selection_scope": bool(
+            decomposition.primitive_count == 1
+            and selected_source_faces == set(range(case.mesh.face_count))
+        ),
+        "candidate_audit": candidate_audit,
+        "selected_candidate_rank": _selected_candidate_rank(candidate_audit),
         "selected_primitive_kind": selected_kind,
         "primitive_count": decomposition.primitive_count,
         "failure_labels": objective["failure_labels"],
@@ -474,6 +509,59 @@ def _native_fitting_policy_summary(
         "paper_primitive_gap": metrics["paper_primitive_gap"],
         "package_mapping": _package_mapping_summary(package),
     }
+
+
+def _native_candidate_audit(
+    mesh: TriangleMesh,
+    *,
+    primitive_subset: tuple[str, ...],
+    selected_kind: str,
+    normalizer_volume: float,
+) -> list[dict[str, object]]:
+    normalizer = max(float(normalizer_volume), MIN_NORMALIZATION_VOLUME)
+    candidates = fit_primitive_candidates(
+        mesh,
+        frozenset(range(mesh.face_count)),
+        primitive_subset,
+    )
+    rows: list[tuple[float, int, dict[str, object]]] = []
+    for candidate_order, candidate in enumerate(candidates):
+        normalized_weighted_volume = float(candidate.weighted_volume / normalizer)
+        rows.append(
+            (
+                candidate.weighted_volume,
+                candidate_order,
+                {
+                    "primitive_type": candidate.primitive_type,
+                    "candidate_order": candidate_order,
+                    "selection_objective": NATIVE_SELECTION_COST_NAME,
+                    "selection_objective_units": "raw_weighted_primitive_volume_proxy",
+                    "volume": candidate.volume,
+                    "weighted_volume": candidate.weighted_volume,
+                    "normalized_weighted_volume": normalized_weighted_volume,
+                    "contains_assigned_points": candidate.contains_assigned_points,
+                    "dimensions": candidate.dimensions,
+                    "selected": candidate.primitive_type == selected_kind,
+                },
+            )
+        )
+    return [
+        {
+            **row,
+            "rank": rank,
+        }
+        for rank, (_, _, row) in enumerate(
+            sorted(rows, key=lambda item: (item[0], item[1])),
+            start=1,
+        )
+    ]
+
+
+def _selected_candidate_rank(candidate_audit: list[dict[str, object]]) -> int | None:
+    for candidate in candidate_audit:
+        if candidate["selected"]:
+            return int(candidate["rank"])
+    return None
 
 
 def _package_mapping_summary(package) -> dict[str, object]:
@@ -503,18 +591,48 @@ def _native_fitting_comparison(
         and native["selected_primitive_kind"] not in set(legacy["primitive_subset"])
     )
     native_fully_mapped = native["package_mapping"]["status_counts"] == {"mapped": 1}
+    legacy_candidates = legacy["candidate_audit"]
+    native_candidates = native["candidate_audit"]
+    legacy_best_cost = _best_candidate_normalized_cost(legacy_candidates)
+    native_best_cost = _best_candidate_normalized_cost(native_candidates)
+    native_next_cost = _next_candidate_normalized_cost(native_candidates)
+    native_cost_explained = bool(
+        native["selected_candidate_rank"] == 1
+        and native_candidates
+        and native_candidates[0]["selected"] is True
+        and native_candidates[0]["primitive_type"] == native["selected_primitive_kind"]
+    )
     return {
         "native_selected_newton_extension": native_selected_extension,
         "native_package_fully_mapped": native_fully_mapped,
         "native_normalized_volume_delta": float(native_volume - legacy_volume),
         "legacy_normalized_weighted_volume": legacy_volume,
         "native_normalized_weighted_volume": native_volume,
+        "native_selection_margin_vs_legacy_best": float(native_best_cost - legacy_best_cost),
+        "native_selection_margin_vs_next_native_candidate": (
+            None if native_next_cost is None else float(native_best_cost - native_next_cost)
+        ),
+        "native_selected_kind_cost_explained": native_cost_explained,
+        "selection_claim_boundary": NATIVE_SELECTION_AUDIT_CLAIM_BOUNDARY,
         "expectation_matched": bool(
             native_selected_extension
             and native_fully_mapped
             and native_volume <= legacy_volume
+            and native_cost_explained
         ),
     }
+
+
+def _best_candidate_normalized_cost(candidate_audit: list[dict[str, object]]) -> float:
+    if not candidate_audit:
+        return 0.0
+    return float(candidate_audit[0]["normalized_weighted_volume"])
+
+
+def _next_candidate_normalized_cost(candidate_audit: list[dict[str, object]]) -> float | None:
+    if len(candidate_audit) < 2:
+        return None
+    return float(candidate_audit[1]["normalized_weighted_volume"])
 
 
 def _real_usd_scope_payload() -> dict[str, object]:
@@ -537,6 +655,33 @@ def _real_usd_scope_payload() -> dict[str, object]:
             },
         ],
     }
+
+
+def _squat_cylinder_mesh(segment_count: int = 16) -> TriangleMesh:
+    radius = 1.0
+    height = 0.1
+    points: list[list[float]] = []
+    for z in (-height * 0.5, height * 0.5):
+        for index in range(segment_count):
+            angle = 2.0 * np.pi * index / segment_count
+            points.append([radius * np.cos(angle), radius * np.sin(angle), z])
+    bottom_center = len(points)
+    points.append([0.0, 0.0, -height * 0.5])
+    top_center = len(points)
+    points.append([0.0, 0.0, height * 0.5])
+
+    faces: list[list[int]] = []
+    for index in range(segment_count):
+        next_index = (index + 1) % segment_count
+        bottom_left = index
+        bottom_right = next_index
+        top_left = segment_count + index
+        top_right = segment_count + next_index
+        faces.append([bottom_left, bottom_right, top_right])
+        faces.append([bottom_left, top_right, top_left])
+        faces.append([bottom_center, bottom_right, bottom_left])
+        faces.append([top_center, top_left, top_right])
+    return TriangleMesh(points=np.asarray(points, dtype=float), faces=np.asarray(faces, dtype=int))
 
 
 def _expected_failure_case_payload(

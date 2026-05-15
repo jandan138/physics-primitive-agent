@@ -48,6 +48,126 @@ def _write_mesh_usd(path: Path, points, face_vertex_counts, face_vertex_indices)
     stage.GetRootLayer().Save()
 
 
+def _write_two_mesh_manifest(tmp_path: Path) -> Path:
+    bed_path = tmp_path / "bed.usda"
+    franka_path = tmp_path / "franka.usda"
+    _write_mesh_usd(
+        bed_path,
+        points=[
+            (0, 0, 0),
+            (2, 0, 0),
+            (2, 1, 0),
+            (0, 1, 0),
+            (0, 0, 0.5),
+            (2, 0, 0.5),
+            (2, 1, 0.5),
+            (0, 1, 0.5),
+        ],
+        face_vertex_counts=[4, 4, 4, 4, 4, 4],
+        face_vertex_indices=[
+            0,
+            1,
+            2,
+            3,
+            4,
+            7,
+            6,
+            5,
+            0,
+            4,
+            5,
+            1,
+            1,
+            5,
+            6,
+            2,
+            2,
+            6,
+            7,
+            3,
+            3,
+            7,
+            4,
+            0,
+        ],
+    )
+    _write_mesh_usd(
+        franka_path,
+        points=[
+            (0, 0, 0),
+            (1, 0, 0),
+            (0, 1, 0),
+            (0, 0, 1),
+        ],
+        face_vertex_counts=[3, 3, 3, 3],
+        face_vertex_indices=[0, 1, 2, 0, 3, 1, 1, 3, 2, 2, 3, 0],
+    )
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump(
+            {
+                "manifest_id": "test_manifest",
+                "assets": [
+                    {"role": "bed_dev_smoke", "path": str(bed_path)},
+                    {"role": "franka_import_smoke", "path": str(franka_path)},
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return manifest_path
+
+
+def _write_real_usd_native_config(tmp_path: Path, manifest_path: Path) -> Path:
+    config_path = tmp_path / "real_usd_native.yaml"
+    config_path.write_text(
+        yaml.safe_dump(
+            {
+                "asset": {
+                    "id": "bed_franka_native_probe",
+                    "path": str(manifest_path),
+                },
+                "task": {"primary": "native_primitive_fitting_comparison"},
+                "compile": {"method": "cpd_like_baseline", "max_primitives": 1},
+                "cpd_like": {
+                    "asset_manifest": str(manifest_path),
+                    "asset_roles": ["bed_dev_smoke", "franka_import_smoke"],
+                    "legacy_primitive_subset": ["box", "sphere", "capsule"],
+                    "native_primitive_subset": [
+                        "box",
+                        "sphere",
+                        "capsule",
+                        "cylinder",
+                        "cone",
+                        "ellipsoid",
+                    ],
+                    "max_source_faces_by_role": {
+                        "bed_dev_smoke": 8,
+                        "franka_import_smoke": 4,
+                    },
+                    "component_merge": "virtual_pairwise",
+                    "report_merge_trace": "summary",
+                },
+                "native_fitting_comparison": {
+                    "claim_boundary": (
+                        "real_usd_native_fitting_comparison_not_collision_quality_validation"
+                    ),
+                    "evidence_level": "offline_real_usd_native_fitting_smoke",
+                },
+                "newton": {"source_dir": str(tmp_path / "newton")},
+                "newton_diagnostic": {
+                    "probe_type": "contact_canary",
+                    "device": "cpu",
+                    "drop_settle": {"frames": 12, "substeps": 2},
+                    "sphere_rain": {"sphere_count_x": 2, "sphere_count_y": 2},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return config_path
+
+
 def test_help_mentions_project(capsys):
     assert cli.main(["--help"]) == 0
 
@@ -253,6 +373,73 @@ def test_check_assets_returns_json_for_asset_read_error(tmp_path, capsys):
     payload = json.loads(capsys.readouterr().out)
     assert payload["status"] == "smoke_failed"
     assert payload["reports"][0]["status"] == "read_error"
+
+
+def test_cli_materialize_assets_emits_report(tmp_path, capsys, monkeypatch):
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump({"manifest_id": "fixture", "assets": []}),
+        encoding="utf-8",
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                f"  path: {manifest_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    calls = []
+
+    def fake_report(manifest_path_arg, *, mirror_root=None):
+        calls.append((str(manifest_path_arg), mirror_root))
+        return {"stage": "asset_materialization", "status": "materialized", "assets": []}
+
+    monkeypatch.setattr(cli, "build_asset_materialization_report", fake_report, raising=False)
+
+    assert cli.main(["--config", str(config_path), "--materialize-assets"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "asset_materialization"
+    assert calls == [(str(manifest_path), None)]
+
+
+def test_cli_materialize_assets_redirects_builder_stdout_to_stderr(tmp_path, capsys, monkeypatch):
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump({"manifest_id": "fixture", "assets": []}),
+        encoding="utf-8",
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                f"  path: {manifest_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    def noisy_report(manifest_path_arg, *, mirror_root=None):
+        print("NOISY USD OUTPUT")
+        return {"stage": "asset_materialization", "status": "materialized", "assets": []}
+
+    monkeypatch.setattr(cli, "build_asset_materialization_report", noisy_report, raising=False)
+
+    assert cli.main(["--config", str(config_path), "--materialize-assets"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "asset_materialization"
+    assert "NOISY USD OUTPUT" not in captured.out
+    assert "NOISY USD OUTPUT" in captured.err
 
 
 def test_cli_run_cpd_like_emits_report_for_tiny_usd(tmp_path, capsys):
@@ -846,6 +1033,12 @@ def test_cli_run_newton_native_fitting_comparison_emits_json_without_config(caps
     assert payload["stage"] == "cpd_like_newton_native_fitting_comparison"
     assert payload["status"] == "smoke_passed"
     assert payload["cases"][0]["native"]["selected_primitive_kind"] == "cylinder"
+    assert payload["cases"][0]["native"]["selection_policy"] == (
+        "min_weighted_volume_surrogate_v0"
+    )
+    assert payload["cases"][0]["native"]["candidate_audit"][0]["primitive_type"] == "cylinder"
+    assert payload["cases"][0]["native"]["candidate_audit"][0]["selected"] is True
+    assert payload["cases"][0]["comparison"]["native_selected_kind_cost_explained"] is True
     assert [asset["role"] for asset in payload["real_usd_scope"]["assets"]] == [
         "bed_dev_smoke",
         "franka_import_smoke",
@@ -926,6 +1119,339 @@ def test_cli_run_newton_native_fitting_comparison_reads_config_subsets(tmp_path,
     assert payload["evidence_level"] == "custom_native_evidence"
     assert payload["legacy_primitive_subset"] == ["box", "sphere", "capsule", "cylinder"]
     assert cylindrical["comparison"]["native_selected_newton_extension"] is False
+
+
+def test_cli_run_real_usd_native_fitting_comparison_reads_roles_from_config(tmp_path, capsys):
+    manifest_path = _write_two_mesh_manifest(tmp_path)
+    config_path = _write_real_usd_native_config(tmp_path, manifest_path)
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-fitting-comparison",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_real_usd_native_fitting_comparison"
+    assert payload["status"] == "smoke_passed"
+    assert [case["asset_role"] for case in payload["cases"]] == [
+        "bed_dev_smoke",
+        "franka_import_smoke",
+    ]
+    assert payload["cases"][0]["legacy"]["max_source_faces"] == 8
+    assert payload["cases"][1]["native"]["max_source_faces"] == 4
+
+
+def test_cli_run_real_usd_candidate_loss_diagnosis_emits_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    manifest_path = _write_two_mesh_manifest(tmp_path)
+    config_path = _write_real_usd_native_config(tmp_path, manifest_path)
+
+    def fake_diagnosis_report(**kwargs):
+        assert kwargs["roles"] == ("bed_dev_smoke", "franka_import_smoke")
+        assert kwargs["max_source_faces_by_role"] == {
+            "bed_dev_smoke": 8,
+            "franka_import_smoke": 4,
+        }
+        return {
+            "stage": "cpd_like_real_usd_candidate_loss_diagnosis",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(
+        cli,
+        "build_real_usd_candidate_loss_diagnosis_report",
+        fake_diagnosis_report,
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-candidate-loss-diagnosis",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_real_usd_candidate_loss_diagnosis"
+    assert payload["status"] == "smoke_passed"
+
+
+def test_cli_run_real_usd_candidate_loss_diagnosis_reads_custom_metadata(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    manifest_path = _write_two_mesh_manifest(tmp_path)
+    config_path = _write_real_usd_native_config(tmp_path, manifest_path)
+    config_data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config_data["candidate_loss_diagnosis"] = {
+        "objective_version": "candidate_loss_test_v1",
+        "claim_boundary": "custom_candidate_loss_boundary",
+        "evidence_level": "custom_candidate_loss_evidence",
+    }
+    config_path.write_text(yaml.safe_dump(config_data), encoding="utf-8")
+
+    def fake_diagnosis_report(**kwargs):
+        options = kwargs["objective_options"]
+        return {
+            "stage": "cpd_like_real_usd_candidate_loss_diagnosis",
+            "status": "smoke_passed",
+            "objective_version": options.objective_version,
+            "claim_boundary": options.claim_boundary,
+            "evidence_level": options.evidence_level,
+            "cases": [],
+        }
+
+    monkeypatch.setattr(
+        cli,
+        "build_real_usd_candidate_loss_diagnosis_report",
+        fake_diagnosis_report,
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-candidate-loss-diagnosis",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["objective_version"] == "candidate_loss_test_v1"
+    assert payload["claim_boundary"] == "custom_candidate_loss_boundary"
+    assert payload["evidence_level"] == "custom_candidate_loss_evidence"
+
+
+def test_cli_run_real_usd_candidate_loss_diagnosis_rejects_non_finite_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    manifest_path = _write_two_mesh_manifest(tmp_path)
+    config_path = _write_real_usd_native_config(tmp_path, manifest_path)
+    monkeypatch.setattr(
+        cli,
+        "build_real_usd_candidate_loss_diagnosis_report",
+        lambda **kwargs: {
+            "stage": "cpd_like_real_usd_candidate_loss_diagnosis",
+            "status": "smoke_passed",
+            "bad": float("nan"),
+        },
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-candidate-loss-diagnosis",
+            ]
+        )
+        == 2
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "real_usd_candidate_loss_diagnosis report contains non-finite JSON values" in captured.err
+    assert "Traceback" not in captured.err
+
+
+def test_cli_run_real_usd_native_fitting_comparison_rejects_non_finite_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = _write_real_usd_native_config(tmp_path, _write_two_mesh_manifest(tmp_path))
+    monkeypatch.setattr(
+        cli,
+        "build_real_usd_native_fitting_comparison_report",
+        lambda **kwargs: {
+            "stage": "cpd_like_real_usd_native_fitting_comparison",
+            "status": "smoke_passed",
+            "bad": float("nan"),
+        },
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-fitting-comparison",
+            ]
+        )
+        == 2
+    )
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "real_usd_native_fitting_comparison report contains non-finite JSON values" in captured.err
+    assert "Traceback" not in captured.err
+
+
+def test_cli_run_real_usd_native_contact_comparison_requires_config(capsys):
+    assert cli.main(["--run-real-usd-native-contact-comparison"]) == 2
+
+    assert "--run-real-usd-native-contact-comparison requires --config" in capsys.readouterr().err
+
+
+def test_cli_run_real_usd_native_contact_comparison_emits_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = _write_real_usd_native_config(tmp_path, _write_two_mesh_manifest(tmp_path))
+
+    def fake_contact_report(**kwargs):
+        assert kwargs["source_dir"] == str(tmp_path / "newton")
+        assert kwargs["device"] == "cpu"
+        return {
+            "stage": "newton_real_usd_native_contact_comparison",
+            "status": "dependency_gap",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(cli, "build_real_usd_native_contact_comparison_report", fake_contact_report)
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-contact-comparison",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "newton_real_usd_native_contact_comparison"
+    assert payload["status"] == "dependency_gap"
+
+
+def test_cli_run_real_usd_native_task_comparison_gates_tasks(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = _write_real_usd_native_config(tmp_path, _write_two_mesh_manifest(tmp_path))
+
+    def fake_task_report(**kwargs):
+        assert kwargs["drop_settle_options"].frames == 12
+        assert kwargs["sphere_rain_options"].sphere_count_x == 2
+        return {
+            "stage": "newton_real_usd_native_task_comparison",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(cli, "build_real_usd_native_task_comparison_report", fake_task_report)
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-task-comparison",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "newton_real_usd_native_task_comparison"
+    assert payload["status"] == "smoke_passed"
+
+
+def test_cli_run_real_usd_native_contact_comparison_passes_custom_claim_boundary(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = _write_real_usd_native_config(tmp_path, _write_two_mesh_manifest(tmp_path))
+
+    def fake_contact_report(**kwargs):
+        assert kwargs["claim_boundary"] == "custom_contact_boundary"
+        return {
+            "stage": "newton_real_usd_native_contact_comparison",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(cli, "build_real_usd_native_contact_comparison_report", fake_contact_report)
+
+    config_data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config_data["newton_diagnostic"]["claim_boundary"] = "custom_contact_boundary"
+    config_path.write_text(
+        yaml.safe_dump(config_data),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-contact-comparison",
+            ]
+        )
+        == 0
+    )
+    assert json.loads(capsys.readouterr().out)["status"] == "smoke_passed"
+
+
+def test_cli_run_real_usd_native_task_comparison_passes_custom_claim_boundary(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = _write_real_usd_native_config(tmp_path, _write_two_mesh_manifest(tmp_path))
+
+    def fake_task_report(**kwargs):
+        assert kwargs["claim_boundary"] == "custom_task_boundary"
+        assert kwargs["contact_claim_boundary"] == "custom_task_boundary"
+        return {
+            "stage": "newton_real_usd_native_task_comparison",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(cli, "build_real_usd_native_task_comparison_report", fake_task_report)
+
+    config_data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config_data["newton_diagnostic"]["claim_boundary"] = "custom_task_boundary"
+    config_path.write_text(
+        yaml.safe_dump(config_data),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-task-comparison",
+            ]
+        )
+        == 0
+    )
+    assert json.loads(capsys.readouterr().out)["status"] == "smoke_passed"
 
 
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
@@ -1437,6 +1963,61 @@ def test_cli_run_cpd_like_resolves_manifest_asset_role(tmp_path, capsys):
 
     payload = json.loads(capsys.readouterr().out)
     assert payload["source_path"] == str(asset_path)
+    assert payload["primitive_count"] == 1
+
+
+def test_cli_run_cpd_like_prefers_materialized_manifest_path(tmp_path, capsys):
+    local_path = tmp_path / "local_quad.usda"
+    missing_source_path = tmp_path / "missing_source.usda"
+    _write_mesh_usd(
+        local_path,
+        points=[(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)],
+        face_vertex_counts=[4],
+        face_vertex_indices=[0, 1, 2, 3],
+    )
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump(
+            {
+                "assets": [
+                    {
+                        "role": "bed_dev_smoke",
+                        "path": str(missing_source_path),
+                        "local_path": str(local_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: local_manifest_quad",
+                f"  path: {manifest_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  max_primitives: 1",
+                "  allowed_fallback:",
+                "    - convex_hull",
+                "  verify:",
+                "    - geometry_only",
+                "cpd_like:",
+                f"  asset_manifest: {manifest_path}",
+                "  asset_role: bed_dev_smoke",
+                "  max_source_faces: 8",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["source_path"] == str(local_path)
     assert payload["primitive_count"] == 1
 
 

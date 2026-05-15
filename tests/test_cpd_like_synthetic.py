@@ -4,7 +4,12 @@ import math
 import numpy as np
 
 import primitive_collision_compiler.baselines.cpd_like.synthetic as cpd_synthetic
-from primitive_collision_compiler.baselines.cpd_like.primitives import fit_best_primitive
+import primitive_collision_compiler.baselines.cpd_like.primitives as cpd_primitives
+from primitive_collision_compiler.baselines.cpd_like.primitives import (
+    PrimitiveFit,
+    fit_best_primitive,
+    fit_primitive_candidates,
+)
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
     EXPECTED_FAILURE_WORKBENCH_CLAIM_BOUNDARY,
     NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY,
@@ -223,12 +228,14 @@ def test_newton_native_fitting_comparison_selects_native_primitives():
         "cylindrical_rod",
         "tapered_cone",
         "ellipsoid_blob",
+        "squat_cylinder",
     ]
 
     expected_native = {
         "cylindrical_rod": "cylinder",
         "tapered_cone": "cone",
         "ellipsoid_blob": "ellipsoid",
+        "squat_cylinder": "cylinder",
     }
     for case in report["cases"]:
         case_id = case["case_id"]
@@ -236,6 +243,25 @@ def test_newton_native_fitting_comparison_selects_native_primitives():
         assert case["expected_native_primitive"] == expected_native[case_id]
         assert case["legacy"]["selected_primitive_kind"] in {"box", "sphere", "capsule"}
         assert case["native"]["selected_primitive_kind"] == expected_native[case_id]
+        native_candidates = case["native"]["candidate_audit"]
+        legacy_candidates = case["legacy"]["candidate_audit"]
+        assert native_candidates[0]["primitive_type"] == expected_native[case_id]
+        assert native_candidates[0]["selected"] is True
+        assert native_candidates[0]["rank"] == 1
+        assert case["native"]["selected_candidate_rank"] == 1
+        assert case["native"]["selection_policy"] == "min_weighted_volume_surrogate_v0"
+        assert case["native"]["selection_cost_name"] == "weighted_primitive_volume"
+        assert case["native"]["selection_cost_units"] == "source_mesh_volume_units"
+        assert case["native"]["candidate_audit_scope"] == "single_primitive_full_mesh_fixture"
+        assert case["native"]["candidate_audit_face_count"] > 0
+        assert case["native"]["candidate_audit_matches_selection_scope"] is True
+        assert all(candidate["rank"] == index for index, candidate in enumerate(native_candidates, 1))
+        assert len(legacy_candidates) == 3
+        assert case["comparison"]["native_selected_kind_cost_explained"] is True
+        assert case["comparison"]["native_selection_margin_vs_legacy_best"] <= 0.0
+        assert case["comparison"]["selection_claim_boundary"] == (
+            "synthetic_selection_audit_not_paper_optimizer_or_collision_quality"
+        )
         assert case["comparison"]["native_selected_newton_extension"] is True
         assert case["comparison"]["native_normalized_volume_delta"] <= 0.0
         assert case["native"]["package_mapping"]["status_counts"] == {"mapped": 1}
@@ -257,6 +283,82 @@ def test_newton_native_fitting_comparison_report_is_strict_json_serializable():
     encoded = json.dumps(report, allow_nan=False, sort_keys=True)
 
     assert "cpd_like_newton_native_fitting_comparison" in encoded
+
+
+def test_cylinder_axis_search_selects_squat_cylinder_over_box():
+    mesh = _squat_cylinder_mesh()
+
+    fit = fit_best_primitive(
+        mesh,
+        frozenset(range(mesh.face_count)),
+        primitive_subset=("box", "cylinder"),
+    )
+    candidates = {
+        candidate.primitive_type: candidate
+        for candidate in fit_primitive_candidates(
+            mesh,
+            frozenset(range(mesh.face_count)),
+            primitive_subset=("box", "cylinder"),
+        )
+    }
+
+    assert fit.primitive_type == "cylinder"
+    assert candidates["cylinder"].weighted_volume < candidates["box"].weighted_volume
+    assert candidates["cylinder"].dimensions["axis_selection"] == (
+        "min_volume_over_candidate_axes"
+    )
+
+
+def test_fit_primitive_candidates_preserves_subset_order_and_paper_gap_metadata():
+    mesh = cpd_synthetic._adjacent_square_mesh()
+
+    candidates = fit_primitive_candidates(
+        mesh,
+        frozenset(range(mesh.face_count)),
+        primitive_subset=("box", "box", "frustum", "capped_cylinder"),
+    )
+
+    assert [candidate.primitive_type for candidate in candidates] == [
+        "box",
+        "capped_cylinder",
+    ]
+    assert {candidate.source_faces for candidate in candidates} == {(0, 1)}
+    assert all(
+        candidate.unsupported_primitives == ("frustum", "trapezoidal_prism")
+        for candidate in candidates
+    )
+
+
+def test_fit_best_primitive_breaks_equal_cost_ties_by_subset_order(monkeypatch):
+    mesh = cpd_synthetic._adjacent_square_mesh()
+
+    def fake_fit_primitive(primitive_type, points, axes, source_faces):
+        return PrimitiveFit(
+            primitive_type=primitive_type,
+            source_faces=source_faces,
+            center=(0.0, 0.0, 0.0),
+            axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+            dimensions={"test": primitive_type},
+            volume=1.0,
+            weighted_volume=1.0,
+            contains_assigned_points=True,
+        )
+
+    monkeypatch.setattr(cpd_primitives, "_fit_primitive", fake_fit_primitive)
+
+    first = fit_best_primitive(
+        mesh,
+        frozenset(range(mesh.face_count)),
+        primitive_subset=("sphere", "box"),
+    )
+    second = fit_best_primitive(
+        mesh,
+        frozenset(range(mesh.face_count)),
+        primitive_subset=("box", "sphere"),
+    )
+
+    assert first.primitive_type == "sphere"
+    assert second.primitive_type == "box"
 
 
 def test_cone_proxy_stays_finite_when_forced_on_non_cone_fixture():
@@ -307,3 +409,31 @@ def test_cylinder_proxy_floors_zero_span_volume():
     assert fit.dimensions["half_height"] > 0.0
     assert fit.volume > 0.0
     json.dumps(fit.to_dict(), allow_nan=False)
+
+
+def _squat_cylinder_mesh(segment_count: int = 16) -> TriangleMesh:
+    radius = 1.0
+    height = 0.1
+    points: list[list[float]] = []
+    for z in (-height * 0.5, height * 0.5):
+        for index in range(segment_count):
+            angle = 2.0 * math.pi * index / segment_count
+            points.append([radius * math.cos(angle), radius * math.sin(angle), z])
+    bottom_center = len(points)
+    points.append([0.0, 0.0, -height * 0.5])
+    top_center = len(points)
+    points.append([0.0, 0.0, height * 0.5])
+
+    faces: list[list[int]] = []
+    for index in range(segment_count):
+        next_index = (index + 1) % segment_count
+        bottom_left = index
+        bottom_right = next_index
+        top_left = segment_count + index
+        top_right = segment_count + next_index
+        faces.append([bottom_left, bottom_right, top_right])
+        faces.append([bottom_left, top_right, top_left])
+        faces.append([bottom_center, bottom_right, bottom_left])
+        faces.append([top_center, top_left, top_right])
+
+    return TriangleMesh(points=np.array(points, dtype=float), faces=np.array(faces, dtype=int))

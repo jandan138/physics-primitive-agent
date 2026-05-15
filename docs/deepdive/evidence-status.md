@@ -13,6 +13,12 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The proposal requires explicit fallback to convex decomposition, SDF, hydroelastic, convex mesh, or manual review.
 - The current executable surface can report config dry-runs, USD asset-open smoke diagnostics,
   Newton source import diagnostics, and environment-readiness diagnostics.
+- The current executable surface can materialize manifest USD assets into ignored repo-local
+  mirrors under `assets/raw/mirrors/` and prefer those local paths at runtime when present. Current
+  bed materialization records the material/texture closure; current Franka materialization records
+  a USD layer mirror with unresolved `OmniPBR.mdl`. This is asset intake and reproducibility
+  diagnostics, not benchmark or collision-quality evidence. See
+  [Asset mirror materialization](../reference/asset-mirror-materialization.md).
 - The current executable surface can run a geometry-only CPD-like face-merge smoke path that
   extracts a USD mesh, fits restricted `box`/`sphere`/`capsule` primitive candidates plus an
   opt-in offline `capped_cylinder` proposal proxy, greedily merges adjacent face groups by
@@ -68,9 +74,31 @@ This file separates current evidence from future claims. See [message-map.md](me
   CPD-like generator emits the new native kinds by default.
 - The current executable surface can run `cpd_like_newton_native_fitting_comparison`, an opt-in
   deterministic synthetic comparison where the six-kind Newton-native subset selects `cylinder`,
-  `cone`, and `ellipsoid` on three toy meshes and maps the resulting one-primitive packages
-  through Newton shape mapping. This is synthetic fitting evidence, not collision-quality evidence,
-  default asset behavior, or completed bed/Franka evidence.
+  `cone`, and `ellipsoid` on toy meshes and maps the resulting one-primitive packages through
+  Newton shape mapping. The report now also includes a squat-cylinder fixture that exercises the
+  controlled cylinder-axis search, plus candidate weighted-volume audit tables that explain those
+  toy selections under the current surrogate primitive-choice rule. This is synthetic fitting and
+  diagnostic accounting evidence, not collision-quality evidence, default asset behavior, or
+  bed/Franka improvement evidence.
+- The current executable surface can run `cpd_like_real_usd_native_fitting_comparison`, a
+  real-USD old/new diagnostic report over capped `bed_dev_smoke` and capped
+  `franka_import_smoke` first-mesh scope. The current run keeps bed at `32` boxes in both lanes
+  and changes the Franka native lane to `29` boxes plus `3` cylinders under the current surrogate.
+  This is not evidence that native primitives improved bed or Franka. The report can now include
+  per-selected-cluster candidate audit summaries that show whether extension primitives won any
+  clusters under the current surrogate.
+- The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
+  per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
+  records why remaining box-selected clusters beat extension candidates under the current
+  surrogate and records the three Franka clusters where `cylinder` is selected. This is surrogate
+  diagnostic accounting, not collision-quality evidence or whole-robot collider-quality evidence.
+- The current executable surface can run `newton_real_usd_native_contact_comparison`, which
+  requires full Newton mapping before contact canaries for the capped bed and capped Franka
+  old/new packages.
+- The current executable surface can run `newton_real_usd_native_task_comparison`, which gates
+  drop/settle and sphere-rain behind contact canary success for the same capped real-USD packages.
+  This is named task-smoke evidence under recorded settings, not collision-quality validation,
+  benchmark evidence, or whole-robot collider-quality evidence.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
@@ -124,13 +152,35 @@ This file separates current evidence from future claims. See [message-map.md](me
   `cone`, and `ellipsoid_blob` selects `ellipsoid` under the opt-in six-kind subset. The record
   also declares `bed_dev_smoke` and `franka_import_smoke` as next-scope real USD assets, not as
   completed old/new comparison evidence.
+- The 2026-05-15 synthetic native selection audit record reports `smoke_passed` for the same three
+  deterministic toy meshes with candidate weighted-volume tables. The selected native candidate
+  has rank `1` in each native lane, and the report records surrogate-cost margins against the
+  legacy lane and the next native candidate. This is not a quality metric or paper optimizer.
+- The earlier 2026-05-15 real-USD native fitting, candidate-audit, contact, task, and completion
+  records documented the pre-cylinder-axis baseline where both capped assets selected boxes. Those
+  records are superseded for current status by the candidate-loss/cylinder-axis rerun.
+- The 2026-05-15 candidate-loss/cylinder-axis rerun reports `smoke_passed`: synthetic native
+  fitting now includes `squat_cylinder -> cylinder`; capped bed remains `32` boxes in both lanes;
+  capped Franka native selects `29` boxes plus `3` cylinders under the surrogate.
+- The same rerun reports candidate-loss diagnosis for capped real USDs: bed has `32` box-selected
+  clusters where extension candidates are more expensive under the surrogate; Franka has `29`
+  such box-selected clusters and `3` native-extension-selected clusters.
+- The same rerun reports `smoke_passed` for contact and task gates: all four bed/Franka old/new
+  packages passed contact canaries, drop/settle, and sphere-rain. Capped Franka native produced a
+  representative `cylinder` canary contact in addition to the representative `box` canary path.
+  Bed drop final speed was about `0.0404565 m/s`; Franka legacy was about `0.0005830 m/s`; Franka
+  native was about `0.0004622 m/s`; sphere-rain contact density remained
+  `0.1111111111111111`.
+- The 2026-05-15 real-USD asset mirror materialization record reports local ignored mirrors for
+  the current smoke manifests: bed materialized 18 files with no unresolved dependencies; Franka
+  materialized 13 USD files and records unresolved `OmniPBR.mdl`. `--check-assets` selected
+  `local_path` and reported `smoke_passed` for both manifests.
 
 ## Current Unsupported Claims
 
 - General primitive fitting quality across arbitrary assets has not been evaluated.
-- Task-level Newton diagnostic evidence beyond the recorded capped bed drop/settle and
-  sphere-rain contact-density proxy smokes plus the synthetic native bundle smoke has not been
-  evaluated.
+- Task-level Newton diagnostic evidence beyond the recorded capped bed, capped Franka, and
+  synthetic native-bundle smokes has not been evaluated.
 - Real contact-stress measurement has not been implemented or calibrated.
 - Whole-robot collider quality, articulation-aware robot simulation, and aggregate robot-class
   evidence have not been evaluated.
@@ -147,10 +197,12 @@ This file separates current evidence from future claims. See [message-map.md](me
   collision-quality evidence, benchmark evidence, or an asset/task improvement.
 - The CPD-like generator emits `cylinder`, `cone`, or `ellipsoid` by default for normal asset
   configs.
-- The opt-in native fitting comparison proves bed or Franka collision-package improvement.
+- The real-USD native fitting comparison proves bed or Franka collision-package improvement.
 - The synthetic native primitive bundle proves broad asset quality, collision quality, benchmark
   performance, or paper-scope primitive coverage.
 - Environment-readiness diagnostics imply Newton simulation readiness.
+- Asset mirror materialization implies license review, complete visual/material packaging,
+  benchmark readiness, or collision-quality evidence.
 
 ## Future Evidence Needed
 
@@ -190,9 +242,12 @@ versus component-merge accounting. A focused cost-guided merge-search smoke now 
 AABB-normalized merge-excess into an opt-in synthetic merge decision. A deterministic
 expected-failure workbench now converts three known CPD-paper gaps into diagnostic flags. The
 native fitting comparison now lets the synthetic workbench compare the old `box`/`sphere`/`capsule`
-subset against the six-kind Newton-native subset. Next run that old/new comparison on capped bed
-and capped Franka USD meshes before changing asset claims or adding LLM/VLM. Report failures and
-fallback behavior as first-class evidence.
+subset against the six-kind Newton-native subset, with a candidate weighted-volume audit table
+explaining the toy selections. The real-USD bed/Franka probe comparison now runs the same old/new
+lanes through offline reports, candidate-loss diagnosis, contact canaries, and gated task smokes;
+it does not show native primitive quality improvement. Bed still selects boxes in both lanes, while
+Franka's native lane now selects three cylinders under the current surrogate. Report failures and fallback
+behavior as first-class evidence before changing broader asset claims or adding LLM/VLM.
 
 ## Current Non-Goals
 

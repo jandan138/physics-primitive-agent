@@ -9,8 +9,9 @@ DeepDive-first workflow around Newton primitive collision artifacts.
 
 This repository is a proposal/bootstrap for a DeepDive-first Newton primitive collision
 compiler. It now includes a geometry-only CPD-like face-merge smoke path over USD meshes, plus
-config dry-runs, USD asset-open smoke diagnostics, Newton source diagnostics, and environment
-readiness checks. It also includes a contact-only Newton canary for representative mapped primitive
+config dry-runs, USD asset-open smoke diagnostics, ignored repo-local USD mirror materialization
+for the current bed/Franka smoke assets, Newton source diagnostics, and environment readiness
+checks. It also includes a contact-only Newton canary for representative mapped primitive
 types, plus named drop/settle and sphere-rain contact-density proxy Newton task smokes for the
 capped bed CPD-like package. A separate Franka/simple robot smoke opens the local Franka USD and
 runs capped first-mesh CPD-like geometry proposals. An opt-in CPD-like component-merge gate now
@@ -26,7 +27,16 @@ diagnostic flags and reports whether those expected limitation flags remain visi
 `smoke_passed` status means expected limitations were reported, not decomposition success. An
 opt-in offline `capped_cylinder` geometry proposal proxy now records a named objective-report
 smoke where the unsupported paper primitive gap decreases from 3 to 2; this is not Newton support
-or paper-faithful primitive fitting. See
+or paper-faithful primitive fitting. The native fitting/probe path now has a real-USD diagnostic
+smoke over capped bed and capped Franka first-mesh scope: bed still selects boxes in both lanes,
+while Franka's native lane now selects 29 boxes plus 3 cylinders under the current surrogate. All
+four packages map cleanly, pass contact canaries, and pass gated drop/settle plus sphere-rain under
+recorded settings. This is native selection/accounting evidence, not native primitive improvement
+evidence, whole-robot collider quality, or benchmark evidence. The synthetic native fitting
+comparison now also emits candidate weighted-volume audit tables that explain why `cylinder`,
+`cone`, and `ellipsoid` win on the named toy fixtures; this is toy diagnostic accounting, not a
+real-USD or collision-quality claim.
+See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper
@@ -114,7 +124,7 @@ current basis for project framing, claim boundaries, and future implementation p
 
 - No production mesh-processing or collision-compiler implementation.
 - No broad task-level Newton simulation coverage yet; current task smokes are limited to the
-  recorded capped bed drop/settle and sphere-rain contact-density proxy diagnostics.
+  recorded capped bed, capped Franka first-mesh, and synthetic native-bundle diagnostics.
 - No whole-robot collider-quality or articulated-dynamics evidence; the Franka path is import and
   capped first-mesh geometry smoke only.
 - No full CPD paper reproduction; the component-merge gate, Eq.4 alignment metadata, and objective

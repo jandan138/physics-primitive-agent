@@ -11,7 +11,8 @@ that make collision detection faster or more reliable.
 
 The repository has not reached that full result. It has reached the workbench stage:
 
-1. USD assets can be opened and capped meshes can be extracted.
+1. USD assets can be opened, mirrored into ignored repo-local paths, and capped meshes can be
+   extracted.
 2. A simple CPD-like face-merge baseline can produce primitive proposals.
 3. Those proposals can be wrapped as a collision package.
 4. An offline objective report can summarize paper-aligned surrogate geometry terms.
@@ -26,8 +27,13 @@ The repository has not reached that full result. It has reached the workbench st
 10. A synthetic Newton-native package can exercise `box`, `sphere`, `capsule`, `cylinder`, `cone`,
     and `ellipsoid` through contact, drop/settle, and sphere-rain diagnostics.
 11. An opt-in native fitting comparison can make the CPD-like fitter choose simple `cylinder`,
-    `cone`, and `ellipsoid` proposals on deterministic synthetic meshes.
-12. Records and configs can preserve exactly what was run.
+    `cone`, and `ellipsoid` proposals on deterministic synthetic meshes, including a
+    squat-cylinder fixture for the controlled cylinder-axis search.
+12. A synthetic native selection audit can explain those toy choices with candidate
+    weighted-volume tables and surrogate-cost margins.
+13. Capped bed and capped Franka real-USD lanes can run through fitting reports, candidate audit
+    summaries, candidate-loss diagnosis, Newton contact canaries, and gated task smokes.
+14. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -269,20 +275,50 @@ and compares it against the older subset:
 box, sphere, capsule
 ```
 
-on three deterministic toy meshes:
+on deterministic toy meshes:
 
 - `cylindrical_rod`, where the native subset selects `cylinder`;
 - `tapered_cone`, where the native subset selects `cone`;
-- `ellipsoid_blob`, where the native subset selects `ellipsoid`.
+- `ellipsoid_blob`, where the native subset selects `ellipsoid`;
+- `squat_cylinder`, where the updated cylinder fitter selects `cylinder` after searching axes.
 
 The report also checks that the resulting one-primitive synthetic packages map through Newton
-shape mapping. This is still a synthetic fitting smoke, not Newton task evidence and not
-collision-quality evidence.
+shape mapping. It now includes candidate weighted-volume audit tables so reviewers can see why the
+native primitive ranked first on each toy fixture. This is still a synthetic fitting and
+diagnostic-accounting smoke, not Newton task evidence and not collision-quality evidence.
 
-The same config now declares bed and Franka as the next real-USD scope. That scope declaration is
-not a completed real-asset result. The next concrete step is to run old/new objective reports on
-capped bed and capped Franka meshes, inspect mapping gaps and failure labels, and only then run
-Newton contact canaries or task smokes.
+The follow-up bed/Franka probe config now runs the real-USD scope. It records old/new objective
+reports on capped bed and capped Franka meshes, inspects mapping gaps and failure labels, then runs
+Newton contact canaries and gated task smokes.
+
+## What The Bed/Franka Native Probe Comparison Adds
+
+The bed/Franka native probe comparison completes that next concrete step for two capped real-USD
+smoke roles:
+
+```text
+bed_dev_smoke
+franka_import_smoke
+```
+
+For each role, it runs the legacy `box`/`sphere`/`capsule` lane and the six-kind Newton-native
+lane under the same face cap and merge policy. After the controlled cylinder-axis fitting update,
+bed still selects only `box` primitives in both lanes, while capped Franka's native lane selects
+`29` boxes plus `3` cylinders. That means the pipeline can expose a native-lane selection change,
+but it does not show that the native lane improved the real-asset packages.
+
+The probe comparison then requires full Newton mapping before contact canary, and gates
+drop/settle plus sphere-rain behind contact success. Under the clean Newton conda environment, the
+bed and Franka old/new packages passed the recorded contact and task smokes.
+
+This is a real-USD diagnostic smoke milestone, not a benchmark or collision-quality milestone.
+
+For a more detailed plain-language explanation of why this slice matters but does not prove native
+primitive value, see
+[Real USD native probe in the CPD paper story](real-usd-native-probe-paper-story-explainer.md).
+
+For the next algorithmic sequence after local USD mirrors, see
+[CPD next steps after real USD mirrors](cpd-next-steps-after-real-usd-mirrors.md).
 
 ## What Newton Probes Mean Here
 
@@ -304,6 +340,7 @@ The current position is:
 
 ```text
 USD assets
+-> ignored repo-local mirrors for current bed/Franka smoke roles
 -> CPD-like primitive proposals
 -> paper-aligned surrogate objective report
 -> synthetic objective comparison
@@ -313,18 +350,20 @@ USD assets
 -> historical mapped collision package using Newton-supported primitives
 -> Newton smoke diagnostics for recorded mapped primitives
 -> synthetic Newton-native primitive bundle smoke
+-> synthetic native selection audit for toy primitive choices
+-> real-USD old/new native probe comparison for capped bed and capped Franka
+-> candidate-loss diagnosis and controlled cylinder-axis fitting smoke
 -> dated records
 ```
 
 The next paper-story position should be:
 
 ```text
-USD assets or synthetic fixtures
--> CPD-like primitive proposals
--> objective comparison record
--> native primitive comparison report
--> CPD-like generator extension only if native primitive fitting is justified
--> Newton task probe after generation support and a named diagnostic record
+local USD mirrors or synthetic fixtures
+-> use current candidate-loss labels
+-> one next controlled primitive-fitting or merge-search improvement
+-> synthetic workbench rerun
+-> bed/Franka rerun under full mapping, contact, and task gates
 ```
 
 ## Safe Current Wording
@@ -345,6 +384,10 @@ Use:
 - "Newton-native primitive roadmap";
 - "native analytic primitive bundle";
 - "synthetic Newton-native primitive diagnostic smoke";
+- "controlled cylinder-axis fitting smoke";
+- "real-USD candidate-loss diagnosis";
+- "real-USD native probe diagnostic smoke";
+- "capped bed and capped Franka first-mesh scope";
 - "paper-alignment offline lane";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
@@ -367,16 +410,16 @@ Avoid:
 
 ## Recommended Next Slices
 
-The next slices should move toward runtime usefulness without overclaiming:
+The next slices should move toward primitive-selection usefulness without overclaiming:
 
-1. Run the old/new native-fitting objective report on capped bed and capped Franka meshes.
-2. Compare primitive kind counts, volume proxy, merge-excess accounting, mapping gaps, and failure
-   labels for the real USD scope.
-3. If the old/new real USD packages map cleanly, run Newton contact canary before broader
-   drop/settle or sphere-rain task smokes.
+1. Use the current candidate-loss diagnosis labels to pick one next fitting or merge-search target.
+2. Improve one controlled primitive-fitting or merge-search piece on synthetic fixtures first.
+3. Re-run capped bed/Franka only after the synthetic diagnostic explains a real selection change.
+4. Keep contact and task probes gated by full mapping and dated records.
 
 ## Claim Boundary
 
-This page adds only narrow synthetic native-bundle and opt-in synthetic native-fitting comparison
-claims. It does not add benchmark, collision-quality, completed bed/Franka old/new, asset-wide, or
+This page adds narrow synthetic native-bundle, opt-in synthetic native-fitting, synthetic
+native-selection audit, and capped bed/Franka first-mesh real-USD diagnostic-smoke claims. It does
+not add benchmark, collision-quality, native primitive improvement, asset-wide, whole-robot, or
 paper-scope reproduction claims.

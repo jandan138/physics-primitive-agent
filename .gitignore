@@ -23,6 +23,7 @@ assets/generated/
 reports/generated/
 experiments/runs/
 docs/tmp/papers/*.pdf
+docs/tmp/papers/arXiv-*/
 *.mp4
 *.mov
 *.obj
