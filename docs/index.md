@@ -76,6 +76,8 @@ until a separate mapping and diagnostic record exists for any new primitive kind
   gap evidence.
 - [CPD capped-cylinder master verification record](records/2026-05-15-cpd-capped-cylinder-master-verification.md):
   post-merge master verification for the capped-cylinder proxy slice.
+- [Big Goal 1 completion audit](records/2026-05-15-big-goal-1-completion-audit.md):
+  completion audit for the minimal CPD-like diagnostic workbench goal.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.
