@@ -508,7 +508,7 @@ Expected: all pass.
 Use the project-standard external conda environment and local Newton source when present:
 
 ```bash
-/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python - <<'PY'
+PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python - <<'PY'
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.newton.diagnostics import run_newton_contact_smoke
 from primitive_collision_compiler.newton.drop_settle import DropSettleOptions, run_newton_drop_settle
@@ -519,17 +519,17 @@ package = CollisionPackage(
     asset_id="synthetic_native_bundle",
     primitives=(
         PrimitiveSpec(primitive_id="box0", kind="box", dimensions={"half_extents": [0.2, 0.2, 0.2]}),
-        PrimitiveSpec(primitive_id="sphere0", kind="sphere", center=(0.8, 0.0, 0.0), dimensions={"radius": 0.2}),
-        PrimitiveSpec(primitive_id="capsule0", kind="capsule", center=(1.6, 0.0, 0.0), dimensions={"radius": 0.15, "half_height": 0.3}),
-        PrimitiveSpec(primitive_id="cylinder0", kind="cylinder", center=(2.4, 0.0, 0.0), dimensions={"radius": 0.15, "half_height": 0.3}),
-        PrimitiveSpec(primitive_id="cone0", kind="cone", center=(3.2, 0.0, 0.0), dimensions={"radius": 0.18, "half_height": 0.3}),
-        PrimitiveSpec(primitive_id="ellipsoid0", kind="ellipsoid", center=(4.0, 0.0, 0.0), dimensions={"radii": [0.16, 0.2, 0.24]}),
+        PrimitiveSpec(primitive_id="sphere0", kind="sphere", center=(0.7, 0.0, 0.0), dimensions={"radius": 0.2}),
+        PrimitiveSpec(primitive_id="capsule0", kind="capsule", center=(1.4, 0.0, 0.0), dimensions={"radius": 0.15, "half_height": 0.3}),
+        PrimitiveSpec(primitive_id="cylinder0", kind="cylinder", center=(2.1, 0.0, 0.0), dimensions={"radius": 0.15, "half_height": 0.3}),
+        PrimitiveSpec(primitive_id="cone0", kind="cone", center=(2.8, 0.0, 0.0), dimensions={"radius": 0.18, "half_height": 0.3}),
+        PrimitiveSpec(primitive_id="ellipsoid0", kind="ellipsoid", center=(3.5, 0.0, 0.0), dimensions={"radii": [0.16, 0.2, 0.24]}),
     ),
 )
 source_dir = "/cpfs/user/zhuzihou/dev/newton"
 print("contact", run_newton_contact_smoke(package, source_dir=source_dir, device="cpu").status)
-print("drop", run_newton_drop_settle(package, source_dir=source_dir, device="cpu", options=DropSettleOptions(frames=8, substeps=4)).status)
-print("sphere_rain", run_newton_sphere_rain(package, source_dir=source_dir, device="cpu", options=SphereRainOptions(sphere_count_x=2, sphere_count_y=2, frames=8, substeps=4)).status)
+print("drop", run_newton_drop_settle(package, source_dir=source_dir, device="cpu", options=DropSettleOptions(frames=120, substeps=4)).status)
+print("sphere_rain", run_newton_sphere_rain(package, source_dir=source_dir, device="cpu", options=SphereRainOptions(sphere_count_x=2, sphere_count_y=2, frames=120, substeps=4)).status)
 PY
 ```
 

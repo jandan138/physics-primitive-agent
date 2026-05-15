@@ -31,8 +31,8 @@ The capped-cylinder proxy change is small but important in this story, but it is
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
 opt-in offline proposal proxy and recording that the unsupported paper primitive gap can decrease
 from 3 to 2 in a named report. The runtime roadmap now stays Newton-native first: `cylinder`,
-`cone`, and `ellipsoid` have been added together as a verified synthetic native analytic bundle
-before any paper-only primitive is considered for Newton tasks.
+`cone`, and `ellipsoid` have dated synthetic diagnostic-path evidence before any paper-only
+primitive is considered for Newton tasks.
 
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
@@ -237,8 +237,9 @@ already mapped `box`, `sphere`, and `capsule`.
 
 This bundle was implemented together because the work touches the same surfaces: shape validation,
 Newton builder calls, package bounds, support-height estimates, contact canaries, drop/settle,
-sphere-rain, tests, and records. The dated native-bundle record proves each primitive kind through
-mapping and diagnostic construction, plus a synthetic clean-env runtime smoke.
+sphere-rain, tests, and records. The dated native-bundle record documents diagnostic-path evidence
+for each primitive kind through mapping and diagnostic construction, plus a synthetic clean-env
+runtime smoke.
 
 `frustum` and `trapezoidal_prism` should remain in the offline paper-alignment lane for now. They
 can still appear in `paper_primitive_gap` accounting, but they should not enter Newton task claims

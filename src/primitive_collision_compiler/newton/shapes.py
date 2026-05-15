@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from numbers import Integral
 from typing import Any
 
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
@@ -83,7 +84,7 @@ def _validate_axis_shape(dimensions: dict[str, Any], kind: str) -> str:
     if _as_non_negative_float(dimensions.get("half_height")) is None:
         return f"{kind} half_height is required and must be non-negative finite"
     axis_index = dimensions.get("axis_index", 2)
-    if axis_index not in (0, 1, 2):
+    if isinstance(axis_index, bool) or not isinstance(axis_index, Integral) or axis_index not in (0, 1, 2):
         return f"{kind} axis_index must be 0, 1, or 2"
     return ""
 

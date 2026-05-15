@@ -64,7 +64,9 @@ def test_drop_settle_reports_dependency_gap_after_full_mapping_passes(tmp_path):
 def test_drop_settle_options_reject_non_positive_values():
     for kwargs in (
         {"frames": 0},
+        {"frames": 1.5},
         {"substeps": 0},
+        {"substeps": True},
         {"frame_dt_seconds": 0.0},
         {"height_m": -0.1},
         {"iterations": 0},
@@ -248,14 +250,18 @@ class _RecordingBuilder:
     def __init__(self) -> None:
         self.calls: list[tuple[str, dict[str, object]]] = []
 
-    def add_shape_cylinder(self, **kwargs):
-        self.calls.append(("cylinder", kwargs))
+    def add_shape_cylinder(self, *, body, xform, radius, half_height):
+        self.calls.append(
+            ("cylinder", {"body": body, "xform": xform, "radius": radius, "half_height": half_height})
+        )
 
-    def add_shape_cone(self, **kwargs):
-        self.calls.append(("cone", kwargs))
+    def add_shape_cone(self, *, body, xform, radius, half_height):
+        self.calls.append(
+            ("cone", {"body": body, "xform": xform, "radius": radius, "half_height": half_height})
+        )
 
-    def add_shape_ellipsoid(self, **kwargs):
-        self.calls.append(("ellipsoid", kwargs))
+    def add_shape_ellipsoid(self, *, body, xform, rx, ry, rz):
+        self.calls.append(("ellipsoid", {"body": body, "xform": xform, "rx": rx, "ry": ry, "rz": rz}))
 
 
 class _FakeWarp:

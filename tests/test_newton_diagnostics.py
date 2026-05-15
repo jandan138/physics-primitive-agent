@@ -130,7 +130,9 @@ def test_contact_canary_builds_newton_native_static_shapes():
     assert [call[0] for call in builder.calls] == ["cylinder", "cone", "ellipsoid"]
     assert builder.calls[0][1]["body"] == -1
     assert builder.calls[0][1]["radius"] == 0.3
+    assert builder.calls[0][1]["xform"]["rotation"][1][2] == (0.0, 1.0, 0.0)
     assert builder.calls[1][1]["half_height"] == 0.9
+    assert builder.calls[1][1]["xform"]["rotation"][1][2] == (1.0, 0.0, 0.0)
     assert builder.calls[2][1]["rx"] == 0.2
     assert builder.calls[2][1]["ry"] == 0.4
     assert builder.calls[2][1]["rz"] == 0.6
@@ -166,14 +168,18 @@ class _RecordingBuilder:
     def __init__(self) -> None:
         self.calls: list[tuple[str, dict[str, object]]] = []
 
-    def add_shape_cylinder(self, **kwargs):
-        self.calls.append(("cylinder", kwargs))
+    def add_shape_cylinder(self, *, body, xform, radius, half_height):
+        self.calls.append(
+            ("cylinder", {"body": body, "xform": xform, "radius": radius, "half_height": half_height})
+        )
 
-    def add_shape_cone(self, **kwargs):
-        self.calls.append(("cone", kwargs))
+    def add_shape_cone(self, *, body, xform, radius, half_height):
+        self.calls.append(
+            ("cone", {"body": body, "xform": xform, "radius": radius, "half_height": half_height})
+        )
 
-    def add_shape_ellipsoid(self, **kwargs):
-        self.calls.append(("ellipsoid", kwargs))
+    def add_shape_ellipsoid(self, *, body, xform, rx, ry, rz):
+        self.calls.append(("ellipsoid", {"body": body, "xform": xform, "rx": rx, "ry": ry, "rz": rz}))
 
 
 class _FakeWarp:

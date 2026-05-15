@@ -120,6 +120,16 @@ def test_map_package_shapes_rejects_bad_native_bundle_dimensions():
                 dimensions={"radius": 0.3, "half_height": -1.0},
             ),
             PrimitiveSpec(
+                primitive_id="bad-capsule-axis-bool",
+                kind="capsule",
+                dimensions={"radius": 0.3, "half_height": 1.0, "axis_index": True},
+            ),
+            PrimitiveSpec(
+                primitive_id="bad-cylinder-axis-float",
+                kind="cylinder",
+                dimensions={"radius": 0.3, "half_height": 1.0, "axis_index": 1.0},
+            ),
+            PrimitiveSpec(
                 primitive_id="bad-ellipsoid-radii",
                 kind="ellipsoid",
                 dimensions={"radii": [0.2, math.inf, 0.6]},
@@ -129,11 +139,13 @@ def test_map_package_shapes_rejects_bad_native_bundle_dimensions():
 
     mappings = map_package_shapes(package)
 
-    assert [mapping.status for mapping in mappings] == ["mapping_gap"] * 4
+    assert [mapping.status for mapping in mappings] == ["mapping_gap"] * 6
     assert "cylinder radius" in mappings[0].detail
     assert "cylinder axis_index" in mappings[1].detail
     assert "cone half_height" in mappings[2].detail
-    assert "ellipsoid radii" in mappings[3].detail
+    assert "capsule axis_index" in mappings[3].detail
+    assert "cylinder axis_index" in mappings[4].detail
+    assert "ellipsoid radii" in mappings[5].detail
 
 
 def test_map_package_shapes_keeps_capped_cylinder_as_mapping_gap():

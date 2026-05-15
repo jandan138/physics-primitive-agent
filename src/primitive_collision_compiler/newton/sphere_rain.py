@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 import math
+from numbers import Integral
 from types import ModuleType
 from typing import Any
 
@@ -567,7 +568,7 @@ def _p95(values: tuple[int, ...]) -> float:
 
 
 def _positive_int(value: int, name: str) -> None:
-    if int(value) < 1:
+    if isinstance(value, bool) or not isinstance(value, Integral) or int(value) < 1:
         raise ValueError(f"{name} must be at least 1")
 
 
