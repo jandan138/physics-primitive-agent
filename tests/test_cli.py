@@ -639,6 +639,42 @@ def test_cli_run_cpd_like_synthetic_comparison_rejects_non_finite_json(
     assert "Traceback" not in captured.err
 
 
+def test_cli_run_cpd_like_cost_guided_synthetic_comparison_emits_json_without_config(capsys):
+    assert cli.main(["--run-cpd-like-cost-guided-synthetic-comparison"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "cpd_like_cost_guided_synthetic_objective_comparison"
+    assert payload["status"] == "smoke_passed"
+    assert payload["cases"][0]["case_id"] == "cost_guided_pair_choice"
+    assert captured.err == ""
+
+
+def test_cli_run_cpd_like_cost_guided_synthetic_comparison_rejects_non_finite_json(
+    capsys,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cost_guided_synthetic_comparison_report",
+        lambda: {
+            "stage": "cpd_like_cost_guided_synthetic_objective_comparison",
+            "status": "smoke_passed",
+            "bad": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cost-guided-synthetic-comparison"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert (
+        "cpd_like_cost_guided_synthetic_comparison report contains non-finite JSON values"
+        in captured.err
+    )
+    assert "Traceback" not in captured.err
+
+
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")
