@@ -1,0 +1,46 @@
+---
+import StatusBadge from "./StatusBadge.astro";
+
+interface Props {
+  id: string;
+  section?: string;
+  original: string;
+  translation: string;
+  translationStatus?: string;
+  explanationStatus?: string;
+  reproductionStatus?: string;
+  sourceNamespace?: string;
+  translationProvenance?: string;
+}
+
+const {
+  id,
+  section = "",
+  original,
+  translation,
+  translationStatus = "draft_ai_assisted",
+  explanationStatus = "empty",
+  reproductionStatus = "not_started",
+  sourceNamespace = "cpd_paper_source_text",
+  translationProvenance = "not_recorded",
+} = Astro.props;
+---
+
+<article class="paper-block" id={id} data-source-namespace={sourceNamespace}>
+  <header class="paper-block__meta">
+    <a href={`#${id}`} class="paper-block__anchor">{section ? `${section} / ` : ""}{id}</a>
+    <div class="paper-block__badges" aria-label="Paragraph status">
+      <StatusBadge label="AI 初译，待人工校对" tone="draft" />
+      <StatusBadge label="source-paper-not-project-evidence" tone="partial" />
+      <StatusBadge label={`解释: ${explanationStatus}`} />
+      <StatusBadge label={`复现: ${reproductionStatus}`} />
+    </div>
+  </header>
+  <div class="paper-block__original" lang="en">{original}</div>
+  <div class="paper-block__translation" lang="zh-Hans">{translation}</div>
+  <footer class="paper-block__status">
+    <span>translation_status: {translationStatus}</span>
+    <span> / translation_provenance: {translationProvenance}</span>
+    <span> / source_namespace: {sourceNamespace}</span>
+  </footer>
+</article>

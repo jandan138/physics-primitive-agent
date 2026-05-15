@@ -1,0 +1,18 @@
+{
+  "paper_id": "knodt_gao_2026_convex_primitive_decomposition_for_collision_detection",
+  "source_version": "arxiv_2602.07369v1",
+  "source_path": "docs/tmp/papers/arXiv-2602.07369v1",
+  "translation_status": "draft_ai_assisted",
+  "permission_status": "user_asserted_permission_record_pending",
+  "permission_artifact_status": "pending_user_supplied_record_or_redacted_summary",
+  "claim_boundary": "permission_record_pending_bilingual_companion_scaffold_not_cpd_reproduction",
+  "sections": [
+    {"slug": "abstract", "title": "Abstract"},
+    {"slug": "introduction", "title": "Introduction"},
+    {"slug": "background", "title": "Related Work"},
+    {"slug": "method", "title": "Method"},
+    {"slug": "experiments", "title": "Results And Ablations"},
+    {"slug": "conclusion", "title": "Discussion, Limitations, And Conclusion"},
+    {"slug": "additional-results", "title": "Additional Results"}
+  ]
+}

@@ -1,0 +1,41 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  caption: string;
+  images?: string[];
+  source?: string;
+}
+
+const { id, title, caption, images = [], source = "" } = Astro.props;
+const withBase = (path: string) => {
+  if (path.startsWith("http") || path.startsWith("data:") || path.startsWith("#")) {
+    return path;
+  }
+  if (path.startsWith(import.meta.env.BASE_URL)) {
+    return path;
+  }
+  const base = import.meta.env.BASE_URL.endsWith("/")
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+  return `${base}${path.replace(/^\/+/, "")}`;
+};
+const resolvedImages = images.map(withBase);
+const resolvedSource = source ? withBase(source) : "";
+---
+
+<figure class="figure-panel" id={id}>
+  <figcaption class="figure-panel__caption">
+    <strong>{title}</strong>
+    <span>{caption}</span>
+  </figcaption>
+  {resolvedImages.length > 0 ? (
+    <div class="figure-panel__grid">
+      {resolvedImages.map((image) => <img src={image} alt={`${title} image`} loading="lazy" />)}
+    </div>
+  ) : resolvedSource ? (
+    <a class="figure-panel__source" href={resolvedSource}>View source figure</a>
+  ) : (
+    <p class="figure-panel__pending">Figure asset withheld until the permission record is attached.</p>
+  )}
+</figure>

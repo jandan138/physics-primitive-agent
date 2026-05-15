@@ -1,0 +1,51 @@
+---
+import "../styles/paper.css";
+
+interface NavItem {
+  href: string;
+  label: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  navItems?: NavItem[];
+}
+
+const { title, description = "", navItems = [] } = Astro.props;
+const withBase = (path: string) => {
+  if (path.startsWith("http") || path.startsWith("#")) {
+    return path;
+  }
+  const base = import.meta.env.BASE_URL.endsWith("/")
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+  return `${base}${path.replace(/^\/+/, "")}`;
+};
+---
+
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="paper-shell">
+      <aside class="paper-nav" aria-label="Paper sections">
+        <a class="paper-nav__home" href={withBase("paper/")}>CPD Companion</a>
+        {navItems.map((item) => <a href={withBase(item.href)}>{item.label}</a>)}
+      </aside>
+      <main class="paper-main">
+        <aside class="source-namespace-banner">
+          Source namespace: cpd_paper_source_text. The English paper text and translated text describe the CPD paper.
+          They are not claims that this repository has reproduced the paper or achieved the paper's reported benchmark
+          results.
+        </aside>
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

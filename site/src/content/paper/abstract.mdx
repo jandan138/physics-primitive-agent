@@ -1,0 +1,20 @@
+---
+title: "Abstract"
+slug: "abstract"
+---
+import PaperBlock from "../../components/PaperBlock.astro";
+import LatexBlock from "../../components/LatexBlock.astro";
+
+# Abstract
+
+<PaperBlock
+  id="abstract-p001"
+  section="Abstract"
+  original="Creation of collision objects for 3D models is a time-consuming task, requiring modelers to manually place primitives such as bounding boxes, capsules, spheres, and other convex primitives to approximate complex meshes. While there has been work in automatic approximate convex decompositions of meshes using convex hulls, they are not practical for applications with tight performance budgets such as games due to slower collision detection and inability to manually modify the output while maintaining convexity as compared to manually placed primitives. Rather than convex decomposition with convex hulls, we devise an approach for bottom-up decomposition of an input mesh into convex primitives specifically for rigid body simulation inspired by quadric mesh simplification. This approach fits primitives to complex, real-world meshes that provide plausible simulation performance and are guaranteed to enclose the input surface. We test convex primitive decomposition on over 60 models from Sketchfab, showing the algorithm's effectiveness. On this dataset, convex primitive decomposition has lower one-way mean and median Hausdorff and Chamfer distance from the collider to the input compared to V-HACD and CoACD, with less than one-third of the complexity as measured by total bytes for each collider. On top of that, rigid-body simulation performance measured by wall-clock time is consistently improved across 24 tested models."
+  translation="为 3D 模型创建碰撞对象是一项耗时任务，需要建模人员手动放置包围盒、胶囊体、球体以及其他凸基元来近似复杂网格。虽然已有工作使用凸包对网格进行自动近似凸分解，但与手动放置的基元相比，这些方法在游戏等性能预算严格的应用中并不实用，因为其碰撞检测更慢，并且难以在保持凸性的同时手动修改输出。不同于使用凸包的凸分解，我们提出一种受二次网格简化启发的方案，专门面向刚体仿真，将输入网格自底向上分解为凸基元。该方法能够为复杂的真实世界网格拟合基元，提供合理的仿真性能，并保证包围输入表面。我们在来自 Sketchfab 的 60 多个模型上测试凸基元分解，展示了算法的有效性。在该数据集上，与 V-HACD 和 CoACD 相比，凸基元分解在从碰撞体到输入的单向平均和中位 Hausdorff 距离以及 Chamfer 距离上更低，而复杂度按每个碰撞体的总字节数衡量不到三分之一。此外，在 24 个测试模型上，以墙钟时间衡量的刚体仿真性能均得到持续提升。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>

@@ -1,0 +1,156 @@
+---
+title: "Related Work"
+slug: "background"
+---
+import PaperBlock from "../../components/PaperBlock.astro";
+import LatexBlock from "../../components/LatexBlock.astro";
+
+# Related Work
+
+## Related Work
+
+### Quadric Mesh Reduction
+
+<PaperBlock
+  id="background-p001"
+  section="Related Work"
+  original="Our approach is loosely based on Quadric Mesh Reduction [qem, qem_uv_texture, qem_hoppe, probabilistic_quadrics], which reduces the number of triangles through edge collapse [fast_and_memory_efficient_polygonal_simp, mesh_optimization] by representing vertices of triangles as linear operators of the form $Q_v = \Sigma pp^\top$, with $p\inR^4$ defined as the equation of the plane of each face containing vertex $v\inR^3$. These linear operators can be efficiently combined as $Q^* = Q_1 + Q_2$, and the optimal position of a combination of vertices can be computed by solving:"
+  translation="我们的方法大致基于 Quadric Mesh Reduction [qem, qem_uv_texture, qem_hoppe, probabilistic_quadrics]。该方法通过边折叠 [fast_and_memory_efficient_polygonal_simp, mesh_optimization] 减少三角形数量，将三角形顶点表示为形如 $Q_v = \Sigma pp^\top$ 的线性算子，其中 $p\inR^4$ 定义为包含顶点 $v\inR^3$ 的每个面的平面方程。这些线性算子可以高效地合并为 $Q^* = Q_1 + Q_2$，并且可以通过求解下式计算顶点组合的最优位置："
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="background-l001" label="Related Work / equation / background-l001">
+
+```latex
+\begin{equation}
+\begin{bmatrix}
+    Q_{00} & Q_{01} & Q_{02} & Q_{03} \\
+    Q_{10} & Q_{11} & Q_{12} & Q_{13} \\
+    Q_{20} & Q_{21} & Q_{22} & Q_{23} \\
+    0 & 0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+\vect{v} \\ 1
+\end{bmatrix}= \begin{bmatrix}
+    0 \\ 0 \\ 0 \\ 1
+\end{bmatrix}
+\end{equation}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="background-p002"
+  section="Related Work"
+  original="Because of the simplicity of combining $Q$ due to its linearity, this approach scales well as the size of the input mesh increases. Edges are merged greedily, based on the error $v^\top (Q_{v_0} + Q_{v_1}) v$, and are used to build progressively coarser representations of the input mesh, similar in spirit to [qem, silhouette_clipping, sqem]. Quadric mesh reduction is used in industry and research as a way to reduce the number of elements in complex meshes. It has also been extended to handle other attributes on meshes, including vertex colors, normals, and texture coordinates. Quadrics have been applied to many problems, including handling topology computations that rely on mass [QuadricTopology], shape reconstruction [shape_recon_quadric], spectral simplification [spectral_mesh_simp], and vertex positions in dual contouring [dual_contouring]."
+  translation="由于 $Q$ 的线性性使合并非常简单，随着输入网格规模增大，该方法仍具有良好的扩展性。边会根据误差 $v^\top (Q_{v_0} + Q_{v_1}) v$ 被贪心合并，并用于构建输入网格逐步变粗的表示，这与 [qem, silhouette_clipping, sqem] 在精神上相似。二次网格简化在工业和研究中都被用作减少复杂网格元素数量的方法。它也已被扩展到处理网格上的其他属性，包括顶点颜色、法线和纹理坐标。Quadrics 已被应用于许多问题，包括处理依赖质量的拓扑计算 [QuadricTopology]、形状重建 [shape_recon_quadric]、谱简化 [spectral_mesh_simp]，以及双轮廓中的顶点位置 [dual_contouring]。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="background-p003"
+  section="Related Work"
+  original="Quadrics have also been adapted to handle approximation of meshes as a linear interpolation of spheres [sqem, anim_sqem]. Instead of the standard quadric metric, a newly proposed quadric metric is based on the signed distance to a sphere: $d = n^\top (p - c_\text{sphere}) - r_\text{sphere}$. From this formulation, an approach that solves for the center $c_\text{sphere}$ and radius $r_\text{sphere}$ is derived, and elements can be merged together in a similar way as standard quadrics. Unlike standard quadrics though, the cost function is replaced with the sum of squared oriented distances of each sphere to the faces of the vertices that it subsumes. Spherical Quadrics (SQEM) lead to a coarse approximation of the input mesh as an interconnected series of spheres, which can then be used for animation. Because of its simplicity and similarity to our goal of abstracting an input with coarse shapes, we draw inspiration for our approach from Spherical Quadric Error Metrics. Note that SQEM is not comparable to our method in rigid body simulation, since the parameters of spheres are linearly interpolated along mesh faces and edges and thus it cannot be represented as discrete components for collision."
+  translation="Quadrics 也已被改造用于将网格近似为球体的线性插值 [sqem, anim_sqem]。不同于标准 quadric 度量，新提出的 quadric 度量基于到球体的有符号距离：$d = n^\top (p - c_\text{sphere}) - r_\text{sphere}$。由该形式可以推导出一种求解球心 $c_\text{sphere}$ 和半径 $r_\text{sphere}$ 的方法，并且元素可以按类似标准 quadrics 的方式合并。不过，与标准 quadrics 不同，代价函数被替换为每个球体到其所吸收顶点的面的有向距离平方和。Spherical Quadrics (SQEM) 会将输入网格粗略近似为一系列相互连接的球体，随后可用于动画。由于其简单性，并且与我们用粗略形状抽象输入的目标相似，我们的方法从 Spherical Quadric Error Metrics 中获得启发。需要注意的是，SQEM 在刚体仿真中不能与我们的方法直接比较，因为球体参数沿网格面和边进行线性插值，因此无法表示为用于碰撞的离散组件。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="background-p004"
+  section="Related Work"
+  original="Our approach builds on the edge collapse operator, replacing the vertices usually merged together for mesh simplification with primitives for each face that are progressively merged together to form a larger primitive. Our formulation is also simpler than normal quadrics, as we only need to maintain a single matrix in $R^{3\times 3}$."
+  translation="我们的方法建立在边折叠算子之上，将网格简化中通常被合并的顶点替换为每个面的基元，并将这些基元逐步合并成更大的基元。我们的形式也比普通 quadrics 更简单，因为只需要维护一个 $R^{3\times 3}$ 中的矩阵。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="background-p005"
+  section="Related Work"
+  original="A few mesh simplification approaches in theory could be applied to collision detection [bounding_proxies_for_shape_approximation, silhouette_clipping], but in practice triangle meshes used directly in rigid body simulation often lead to objects clipping through faces and poor performance."
+  translation="理论上，一些网格简化方法可以应用于碰撞检测 [bounding_proxies_for_shape_approximation, silhouette_clipping]，但在实践中，直接用于刚体仿真的三角网格常常会导致物体穿过面以及性能不佳。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+### Shape Abstraction
+
+<PaperBlock
+  id="background-p006"
+  section="Related Work"
+  original="Another approach to simplifying meshes is abstraction using simpler geometric primitives. Geometric primitives, often represented as parametric models such as signed distance functions, quadrics, or explicit primitives, are used in constructive solid geometry for computer aided design [realtime_csg] along with parametric curves [abstraction_of_shapes]. There are a number of different approaches to recovering shapes from input meshes such as random sampling (RANSAC) [efficient_ransac, generic_primitive_detection_in_point_clouds] and data-driven approaches [cuboid_abstraction, superquadrics, marching_primitives, surface_edge_detect_point_cloud]. These approaches primarily work on simple inputs and cannot preserve high frequency details. One work related to our approach is [quadric_surface_extraction], which fits quadrics to a surface with Lloyd's algorithm and a Euclidean distance metric. Their fitting also requires the computation of eigenvectors to fit quadrics, distinct from our approach which uses them for alignment only. A number of works stemmed from that work [variational_3d_shape_segmentation]. Another similar work is [hierarchical_mesh_segmentation_based_on_fitting] which seeks to perform shape approximation by merging faces, similar to our approach. In contrast though, this prior work only shows 3 shapes with custom cost functions per shape (whereas this work shows 6 with the same cost function), and is not guaranteed to enclose the input shape. Furthermore, that work does not have a specific target application and tested on a much smaller dataset, whereas this work has a large emphasis on validation specifically for collision detection."
+  translation="另一种简化网格的方法是使用更简单的几何基元进行抽象。几何基元通常表示为参数模型，例如有符号距离函数、quadrics 或显式基元，并与参数曲线 [abstraction_of_shapes] 一起用于计算机辅助设计中的构造实体几何 [realtime_csg]。已有多种从输入网格恢复形状的方法，例如随机采样 (RANSAC) [efficient_ransac, generic_primitive_detection_in_point_clouds] 和数据驱动方法 [cuboid_abstraction, superquadrics, marching_primitives, surface_edge_detect_point_cloud]。这些方法主要适用于简单输入，且无法保留高频细节。与我们方法相关的一项工作是 [quadric_surface_extraction]，它使用 Lloyd 算法和欧氏距离度量将 quadrics 拟合到表面。其拟合还需要计算特征向量来拟合 quadrics，这不同于我们的方法；我们仅将特征向量用于对齐。有若干工作源自该工作 [variational_3d_shape_segmentation]。另一项相似工作是 [hierarchical_mesh_segmentation_based_on_fitting]，它试图通过合并面来进行形状近似，类似于我们的方法。相比之下，该既有工作每种形状使用自定义代价函数且只展示 3 种形状（而本文使用同一代价函数展示 6 种），并且不保证包围输入形状。此外，该工作没有特定的目标应用，且测试数据集小得多；而本文特别强调针对碰撞检测的验证。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="background-p007"
+  section="Related Work"
+  original="There are also many works using clustering for shape abstraction. For such approaches, there are a few design choices. First is choice of clustering algorithm, usually Lloyd's algorithm/iterative region growing [quadric_surface_extraction, variational_mesh_segmentation, d_charts, variational_3d_shape_segmentation, quasi_optimal_region_growing, variational_hierarchical_directed_bounding_box_construction], a greedy approach which merges elements together bottom up (similar to our approach) [hierarchical_face_clustering_on_polygonal_surfaces, qem, simple_primitive_recognition_via_face_clustering, hierarchical_mesh_segmentation_based_on_fitting], or splitting approaches [split_merge_refine, hierarchical_mesh_segmentation_based_on_quadric]. Prior work may target different outputs, such as clustering faces into primitives represented by quadrics [quadric_surface_extraction, variational_mesh_segmentation, generic_primitive_detection_in_point_clouds], a small non-general set of primitives [ellipsoid_decomposition_of_3d_models, simple_primitive_recognition_via_face_clustering, primitive_based_3d_segmentation_cad_models, hierarchical_mesh_segmentation_based_on_quadric, variational_3d_shape_segmentation], oriented bounding boxes [obbtree, split_merge_refine, variational_hierarchical_directed_bounding_box_construction, variational_3d_shape_segmentation, variational_obb_tree], and ellipsoids [variational_3d_shape_segmentation, ellipsoid_decomposition_of_3d_models]. Our approach is close to prior work that produces primitives, but our approach is more general as any parametric shape that satisfies a simple interface can be used. This includes, spheres, capsules, boxes, frustums, trapezoidal prisms and cylinders, which no previous approach can produce together. Furthermore, prior work relies on primitive specific features for fitting. Our work introduces the use of the eigendecomposition for the primitive's orientation, which can be used to fit other parameters using the enclosed points, with less reliance on primitive specific features. Our work also focuses on the specific problem of rigid body simulation. For a comprehensive analysis on prior work, see a recent survey on geometric primitive fitting [survey_of_simple_geometric_primitives]."
+  translation="还有许多工作使用聚类进行形状抽象。对于这类方法，有若干设计选择。首先是聚类算法的选择，通常是 Lloyd 算法/迭代区域生长 [quadric_surface_extraction, variational_mesh_segmentation, d_charts, variational_3d_shape_segmentation, quasi_optimal_region_growing, variational_hierarchical_directed_bounding_box_construction]，自底向上合并元素的贪心方法（类似于我们的方法）[hierarchical_face_clustering_on_polygonal_surfaces, qem, simple_primitive_recognition_via_face_clustering, hierarchical_mesh_segmentation_based_on_fitting]，或分裂方法 [split_merge_refine, hierarchical_mesh_segmentation_based_on_quadric]。既有工作可能面向不同输出，例如将面聚类为由 quadrics 表示的基元 [quadric_surface_extraction, variational_mesh_segmentation, generic_primitive_detection_in_point_clouds]、一小组非通用基元 [ellipsoid_decomposition_of_3d_models, simple_primitive_recognition_via_face_clustering, primitive_based_3d_segmentation_cad_models, hierarchical_mesh_segmentation_based_on_quadric, variational_3d_shape_segmentation]、有向包围盒 [obbtree, split_merge_refine, variational_hierarchical_directed_bounding_box_construction, variational_3d_shape_segmentation, variational_obb_tree]，以及椭球体 [variational_3d_shape_segmentation, ellipsoid_decomposition_of_3d_models]。我们的方法接近那些生成基元的既有工作，但更为通用，因为任何满足简单接口的参数化形状都可以使用。这包括球体、胶囊体、盒体、截头体、梯形棱柱和圆柱体；此前没有方法能够同时生成这些形状。此外，既有工作在拟合时依赖特定于基元的特征。我们的工作引入了使用特征分解确定基元朝向的方法，并可利用被包围点拟合其他参数，从而更少依赖特定于基元的特征。我们的工作还聚焦于刚体仿真这一具体问题。关于既有工作的全面分析，可参见近期关于几何基元拟合的综述 [survey_of_simple_geometric_primitives]。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+### Approximate Convex Decomposition
+
+<PaperBlock
+  id="background-p008"
+  section="Related Work"
+  original="Prior work on convex decomposition for collision detection has revolved around approximate convex decomposition [model_composition_from_interchangeable_components, vhacd, nav_approx_acd, acd_polyhedra, animated_decomp, shape_segmentation_by_approx_convex, hierarchical_convex_approximation_of_3d_shapes]. Approximate convex decomposition relies on splitting an input mesh into convex hulls, approximating the shape of the input mesh using a concavity metric to determine whether to a split a shape into subparts. Many of these approaches remesh or voxelize the input to make it manifold, then partition the manifold mesh top-down along cutting planes, tightly matching the input shape. What we found when investigating whether this approach is suitable for game development is that convex hulls are more complex than the count of hulls indicates, can occasionally be imprecise, and are not easy to modify within existing DCC tools or engines while maintaining convexity. This motivates our divergence from convex hull decomposition."
+  translation="面向碰撞检测的凸分解既有工作主要围绕近似凸分解展开 [model_composition_from_interchangeable_components, vhacd, nav_approx_acd, acd_polyhedra, animated_decomp, shape_segmentation_by_approx_convex, hierarchical_convex_approximation_of_3d_shapes]。近似凸分解依赖于将输入网格拆分为凸包，并使用凹度指标近似输入网格的形状，以判断是否应将某个形状拆分为子部分。许多此类方法会对输入重新网格化或体素化，使其成为流形，然后沿切割平面自顶向下划分流形网格，从而紧密匹配输入形状。我们在考察这种方法是否适合游戏开发时发现，凸包的复杂度高于凸包数量本身所显示的程度，偶尔可能不够精确，并且在现有 DCC 工具或引擎中不易修改同时保持凸性。这促使我们偏离凸包分解路线。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="background-p009"
+  section="Related Work"
+  original="One component of prior work (and specifically CoACD) is their use of plane-cutting of hulls into separate components, relying on Monte Carlo search to find a good cutting plane. Due to the infinite number of cutting plane candidates, prior approaches cut on a limited set of axes, leading to excessive and poor cuts. We evade this problem entirely by performing bottom-up merging of primitives. This allows us to take into account local coordinate frames, ridding ourselves of suboptimal axis-aligned constraints."
+  translation="既有工作（尤其是 CoACD）的一个组成部分，是使用平面切割将凸包分成单独组件，并依赖 Monte Carlo 搜索寻找较好的切割平面。由于候选切割平面数量无限，既有方法只能在有限轴集合上切割，导致过多且质量较差的切割。我们通过对基元进行自底向上的合并完全避开了这个问题。这使我们能够考虑局部坐标系，摆脱次优的轴对齐约束。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="background-p010"
+  section="Related Work"
+  original="We also note that our approach's error metric using volume differences is built on prior works such as [animated_decomp] which uses volume to determine when to split a hull. One key difference is that prior work often requires watertight meshes to compute the volume of the input mesh. Our approach does not require a watertight input, since we use the volume of the already computed primitives rather than the mesh itself."
+  translation="我们还注意到，我们方法中使用体积差异的误差度量建立在 [animated_decomp] 等既有工作之上；该工作使用体积来判断何时拆分凸包。一个关键差异是，既有工作通常需要水密网格才能计算输入网格的体积。我们的方法不要求输入是水密的，因为我们使用的是已计算基元的体积，而不是网格本身的体积。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>

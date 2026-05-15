@@ -1,0 +1,58 @@
+---
+import PaperLayout from "../../layouts/PaperLayout.astro";
+import manifest from "../../data/paper-manifest.json";
+
+const withBase = (path: string) => {
+  const base = import.meta.env.BASE_URL.endsWith("/")
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`;
+  return `${base}${path.replace(/^\/+/, "")}`;
+};
+const navItems = manifest.sections.map((section) => ({
+  href: `paper/${section.slug}/`,
+  label: section.title,
+}));
+---
+
+<PaperLayout
+  title="CPD Paper Companion"
+  description="Permission-record-pending bilingual CPD paper companion scaffold"
+  navItems={navItems}
+>
+  <section class="paper-hero">
+    <p class="paper-kicker">User-confirmed permission; record pending</p>
+    <h1>Convex Primitive Decomposition for Collision Detection</h1>
+    <p>
+      English source text with AI-assisted Chinese draft translation. Translation is not yet
+      human-reviewed. Public full-text expansion should wait for the private permission record or
+      a redacted permission summary. Project reproduction notes are claim-bounded and added only
+      where dated records exist.
+    </p>
+    <dl class="paper-meta-grid">
+      <div>
+        <dt>Source</dt>
+        <dd>{manifest.source_version}</dd>
+      </div>
+      <div>
+        <dt>Translation</dt>
+        <dd>{manifest.translation_status}</dd>
+      </div>
+      <div>
+        <dt>Permission</dt>
+        <dd>{manifest.permission_status}</dd>
+      </div>
+      <div>
+        <dt>Claim Boundary</dt>
+        <dd>{manifest.claim_boundary}</dd>
+      </div>
+    </dl>
+  </section>
+  <section class="paper-section-list" aria-label="Paper sections">
+    {manifest.sections.map((section) => (
+      <a class="paper-section-link" href={withBase(`paper/${section.slug}/`)}>
+        <span>{section.title}</span>
+        <small>{manifest.translation_status}</small>
+      </a>
+    ))}
+  </section>
+</PaperLayout>

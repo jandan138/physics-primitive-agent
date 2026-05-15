@@ -1,0 +1,16 @@
+---
+interface Props {
+  id: string;
+  label: string;
+}
+
+const { id, label } = Astro.props;
+---
+
+<aside class="latex-block" id={id}>
+  <header class="latex-block__header">
+    <a href={`#${id}`}>{label}</a>
+    <span>source LaTeX preserved; paper assets withheld pending permission record</span>
+  </header>
+  <slot />
+</aside>

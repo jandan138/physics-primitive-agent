@@ -1,0 +1,914 @@
+---
+title: "Additional Results"
+slug: "additional-results"
+---
+import PaperBlock from "../../components/PaperBlock.astro";
+import LatexBlock from "../../components/LatexBlock.astro";
+
+# Additional Results
+
+<LatexBlock id="additional-results-p001" label="Additional Results / control / additional-results-p001">
+
+```latex
+\appendix
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p002"
+  section="Additional Results"
+  original="Meshing of Cylinders and Capsules: Our approach outputs cylinders, capsules, spheres, and frustums modeled as parametric functions. For some applications though (such as rendering), all inputs must be given as a mesh, so we convert these primitives to quantized meshes. For cylinders and frustums, we output prisms capped by one face on each end. For spheres, we use a UV sphere approximation. For capsules, we output prisms capped with UV spheres on each end. This makes our approach suitable for any downstream applications."
+  translation="圆柱体和 capsule 的网格化：我们的方法输出以参数函数建模的圆柱体、capsule、球体和 frustum。不过，对于某些应用（例如渲染），所有输入都必须以网格形式给出，因此我们将这些 primitives 转换为量化网格。对于圆柱体和 frustum，我们输出两端各由一个面封口的棱柱。对于球体，我们使用 UV sphere 近似。对于 capsule，我们输出两端由 UV sphere 封口的棱柱。这使我们的方法适用于任何下游应用。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+## Additional Results
+
+<PaperBlock
+  id="additional-results-p003"
+  section="Additional Results"
+  original="We show additional results from our approach and provide pseudo-code for fitting frustums in Alg. ref:alg:frustum and isosceles trapezoidal prisms in Alg. ref:alg:isotrap. Then, we plot frame durations for collisions with 5000 spheres for many meshes in Fig. ref:fig:additional-sim-times, and Fig. ref:fig:sim-times-component-comparison. We show outputs on buildings, characters, props, and environments in Fig. ref:fig:additional_qualitative_results. We include more comparisons to CoACD and V-HACD in Fig. ref:fig:additional_comparisons. Complete statistics for the primitives generated on our dataset are in Tab. ref:tab:complete_results, with all 1-way distances in Tab. ref:tab:distance_comparison. We show byte counts for all models in Tab. ref:tab:raw-memory-cost. We show our approach on a complex scene [ORCAAmazonBistro], to generate an initial decomposition, then automatically delete thin bounding boxes to get the output shown in Fig. ref:fig:bistro. We then show our approach on two organic objects in Fig. ref:fig:organic-meshes, and one complex example in Fig. ref:fig:yeahright. Finally, we show additional examples with collision detection comparisons from the V-HACD dataset [vhacd] in Fig. ref:fig:vhacd-data-comp."
+  translation="我们展示了我们方法的更多结果，并在 Alg. ref:alg:frustum 中提供了拟合 frustum 的伪代码，在 Alg. ref:alg:isotrap 中提供了拟合 isosceles trapezoidal prism 的伪代码。随后，我们在 Fig. ref:fig:additional-sim-times 和 Fig. ref:fig:sim-times-component-comparison 中绘制了许多网格与 5000 个球体发生碰撞时的帧时长。我们在 Fig. ref:fig:additional_qualitative_results 中展示了建筑、角色、道具和环境上的输出。我们在 Fig. ref:fig:additional_comparisons 中加入了与 CoACD 和 V-HACD 的更多比较。我们数据集上生成 primitives 的完整统计见 Tab. ref:tab:complete_results，所有 1-way distances 见 Tab. ref:tab:distance_comparison。我们在 Tab. ref:tab:raw-memory-cost 中展示了所有模型的 byte counts。我们在一个复杂场景 [ORCAAmazonBistro] 上展示了我们的方法：先生成初始分解，然后自动删除很薄的 bounding boxes，以得到 Fig. ref:fig:bistro 中展示的输出。随后，我们在 Fig. ref:fig:organic-meshes 中展示了我们方法在两个有机对象上的结果，并在 Fig. ref:fig:yeahright 中展示了一个复杂示例。最后，我们在 Fig. ref:fig:vhacd-data-comp 中展示了来自 V-HACD 数据集 [vhacd]、并带有碰撞检测比较的更多示例。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-p004" label="Additional Results / control / additional-results-p004">
+
+```latex
+\newpage
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-l001" label="Additional Results / algorithm / additional-results-l001">
+
+```latex
+\begin{algorithm}
+\caption{Frustum Point Subsuming\label{alg:frustum}}
+\begin{algorithmic}[1]
+\Statex \textbf{Input: } Points $\in\mathbb{R}^{N\times3}$, Base Point $\vect{c}$, Axis $\vect{a}$
+\Statex \textbf{Output: } height $h$, top and bottom radius $r_\text{top}, r_\text{bot}$
+\State $h = 0, r_\text{bot} = 0, r_\text{top} = 0$
+\For{p $\in$ Points} $h = \max(h, |(p-c)^\top a|)$
+\EndFor
+\State $r_\text{top}^* = 0, y_\text{top}^* = 1, r_\text{bot}^* = 0, y_\text{bot}^* = 0$ \Comment{Approx. constraints}
+\Procedure{Y}{p}:
+\Return $\frac{(p - c)^\top a}{h}$
+\EndProcedure
+\Procedure{$R_\text{side}$}{r, y, $r_\text{opp}$}:
+\Return \textbf{if} side \textbf{is} bot \\ $|\frac{r - r_\text{opp}y}{1 - y}|$ \textbf{else} $|\frac{r - r_\text{opp}(1-y)}{y}|$
+\EndProcedure
+\For{p $\in$ Points}:
+    \State side, opp $ = $ \textbf{if} $Y(p) \leq 0.5$ \{ bot, top \} \textbf{else} \{ top, bot \}
+    \State $r = \lVert (p - c) - h(p - c)^\top a\rVert_2$
+    \State $\text{next} = R_\text{side}(r, Y(p), r_\text{opp})$
+    \If{$\text{next} > r_\text{side}^*$}
+        \State $r_\text{side}^* = r, y_\text{side}^* = Y(p), r_\text{side} = \text{next}$
+        \State $r_\text{opp}^* = R_\text{opp}(r_\text{opp}^*, y_\text{opp}^*, r_\text{side}^*)$
+    \EndIf
+\EndFor
+\Statex Similar FixSide(...) Procedure as Alg.~\ref{alg:isotrap} \\
+\Return $h, r_\text{top}, r_\text{bot}$
+\end{algorithmic}
+\end{algorithm}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p005"
+  section="Additional Results"
+  original="Frustum Point Subsuming"
+  translation="Frustum 点包含判定"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-p006" label="Additional Results / control / additional-results-p006">
+
+```latex
+\vfill\null
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-l002" label="Additional Results / algorithm / additional-results-l002">
+
+```latex
+\begin{algorithm}
+\caption{Isosceles Trapezoid Point Subsuming\label{alg:isotrap}}
+\begin{algorithmic}[1]
+\Statex \textbf{Input: } Points $\in\mathbb{R}^{N\times3}$, Center $c$, Axes $a_x, a_y, a_z$
+\Statex \textbf{Output: } Half-radii $h_x, h_y, h_{zt}, h_{zb}$
+\State $h_x = 0, h_y = 0, h_{zt} = 0, h_{zb} = 0$
+\For{p $\in$ Points} \Comment{Compute $h_x$, $h_y$}
+    \State $h_x = \max(h_x, |(p-c)^\top a_x|)$, $h_y = \max(h_y, |(p-c)^\top a_y|)$
+\EndFor
+\State $z_{zt}^* = 0, y_{zt}^* = 1, z_{zb}^* = 0, y_{zb}^* = 0$ \Comment{Current approx. constraints}
+\For{p $\in$ Points}:
+    \Procedure{UpdateConstraint}{side $\in \{ \text{zt, zb} \}$}
+        \State \text{opp} = \textbf{if} side \textbf{is} zt \{ zb \} \textbf{else} \{ zt \}
+        \State $\text{next} = h_\text{side}(z(p), y(p), h_\text{opp})$ \Comment{$h_{zt} \text{ or } h_{zb}$}
+        \If{$\text{next} > h_\text{side}$}
+            \State $z_\text{side}^* = z(p), y_\text{side}^* = y(p), h_\text{side} = \text{next}$
+            \State $h_\text{opp} = |h_\text{opp}(z_\text{opp}^*, y_\text{opp}^*, h_\text{side})|$ \label{line:update_half_extent}
+        \EndIf
+    \EndProcedure
+    \State\Call{UpdateConstraint}{\textbf{if} $y(p) \leq 0.5$ \{ zb \} \textbf{else} \{ zt \}}
+\EndFor
+\Procedure{FixSide}{top $\in$ bool} \\
+    \Comment{Fix one side, find min. that subsumes all points for other.}\\
+    \Comment{Guarantees that all input points are subsumed.}
+    \State $v, o =$ \textbf{if} top \{ $zt, zb$ \} \textbf{else} \{ $zb, zt$ \}
+    \State $h_{v} = 0$
+    \For{p $\in$ Points}:
+    $h_v = \max(h_v, h_v(z(p), y(p), h_o))$
+    \EndFor
+\EndProcedure
+\State FixSide($h_{zt} < h_{zb}$) \Comment{Fix larger side and set smaller}
+\State FixSide($h_{zt} \geq h_{zb}$) \Comment{Then vice-versa} \\
+\Return $h_x, h_y, h_{zt}, h_{bt}$
+\end{algorithmic}
+\end{algorithm}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p007"
+  section="Additional Results"
+  original="Isosceles Trapezoid Point Subsuming"
+  translation="等腰梯形点包含判定"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-p008" label="Additional Results / control / additional-results-p008">
+
+```latex
+{
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-p009" label="Additional Results / control / additional-results-p009">
+
+```latex
+\setlength{\tabcolsep}{0em}
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-l003" label="Additional Results / figure* / additional-results-l003">
+
+```latex
+\begin{figure*}
+    \centering
+    \begin{tabular}{c c c c}
+        \multicolumn{4}{c}{Additional Results} \\
+        Input Mesh & Convex Prim. Decomp. & Input Mesh & Convex Prim. Decomp. \\
+        \includegraphics[width=0.25\linewidth]{assets/chimney_pipe_input} &
+        \includegraphics[width=0.25\linewidth]{assets/chimney_pipe} &
+        \includegraphics[width=0.25\linewidth]{assets/spiral_staircase_input} & \includegraphics[width=0.25\linewidth]{assets/spiral_staircase}
+        \\
+        $|F| = 3404$ & 1 Box, 2 Cylinders, 3 Frustums & $|F| = 6358$ & 24 boxes, 40 Capsules, 16 Prisms \\
+
+        \includegraphics[width=0.25\linewidth]{assets/japanese_house_2_input} &
+        \includegraphics[width=0.25\linewidth]{assets/japanese_house_2} &
+        \includegraphics[width=0.25\linewidth]{assets/japanese_house_input} &
+        \includegraphics[width=0.25\linewidth]{assets/japanese_house} \\
+        $|F| = 233965$ & 409 Boxes, 1 Cap, 2 Prism & $|F| = 119639$ & \tiny 645 Boxes, 22 Cap, 145 Cyl, 118 Prisms, 22 Sph \\
+
+        \includegraphics[width=0.25\linewidth]{assets/bicycle_original} &
+        \includegraphics[width=0.25\linewidth]{assets/bicycle_ours} &
+
+        \includegraphics[width=0.25\linewidth]{assets/church_organ_original} &
+        \includegraphics[width=0.25\linewidth]{assets/church_organ_ours}
+        \\
+        $|F| = 54995$ & 50 Boxes, 34 Cap, 22 Cyl, 2 Prism & $|F| = 20875$ &
+        \footnotesize 94 Boxes, 17 Cap, 67 Cyl, 2 Sph \\
+
+        \includegraphics[width=0.25\linewidth]{assets/shinto_shrine_original} & \includegraphics[width=0.25\linewidth]{assets/shinto_shrine_ours} &
+        \includegraphics[width=0.25\linewidth]{assets/fantasy_asian_house_original} & \includegraphics[width=0.25\linewidth]{assets/fantasy_asian_house_ours} \\
+        $|F| = 6280$ & 77 Boxes, 6 Capsules, 40 Cylinders & $|F| = 267267$ & \scriptsize 3675 Boxes, 223 Cap, 131 Cyl, 2 Prisms \\\\
+    \end{tabular}
+    \caption{Additional results from running our approach on a variety of input meshes. Green indicates bounding boxes, yellow for cylinders, blue for trapezoidal prisms, and red for capsules, light blue for spherres. Our approach greatly cuts down on the number of input elements. \ccby BlenderFace, \ccby RubaQewar, \ccby neos\_nelia, \ccby Deerex, \ccby Hoody468, \ccby Nathan Sioui, \ccby neih.D, \ccby Scritta.}
+    \label{fig:additional_qualitative_results}
+    % \Description{
+    % Our approach on a number of additional outputs:
+    % From left-to-right, top-to-bottom:
+    % 1. A bicycle
+    % 2. A spiral staircase
+    % 3. A chimney pipe
+    % 4. A church organ
+    % 5. A small japanese house
+    % 6. An asian storefront
+    % 7. A shinto shrine
+    % 8. An asian style hut with bamboo behind it.
+    % }
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p010"
+  section="Additional Results"
+  original="Additional results from running our approach on a variety of input meshes. Green indicates bounding boxes, yellow for cylinders, blue for trapezoidal prisms, and red for capsules, light blue for spherres. Our approach greatly cuts down on the number of input elements. License: BlenderFace, \ccby RubaQewar, \ccby neos\_nelia, \ccby Deerex, \ccby Hoody468, \ccby Nathan Sioui, \ccby neih.D, License: Scritta."
+  translation="在多种输入网格上运行我们方法得到的更多结果。绿色表示 bounding boxes，黄色表示圆柱体，蓝色表示梯形棱柱，红色表示 capsules，浅蓝色表示球体。我们的方法大幅减少了输入元素的数量。License: BlenderFace, \ccby RubaQewar, \ccby neos\_nelia, \ccby Deerex, \ccby Hoody468, \ccby Nathan Sioui, \ccby neih.D, License: Scritta."
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-p011" label="Additional Results / control / additional-results-p011">
+
+```latex
+}
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-p012" label="Additional Results / control / additional-results-p012">
+
+```latex
+{
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-p013" label="Additional Results / control / additional-results-p013">
+
+```latex
+\setlength{\tabcolsep}{0em}
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-l004" label="Additional Results / figure* / additional-results-l004">
+
+```latex
+\begin{figure*}
+    \renewcommand{\arraystretch}{0.9}
+    \centering
+    \begin{tabular}{c c c c}
+        \multicolumn{4}{c}{Additional Comparisons} \\
+        Input Mesh & Convex Primitive Decomposition & CoACD & V-HACD \\
+        \includegraphics[width=0.25\linewidth]{assets/rope_bridge_input} &
+        \includegraphics[width=0.25\linewidth]{assets/rope_bridge} &
+        \includegraphics[width=0.25\linewidth]{assets/rope_bridge_coacd} &
+        \includegraphics[width=0.25\linewidth]{assets/rope_bridge_vhacd} \\
+
+        |F| = 7256 & 132 Boxes, 40 Cap, 170 Cyl, 16 Sph & 279 Hulls (|F| = 12246) & 27 Hulls (|F| = 2376) \\
+        \includegraphics[width=0.15\linewidth]{assets/table_input} &
+        \includegraphics[width=0.15\linewidth]{assets/table} &
+        \includegraphics[width=0.15\linewidth]{assets/table_coacd} &
+        \includegraphics[width=0.15\linewidth]{assets/table_vhacd} \\
+        |F| = 66 & 11 Boxes & 11 Hulls (|F| = 1210) & 12 Hulls (|F| = 266) \\
+
+        \includegraphics[width=0.2\linewidth]{assets/cube2_input} &
+        \includegraphics[width=0.2\linewidth]{assets/cube2} &
+        \includegraphics[width=0.2\linewidth]{assets/cube2_coacd} &
+        \includegraphics[width=0.2\linewidth]{assets/cube2_vhacd} \\
+        |F| = 5756 & 4 Boxes, 191 Cap, 21 Cyl & 86 Hulls (|F| = 7294) & 44 Hulls (|F| = 7459)  \\
+
+        \includegraphics[width=0.14\linewidth]{assets/tank_input} &
+        \includegraphics[width=0.14\linewidth]{assets/tank} &
+        \includegraphics[width=0.14\linewidth]{assets/tank_coacd} &
+        \includegraphics[width=0.14\linewidth]{assets/tank_vhacd} \\
+        |F| = 15306 & 16 Boxes, 7 Cylinders & 19 Hulls (|F| = 4784) & 17 Hulls (|F| = 3672) \\
+
+        \includegraphics[width=0.08\linewidth]{assets/lantern_original} &
+        \includegraphics[width=0.08\linewidth]{assets/lantern_ours} &
+        \includegraphics[width=0.08\linewidth]{assets/lantern_coacd} &
+        \includegraphics[width=0.08\linewidth]{assets/lantern_vhacd} \\
+        |F| = 1360 & 17 Boxes, 6 Cylinders, 4 Prisms & 5 Hulls (|F| = 716) & 8 Hulls (|F| = 394) \\
+
+        \includegraphics[width=0.2\linewidth]{assets/pipe_wall_original} &
+        \includegraphics[width=0.2\linewidth]{assets/pipe_wall_ours} &
+        \includegraphics[width=0.2\linewidth]{assets/pipe_wall_coacd} &
+        \includegraphics[width=0.2\linewidth]{assets/pipe_wall_vhacd} \\
+        |F| = 1545 & 44 Boxes, 31 Cap., 25 Cyl. & 70 Hulls (|F| = 7564) & 35 Hulls (|F| = 1840) \\
+
+        \includegraphics[width=0.25\linewidth]{assets/sword_original} &
+        \includegraphics[width=0.25\linewidth]{assets/sword_ours} &
+        \includegraphics[width=0.25\linewidth]{assets/sword_coacd} & \includegraphics[width=0.25\linewidth]{assets/sword_vhacd} \\
+        |F| = 35288 & 273 Boxes, 5 Cap, 18 Cyl, 8 Prisms & 3 Hulls (|F| = 596) & 9 Hulls (|F| = 10182) \\
+    \end{tabular}
+    \caption{Additional comparison from running our approach on a variety of input meshes. Green indicates bounding boxes, yellow cylinders, blue trapezoidal prisms, red capsules, light blue spheres, and light orange frustums. Our approach more closely adheres to the input mesh while containing fewer elements than approximate convex decomposition approaches. Our approach also uses the fewest bytes on all models shown. \ccby lucq, \ccby toAflame, \ccby maxpsr, \ccby Blenderolokos, \ccby Aerial\_Knight, \ccby RitorDP.}
+    \label{fig:additional_comparisons}
+    % \Description{
+    % Our approach compared to CoACD and V-HACD on a number of additional outputs:
+    % First column is the input, 2nd column is our approach, third column is CoACD, fourth column is V-HACD.
+    % From top-to-bottom:
+    % 1. A bridge
+    % 2. A table
+    % 3. A cylindrical container of some sort
+    % 4. A lantern hanging by a chain
+    % 5. A wall covered by pipes
+    % 6. a French sword with an ornate guard
+    % }
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p014"
+  section="Additional Results"
+  original="Additional comparison from running our approach on a variety of input meshes. Green indicates bounding boxes, yellow cylinders, blue trapezoidal prisms, red capsules, light blue spheres, and light orange frustums. Our approach more closely adheres to the input mesh while containing fewer elements than approximate convex decomposition approaches. Our approach also uses the fewest bytes on all models shown. License: lucq, \ccby toAflame, \ccby maxpsr, \ccby Blenderolokos, \ccby Aerial\_Knight, \ccby RitorDP."
+  translation="在多种输入网格上运行我们方法得到的更多比较。绿色表示 bounding boxes，黄色表示圆柱体，蓝色表示梯形棱柱，红色表示 capsules，浅蓝色表示球体，浅橙色表示 frustums。与 approximate convex decomposition 方法相比，我们的方法在使用更少元素的同时更紧密地贴合输入网格。在所示所有模型上，我们的方法使用的字节数也最少。License: lucq, \ccby toAflame, \ccby maxpsr, \ccby Blenderolokos, \ccby Aerial\_Knight, \ccby RitorDP."
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-p015" label="Additional Results / control / additional-results-p015">
+
+```latex
+}
+```
+
+</LatexBlock>
+
+<LatexBlock id="additional-results-l005" label="Additional Results / table* / additional-results-l005">
+
+```latex
+\begin{table*}
+\centering
+\scriptsize
+\begin{tabular}{|c|| c|c|c|c ||c|c|c|c|c|c|c||c|c||c|c|}
+\hline
+& \multicolumn{4}{c||}{Input} & \multicolumn{7}{c||}{Ours} & \multicolumn{2}{c||}{CoACD} & \multicolumn{2}{c|}{V-HACD} \\\hline
+\hline
+Name & \#F & \#V  & Mani. & WT & \#Box & \#Cap & \#Sph & \#Cyl & \#Fru & \#Pri & Time (s) & \#F & \#Hull & \#F & \#Hull \\\hline
+Armadillo & 99976 & 49990 & \greencheck & \greencheck & 195 & & & 4 & & 1 & 12.303 & 9632 & 24 & 11275 & 15 \\\hline
+Armored Charizard & 4649 & 3273 & \greencheck & \redX & 144 & 2 & & 10 & & 32 & 0.417 & 7170 & 41 & 2402 & 26 \\\hline
+Bell & 10686 & 10578 & \greencheck & \redX & 47 & 4 & & 2 & & & 1.418 & 11546 & 63 & 6198 & 22 \\\hline
+Bicycle & 54995 & 102354 & \greencheck & \redX & 50 & 34 & & 22 & & 2 & 9.373 & 4904 & 30 & 9106 & 23 \\\hline
+Canon At1 & 9624 & 13094 & \greencheck & \redX & 8 & & & 4 & & & 1.531 & 7484 & 28 & 3174 & 15 \\\hline
+Cardboard Boxes & 119 & 202 & \redX & \redX & 34 & & & & & 10 & 0.006 & 5568 & 65 & 496 & 40 \\\hline
+Casio Keyboard & 2804 & 3730 & \greencheck & \redX & 16 & & & & & & 0.511 & 440 & 1 & 658 & 6 \\\hline
+Chimney Pipe & 3404 & 4864 & \greencheck & \redX & 1 & & & 2 & 3 & & 0.641 & 5354 & 27 & 2334 & 30 \\\hline
+Chitinous Knight & 87258 & 89239 & \greencheck & \redX & 47 & 1 & & 1 & & & 16.084 & 4316 & 16 & 13019 & 14 \\\hline
+Chuo House & 173163 & 209450 & \redX & \redX & 1023 & 10 & & 22 & & 18 & 32.894 & 3198 & 29 & 5200 & 27 \\\hline
+Church Organ & 20875 & 26902 & \greencheck & \redX & 94 & 17 & 2 & 67 & & & 2.392 & 5550 & 54 & 3122 & 39 \\\hline
+Cinema Scan & 423713 & 351719 & \greencheck & \redX & 475 & 1 & & 17 & & 5 & 62.922 & 8384 & 87 & 6030 & 37 \\\hline
+Cube & 5756 & 7401 & \greencheck & \redX & 4 & 191 & & 24 & & & 0.516 & 7286 & 87 & 7076 & 44 \\\hline
+Cyberpunk Atm & 6566 & 10447 & \greencheck & \redX & 63 & & & 24 & & & 0.659 & 3912 & 25 & 1458 & 16 \\\hline
+Cyberpunk Bike & 31916 & 37040 & \greencheck & \redX & 34 & 3 & 4 & 16 & & 1 & 4.379 & 4614 & 15 & 9626 & 42 \\\hline
+Dojo & 4569 & 4133 & \greencheck & \redX & 470 & 1 & & 8 & & 4 & 0.208 & 9866 & 149 & 2354 & 50 \\\hline
+Dungeon (Precise) & 17986 & 59852 & \greencheck & \redX & 532 & & & 9 & & & 1.680 & 6984 & 90 & 1298 & 17 \\\hline
+Espresso Machine & 19738 & 29059 & \greencheck & \redX & 60 & 16 & 1 & 101 & & & 2.500 & 10878 & 93 & 4668 & 35 \\\hline
+Fantasy Asian House & 267627 & 289886 & \greencheck & \redX & 3675 & 223 & & 131 & & 2 & 39.965 & 3548 & 28 & 10940 & 35 \\\hline
+Fps-Hands & 4076 & 4600 & \greencheck & \redX & 145 & & & 5 & & & 0.533 & 2472 & 12 & 2440 & 14 \\\hline
+Fractal & 8184 & 7816 & \redX & \redX & 5434 & & & & & & 0.168 & 53148 & 1126 & 3010 & 52 \\\hline
+French Halfbasket & 35288 & 41255 & \greencheck & \redX & 273 & 5 & & 18 & & & 5.383 & 596 & 3 & 10182 & 9 \\\hline
+Greek Vase & 12545 & 14464 & \redX & \redX & 379 & & & & & & 0.713 & 18624 & 62 & 12790 & 51 \\\hline
+Gun & 10256 & 8994 & \greencheck & \redX & 112 & & & 13 & & 8 & 1.203 & 3354 & 17 & 2308 & 20 \\\hline
+Hover Bike & 9327 & 7025 & \greencheck & \redX & 66 & & & 6 & & & 1.011 & 3924 & 16 & 2850 & 19 \\\hline
+Jpn Corridor & 200 & 308 & \greencheck & \redX & 33 & & & & & & 0.011 & 4754 & 34 & 542 & 20 \\\hline
+Jpn House & 119620 & 141206 & \greencheck & \redX & 645 & 22 & 22 & 145 & & 118 & 17.247 & 6332 & 75 & 4010 & 34 \\\hline
+Jpn House 2 & 233965 & 235330 & \redX & \redX & 409 & 1 & & & & 2 & 50.214 & 3876 & 39 & 2184 & 24 \\\hline
+Jpn House 3 & 41462 & 42444 & \greencheck & \greencheck & 645 & & & 1 & & 3 & 4.282 & 1970 & 13 & 1404 & 13 \\\hline
+Jpn Paddle Crab & 567566 & 550825 & \greencheck & \redX & 1146 & & & 14 & & 3 & 134.896 & 11484 & 64 & 16579 & 22 \\\hline
+Shinto Shrine & 6280 & 6638 & \greencheck & \redX & 77 & 6 & & 40 & & & 0.780 & 7116 & 69 & 2270 & 26 \\\hline
+Kagiya Edo Tokyo & 22819 & 18820 & \redX & \redX & 668 & 1 & & 207 & & 19 & 2.400 & 1088 & 7 & 652 & 8 \\\hline
+Lantern & 1360 & 1862 & \greencheck & \redX & 17 & & & 6 & & 4 & 0.148 & 716 & 5 & 392 & 8 \\\hline
+Lekythos & 1075 & 1148 & \greencheck & \redX & 110 & & & 3 & & 7 & 0.106 & 9056 & 40 & 3498 & 42 \\\hline
+Lethe & 4782 & 8219 & \greencheck & \redX & 112 & 1 & 13 & 62 & & 10 & 0.490 & 4172 & 25 & 2140 & 18 \\\hline
+Marble Track & 32558 & 47029 & \greencheck & \redX & 106 & 1 & 4 & 117 & & 10 & 5.460 & 7594 & 50 & 3946 & 18 \\\hline
+Maze & 37191 & 40663 & \greencheck & \redX & 7000 & & & & & & 1.450 & 70674 & 684 & 3628 & 105 \\\hline
+Mech & 8732 & 15771 & \greencheck & \redX & 42 & 2 & & 5 & & 4 & 1.130 & 5618 & 29 & 2632 & 22 \\\hline
+Melon Pallet & 45016 & 45342 & \greencheck & \redX & 38 & & & & & & 6.015 & 9790 & 54 & 4900 & 23 \\\hline
+Militech Robot & 52373 & 29422 & \greencheck & \redX & 116 & & & 68 & & & 5.925 & 13050 & 66 & 5784 & 25 \\\hline
+Modular Fence Corner & 4642 & 3257 & \greencheck & \redX & 3 & & & 5 & & & 0.592 & 5240 & 13 & 1602 & 10 \\\hline
+Old Tree & 4226 & 4921 & \greencheck & \redX & 98 & 1 & & & & 1 & 0.476 & 6204 & 38 & 3079 & 15 \\\hline
+Pipe Wall & 1545 & 1791 & \greencheck & \redX & 44 & 31 & & 25 & & & 0.131 & 7564 & 70 & 1840 & 35 \\\hline
+Pipes & 1200 & 2154 & \greencheck & \redX & 21 & & & 22 & & 7 & 0.127 & 5666 & 27 & 3032 & 42 \\\hline
+Potted Plant & 4861 & 6830 & \greencheck & \redX & 57 & 2 & & 8 & & 5 & 0.535 & 10560 & 70 & 4600 & 46 \\\hline
+Raspberry Plant & 487445 & 427594 & \greencheck & \redX & 245 & 3 & & 5 & & 1 & 135.427 & 8724 & 76 & 9640 & 34 \\\hline
+Road & 306 & 522 & \greencheck & \redX & 5 & & & & & & 0.044 & 132 & 1 & 66 & 6 \\\hline
+Rope Bridge & 7256 & 7624 & \greencheck & \redX & 132 & 40 & 16 & 170 & & & 0.515 & 12254 & 279 & 2376 & 27 \\\hline
+Shinto Watchtower & 131367 & 134770 & \redX & \redX & 1387 & 1 & 80 & 1 & & 11 & 16.909 & 12968 & 122 & 12408 & 75 \\\hline
+Shirakawago House & 15965 & 21329 & \greencheck & \redX & 1299 & 11 & 2 & 80 & & & 1.487 & 11424 & 100 & 3009 & 41 \\\hline
+Snowflake Orb & 77418 & 38395 & \greencheck & \greencheck & 1273 & & & 156 & & 66 & 7.822 & 22768 & 78 & 39433 & 39 \\\hline
+Sony Pc & 15512 & 24533 & \greencheck & \redX & 171 & 6 & & 42 & & 5 & 2.341 & 3440 & 30 & 3864 & 18 \\\hline
+Space Fighter & 34965 & 55060 & \greencheck & \redX & 158 & & 4 & 23 & & & 8.472 & 4512 & 16 & 5593 & 39 \\\hline
+Spacestation V3 & 35488 & 89668 & \greencheck & \redX & 1667 & 8 & 91 & 181 & & & 3.808 & 6170 & 165 & 2132 & 28 \\\hline
+Speeder Bike & 11926 & 15152 & \greencheck & \redX & 239 & 1 & 3 & 20 & & 20 & 1.305 & 3924 & 20 & 6096 & 42 \\\hline
+Spider Tank & 106464 & 204581 & \greencheck & \redX & 244 & 11 & 3 & 125 & & 2 & 15.844 & 7560 & 41 & 4104 & 19 \\\hline
+Spiral Staircase & 6358 & 7437 & \redX & \redX & 24 & 40 & & & & 16 & 0.861 & 3556 & 35 & 4502 & 30 \\\hline
+Guard Rail & 14744 & 14559 & \greencheck & \redX & 16 & 13 & & 11 & & & 1.985 & 2428 & 29 & 2836 & 14 \\\hline
+Table & 66 & 154 & \greencheck & \redX & 11 & & & & & & 0.005 & 1210 & 11 & 266 & 12 \\\hline
+Tank & 15306 & 21338 & \greencheck & \redX & 16 & & & 7 & & & 2.636 & 4784 & 19 & 3672 & 17 \\\hline
+Teacup & 1465 & 2360 & \greencheck & \redX & 117 & & & 3 & & & 0.076 & 10670 & 37 & 3554 & 39 \\\hline
+Training Dummy & 20816 & 17483 & \greencheck & \redX & 8 & & & 19 & & & 2.981 & 4586 & 14 & 4108 & 17 \\\hline
+Turtle Castle & 378627 & 405918 & \greencheck & \redX & 384 & 1 & & 56 & & 6 & 64.410 & 7852 & 49 & 7942 & 24 \\\hline
+Robot Vera & 47790 & 66243 & \greencheck & \redX & 138 & & 12 & 146 & & & 5.829 & 9774 & 46 & 7874 & 24 \\\hline
+War Tank & 18477 & 26601 & \redX & \redX & 57 & 3 & & 5 & & & 2.474 & 7992 & 98 & 2236 & 29 \\\hline
+Wat Benchamabophit & 999956 & 1115136 & \greencheck & \redX & 1621 & 17 & 6 & 54 & & 8 & 178.146 & 6376 & 56 & 6096 & 44 \\\hline
+White Headed Vulture & 115998 & 65304 & \greencheck & \redX & 198 & & & & & 2 & 16.866 & 4006 & 15 & 6488 & 18 \\\hline
+Yeahright & 377344 & 377084 & \greencheck & \greencheck & 761 & 13 & 4 & 22 & & & 70.787 & 4860 & 47 & 38432 & 30 \\\hline\end{tabular}
+\caption{Primitive counts of our approach on our dataset from Sketchfab, compared to CoACD~\cite{coacd} and V-HACD~\cite{vhacd}. Empty cells indicate 0. Non-manifoldness indicates if there are any non-manifold edges, and (WT) watertightness indicates if there are no boundary edges. Convex primitive decomposition's output varies heavily with the structure of the input mesh, sometimes favoring one kind of primitive over others. \label{tab:complete_results}}
+\end{table*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p016"
+  section="Additional Results"
+  original="Primitive counts of our approach on our dataset from Sketchfab, compared to CoACD [coacd] and V-HACD [vhacd]. Empty cells indicate 0. Non-manifoldness indicates if there are any non-manifold edges, and (WT) watertightness indicates if there are no boundary edges. Convex primitive decomposition's output varies heavily with the structure of the input mesh, sometimes favoring one kind of primitive over others."
+  translation="我们的方法在来自 Sketchfab 的数据集上的 primitive counts，并与 CoACD [coacd] 和 V-HACD [vhacd] 比较。空单元格表示 0。Non-manifoldness 表示是否存在任何非流形边，(WT) watertightness 表示是否没有边界边。Convex primitive decomposition 的输出会随输入网格的结构显著变化，有时会偏向某一种 primitive 而不是其他 primitives。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l006" label="Additional Results / table* / additional-results-l006">
+
+```latex
+\begin{table*}
+\centering
+\scriptsize
+\begin{tabular}{|c||c|c||c|c||c|c|}
+\hline
+1-way (New $\rightarrow$ Input) Dist.$^\downarrow$ & \multicolumn{2}{c||}{Ours} & \multicolumn{2}{c||}{CoACD} & \multicolumn{2}{c|}{V-HACD} \\\hline
+Name & Hausdorff & Chamfer & Hausdorff & Chamfer & Hausdorff & Chamfer \\\hline\hline
+Armadillo & 0.10065 & 0.01314 & 0.08252 & 0.01008 & \textbf{0.07888} & \textbf{0.00848} \\\hline
+Armored Charizard & \textbf{0.01523} & \textbf{0.00071} & 0.07099 & 0.01056 & 0.07472 & 0.01009 \\\hline
+Bell & 0.06347 & 0.01062 & \textbf{0.03188} & \textbf{0.00663} & 0.09992 & 0.01308 \\\hline
+Bicycle & \textbf{0.01196} & \textbf{0.00221} & 0.03536 & 0.00935 & 0.04943 & 0.00718 \\\hline
+Canon At1 & 0.12554 & 0.02809 & \textbf{0.12344} & 0.01619 & 0.12567 & \textbf{0.01438} \\\hline
+Cardboard Boxes & \textbf{0.01531} & \textbf{0.00236} & 0.03449 & 0.00758 & 0.05353 & 0.00563 \\\hline
+Casio Keyboard & \textbf{0.01388} & \textbf{0.00296} & 0.02015 & 0.00997 & 0.04523 & 0.00490 \\\hline
+Chimney Pipe & 0.13351 & 0.02427 & \textbf{0.08515} & 0.01136 & 0.08925 & \textbf{0.00826} \\\hline
+Chitinous Knight & 0.07392 & 0.01502 & \textbf{0.06393} & 0.01201 & 0.06716 & \textbf{0.00719} \\\hline
+Chuo House & 0.10229 & \textbf{0.00340} & \textbf{0.08021} & 0.01410 & 0.08105 & 0.01114 \\\hline
+Church Organ & \textbf{0.03531} & 0.00746 & 0.03630 & 0.00946 & 0.03745 & \textbf{0.00493} \\\hline
+Cinema Scan & 0.07168 & \textbf{0.00214} & \textbf{0.03566} & 0.00906 & 0.05282 & 0.00793 \\\hline
+Cube & \textbf{0.00260} & \textbf{0.00025} & 0.02967 & 0.00810 & 0.04041 & 0.00707 \\\hline
+Cyberpunk Atm & \textbf{0.04043} & \textbf{0.00746} & 0.07036 & 0.01175 & 0.05880 & 0.00847 \\\hline
+Cyberpunk Bike & 0.07587 & 0.01264 & \textbf{0.03430} & 0.00912 & 0.04883 & \textbf{0.00599} \\\hline
+Dojo & 0.11107 & 0.01811 & \textbf{0.03127} & 0.00792 & 0.09150 & \textbf{0.00762} \\\hline
+Dungeon Level (Precise) & \textbf{0.00570} & \textbf{0.00294} & 0.01758 & 0.00548 & 0.05483 & 0.00483 \\\hline
+Espresso Machine & \textbf{0.02850} & \textbf{0.00691} & 0.07415 & 0.01195 & 0.06583 & 0.01048 \\\hline
+Fantasy Asian House & 0.06878 & \textbf{0.00547} & 0.05872 & 0.01137 & \textbf{0.05344} & 0.00748 \\\hline
+Fps-Hands & \textbf{0.01239} & \textbf{0.00383} & 0.03822 & 0.00944 & 0.04366 & 0.00614 \\\hline
+Fractal & \textbf{0.00003} & \textbf{0.00003} & 0.02123 & 0.00506 & 0.03494 & 0.00619 \\\hline
+French Halfbasket & \textbf{0.00596} & \textbf{0.00065} & 0.03245 & 0.00838 & 0.01955 & 0.00204 \\\hline
+Greek Vase & \textbf{0.00669} & \textbf{0.00176} & 0.03433 & 0.00998 & 0.11744 & 0.01602 \\\hline
+Gun & \textbf{0.03779} & \textbf{0.00673} & 0.05785 & 0.01105 & 0.05903 & 0.00723 \\\hline
+Hover Bike & \textbf{0.05884} & \textbf{0.00960} & 0.06923 & 0.01254 & 0.07398 & 0.01110 \\\hline
+Jpn Corridor & \textbf{0.00770} & \textbf{0.00003} & 0.02189 & 0.00832 & 0.12483 & 0.00890 \\\hline
+Jpn House & 0.09144 & 0.02295 & \textbf{0.03314} & 0.00817 & 0.25382 & \textbf{0.00716} \\\hline
+Jpn House 2 & \textbf{0.01592} & \textbf{0.00195} & 0.03046 & 0.00715 & 0.03925 & 0.00452 \\\hline
+Jpn House 3 & \textbf{0.01791} & \textbf{0.00021} & 0.12074 & 0.01888 & 0.12718 & 0.01599 \\\hline
+Jpn Paddle Crab & \textbf{0.02933} & \textbf{0.00562} & 0.07334 & 0.00910 & 0.08255 & 0.00969 \\\hline
+Shinto Shrine & 0.04818 & 0.00908 & \textbf{0.04068} & 0.00880 & 0.05948 & \textbf{0.00786} \\\hline
+Kagiya Edo Tokyo & \textbf{0.00642} & \textbf{0.00176} & 0.10794 & 0.02253 & 0.10737 & 0.01558 \\\hline
+Lantern & 0.11232 & 0.01439 & \textbf{0.10980} & 0.01612 & 0.11202 & \textbf{0.01331} \\\hline
+Lekythos & \textbf{0.04035} & 0.00738 & 0.04216 & 0.01160 & 0.06151 & \textbf{0.00709} \\\hline
+Lethe & 0.07164 & \textbf{0.00751} & \textbf{0.04467} & 0.00822 & 0.09024 & 0.00923 \\\hline
+Marble Track & \textbf{0.01486} & \textbf{0.00053} & 0.02851 & 0.00630 & 0.10007 & 0.00621 \\\hline
+Maze & \textbf{0.00057} & \textbf{0.00043} & 0.00701 & 0.00247 & 0.01625 & 0.00194 \\\hline
+Mech & 0.08841 & 0.01407 & 0.06509 & 0.00984 & \textbf{0.05552} & \textbf{0.00670} \\\hline
+Melon Pallet & \textbf{0.01604} & \textbf{0.00334} & 0.05276 & 0.00656 & 0.05174 & 0.00426 \\\hline
+Militech Robot & \textbf{0.00808} & \textbf{0.00221} & 0.04393 & 0.00707 & 0.05294 & 0.00760 \\\hline
+Modular Fence Corner & 0.25632 & 0.02719 & \textbf{0.02813} & 0.00839 & 0.06559 & \textbf{0.00594} \\\hline
+Old Tree & 0.08825 & 0.00616 & \textbf{0.03537} & \textbf{0.00410} & 0.06434 & 0.01040 \\\hline
+Pipe Wall & \textbf{0.00977} & \textbf{0.00240} & 0.03148 & 0.00733 & 0.05593 & 0.00590 \\\hline
+Pipes & \textbf{0.01968} & 0.00718 & 0.03984 & 0.00967 & 0.04104 & \textbf{0.00656} \\\hline
+Potted Plant & 0.05526 & 0.01271 & \textbf{0.05503} & \textbf{0.01049} & 0.08425 & 0.01146 \\\hline
+Raspberry Plant & 0.06606 & \textbf{0.00817} & \textbf{0.03220} & 0.00833 & 0.04783 & 0.00877 \\\hline
+Road & \textbf{0.00153} & 0.00066 & 0.01749 & 0.01075 & 0.00344 & \textbf{0.00006} \\\hline
+Rope Bridge & 0.05778 & 0.01795 & \textbf{0.01827} & 0.00678 & 0.03575 & \textbf{0.00648} \\\hline
+Shinto Watchtower & \textbf{0.03843} & 0.00958 & 0.03871 & 0.00944 & 0.05066 & \textbf{0.00851} \\\hline
+Shirakawago House & \textbf{0.06299} & \textbf{0.00490} & 0.12086 & 0.01269 & 0.12261 & 0.01411 \\\hline
+Snowflake Orb & \textbf{0.01533} & \textbf{0.00449} & 0.02962 & 0.00795 & 0.03527 & 0.00569 \\\hline
+Sony Pc & 0.05983 & \textbf{0.00839} & \textbf{0.04663} & 0.01307 & 0.11451 & 0.01695 \\\hline
+Space Fighter & 0.04089 & 0.00609 & 0.03990 & 0.00673 & \textbf{0.03338} & \textbf{0.00309} \\\hline
+Spacestation V3 & \textbf{0.02719} & \textbf{0.00248} & 0.02855 & 0.00641 & 0.11113 & 0.03307 \\\hline
+Speeder Bike & \textbf{0.05146} & 0.00897 & 0.05253 & 0.00956 & 0.05333 & \textbf{0.00728} \\\hline
+Spider Tank & \textbf{0.00962} & \textbf{0.00192} & 0.03645 & 0.00769 & 0.05948 & 0.00760 \\\hline
+Spiral Staircase & 0.13282 & 0.01846 & \textbf{0.03745} & 0.00972 & 0.05840 & \textbf{0.00797} \\\hline
+Guard Rail & \textbf{0.00502} & \textbf{0.00173} & 0.03474 & 0.00778 & 0.04421 & 0.00988 \\\hline
+Table & \textbf{0.00207} & \textbf{0.00098} & 0.03840 & 0.01053 & 0.03449 & 0.00234 \\\hline
+Tank & \textbf{0.02078} & \textbf{0.00533} & 0.16587 & 0.02053 & 0.16880 & 0.02079 \\\hline
+Teacup & \textbf{0.01361} & \textbf{0.00415} & 0.03497 & 0.00972 & 0.08308 & 0.00593 \\\hline
+Training Dummy & \textbf{0.03855} & 0.01072 & 0.09124 & 0.01129 & 0.05419 & \textbf{0.00929} \\\hline
+Turtle Castle & \textbf{0.05321} & \textbf{0.00784} & 0.09978 & 0.01941 & 0.10281 & 0.01814 \\\hline
+Robot Vera & \textbf{0.01120} & \textbf{0.00115} & 0.03402 & 0.00710 & 0.04165 & 0.00605 \\\hline
+War Tank & 0.04930 & 0.00802 & \textbf{0.04800} & 0.00721 & 0.05458 & \textbf{0.00662} \\\hline
+Wat Benchamabophit & \textbf{0.01643} & \textbf{0.00196} & 0.03528 & 0.00801 & 0.08985 & 0.00699 \\\hline
+White Headed Vulture & \textbf{0.03381} & \textbf{0.00180} & 0.09739 & 0.01401 & 0.09997 & 0.01310 \\\hline
+Yeahright & \textbf{0.00333} & \textbf{0.00092} & 0.03685 & 0.00939 & 0.06662 & 0.01072 \\\hline
+\end{tabular}
+\caption{\label{tab:distance_comparison} Full set of comparisons of our approach on our dataset. Convex primitive decomposition is on average closer to the input mesh than CoACD~\cite{coacd} and V-HACD~\cite{vhacd} on both the chamfer and hausdorff distance. Distances are normalized as $\frac{\text{Hausdorff\slash Chamfer New $\rightarrow$ Input}}{\lVert\text{Bounding Box Diag}\rVert_2}$.
+}
+\end{table*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p017"
+  section="Additional Results"
+  original="Full set of comparisons of our approach on our dataset. Convex primitive decomposition is on average closer to the input mesh than CoACD [coacd] and V-HACD [vhacd] on both the chamfer and hausdorff distance. Distances are normalized as $\frac{\text{Hausdorff/ Chamfer New $\rightarrow$ Input}}{\lVert\text{Bounding Box Diag}\rVert_2}$."
+  translation="我们的方法在我们数据集上的完整比较。对于 chamfer distance 和 hausdorff distance，convex primitive decomposition 平均而言都比 CoACD [coacd] 和 V-HACD [vhacd] 更接近输入网格。距离按 $\frac{\text{Hausdorff/ Chamfer New $\rightarrow$ Input}}{\lVert\text{Bounding Box Diag}\rVert_2}$ 归一化。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l007" label="Additional Results / table* / additional-results-l007">
+
+```latex
+\begin{table*}
+\centering
+\scriptsize
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+Model Name & \multicolumn{2}{c|}{Ours} & \multicolumn{3}{c|}{CoACD} & \multicolumn{3}{c|}{V-HACD} \\\hline
+ & Floats & Total & Floats & Ints & Total & Floats & Ints & Total \\\cline{0-1}\cline{4-5}\cline{7-8}
+Bytes Used & 4 & Bytes & 4 & 2 & Bytes & 4 & 2 & Bytes \\\hline\hline
+Armadillo & 1989 & \textbf{ 7956 } & 14592 & 28896 & 116160 & 17835 & 33825 & 138990 \\\hline
+Armored Charizard & 1876 & \textbf{ 7504 } & 11001 & 21510 & 87024 & 3810 & 7206 & 29652 \\\hline
+Bell & 512 & \textbf{ 2048 } & 17697 & 34638 & 140064 & 9726 & 18594 & 76092 \\\hline
+Bicycle & 914 & \textbf{ 3656 } & 7536 & 14712 & 59568 & 14268 & 27318 & 111708 \\\hline
+Canon At1 & 108 & \textbf{ 432 } & 11394 & 22452 & 90480 & 4959 & 9522 & 38880 \\\hline
+Cardboard Boxes & 450 & \textbf{ 1800 } & 8742 & 16704 & 68376 & 987 & 1488 & 6924 \\\hline
+Casio Keyboard & 160 & \textbf{ 640 } & 666 & 1320 & 5304 & 1065 & 1974 & 8208 \\\hline
+Chimney Pipe & 48 & \textbf{ 192 } & 8193 & 16062 & 64896 & 3813 & 7002 & 29256 \\\hline
+Chitinous Knight & 484 & \textbf{ 1936 } & 6570 & 12948 & 52176 & 20706 & 39057 & 160938 \\\hline
+Chuo House & 10652 & 42608 & 4971 & 9594 & \textbf{ 39072 } & 8142 & 15600 & 63768 \\\hline
+Church Organ & 1536 & \textbf{ 6144 } & 8649 & 16650 & 67896 & 5019 & 9366 & 38808 \\\hline
+Cinema Scan & 4931 & \textbf{ 19724 } & 13098 & 25152 & 102696 & 9882 & 18090 & 75708 \\\hline
+Cube & 1545 & \textbf{ 6180 } & 11451 & 21858 & 89520 & 11013 & 21228 & 86508 \\\hline
+Cyberpunk Atm & 798 & \textbf{ 3192 } & 6018 & 11736 & 47544 & 2346 & 4374 & 18132 \\\hline
+Cyberpunk Bike & 500 & \textbf{ 2000 } & 7011 & 13842 & 55728 & 15357 & 28878 & 119184 \\\hline
+Dojo & 4807 & \textbf{ 19228 } & 15693 & 29598 & 121968 & 3894 & 7062 & 29700 \\\hline
+Dungeon (Precise) & 5383 & 21532 & 11016 & 20952 & 85968 & 2127 & 3894 & \textbf{ 16296 } \\\hline
+Espresso Machine & 1423 & \textbf{ 5692 } & 16875 & 32634 & 132768 & 7389 & 14004 & 57564 \\\hline
+Fantasy Asian House & 39250 & 157000 & 5490 & 10644 & \textbf{ 43248 } & 16524 & 32820 & 131736 \\\hline
+Fps-Hands & 1485 & \textbf{ 5940 } & 3780 & 7416 & 29952 & 3813 & 7320 & 29892 \\\hline
+Fractal & 54340 & 217360 & 86478 & 159444 & 664800 & 4845 & 9030 & \textbf{ 37440 } \\\hline
+French Halfbasket & 2891 & 11564 & 912 & 1788 & \textbf{ 7224 } & 16737 & 30546 & 128040 \\\hline
+Greek Vase & 3790 & \textbf{ 15160 } & 28308 & 55872 & 224976 & 19779 & 38370 & 155856 \\\hline
+Gun & 1299 & \textbf{ 5196 } & 5133 & 10062 & 40656 & 3627 & 6924 & 28356 \\\hline
+Hover Bike & 702 & \textbf{ 2808 } & 5982 & 11772 & 47472 & 4491 & 8550 & 35064 \\\hline
+Jpn Corridor & 330 & \textbf{ 1320 } & 7335 & 14262 & 57864 & 936 & 1626 & 6996 \\\hline
+Jpn House & 9005 & \textbf{ 36020 } & 9948 & 18996 & 77784 & 6360 & 12030 & 49500 \\\hline
+Jpn House 2 & 4119 & \textbf{ 16476 } & 6048 & 11628 & 47448 & 3552 & 6552 & 27312 \\\hline
+Jpn House 3 & 6490 & 25960 & 3033 & 5910 & 23952 & 2316 & 4212 & \textbf{ 17688 } \\\hline
+Jpn Paddle Crab & 11591 & \textbf{ 46364 } & 17610 & 34452 & 139344 & 27912 & 49737 & 211122 \\\hline
+Shinto Shrine & 1092 & \textbf{ 4368 } & 11088 & 21348 & 87048 & 3660 & 6810 & 28260 \\\hline
+Kagiya Edo Tokyo & 8345 & 33380 & 1674 & 3264 & 13224 & 1068 & 1956 & \textbf{ 8184 } \\\hline
+Lantern & 256 & \textbf{ 1024 } & 1104 & 2148 & 8712 & 636 & 1176 & 4896 \\\hline
+Lekythos & 1198 & \textbf{ 4792 } & 13824 & 27168 & 109632 & 5598 & 10494 & 43380 \\\hline
+Lethe & 1723 & \textbf{ 6892 } & 6408 & 12516 & 50664 & 3420 & 6420 & 26520 \\\hline
+Marble Track & 2012 & \textbf{ 8048 } & 11691 & 22782 & 92328 & 6438 & 11838 & 49428 \\\hline
+Maze & 70000 & 280000 & 330 & 212022 & 425364 & 6105 & 10884 & \textbf{ 46188 } \\\hline
+Mech & 513 & \textbf{ 2052 } & 8601 & 16854 & 68112 & 4185 & 7896 & 32532 \\\hline
+Melon Pallet & 380 & \textbf{ 1520 } & 15009 & 29370 & 118776 & 8127 & 14700 & 61908 \\\hline
+Militech Robot & 1636 & \textbf{ 6544 } & 19971 & 39150 & 158184 & 9144 & 17352 & 71280 \\\hline
+Modular Fence Corner & 65 & \textbf{ 260 } & 7938 & 15720 & 63192 & 2472 & 4806 & 19500 \\\hline
+Old Tree & 998 & \textbf{ 3992 } & 9534 & 18612 & 75360 & 4878 & 9237 & 37986 \\\hline
+Pipes & 441 & \textbf{ 1764 } & 8661 & 16998 & 68640 & 4872 & 9096 & 37680 \\\hline
+Pipe Wall & 832 & \textbf{ 3328 } & 11766 & 22692 & 92448 & 3069 & 5520 & 23316 \\\hline
+Potted Plant & 695 & \textbf{ 2780 } & 16260 & 31680 & 128400 & 7437 & 13800 & 57348 \\\hline
+Raspberry Plant & 2517 & \textbf{ 10068 } & 13542 & 26172 & 106512 & 16023 & 28920 & 121932 \\\hline
+Road & 50 & \textbf{ 200 } & 204 & 396 & 1608 & 135 & 198 & 936 \\\hline
+Rope Bridge & 2854 & \textbf{ 11416 } & 20055 & 36762 & 153744 & 3891 & 7128 & 29820 \\\hline
+Shinto Watchtower & 14325 & \textbf{ 57300 } & 20184 & 38904 & 158544 & 19698 & 37224 & 153240 \\\hline
+Shirakawago House & 13635 & 54540 & 17736 & 34272 & 139488 & 4854 & 9027 & \textbf{ 37470 } \\\hline
+Snowflake Orb & 14548 & \textbf{ 58192 } & 34620 & 68304 & 275088 & 67422 & 118299 & 506286 \\\hline
+Sony Pc & 2101 & \textbf{ 8404 } & 5340 & 10320 & 42000 & 6336 & 11592 & 48528 \\\hline
+Spacestation V3 & 18357 & 73428 & 10245 & 18510 & 78000 & 3432 & 6396 & \textbf{ 26520 } \\\hline
+Space Fighter & 1757 & \textbf{ 7028 } & 6864 & 13536 & 54528 & 8802 & 16779 & 68766 \\\hline
+Speeder Bike & 2769 & \textbf{ 11076 } & 6006 & 11772 & 47568 & 9642 & 18288 & 75144 \\\hline
+Spider Tank & 3426 & \textbf{ 13704 } & 11586 & 22680 & 91704 & 6510 & 12312 & 50664 \\\hline
+Spiral Staircase & 696 & \textbf{ 2784 } & 5544 & 10668 & 43512 & 7110 & 13506 & 55452 \\\hline
+Guard Rail & 328 & \textbf{ 1312 } & 3816 & 7284 & 29832 & 4473 & 8508 & 34908 \\\hline
+Table & 110 & \textbf{ 440 } & 1881 & 3630 & 14784 & 471 & 798 & 3480 \\\hline
+Tank & 209 & \textbf{ 836 } & 7290 & 14352 & 57864 & 5781 & 11016 & 45156 \\\hline
+Teacup & 1191 & \textbf{ 4764 } & 16227 & 32010 & 128928 & 5676 & 10662 & 44028 \\\hline
+Training Dummy & 213 & \textbf{ 852 } & 6963 & 13758 & 55368 & 6375 & 12324 & 50148 \\\hline
+Turtle Castle & 4305 & \textbf{ 17220 } & 12072 & 23556 & 95400 & 12660 & 23826 & 98292 \\\hline
+Robot Vera & 2450 & \textbf{ 9800 } & 14937 & 29322 & 118392 & 12339 & 23622 & 96600 \\\hline
+War Tank & 626 & \textbf{ 2504 } & 12576 & 23976 & 98256 & 3564 & 6708 & 27672 \\\hline
+Wat Benchamabophit & 16819 & \textbf{ 67276 } & 9900 & 19128 & 77856 & 9624 & 18288 & 75072 \\\hline
+White Headed Vulture & 2002 & \textbf{ 8008 } & 6099 & 12018 & 48432 & 10590 & 19464 & 81288 \\\hline
+Yeahright & 7871 & \textbf{ 31484 } & 7572 & 14580 & 59448 & 59139 & 115296 & 467148 \\\hline
+\end{tabular}
+\caption{\label{tab:raw-memory-cost} Comparison of memory cost for each model in our dataset, measured in bytes. Our approach on whole uses less memory than the other approaches. For floats, we treat them as 4 bytes (single-precision \texttt{float} in C), and for integers we treat them as unsigned 2 byte integers (\texttt{uint16\_t} in C), even though in some cases it would overflow.}
+\end{table*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p018"
+  section="Additional Results"
+  original="Comparison of memory cost for each model in our dataset, measured in bytes. Our approach on whole uses less memory than the other approaches. For floats, we treat them as 4 bytes (single-precision float in C), and for integers we treat them as unsigned 2 byte integers (uint16\_t in C), even though in some cases it would overflow."
+  translation="我们数据集中每个模型的 memory cost 比较，以字节计。整体而言，我们的方法比其他方法使用更少内存。对于浮点数，我们将其视为 4 字节（C 中的 single-precision float）；对于整数，我们将其视为无符号 2 字节整数（C 中的 uint16\_t），即使在某些情况下它会溢出。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l008" label="Additional Results / figure* / additional-results-l008">
+
+```latex
+\begin{figure*}
+    \centering
+    \begin{tabular}{c c}
+        \multicolumn{2}{c}{Frame Time$^\downarrow$  During Ball-Dropping Sim. of Ours, CoACD, V-HACD} \\
+        Similar Behavior for All Meshes & Ours Has Closer Behavior To Input \\
+
+        {\small Training Dummy (Vertex Merging Fig.~\ref{fig:ablate-vertex-merging})} &
+        {\small Shinto Watchtower (Fig.~\ref{fig:teaser})} \\
+        \includegraphics[width=0.49\linewidth]{plots/training_dummy_timings} &
+        \includegraphics[width=0.49\linewidth]{plots/shinto_watchtower} \\
+
+        {\small Cylindrical Water Tank (Fig.~\ref{fig:additional_comparisons})} & {\small Rope Bridge (Fig.~\ref{fig:additional_comparisons})} \\
+        \includegraphics[width=0.49\linewidth]{plots/sim-comp-tank} &
+        \includegraphics[width=0.49\linewidth]{plots/sim_comp_rope_bridge} \\
+
+        {\small Bell} &
+        {\small Table (Fig.~\ref{fig:additional_comparisons})} \\
+        \includegraphics[width=0.49\linewidth]{plots/sim_comp_bell} &
+        \includegraphics[width=0.49\linewidth]{plots/table_collision_timings} \\
+
+        {\small Canon AT1 Camera} &
+        {\small Cube (Precise) (Fig.~\ref{fig:cube_failure})} \\
+        \includegraphics[width=0.49\linewidth]{plots/sim_comp_canon_at1} &
+        \includegraphics[width=0.49\linewidth]{plots/sim_comp_cube2} \\
+
+        {\small War Tank} & {\small Spiral Staircase (Fig.~\ref{fig:additional_qualitative_results})} \\
+        \includegraphics[width=0.49\linewidth]{plots/war_tank_timings} &
+        \includegraphics[width=0.49\linewidth]{plots/spiral_staircase} \\
+    \end{tabular}
+
+    \caption{Comparison of frame duration for collision detection when dropping 5000 spheres on different meshes, where the left-column is meshes where the behavior of all colliders is relatively similar, and the right column is the performance when our collider has visually more similar performance to the input. In both cases, our approach has comparable or better performance than CoACD and V-HACD.}
+
+    \label{fig:additional-sim-times}
+    %\Description{A chart comparing the duration of each frame for collision detection, for our approach, CoACD and V-HACD. The three approaches are quite similar, our approach's peak is below CoACD and above V-HACD. The tail of our plot is noticeably lower.}
+    %\vspace{-1em}
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p019"
+  section="Additional Results"
+  original="Comparison of frame duration for collision detection when dropping 5000 spheres on different meshes, where the left-column is meshes where the behavior of all colliders is relatively similar, and the right column is the performance when our collider has visually more similar performance to the input. In both cases, our approach has comparable or better performance than CoACD and V-HACD."
+  translation="在不同网格上投放 5000 个球体进行 collision detection 时的 frame duration 比较，其中左列是所有 colliders 行为相对相似的网格，右列是我们 collider 的表现与输入在视觉上更相似时的性能。在两种情况下，我们的方法都具有与 CoACD 和 V-HACD 相当或更好的性能。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l009" label="Additional Results / figure* / additional-results-l009">
+
+```latex
+\begin{figure*}
+    \centering
+    \scriptsize
+    \begin{tabular}{c c}
+        \multicolumn{2}{c}{Frame Time$^\downarrow$  During Ball-Dropping Sim. of Ours, CoACD, V-HACD (All similar to Input)} \\
+        {\small Jpn Corridor, Ours = 35 Primitives, CoACD = 34 Hulls} &
+        {\small Espresso Machine, Ours = 178 Primitives, CoACD = 93 Hulls} \\
+        \includegraphics[width=0.45\linewidth]{plots/sim_comp_japanese_corridor_middle.pdf} &
+        \includegraphics[width=0.45\linewidth]{plots/sim_comp_espresso_machine} \\
+        {\small Melon Pallet, Ours = 38 Primitives, CoACD = 54 Hulls} &
+        {\small Jpn Paddle Crab, Fig.~\ref{fig:organic-meshes}, Ours = 1165 Primitives, CoACD = 64 Hulls} \\
+        \includegraphics[width=0.45\linewidth]{plots/sim_comp_melon_pallet.pdf} &
+        \includegraphics[width=0.45\linewidth]{plots/sim_comp_japanese_paddle_crab} \\
+        {\small Church Organ, Fig.~\ref{fig:additional_qualitative_results}, Ours = 180 Primitives, CoACD = 57} & {\small Space Fighter, Ours = 158 Primitives, CoACD = 16 Hulls} \\
+        \includegraphics[width=0.45\linewidth]{plots/sim_comp_church_organ.pdf} &
+        \includegraphics[width=0.45\linewidth]{plots/sim_comp_space_fighter.pdf} \\
+    \end{tabular}
+
+    \caption{Comparison of our approach against CoACD and V-HACD, considering the number of components in our approach versus CoACD. Our approach is always faster or equal to approximate convex decomposition, regardless of the number of components.}
+
+    \label{fig:sim-times-component-comparison}
+    %\Description{A chart comparing the duration of each frame for collision detection, for our approach, CoACD and V-HACD. The three approaches are quite similar, our approach's peak is below CoACD and above V-HACD. The tail of our plot is noticeably lower.}
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p020"
+  section="Additional Results"
+  original="Comparison of our approach against CoACD and V-HACD, considering the number of components in our approach versus CoACD. Our approach is always faster or equal to approximate convex decomposition, regardless of the number of components."
+  translation="我们的方法与 CoACD 和 V-HACD 的比较，同时考虑我们方法中的 component 数量与 CoACD 的 component 数量。无论 component 数量如何，我们的方法始终快于或等同于 approximate convex decomposition。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l010" label="Additional Results / figure* / additional-results-l010">
+
+```latex
+\begin{figure*}
+    \centering
+    \begin{tabular}{c c}
+    \frame{\includegraphics[width=0.38\linewidth]{assets/bistro_ref}} &
+    \frame{\includegraphics[width=0.38\linewidth]{assets/bistro_ours}} \\
+    |F| $= 570588$ & 2343 Boxes, 115 Capsules, 1343 Cylinders \\
+    \end{tabular}
+    \caption{An additional example of our approach on a dense, complex scene~\cite{ORCAAmazonBistro}. The entire scene is processed in one pass in under 2 minutes, and naturally decomposes objects into constituent parts. We use our approach to generate an initial decomposition, then automatically delete any extremely thin bounding boxes which have radius on any axis $\leq\num{1e-4}$. This postprocessing is included because around the placemats there are a number of frills which contribute a large number of primitives but have essentially 0 volume. Furthermore, many walls are entirely planar but may not be rectangular, leading to regions jutting out. Removing thin bounding boxes fixes both problems.
+    Green indicates bounding boxes, yellow for cylinders, and red for capsules.
+    \label{fig:bistro}}
+    %\Description{The inside of a restaurant, with set tables and a wine bar. Behind the bar are a number of bottles in shelves. The scene is decomposed into cylinders and boxes.}
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p021"
+  section="Additional Results"
+  original="An additional example of our approach on a dense, complex scene [ORCAAmazonBistro]. The entire scene is processed in one pass in under 2 minutes, and naturally decomposes objects into constituent parts. We use our approach to generate an initial decomposition, then automatically delete any extremely thin bounding boxes which have radius on any axis $\leq1e-4$. This postprocessing is included because around the placemats there are a number of frills which contribute a large number of primitives but have essentially 0 volume. Furthermore, many walls are entirely planar but may not be rectangular, leading to regions jutting out. Removing thin bounding boxes fixes both problems. Green indicates bounding boxes, yellow for cylinders, and red for capsules."
+  translation="我们的方法在一个密集复杂场景 [ORCAAmazonBistro] 上的更多示例。整个场景在一次处理中完成，用时不到 2 分钟，并自然地将对象分解为组成部分。我们使用我们的方法生成初始分解，然后自动删除任何极薄的 bounding boxes，这些 bounding boxes 在任一轴上的半径 $\leq1e-4$。加入这一后处理是因为餐垫周围有许多褶边，它们会贡献大量 primitives，但体积基本为 0。此外，许多墙面完全是平面的，但可能不是矩形，导致区域向外突出。删除薄 bounding boxes 可以修复这两个问题。绿色表示 bounding boxes，黄色表示圆柱体，红色表示 capsules。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l011" label="Additional Results / figure* / additional-results-l011">
+
+```latex
+\begin{figure*}
+    \centering
+    \setlength{\tabcolsep}{2pt}
+    \begin{tabular}{c c c c}
+        Input & Ours & Input & Ours \\
+        \includegraphics[width=0.2\linewidth]{assets/japanese_silver_tree_n_sericea_input} &
+        \includegraphics[width=0.2\linewidth]{assets/japanese_silver_tree_n_sericea} &
+        \includegraphics[width=0.2\linewidth]{assets/giant_hornet_input} &
+        \includegraphics[width=0.2\linewidth]{assets/giant_hornet} \\
+        |F| = 497084 & 288 Boxes, 8 Cap, 4 Cyl, 4 Sph & |F| = 375224 & 311 Boxes, 12 Cap, 5 Cyl, 3 Sph \\
+    \end{tabular}
+    \caption{We show our approach on organic meshes, which are not represented heavily in our dataset. Our approach is primarily designed for artist created meshes for games, but can capture coarse details on organic meshes. A larger number of primitives are used, as each primitive alone cannot capture curved surfaces well. For these models, we change weights so that spheres are 0.7, capsules are 0.85, and isosceles prisms are disallowed. The current approach for these kinds of mesh is manual creation, convex hulls, or coarse approximations. \cczero ffish.asia / floraZia.com.}
+    \label{fig:organic-meshes}
+    %\Description{Decomposition of a plant with some berries, and a giant hornet with our approach}
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p022"
+  section="Additional Results"
+  original="We show our approach on organic meshes, which are not represented heavily in our dataset. Our approach is primarily designed for artist created meshes for games, but can capture coarse details on organic meshes. A larger number of primitives are used, as each primitive alone cannot capture curved surfaces well. For these models, we change weights so that spheres are 0.7, capsules are 0.85, and isosceles prisms are disallowed. The current approach for these kinds of mesh is manual creation, convex hulls, or coarse approximations. License: ffish.asia / floraZia.com."
+  translation="我们展示了我们的方法在有机网格上的结果，这类网格在我们的数据集中占比不高。我们的方法主要为游戏中的艺术家创建网格而设计，但也能捕获有机网格上的粗略细节。这里使用了更多 primitives，因为单个 primitive 无法很好地捕获曲面。对于这些模型，我们调整权重，使球体为 0.7、capsules 为 0.85，并禁用 isosceles prisms。当前处理这类网格的方法是手工创建、convex hulls，或粗略近似。License: ffish.asia / floraZia.com."
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l012" label="Additional Results / figure* / additional-results-l012">
+
+```latex
+\begin{figure*}
+    \centering
+    \begin{minipage}[b]{0.5\textwidth}
+    \raggedleft
+    \begin{tabular}{c c}
+        \includegraphics[width=0.57\textwidth]{assets/yeahright_original} &
+        \includegraphics[width=0.57\textwidth]{assets/yeahright_ours} \\
+        Input (|F| = 377344) & \small 761 Boxes, 13 Cap, 22 Cyl, 4 Spheres \\
+    \end{tabular}
+
+    \caption{Our approach on a particularly challenging mesh, ``Yeahright''. Our approach can preserve thin structures and holes. \cczero Keenan Crane.}
+    \label{fig:yeahright}
+
+    %\Description{Our approach on an extremely abnormal mesh. The input mesh is a bulbous wireframe with a number of trypophobia inducing components.}
+    \end{minipage}
+    \hspace{6em}
+    \begin{minipage}[b]{0.3\textwidth}
+        \raggedright
+        \centering
+        \frame{\includegraphics[width=0.666\textwidth]{assets/training_dummies}}
+        \caption{Visualization of many training dummies from Fig.~\ref{fig:ablate-vertex-merging}, colliding inside of ``Jpn. Corridor Middle''.}
+    \end{minipage}
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p023"
+  section="Additional Results"
+  original="Our approach on a particularly challenging mesh, ``Yeahright''. Our approach can preserve thin structures and holes. License: Keenan Crane."
+  translation="我们的方法在一个特别具有挑战性的网格 ``Yeahright'' 上的结果。我们的方法可以保留细薄结构和孔洞。License: Keenan Crane."
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="additional-results-p024"
+  section="Additional Results"
+  original="Visualization of many training dummies from Fig. ref:fig:ablate-vertex-merging, colliding inside of ``Jpn. Corridor Middle''."
+  translation="Fig. ref:fig:ablate-vertex-merging 中许多训练假人在 ``Jpn. Corridor Middle'' 内发生碰撞的可视化。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<LatexBlock id="additional-results-l013" label="Additional Results / figure* / additional-results-l013">
+
+```latex
+\begin{figure*}
+    \centering
+    \setlength{\tabcolsep}{1pt}
+    \begin{tabular}{c c c c c c}
+        Input & Ours & V-HACD & Input & Ours & V-HACD \\
+
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_hornbug_input} &
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_hornbug} &
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_hornbug_vhacd} &
+
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_octopus_input} &
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_octopus} &
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_octopus_vhacd} \\
+
+        |F| = 1884 & 69 Boxes, 7 Cap, 6 Cyl, 8 Prism & 50 Hulls (|F| = 4272) &
+        |F| = 33872 & 48 Boxes, 14 Cap, 5 Cyl & 47 Hulls (|F| = 5606) \\
+        \multicolumn{3}{c}{\includegraphics[width=0.45\linewidth]{plots/vhacd_hornbug.pdf}} &
+        \multicolumn{3}{c}{\includegraphics[width=0.45\linewidth]{plots/vhacd_octopus.pdf}} \\
+
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_torus_input} &
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_torus} &
+        \includegraphics[width=0.14\linewidth]{assets/vhacd_torus_vhacd} &
+
+        \includegraphics[width=0.15\linewidth]{assets/vhacd_crank_input} &
+        \includegraphics[width=0.15\linewidth]{assets/vhacd_crank} &
+        \includegraphics[width=0.15\linewidth]{assets/vhacd_crank_vhacd} \\
+        |F| = 576 & 54 Boxes, 1 Prism & 21 Hulls (|F| = 2340) &
+        |F| = 100028 & 11 Boxes, 3 Cyl, 2 Prism & 72 Hulls (|F| = 8812)
+        \\
+        \multicolumn{3}{c}{\includegraphics[width=0.45\linewidth]{plots/vhacd_torus.pdf}} &
+        \multicolumn{3}{c}{\includegraphics[width=0.45\linewidth]{plots/vhacd_crank.pdf}} \\
+    \end{tabular}
+    \caption{\label{fig:vhacd-data-comp} Comparison of our approach to V-HACD~\cite{vhacd} on a few models from their dataset. Our approach's decomposition often breaks up the input mesh in similar positions to V-HACD, while improving collision performance.}
+    %\Description{Top-Left: Torus, Top-Right: Dancing Ballerina, Bottom-Left: Hornbug, Bottom-Right: Octopus. Ours is shown decomposed into mostly green boxes, V-HACD is decomposed into multicolor components.}
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="additional-results-p025"
+  section="Additional Results"
+  original="Comparison of our approach to V-HACD [vhacd] on a few models from their dataset. Our approach's decomposition often breaks up the input mesh in similar positions to V-HACD, while improving collision performance."
+  translation="在 V-HACD 数据集 [vhacd] 的几个模型上，我们的方法与 V-HACD [vhacd] 的比较。我们方法的分解通常会在与 V-HACD 相似的位置切分输入网格，同时提升碰撞性能。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>

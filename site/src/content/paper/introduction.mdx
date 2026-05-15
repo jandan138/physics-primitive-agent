@@ -1,0 +1,126 @@
+---
+title: "Introduction"
+slug: "introduction"
+---
+import PaperBlock from "../../components/PaperBlock.astro";
+import LatexBlock from "../../components/LatexBlock.astro";
+
+# Introduction
+
+<LatexBlock id="introduction-l001" label="Introduction / figure* / introduction-l001">
+
+```latex
+\begin{figure*}
+\centering
+\setlength{\tabcolsep}{1pt}
+\renewcommand{\arraystretch}{0.81}
+\begin{tabular}{c c c c}
+    Input & Ours & CoACD{\tiny \cite{coacd}} & V-HACD{\tiny \cite{vhacd}} \\
+    \includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_input_anim}
+    & \includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_anim}
+    & \includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_coacd_anim}
+    & \includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_vhacd_anim} \\
+
+    \frame{\includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_input_anim_inset}}
+    & \frame{\includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_anim_inset}}
+    & \frame{\includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_coacd_anim_inset}}
+    & \frame{\includegraphics[width=0.24\linewidth]{assets/shinto_watchtower_vhacd_anim_inset}} \\
+
+    $\frac{\text{Hausdorff/Chamfer New to Input}}{\lVert\text{Bounding Box Diag}\rVert_2}^\downarrow$ & $0.0384/\num{9.58e-3}$ & $0.0391/\num{9.42e-3}$ & $0.0507/\num{8.51e-3}$ \\
+    |F| = 264328 & \scriptsize 1387 Boxes, 80 Spheres, 1 Cap, 1 Cyl, 11 Prism  &  107 Hulls (|F| = 11812) & 75 Hulls (|F| = 12408) \\
+    \multicolumn{4}{c}{\includegraphics[width=0.8\linewidth]{plots/shinto_watchtower_long}}
+    \vspace{-0.8em} %\vspace{-1.5em}
+\end{tabular}
+\caption{\label{fig:teaser} Convex primitive decomposition on a complex non-manifold mesh with boundaries. Output primitives tightly adhere to the input, and is more efficient in simulation than convex hulls. To test performance, we drop spheres on each collider and measure frame times$^\downarrow$. Our approach has the closest simulation to the original mesh (i.e. balls in the stairwell), but with higher efficiency than CoACD or V-HACD shown in the plot, where x-axis indicates the frame number, y-axis indicates time taken. Green in our approach indicates a bounding box, yellow a cylinder, dark blue a trapezoidal prism, light blue a sphere, and red a capsule. For CoACD and V-HACD, colors are randomly assigned per convex component. Rendering artifacts on V-HACD are due to flipped faces. \ccby sin\_nass.}
+%\Description{A watchtower stylized as a Shinto temple, decomposed into convex primitives, compared against CoACD and V-HACD. The watchtower has a number of floors and has a staircase wrapping around it.}
+\vspace{-1.5em}
+\end{figure*}
+```
+
+</LatexBlock>
+
+<PaperBlock
+  id="introduction-p001"
+  section="Introduction"
+  original="Convex primitive decomposition on a complex non-manifold mesh with boundaries. Output primitives tightly adhere to the input, and is more efficient in simulation than convex hulls. To test performance, we drop spheres on each collider and measure frame times$^\downarrow$. Our approach has the closest simulation to the original mesh (i.e. balls in the stairwell), but with higher efficiency than CoACD or V-HACD shown in the plot, where x-axis indicates the frame number, y-axis indicates time taken. Green in our approach indicates a bounding box, yellow a cylinder, dark blue a trapezoidal prism, light blue a sphere, and red a capsule. For CoACD and V-HACD, colors are randomly assigned per convex component. Rendering artifacts on V-HACD are due to flipped faces. License: sin\_nass."
+  translation="在带边界的复杂非流形网格上进行凸基元分解。输出基元紧密贴合输入，并且在仿真中比凸包更高效。为测试性能，我们将球体落到每个碰撞体上并测量帧时间$^\downarrow$。我们的方法与原始网格的仿真最接近（例如楼梯间中的球），同时效率高于图中所示的 CoACD 或 V-HACD；其中 x 轴表示帧号，y 轴表示耗时。我们的方法中，绿色表示包围盒，黄色表示圆柱体，深蓝色表示梯形棱柱，浅蓝色表示球体，红色表示胶囊体。对于 CoACD 和 V-HACD，每个凸组件的颜色随机分配。V-HACD 上的渲染伪影来自翻转面。许可证：sin\_nass。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="caption"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+## Introduction
+
+<PaperBlock
+  id="introduction-p002"
+  section="Introduction"
+  original="Collision objects are an important component of 3D games, defining the interactions between the player and the world. The current flow for game developers and artists for constructing collider meshes can be slow and time-consuming, requiring manual placement of primitives such as capsules, boxes, and spheres, or construction of convex hulls and back-and-forth tuning of performance. Prior work in this area focuses on convex decomposition of input meshes [coacd, acd_polyhedra, vhacd,animated_decomp] into convex hulls, and there has not been much emphasis on fitting primitives such as boxes, capsules, and other convex primitives shapes to approximate an input mesh. On the other hand, support within physics engines such as PhysX [physx] for collision with primitives (boxes, capsules, spheres) is heavily optimized, and is considered faster than convex hulls. Because of this belief, artists will manually build colliders despite the effort required to do so, especially compared to the minimal effort required to use prior fully-automatic collider mesh generation approaches."
+  translation="碰撞对象是 3D 游戏的重要组成部分，用于定义玩家与世界之间的交互。当前游戏开发者和美术人员构建碰撞体网格的流程可能缓慢而耗时，需要手动放置胶囊体、盒体和球体等基元，或构建凸包并反复调优性能。该领域的既有工作主要关注将输入网格凸分解为凸包 [coacd, acd_polyhedra, vhacd,animated_decomp]，而较少强调拟合盒体、胶囊体以及其他凸基元形状来近似输入网格。另一方面，PhysX [physx] 等物理引擎内部对基元（盒体、胶囊体、球体）的碰撞支持经过高度优化，通常被认为快于凸包。正因为这种认识，尽管手动构建碰撞体需要付出大量工作，尤其是与既有全自动碰撞体网格生成方法的低使用成本相比，美术人员仍会手动构建碰撞体。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="introduction-p003"
+  section="Introduction"
+  original="Previous approaches for automatic collision object construction focus mostly on convex hull decomposition [coacd, vhacd, animated_decomp, nav_approx_acd] for static and animated meshes. These approaches generate approximately convex components for an input mesh based on concavity metrics which measure how concave each component is. Prior work generates a small number of convex components which look good at first glance, but suffer from a few practical problems. First, the decomposition may hide complexity that slows simulation, as each convex component can have an arbitrary number of faces and vertices. Second, decomposition is difficult to control, sometimes producing poor approximations in concave regions, filling holes in empty space, and cutting up planar surfaces. Finally, the output primitives are not similar to artist created colliders, due to reliance on plane cutting, asymmetry of output shapes, and overcomplexity of each component. While this final reason may not appear a problem, it prevents artists from easily modifying colliders using tools such as Blender [Blender] or Unreal Engine [UE5]. For these reasons, we diverge from the prior approach of approximate convex decomposition and focus instead on fitting a subset of parametric convex primitives to represent an input mesh, which can be easily manipulated with existing tools and closely matches artist's manual workflow."
+  translation="以往的自动碰撞对象构建方法主要关注静态和动画网格的凸包分解 [coacd, vhacd, animated_decomp, nav_approx_acd]。这些方法基于凹度指标为输入网格生成近似凸组件，其中凹度指标用于度量每个组件的凹陷程度。既有工作会生成少量初看效果不错的凸组件，但存在若干实际问题。首先，分解可能隐藏会拖慢仿真的复杂度，因为每个凸组件都可以具有任意数量的面和顶点。其次，分解难以控制，有时会在凹陷区域产生较差近似，填充空洞中的空白空间，并切碎平面表面。最后，由于依赖平面切割、输出形状不对称以及每个组件过于复杂，输出基元与美术人员创建的碰撞体并不相似。虽然最后一点可能看起来不是问题，但它会阻碍美术人员使用 Blender [Blender] 或 Unreal Engine [UE5] 等工具轻松修改碰撞体。基于这些原因，我们不同于既有的近似凸分解路线，转而专注于拟合一组参数化凸基元来表示输入网格；这些基元可用现有工具轻松操作，并且更接近美术人员的手工工作流。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="introduction-p004"
+  section="Introduction"
+  original="Our approach takes inspiration from Quadric Mesh Reduction [qem, qem_hoppe,qem_uv_texture] and Spherical Quadric Error Metrics [sqem, anim_sqem], with each mesh face representing a primitive. These primitives are then greedily combined together bottom-up, producing a simplified representation. This simplified representation, consisting of a set of primitives that cover the surface of an input mesh, is similar to Oriented Bounding Box Trees [obbtree], while allowing for more diversity in primitives."
+  translation="我们的方法受到 Quadric Mesh Reduction [qem, qem_hoppe,qem_uv_texture] 和 Spherical Quadric Error Metrics [sqem, anim_sqem] 的启发，其中每个网格面表示一个基元。随后这些基元以自底向上的方式贪心合并，得到简化表示。该简化表示由一组覆盖输入网格表面的基元组成，类似于 Oriented Bounding Box Trees [obbtree]，同时允许更丰富的基元类型。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="introduction-p005"
+  section="Introduction"
+  original="Our approach is efficient and can compute an arbitrary number of primitives for meshes that have millions of faces. The meshes produced are suitable for accurate and efficient collision detection, which we verify using an off-the-shelf collision simulation."
+  translation="我们的方法效率较高，能够为拥有数百万个面的网格计算任意数量的基元。生成的网格适合进行准确且高效的碰撞检测，我们使用现成的碰撞仿真对此进行了验证。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="introduction-p006"
+  section="Introduction"
+  original="We collect and test our approach on a dataset of models from Sketchfab [sketchfab], showing our approach is efficient and robust in practice. We compare our approach to prior approximate convex decomposition algorithms V-HACD [vhacd] and CoACD [coacd] on distance from the input mesh, complexity of output collider, and performance in downstream collision detection simulation."
+  translation="我们收集并在来自 Sketchfab [sketchfab] 的模型数据集上测试该方法，表明我们的方法在实践中高效且鲁棒。我们将方法与既有近似凸分解算法 V-HACD [vhacd] 和 CoACD [coacd] 进行比较，比较维度包括与输入网格的距离、输出碰撞体复杂度，以及下游碰撞检测仿真中的性能。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
+  id="introduction-p007"
+  section="Introduction"
+  original="In summary, we hope to demonstrate that convex primitive decomposition serves to fill the gap between research in creating efficient colliders and actual artistic modeling of collider meshes for rigid body simulation. Our tests validate that our approach is suitable for collision detection and more closely adheres to the input mesh than prior work while at the same time has reduced complexity and better performance."
+  translation="总之，我们希望证明，凸基元分解能够弥合高效碰撞体生成研究与刚体仿真中实际美术建模碰撞体网格之间的差距。我们的测试验证了该方法适用于碰撞检测，并且相比既有工作更紧密地贴合输入网格，同时降低复杂度并提升性能。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>

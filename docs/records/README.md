@@ -109,6 +109,12 @@ Proposed | In progress | Complete | Failed | Superseded
   `ellipsoid`, with bed and Franka declared as next-scope real USD assets.
 - [2026-05-15 Bed Franka Native Fitting Next Steps Docs](2026-05-15-bed-franka-native-fitting-next-steps-docs.md):
   documentation update that makes the next real-USD old/new comparison sequence explicit.
+- [2026-05-15 CPD Paper Companion MVP](2026-05-15-cpd-paper-companion-mvp.md):
+  Astro + MDX bilingual paper companion scaffold with source-paper claim namespacing and
+  permission-record-pending AI-assisted draft translation status.
+- [2026-05-15 CPD Full Text Import And Translation](2026-05-15-cpd-full-text-import-translation.md):
+  full-section CPD companion import with AI-assisted draft translations, gated source LaTeX
+  blocks, and `not_started` reproduction states.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

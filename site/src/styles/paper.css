@@ -1,0 +1,335 @@
+:root {
+  color-scheme: light;
+  --paper-bg: #f7f7f4;
+  --paper-surface: #ffffff;
+  --paper-text: #1f2933;
+  --paper-muted: #5f6b76;
+  --paper-border: #d9ddd7;
+  --paper-accent: #25636f;
+  --paper-draft: #8a5a00;
+  --paper-blocked: #8a2f2f;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: var(--paper-bg);
+  color: var(--paper-text);
+}
+
+.paper-shell {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.paper-nav {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  border-right: 1px solid var(--paper-border);
+  background: #eef1ed;
+  padding: 24px 18px;
+}
+
+.paper-nav a {
+  display: block;
+  color: var(--paper-text);
+  text-decoration: none;
+  padding: 7px 0;
+}
+
+.paper-nav a:focus-visible,
+.paper-nav a:hover,
+.paper-block__anchor:focus-visible,
+.paper-block__anchor:hover,
+.figure-panel__source:focus-visible,
+.figure-panel__source:hover {
+  color: var(--paper-accent);
+  text-decoration: underline;
+}
+
+.paper-nav__home {
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.paper-main {
+  max-width: 1080px;
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  padding: 40px 28px 80px;
+  box-sizing: border-box;
+}
+
+.paper-hero {
+  background: var(--paper-surface);
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.paper-hero h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 34px;
+  line-height: 1.2;
+  margin: 6px 0 12px;
+}
+
+.paper-kicker {
+  color: var(--paper-accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.paper-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 20px 0 0;
+}
+
+.paper-meta-grid div,
+.paper-section-link {
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  background: #fbfbf8;
+  padding: 12px;
+}
+
+.paper-meta-grid dt {
+  color: var(--paper-muted);
+  font-size: 12px;
+}
+
+.paper-meta-grid dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.paper-section-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.paper-section-link {
+  color: var(--paper-text);
+  display: grid;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.paper-section-link span {
+  font-weight: 700;
+}
+
+.paper-section-link small {
+  color: var(--paper-muted);
+}
+
+.paper-block,
+.figure-panel {
+  background: var(--paper-surface);
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.paper-block__meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.paper-block__anchor {
+  color: var(--paper-accent);
+  font-weight: 700;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.paper-block__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.status-badge {
+  border: 1px solid var(--paper-border);
+  border-radius: 999px;
+  color: var(--paper-muted);
+  font-size: 12px;
+  line-height: 1;
+  padding: 6px 8px;
+  white-space: nowrap;
+}
+
+.status-badge--draft {
+  border-color: #dfc06c;
+  color: var(--paper-draft);
+  background: #fff6dc;
+}
+
+.status-badge--partial {
+  border-color: #8db5bd;
+  color: var(--paper-accent);
+  background: #e7f4f6;
+}
+
+.status-badge--blocked {
+  border-color: #d4a1a1;
+  color: var(--paper-blocked);
+  background: #fff0f0;
+}
+
+.source-namespace-banner {
+  background: #eef7f7;
+  border: 1px solid #b7d7dc;
+  border-radius: 8px;
+  color: #244d57;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  padding: 14px 16px;
+}
+
+.paper-block__original {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.paper-block__translation {
+  border-left: 3px solid var(--paper-accent);
+  color: #263744;
+  font-size: 17px;
+  line-height: 1.85;
+  margin-top: 14px;
+  padding-left: 14px;
+}
+
+.paper-block__status {
+  color: var(--paper-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 12px;
+  overflow-wrap: anywhere;
+}
+
+.figure-panel__caption {
+  display: grid;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.figure-panel__caption span {
+  color: var(--paper-muted);
+}
+
+.figure-panel img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--paper-border);
+  border-radius: 6px;
+}
+
+.figure-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.figure-panel__source {
+  display: inline-block;
+  color: var(--paper-accent);
+  margin-top: 14px;
+}
+
+.figure-panel__pending {
+  color: var(--paper-muted);
+  margin: 14px 0 0;
+}
+
+.latex-block {
+  background: #f5f6f2;
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.latex-block__header {
+  align-items: center;
+  border-bottom: 1px solid var(--paper-border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  justify-content: space-between;
+  padding: 10px 14px;
+}
+
+.latex-block__header a {
+  color: var(--paper-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.latex-block__header span {
+  color: var(--paper-muted);
+  font-size: 12px;
+}
+
+.latex-block pre {
+  margin: 0;
+  max-height: 360px;
+  overflow: auto;
+  padding: 14px;
+}
+
+@media (max-width: 860px) {
+  .paper-shell {
+    display: block;
+  }
+
+  .paper-nav {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--paper-border);
+  }
+
+  .paper-main {
+    padding: 24px 16px 56px;
+  }
+
+  .paper-block,
+  .figure-panel {
+    padding: 16px;
+  }
+
+  .paper-block__meta {
+    display: block;
+  }
+
+  .paper-block__badges {
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .status-badge {
+    white-space: normal;
+  }
+}

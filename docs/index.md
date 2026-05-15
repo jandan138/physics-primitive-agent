@@ -99,6 +99,12 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
   opt-in synthetic native fitting comparison and bed/Franka next-scope declaration.
 - [Bed Franka native fitting next steps docs record](records/2026-05-15-bed-franka-native-fitting-next-steps-docs.md):
   documentation update that clarifies the next real-USD old/new comparison sequence.
+- [CPD paper companion MVP record](records/2026-05-15-cpd-paper-companion-mvp.md):
+  Astro + MDX bilingual CPD paper companion scaffold with source-paper claim namespacing,
+  permission-record-pending status, and AI-assisted draft translation status.
+- [CPD full text import and translation record](records/2026-05-15-cpd-full-text-import-translation.md):
+  full-section CPD companion import with AI-assisted draft translations, gated source LaTeX
+  blocks, and `not_started` reproduction states.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.
@@ -128,6 +134,8 @@ offline paper-alignment lane until separate mapping and diagnostic records exist
   TDD implementation plan for the native `cylinder`, `cone`, and `ellipsoid` runtime bundle.
 - [Newton native fitting comparison plan](superpowers/plans/2026-05-15-newton-native-fitting-comparison.md):
   TDD implementation plan for the opt-in native fitting comparison and bed/Franka scope update.
+- [CPD full text import and translation plan](superpowers/plans/2026-05-15-cpd-full-text-import-translation.md):
+  TDD implementation plan for the full-text CPD paper companion importer and draft translation pass.
 
 ## Configs And Artifacts
 
