@@ -65,7 +65,7 @@ probes or claiming collision quality.
   command-only deterministic synthetic objective comparison for topology-only versus
   component-merge accounting.
 - [CPD-like cost-guided merge record](records/2026-05-15-cpd-like-cost-guided-merge.md):
-  focused cost-guided merge-search smoke over deterministic synthetic fixtures.
+  focused cost-guided merge-search smoke over one deterministic synthetic fixture.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.
@@ -73,6 +73,9 @@ probes or claiming collision quality.
   final verification for sphere-rain, Franka smoke, and component-merge gate.
 - [CPD paper story status docs record](records/2026-05-15-cpd-paper-story-status-docs.md):
   documentation update that clarifies where the repository sits in the full CPD paper story.
+- [CPD cost-guided story explainer record](records/2026-05-15-cpd-cost-guided-story-explainer.md):
+  documentation update that explains the cost-guided merge smoke as the first restricted
+  objective-guided decision hook in the CPD paper story.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 - [Environment normalization design](superpowers/specs/2026-05-14-environment-normalization-design.md):

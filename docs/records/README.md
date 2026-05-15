@@ -84,7 +84,7 @@ Proposed | In progress | Complete | Failed | Superseded
   command-only deterministic synthetic objective comparison for topology-only versus
   component-merge accounting.
 - [2026-05-15 CPD-Like Cost-Guided Merge](2026-05-15-cpd-like-cost-guided-merge.md):
-  focused CPD-like cost-guided merge-search smoke over deterministic synthetic fixtures.
+  focused CPD-like cost-guided merge-search smoke over one deterministic synthetic fixture.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.
@@ -94,3 +94,6 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 CPD Paper Story Status Docs](2026-05-15-cpd-paper-story-status-docs.md):
   documentation update that maps the current CPD-like workbench onto the full CPD paper
   reproduction story.
+- [2026-05-15 CPD Cost-Guided Story Explainer](2026-05-15-cpd-cost-guided-story-explainer.md):
+  documentation update that explains the latest cost-guided merge change in the full CPD paper
+  story.

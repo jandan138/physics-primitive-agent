@@ -94,6 +94,11 @@ decision-making cost on a deterministic synthetic fixture.
 That does not make the report paper-faithful. It means one report term has been
 connected to one opt-in merge decision in a toy setting.
 
+Put another way: the report used to be only a dashboard after the drive. The new smoke lets one
+dashboard number affect one steering decision on a controlled toy road. That is useful for the
+paper story because future CPD work needs objective-guided search, but the current scope remains a
+single restricted decision hook.
+
 ## Next Algorithmic Step
 
 The next step is to broaden or deepen this path only where the expected failure

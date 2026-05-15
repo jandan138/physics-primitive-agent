@@ -67,6 +67,24 @@ This is still CPD-like infrastructure, not CPD reproduction. It gives the report
 of merge policy, component counts, topology merge count, virtual merge count, blocked merge count,
 and per-primitive source component IDs.
 
+## What The Cost-Guided Change Means
+
+The latest cost-guided merge-search smoke changes one thing in the toy path: the system can now use
+one recorded cost term to choose between two possible merges.
+
+The old/default behavior is like a simple rule of thumb: "merge touching face groups first." The
+new opt-in behavior asks one more question: "among the best touching merge and the best allowed
+disconnected-component merge, which one adds less extra primitive volume?"
+
+That extra-volume proxy is AABB-normalized merge-excess. On the current `cost_guided_pair_choice`
+toy fixture, the opt-in policy chooses the lower-cost virtual component merge while the default
+policy chooses the available topology merge first.
+
+This matters because a full CPD-style method eventually needs search decisions that are guided by
+objective terms, not only by local adjacency rules. The current implementation is only the first
+auditable hook for that idea. It is not a global optimizer, not a paper-faithful objective, and not
+collision-quality evidence.
+
 ## Why This Exists First
 
 This baseline is useful because it exercises the pipeline that a real CPD reproduction will need:

@@ -21,6 +21,12 @@ The repository has not reached that full result. It has reached the workbench st
 7. Newton can run narrow smoke diagnostics against that package.
 8. Records and configs can preserve exactly what was run.
 
+The latest cost-guided merge change is small but important in this story. Before it, the objective
+report mostly acted like a health check after the baseline had already made its merge choices. Now
+one term from that health check, AABB-normalized merge-excess, can influence one opt-in merge choice
+on a toy mesh. In plain terms, the repository has taken the first step from "we can measure a
+merge cost" toward "we can use a merge cost to choose between merge candidates."
+
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
 
@@ -33,7 +39,7 @@ The CPD paper story can be read as six layers.
 | 1. Asset input | Can a complex mesh enter the pipeline? | Partially in place through USD-open and capped first-mesh extraction smokes. |
 | 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. |
 | 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report. It summarizes primitive budget, volume proxy, merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
-| 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for deterministic synthetic fixtures only. |
+| 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for one deterministic synthetic fixture only. |
 | 5. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
 | 6. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
 
@@ -116,6 +122,15 @@ The cost-guided merge smoke is the first restricted Layer 4 step. It uses one ex
 objective-report term, AABB-normalized merge-excess, to choose among merge candidates on a
 deterministic synthetic fixture.
 
+The simple mental model is:
+
+- the old/default policy says: first try merging neighboring face groups; only after those are
+  exhausted, consider disconnected component pairs;
+- the new/opt-in policy says: at the same loop step, compare the best neighboring merge and the
+  best allowed disconnected-component merge by the recorded merge-excess cost;
+- if the disconnected-component merge has much lower surrogate cost, the opt-in policy can choose
+  it first.
+
 The dedicated `cost_guided_pair_choice` fixture compares:
 
 - old/default `topology_then_virtual`: adjacent topology merges are considered before virtual
@@ -126,6 +141,22 @@ The dedicated `cost_guided_pair_choice` fixture compares:
 This is still below paper-scope search or optimization. It shows that one surrogate cost can affect
 a merge decision on an inspectable toy mesh. It does not prove better collision geometry,
 benchmark quality, or paper-faithful CPD behavior.
+
+Why this matters for the paper story: CPD is ultimately about selecting a compact primitive set
+under geometric and collision-detection constraints. A face-merge baseline that only follows local
+adjacency is too weak to tell that story. The new smoke does not solve that problem, but it creates
+the first auditable place where a paper-shaped cost term changes a decomposition decision.
+
+What it does not yet cover:
+
+- global search over many primitive sets;
+- the paper's full objective formula;
+- richer primitive fitting beyond the current restricted proposals;
+- collision-quality measurement;
+- benchmark comparison.
+
+So the right interpretation is: this is the first cost-aware decision hook in the workbench, not
+the CPD optimizer.
 
 ## What Newton Probes Mean Here
 
@@ -150,7 +181,7 @@ USD assets
 -> CPD-like primitive proposals
 -> paper-aligned surrogate objective report
 -> synthetic objective comparison
--> focused cost-guided merge-search smoke
+-> focused cost-guided merge-search smoke using one objective term
 -> collision package
 -> Newton smoke diagnostics
 -> dated records
@@ -163,6 +194,7 @@ USD assets or synthetic fixtures
 -> CPD-like primitive proposals
 -> objective comparison record
 -> broader expected-failure synthetic fixtures or improved primitive fitting
+-> richer cost-guided merge or primitive-fit decision
 -> Newton task probe
 ```
 
