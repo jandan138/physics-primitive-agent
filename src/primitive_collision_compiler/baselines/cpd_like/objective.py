@@ -132,6 +132,7 @@ def build_cpd_like_objective_report(
         },
         "component_accounting": {
             "merge_policy": decomposition.merge_policy,
+            "merge_search_policy": decomposition.merge_search_policy,
             "initial_component_count": decomposition.initial_component_count,
             "final_component_count": decomposition.final_component_count,
             "topology_merge_count": decomposition.topology_merge_count,

@@ -35,6 +35,23 @@ def _disconnected_triangles_mesh() -> TriangleMesh:
     )
 
 
+def _cost_guided_pair_choice_mesh() -> TriangleMesh:
+    return TriangleMesh(
+        points=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [10.0, 10.0, 10.0],
+                [0.05, 0.05, 0.05],
+                [1.05, 0.05, 0.05],
+                [0.05, 1.05, 0.05],
+            ]
+        ),
+        faces=np.array([[0, 1, 2], [1, 2, 3], [4, 5, 6]]),
+    )
+
+
 def test_fit_best_primitive_records_supported_and_unsupported_types():
     fit = fit_best_primitive(_square_mesh(), frozenset({0, 1}), ("box", "sphere", "capsule"))
 
@@ -159,6 +176,79 @@ def test_decompose_mesh_component_merge_gate_blocks_excessive_virtual_merge_cost
     assert report.blocked_merge_count == 1
     assert report.fallback_reason == "component_merge_threshold_blocked"
     assert report.merge_cost_summary["blocked_merge_count"] == 1
+
+
+def test_decompose_mesh_default_merge_search_keeps_topology_before_virtual():
+    report = decompose_mesh(
+        _cost_guided_pair_choice_mesh(),
+        max_primitives=2,
+        primitive_subset=("box",),
+        component_merge="virtual_pairwise",
+    )
+
+    assert report.status == "smoke_passed"
+    assert report.merge_search_policy == "topology_then_virtual"
+    assert report.topology_merge_count == 1
+    assert report.virtual_component_merge_count == 0
+    assert report.primitives[0].source_component_ids == (0, 1)
+
+
+def test_decompose_mesh_cost_guided_pairwise_can_choose_virtual_before_topology():
+    default_report = decompose_mesh(
+        _cost_guided_pair_choice_mesh(),
+        max_primitives=2,
+        primitive_subset=("box",),
+        component_merge="virtual_pairwise",
+    )
+    cost_guided_report = decompose_mesh(
+        _cost_guided_pair_choice_mesh(),
+        max_primitives=2,
+        primitive_subset=("box",),
+        component_merge="virtual_pairwise",
+        merge_search_policy="cost_guided_pairwise",
+    )
+
+    assert cost_guided_report.stage == "cpd_like_cost_guided_merge_smoke"
+    assert cost_guided_report.status == "smoke_passed"
+    assert cost_guided_report.merge_search_policy == "cost_guided_pairwise"
+    assert cost_guided_report.topology_merge_count == 0
+    assert cost_guided_report.virtual_component_merge_count == 1
+    assert cost_guided_report.primitives[0].source_component_ids == (0, 2)
+    assert (
+        cost_guided_report.merge_cost_summary["accepted_normalized_excess_sum"]
+        < default_report.merge_cost_summary["accepted_normalized_excess_sum"]
+    )
+
+
+def test_decompose_mesh_cost_guided_pairwise_keeps_virtual_threshold_gate():
+    report = decompose_mesh(
+        _cost_guided_pair_choice_mesh(),
+        max_primitives=2,
+        primitive_subset=("box",),
+        component_merge="virtual_pairwise",
+        merge_search_policy="cost_guided_pairwise",
+        excess_volume_threshold_fraction=0.0,
+    )
+
+    assert report.status == "partial"
+    assert report.topology_merge_count == 0
+    assert report.virtual_component_merge_count == 0
+    assert report.blocked_merge_count == 1
+    assert report.fallback_reason == "component_merge_threshold_blocked"
+
+
+def test_decompose_mesh_rejects_unknown_merge_search_policy():
+    try:
+        decompose_mesh(
+            _square_mesh(),
+            max_primitives=1,
+            primitive_subset=("box",),
+            merge_search_policy="paper_optimizer",
+        )
+    except ValueError as exc:
+        assert "merge_search_policy" in str(exc)
+    else:
+        raise AssertionError("unknown merge_search_policy should be rejected")
 
 
 def test_decompose_mesh_component_merge_gate_validates_options():

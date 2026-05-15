@@ -8,6 +8,8 @@ from primitive_collision_compiler.geometry.mesh import TriangleMesh
 
 COMPONENT_MERGE_TOPOLOGY_ONLY = "topology_only"
 COMPONENT_MERGE_VIRTUAL_PAIRWISE = "virtual_pairwise"
+MERGE_SEARCH_TOPOLOGY_THEN_VIRTUAL = "topology_then_virtual"
+MERGE_SEARCH_COST_GUIDED_PAIRWISE = "cost_guided_pairwise"
 REPORT_MERGE_TRACE_SUMMARY = "summary"
 REPORT_MERGE_TRACE_NONE = "none"
 MIN_NORMALIZATION_VOLUME = 1e-12
@@ -20,6 +22,7 @@ class _MergeCandidate:
     merged_fit: PrimitiveFit
     excess_volume: float
     normalized_excess_volume: float
+    is_virtual_component_merge: bool
 
 
 @dataclass(frozen=True)
@@ -36,6 +39,7 @@ class CPDLikeDecompositionReport:
     total_weighted_volume: float
     fallback_reason: str | None
     merge_policy: str
+    merge_search_policy: str
     mesh_aabb_volume: float
     target_primitive_count: int
     initial_component_count: int
@@ -61,6 +65,7 @@ class CPDLikeDecompositionReport:
             "total_weighted_volume": self.total_weighted_volume,
             "fallback_reason": self.fallback_reason,
             "merge_policy": self.merge_policy,
+            "merge_search_policy": self.merge_search_policy,
             "mesh_aabb_volume": self.mesh_aabb_volume,
             "target_primitive_count": self.target_primitive_count,
             "initial_component_count": self.initial_component_count,
@@ -80,6 +85,7 @@ def decompose_mesh(
     primitive_subset: tuple[str, ...],
     *,
     component_merge: str = COMPONENT_MERGE_TOPOLOGY_ONLY,
+    merge_search_policy: str = MERGE_SEARCH_TOPOLOGY_THEN_VIRTUAL,
     excess_volume_threshold_fraction: float | None = None,
     report_merge_trace: str = REPORT_MERGE_TRACE_SUMMARY,
 ) -> CPDLikeDecompositionReport:
@@ -87,6 +93,7 @@ def decompose_mesh(
         raise ValueError("max_primitives must be at least 1")
     _validate_component_merge_options(
         component_merge=component_merge,
+        merge_search_policy=merge_search_policy,
         excess_volume_threshold_fraction=excess_volume_threshold_fraction,
         report_merge_trace=report_merge_trace,
     )
@@ -119,6 +126,42 @@ def decompose_mesh(
     blocked_merge_costs: list[float] = []
 
     while len(clusters) > max_primitives:
+        if merge_search_policy == MERGE_SEARCH_COST_GUIDED_PAIRWISE:
+            merge_candidate = _best_cost_guided_merge(
+                mesh,
+                clusters,
+                fits,
+                component_ids,
+                face_adjacency,
+                primitive_subset,
+                normalizer_volume,
+            )
+            if merge_candidate is None:
+                fallback_reason = "no_merge_candidates_remaining"
+                break
+            if (
+                merge_candidate.is_virtual_component_merge
+                and threshold_fraction is not None
+                and merge_candidate.normalized_excess_volume > threshold_fraction
+            ):
+                fallback_reason = "component_merge_threshold_blocked"
+                blocked_merge_count += 1
+                blocked_merge_costs.append(merge_candidate.normalized_excess_volume)
+                break
+            next_cluster_id = _accept_merge(
+                merge_candidate,
+                clusters,
+                fits,
+                component_ids,
+                next_cluster_id,
+            )
+            if merge_candidate.is_virtual_component_merge:
+                virtual_component_merge_count += 1
+            else:
+                topology_merge_count += 1
+            accepted_merge_costs.append(merge_candidate.normalized_excess_volume)
+            continue
+
         topology_candidate = _best_merge(
             mesh,
             clusters,
@@ -193,9 +236,13 @@ def decompose_mesh(
     total_weighted_volume = float(sum(primitive.weighted_volume for primitive in primitives))
     return CPDLikeDecompositionReport(
         stage=(
-            "cpd_like_component_merge_gate"
-            if component_merge == COMPONENT_MERGE_VIRTUAL_PAIRWISE
-            else "cpd_like_face_merge"
+            "cpd_like_cost_guided_merge_smoke"
+            if merge_search_policy == MERGE_SEARCH_COST_GUIDED_PAIRWISE
+            else (
+                "cpd_like_component_merge_gate"
+                if component_merge == COMPONENT_MERGE_VIRTUAL_PAIRWISE
+                else "cpd_like_face_merge"
+            )
         ),
         status=status,
         primitive_count=len(primitives),
@@ -208,6 +255,7 @@ def decompose_mesh(
         total_weighted_volume=total_weighted_volume,
         fallback_reason=fallback_reason,
         merge_policy=component_merge,
+        merge_search_policy=merge_search_policy,
         mesh_aabb_volume=mesh_aabb_volume,
         target_primitive_count=max_primitives,
         initial_component_count=mesh.face_count,
@@ -277,6 +325,7 @@ def _best_merge(
                 merged_fit=candidate_fit,
                 excess_volume=float(excess_volume),
                 normalized_excess_volume=normalized_excess_volume,
+                is_virtual_component_merge=not require_adjacency,
             )
             candidate = (excess_volume, left_id, right_id, merge_candidate)
             if best is None or candidate[:3] < best[:3]:
@@ -284,6 +333,49 @@ def _best_merge(
     if best is None:
         return None
     return best[3]
+
+
+def _best_cost_guided_merge(
+    mesh: TriangleMesh,
+    clusters: dict[int, frozenset[int]],
+    fits: dict[int, PrimitiveFit],
+    component_ids: dict[int, frozenset[int]],
+    face_adjacency: dict[int, set[int]],
+    primitive_subset: tuple[str, ...],
+    normalizer_volume: float,
+) -> _MergeCandidate | None:
+    topology_candidate = _best_merge(
+        mesh,
+        clusters,
+        fits,
+        component_ids,
+        face_adjacency,
+        primitive_subset,
+        normalizer_volume,
+        require_adjacency=True,
+    )
+    virtual_candidate = _best_merge(
+        mesh,
+        clusters,
+        fits,
+        component_ids,
+        face_adjacency,
+        primitive_subset,
+        normalizer_volume,
+        require_adjacency=False,
+    )
+    candidates = [candidate for candidate in (topology_candidate, virtual_candidate) if candidate]
+    if not candidates:
+        return None
+    return min(
+        candidates,
+        key=lambda candidate: (
+            candidate.normalized_excess_volume,
+            int(candidate.is_virtual_component_merge),
+            candidate.left_id,
+            candidate.right_id,
+        ),
+    )
 
 
 def _accept_merge(
@@ -366,11 +458,24 @@ def _max_or_none(values: list[float]) -> float | None:
 def _validate_component_merge_options(
     *,
     component_merge: str,
+    merge_search_policy: str,
     excess_volume_threshold_fraction: float | None,
     report_merge_trace: str,
 ) -> None:
     if component_merge not in {COMPONENT_MERGE_TOPOLOGY_ONLY, COMPONENT_MERGE_VIRTUAL_PAIRWISE}:
         raise ValueError("component_merge must be topology_only or virtual_pairwise")
+    if merge_search_policy not in {
+        MERGE_SEARCH_TOPOLOGY_THEN_VIRTUAL,
+        MERGE_SEARCH_COST_GUIDED_PAIRWISE,
+    }:
+        raise ValueError("merge_search_policy must be topology_then_virtual or cost_guided_pairwise")
+    if (
+        merge_search_policy == MERGE_SEARCH_COST_GUIDED_PAIRWISE
+        and component_merge != COMPONENT_MERGE_VIRTUAL_PAIRWISE
+    ):
+        raise ValueError(
+            "merge_search_policy cost_guided_pairwise requires component_merge virtual_pairwise"
+        )
     if report_merge_trace not in {REPORT_MERGE_TRACE_SUMMARY, REPORT_MERGE_TRACE_NONE}:
         raise ValueError("report_merge_trace must be summary or none")
     if excess_volume_threshold_fraction is None:
