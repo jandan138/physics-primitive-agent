@@ -169,8 +169,9 @@ def _comparison(policies: dict[str, dict[str, object]]) -> dict[str, object]:
         "primitive_count_delta_virtual_minus_topology": int(
             virtual["primitive_count"] - topology["primitive_count"]
         ),
-        "virtual_pairwise_clears_topology_failure_labels": bool(
-            topology_failures and not virtual_failures
+        "virtual_pairwise_omits_topology_unmerged_component_label": bool(
+            "unmerged_components" in topology_failures
+            and "unmerged_components" not in virtual_failures
         ),
         "topology_failure_labels": sorted(topology_failures),
         "virtual_pairwise_failure_labels": sorted(virtual_failures),

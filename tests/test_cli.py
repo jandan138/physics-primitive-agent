@@ -602,6 +602,43 @@ def test_cli_run_cpd_like_objective_report_rejects_malformed_cpd_like_config(
     assert "component_merge must be topology_only or virtual_pairwise" in payload["fallback_reason"]
 
 
+def test_cli_run_cpd_like_synthetic_comparison_emits_json_without_config(capsys):
+    assert cli.main(["--run-cpd-like-synthetic-comparison"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "cpd_like_synthetic_objective_comparison"
+    assert payload["status"] == "smoke_passed"
+    assert [case["case_id"] for case in payload["cases"]] == [
+        "adjacent_square",
+        "disconnected_pair",
+        "blocked_disconnected_pair",
+    ]
+    assert captured.err == ""
+
+
+def test_cli_run_cpd_like_synthetic_comparison_rejects_non_finite_json(
+    capsys,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_synthetic_comparison_report",
+        lambda: {
+            "stage": "cpd_like_synthetic_objective_comparison",
+            "status": "smoke_passed",
+            "bad": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-synthetic-comparison"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "cpd_like_synthetic_comparison report contains non-finite JSON values" in captured.err
+    assert "Traceback" not in captured.err
+
+
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

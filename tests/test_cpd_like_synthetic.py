@@ -28,7 +28,9 @@ def test_synthetic_comparison_report_covers_inspectable_cases():
     disconnected = cases["disconnected_pair"]
     assert disconnected["policies"]["topology_only"]["status"] == "partial"
     assert disconnected["policies"]["virtual_pairwise"]["status"] == "smoke_passed"
-    assert disconnected["comparison"]["virtual_pairwise_clears_topology_failure_labels"] is True
+    assert disconnected["comparison"][
+        "virtual_pairwise_omits_topology_unmerged_component_label"
+    ] is True
     assert disconnected["comparison"]["primitive_count_delta_virtual_minus_topology"] == -1
 
     blocked = cases["blocked_disconnected_pair"]

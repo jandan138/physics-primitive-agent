@@ -82,7 +82,8 @@ Each case summary should include:
   `status`, `decomposition_stage`, `primitive_count`, `failure_labels`, `primitive_budget`,
   `merge_excess_terms`, and `component_accounting`
 - `comparison`: small derived fields such as primitive-count delta and whether
-  `virtual_pairwise` cleared the topology-only failure labels for the disconnected case
+  `virtual_pairwise` no longer reports the topology-only unmerged-component label for the
+  disconnected fixture
 
 Do not write generated reports into the repository. The report can be emitted by tests and the CLI;
 durable evidence should be summarized in `docs/records/`.

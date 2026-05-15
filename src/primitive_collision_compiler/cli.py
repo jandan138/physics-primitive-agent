@@ -13,6 +13,9 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
     build_cpd_like_objective_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
+from primitive_collision_compiler.baselines.cpd_like.synthetic import (
+    build_cpd_like_synthetic_comparison_report,
+)
 from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError, load_first_mesh
 from primitive_collision_compiler.config import load_compile_config
 from primitive_collision_compiler.contracts import CompileReport
@@ -48,6 +51,11 @@ def build_parser():
         "--run-cpd-like-objective-report",
         action="store_true",
         help="run CPD-like geometry and emit an offline paper-aligned surrogate objective report",
+    )
+    parser.add_argument(
+        "--run-cpd-like-synthetic-comparison",
+        action="store_true",
+        help="run offline synthetic topology/component-merge objective comparison",
     )
     parser.add_argument(
         "--run-newton-contact-smoke",
@@ -241,6 +249,19 @@ def main(argv=None):
     if args.run_cpd_like_objective_report:
         print("npc-compile: --run-cpd-like-objective-report requires --config.", file=sys.stderr)
         return 2
+
+    if args.run_cpd_like_synthetic_comparison:
+        report = build_cpd_like_synthetic_comparison_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_synthetic_comparison report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
 
     if args.run_newton_contact_smoke and args.config:
         try:
