@@ -1,11 +1,10 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report, a synthetic objective comparison over deterministic toy meshes, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The objective report summarizes primitive budget, volume proxy, merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, and component/fallback labels for that CPD-like output. The synthetic comparison reuses the same report on three in-memory fixtures to inspect topology-only versus component-merge accounting. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps all 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report, a synthetic objective comparison over deterministic toy meshes, a focused CPD-like cost-guided merge-search smoke over one deterministic toy mesh, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The objective report summarizes primitive budget, volume proxy, merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, and component/fallback labels for that CPD-like output. The synthetic comparison reuses the same report on three in-memory fixtures to inspect topology-only versus component-merge accounting. The cost-guided smoke uses AABB-normalized merge-excess as a decision-making cost and reports old/new diagnostic accounting on `cost_guided_pair_choice`. The contact canary maps those 32 proposals to Newton box descriptors and produces one representative box contact. The drop/settle smoke maps all 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps all 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: turn one objective-report term into a decision-making cost for one focused
-primitive-fitting or merge-search improvement, compare old and new behavior on the synthetic
-harness, then re-run bed and Franka smokes before strengthening Newton task probes or claiming
-collision quality.
+Current next action: add a specific expected-failure synthetic fixture or one focused
+primitive-fitting improvement, then re-run bed and Franka smokes before strengthening Newton task
+probes or claiming collision quality.
 
 ## DeepDive Package
 
@@ -65,6 +64,8 @@ collision quality.
 - [CPD-like synthetic comparison record](records/2026-05-15-cpd-like-synthetic-comparison.md):
   command-only deterministic synthetic objective comparison for topology-only versus
   component-merge accounting.
+- [CPD-like cost-guided merge record](records/2026-05-15-cpd-like-cost-guided-merge.md):
+  focused cost-guided merge-search smoke over deterministic synthetic fixtures.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.
@@ -89,6 +90,8 @@ collision quality.
   config.
 - `npc-compile --run-cpd-like-synthetic-comparison`: command-only deterministic synthetic
   objective comparison, recorded in `experiments/registry.yaml` without a config file.
+- `npc-compile --run-cpd-like-cost-guided-synthetic-comparison`: command-only deterministic
+  cost-guided synthetic comparison, recorded in `experiments/registry.yaml` without a config file.
 - `scripts/env/readiness_check.py`: local environment-readiness JSON checker.
 - `experiments/registry.yaml`: experiment registry and claim-support status.
 - `assets/`, `reports/`, and `archive/`: artifact boundaries; large/generated outputs stay out
@@ -108,8 +111,9 @@ package. The Franka/simple robot smoke can open a second asset class and run cap
 geometry-only proposals. The CPD-like component-merge gate can report disconnected-component
 merge candidates and normalized excess-volume accounting. The offline CPD-like objective report
 can summarize paper-aligned surrogate terms for that baseline. The synthetic objective comparison
-can inspect deterministic topology-only versus component-merge accounting on toy meshes. These
-evidence layers are not benchmark, collision-quality, whole-robot quality, real contact-stress, or
-CPD reproduction evidence.
+can inspect deterministic topology-only versus component-merge accounting on toy meshes. The
+cost-guided merge-search smoke can inspect one old/new surrogate-cost decision on a toy mesh.
+These evidence layers are not benchmark, collision-quality, whole-robot quality, real
+contact-stress, or CPD reproduction evidence.
 
 Current non-goals: no safety guarantee, no real-world transfer claim, no deployment readiness claim, no benchmark superiority claim, no CPD reproduction claim, and no complete replacement of convex decomposition.

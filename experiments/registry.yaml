@@ -68,3 +68,15 @@ experiments:
     claims_supported:
       - synthetic CPD-like objective diagnostic comparison only
       - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
+  - id: cpd-like-cost-guided-synthetic-comparison
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cost-guided-synthetic-comparison
+    record: docs/records/2026-05-15-cpd-like-cost-guided-merge.md
+    purpose: >
+      Run a command-only deterministic synthetic fixture where the opt-in cost-guided merge-search
+      policy uses AABB-normalized merge-excess as a decision-making cost and compares old/new
+      diagnostic accounting. This entry intentionally has no config because the mesh is an
+      in-memory fixture defined in source.
+    claims_supported:
+      - focused CPD-like cost-guided merge-search smoke only
+      - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim

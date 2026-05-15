@@ -85,17 +85,28 @@ current implementation does not.
 `failure_labels` are the "why should a reviewer distrust this run?" labels.
 They are part of the evidence, not merely errors to hide.
 
+## Current Algorithmic Step
+
+The repository now has one small step beyond a pure health check: the focused
+CPD-like cost-guided merge-search smoke uses AABB-normalized merge-excess as a
+decision-making cost on a deterministic synthetic fixture.
+
+That does not make the report paper-faithful. It means one report term has been
+connected to one opt-in merge decision in a toy setting.
+
 ## Next Algorithmic Step
 
-The next step is to turn this health check into a decision-making cost for a
-small improvement slice.
+The next step is to broaden or deepen this path only where the expected failure
+mode is clear.
 
 The recommended order is:
 
-1. Use the synthetic comparison harness as the testbed.
-2. Add one focused cost-guided merge-search or primitive-fitting improvement.
+1. Add one broader synthetic fixture only if it exposes a specific expected
+   failure mode.
+2. Add one focused primitive-fitting improvement against that fixture.
 3. Compare old and new outputs with the same objective report.
-4. Only then run the bed and Franka smoke paths again.
+4. Re-run the bed and Franka smoke paths only after the synthetic report changes
+   in a named, inspectable way.
 5. Use Newton drop/settle or sphere-rain as downstream diagnostics, not as the
    primary optimization target.
 
@@ -109,6 +120,7 @@ Use:
 - "paper-aligned surrogate objective report";
 - "diagnostic accounting for future CPD reproduction work";
 - "design-aligned with the paper story";
+- "focused CPD-like cost-guided merge-search smoke";
 - "not a paper-faithful objective implementation";
 - "not collision-quality evidence."
 
@@ -116,6 +128,7 @@ Avoid:
 
 - "paper objective reproduced";
 - "CPD objective implemented";
+- "CPD optimizer implemented";
 - "decomposition quality validated";
 - "collision quality score";
 - "benchmark metric."

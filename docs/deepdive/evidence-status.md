@@ -33,6 +33,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   deterministic synthetic comparison over three in-memory toy meshes. It compares topology-only
   and component-merge objective accounting for inspection. This is not benchmark evidence,
   collision-quality evidence, or full CPD reproduction.
+- The current executable surface can run `cpd_like_cost_guided_synthetic_objective_comparison`, a
+  focused CPD-like cost-guided merge-search smoke that turns AABB-normalized merge-excess into a
+  decision-making cost and compares old/new diagnostic accounting on deterministic synthetic
+  fixtures. This is not benchmark evidence, collision-quality evidence, paper-faithful
+  optimization, or full CPD reproduction.
 - The current CPD paper-story position is documented as a reproduction workbench, not as a
   paper-faithful implementation. See
   [CPD paper story status](../reference/cpd-paper-story-status.md).
@@ -75,6 +80,12 @@ This file separates current evidence from future claims. See [message-map.md](me
   deterministic in-memory fixtures: adjacent square, disconnected pair, and blocked disconnected
   pair. It records fixture-level topology-only versus component-merge objective accounting without
   adding benchmark or collision-quality claims.
+- The 2026-05-15 CPD-like cost-guided merge record reports `smoke_passed` for one deterministic
+  in-memory fixture, `cost_guided_pair_choice`: the default topology-then-virtual policy takes one
+  topology merge with accepted normalized merge-excess sum `0.010062106570764756`, while
+  `cost_guided_pairwise` takes one virtual component merge with accepted normalized merge-excess
+  sum `0.000055121`. This is old/new diagnostic accounting on a toy mesh, not collision-quality
+  evidence.
 
 ## Current Unsupported Claims
 
@@ -127,10 +138,11 @@ Franka USD-open and first-mesh CPD-like geometry smoke now broadens asset-class 
 making robot-quality claims. The first CPD-like algorithmic extension is an opt-in
 component-merge gate with explicit merge-cost reporting, still below full CPD reproduction. The
 first synthetic objective comparison now gives deterministic inspection cases for topology-only
-versus component-merge accounting. Next turn one objective-report term into a decision-making cost
-for a focused primitive-fitting or merge-search improvement, compare that change on the synthetic
-harness, then re-run bed and Franka smokes before changing Newton probes or adding LLM/VLM. Report
-failures and fallback behavior as first-class evidence.
+versus component-merge accounting. A focused cost-guided merge-search smoke now turns
+AABB-normalized merge-excess into an opt-in synthetic merge decision. Next broaden synthetic
+fixtures only for specific expected failure modes, then re-run bed and Franka smokes before
+changing Newton probes or adding LLM/VLM. Report failures and fallback behavior as first-class
+evidence.
 
 ## Current Non-Goals
 

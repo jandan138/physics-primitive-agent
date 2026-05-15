@@ -18,7 +18,9 @@ reports disconnected-component merge candidates and normalized excess-volume acc
 remaining below full CPD reproduction. An offline CPD-like objective report now summarizes
 paper-aligned surrogate terms for that baseline without claiming collision quality. A synthetic
 objective comparison now reuses that report on three deterministic toy meshes to inspect
-topology-only versus component-merge accounting without adding benchmark evidence. See
+topology-only versus component-merge accounting without adding benchmark evidence. A focused
+CPD-like cost-guided merge-search smoke now uses AABB-normalized merge-excess as a
+decision-making cost on one deterministic toy mesh and reports old/new diagnostic accounting. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper
@@ -109,6 +111,7 @@ current basis for project framing, claim boundaries, and future implementation p
 - No whole-robot collider-quality or articulated-dynamics evidence; the Franka path is import and
   capped first-mesh geometry smoke only.
 - No full CPD paper reproduction; the component-merge gate and objective report are restricted
-  CPD-like baseline diagnostics.
+  CPD-like baseline diagnostics, and the cost-guided merge-search smoke is a restricted synthetic
+  algorithmic smoke slice.
 - No generated collision artifact pipeline.
 - No claim of production readiness.

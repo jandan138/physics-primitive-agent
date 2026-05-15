@@ -35,6 +35,7 @@ The repository has reached a narrow slice of layer 3:
 - Layer 3 now has an offline paper-aligned surrogate objective report over the capped bed
   CPD-like baseline.
 - Layer 3 also has a command-only synthetic objective comparison over deterministic toy meshes.
+- Layer 4 now has one restricted cost-guided merge-search smoke over a deterministic toy mesh.
 - Layer 3 has a contact-only Newton canary plus two named capped-bed task smokes: drop/settle and
   sphere-rain contact-density proxy.
 - Layer 4 has not started.
@@ -97,6 +98,9 @@ For the current capped bed smoke:
   primitive types still outside the baseline;
 - CPD-like synthetic objective comparison: three in-memory fixtures record topology-only versus
   component-merge accounting, including disconnected and blocked-merge labels;
+- CPD-like cost-guided merge smoke: one in-memory fixture records old/new diagnostic accounting
+  where the opt-in policy uses AABB-normalized merge-excess to choose a virtual component merge
+  instead of the default topology merge;
 - Newton contact smoke: 32 mapped box descriptors and one representative box contact canary;
 - observed representative contact count: 1.
 - Newton drop/settle smoke: all 32 proposals mapped into one compound package body, dropped on a
@@ -114,6 +118,7 @@ Do not use the current face-merge baseline to claim:
 - full CPD paper reproduction;
 - paper-scope primitive coverage;
 - paper-faithful component classification or merge optimization;
+- paper-scope search or optimization;
 - collision quality;
 - broad task-level Newton simulation success beyond the recorded capped-bed drop/settle and
   sphere-rain contact-density proxy smokes;
@@ -133,6 +138,7 @@ Use:
 - "one named capped-bed sphere-rain contact-density proxy smoke";
 - "offline paper-aligned surrogate objective report";
 - "synthetic objective comparison";
+- "focused CPD-like cost-guided merge-search smoke";
 - "not a full CPD paper reproduction";
 - "not collision-quality evidence."
 
@@ -148,10 +154,9 @@ Avoid:
 
 The next useful step is not to strengthen the claim on this baseline. The repository now has the
 second asset-class smoke, the small CPD-like component-merge gate, an offline paper-aligned
-surrogate objective report, and deterministic synthetic comparison cases. The next paper-story
-slice should turn one report term into a real decision-making cost for a focused primitive-fitting
-or merge-search improvement. That improvement should be compared first on the synthetic cases,
-then re-run on the bed and Franka smoke paths, before changing Newton probes or making any
-collision-quality claim. Paper-faithful CPD decomposition work should still avoid full
-reproduction claims until primitive coverage, benchmark settings, and dated experiment records
-exist.
+surrogate objective report, deterministic synthetic comparison cases, and one focused
+cost-guided merge-search smoke. The next paper-story slice should add a specific expected-failure
+synthetic fixture or one primitive-fitting improvement, then re-run bed and Franka smoke paths
+before changing Newton probes or making any collision-quality claim. Paper-faithful CPD
+decomposition work should still avoid full reproduction claims until primitive coverage, benchmark
+settings, and dated experiment records exist.

@@ -16,8 +16,10 @@ The repository has not reached that full result. It has reached the workbench st
 3. Those proposals can be wrapped as a collision package.
 4. An offline objective report can summarize paper-aligned surrogate geometry terms.
 5. A synthetic objective comparison can exercise the same accounting on inspectable toy meshes.
-6. Newton can run narrow smoke diagnostics against that package.
-7. Records and configs can preserve exactly what was run.
+6. A focused cost-guided merge-search smoke can use one objective-report term as a toy-fixture
+   merge decision cost.
+7. Newton can run narrow smoke diagnostics against that package.
+8. Records and configs can preserve exactly what was run.
 
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
@@ -31,7 +33,7 @@ The CPD paper story can be read as six layers.
 | 1. Asset input | Can a complex mesh enter the pipeline? | Partially in place through USD-open and capped first-mesh extraction smokes. |
 | 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. |
 | 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report. It summarizes primitive budget, volume proxy, merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
-| 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. Current behavior is greedy face/component merging. |
+| 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for deterministic synthetic fixtures only. |
 | 5. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
 | 6. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
 
@@ -108,6 +110,23 @@ disconnected fixture no longer reports the topology-only unmerged-component labe
 `virtual_pairwise`; the blocked fixture records the `component_merge_blocked` label. These are
 fixture-level diagnostic differences, not proof that one policy is better collision geometry.
 
+## What The Cost-Guided Merge Smoke Adds
+
+The cost-guided merge smoke is the first restricted Layer 4 step. It uses one existing surrogate
+objective-report term, AABB-normalized merge-excess, to choose among merge candidates on a
+deterministic synthetic fixture.
+
+The dedicated `cost_guided_pair_choice` fixture compares:
+
+- old/default `topology_then_virtual`: adjacent topology merges are considered before virtual
+  component merges;
+- new/opt-in `cost_guided_pairwise`: the best adjacent topology candidate and the best virtual
+  component candidate are compared by normalized merge-excess at the same loop step.
+
+This is still below paper-scope search or optimization. It shows that one surrogate cost can affect
+a merge decision on an inspectable toy mesh. It does not prove better collision geometry,
+benchmark quality, or paper-faithful CPD behavior.
+
 ## What Newton Probes Mean Here
 
 Newton probes are downstream diagnostic checks. They answer a narrow question:
@@ -131,6 +150,7 @@ USD assets
 -> CPD-like primitive proposals
 -> paper-aligned surrogate objective report
 -> synthetic objective comparison
+-> focused cost-guided merge-search smoke
 -> collision package
 -> Newton smoke diagnostics
 -> dated records
@@ -142,7 +162,7 @@ The next paper-story position should be:
 USD assets or synthetic fixtures
 -> CPD-like primitive proposals
 -> objective comparison record
--> improved fitting or merge search
+-> broader expected-failure synthetic fixtures or improved primitive fitting
 -> Newton task probe
 ```
 
@@ -156,6 +176,7 @@ Use:
 - "component-merge gate for audit-friendly merge-cost reporting";
 - "paper-aligned surrogate objective report";
 - "synthetic objective comparison";
+- "focused CPD-like cost-guided merge-search smoke";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -163,6 +184,7 @@ Avoid:
 
 - "CPD reproduced";
 - "paper-faithful CPD implementation";
+- "CPD optimizer implemented";
 - "collision-quality validation";
 - "benchmark result";
 - "safe collider";
@@ -172,13 +194,11 @@ Avoid:
 
 The next slices should move toward the paper core without overclaiming:
 
-1. Turn the current objective report from a health check into one focused cost used by a small
-   merge-search or primitive-fitting improvement.
-2. Compare the old and new behavior on the existing synthetic fixtures before adding more assets.
-3. Add broader synthetic fixtures only when they expose a specific expected failure mode.
-4. Re-run bed and Franka smoke paths after the synthetic comparison shows a clear diagnostic
+1. Add broader synthetic fixtures only when they expose a specific expected failure mode.
+2. Add one primitive-fitting improvement against those fixtures.
+3. Re-run bed and Franka smoke paths after the synthetic comparison shows a clear diagnostic
    difference.
-5. Run Newton drop/settle or sphere-rain only as downstream diagnostics, not as the primary
+4. Run Newton drop/settle or sphere-rain only as downstream diagnostics, not as the primary
    optimization target.
 
 ## Claim Boundary
