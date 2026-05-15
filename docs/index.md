@@ -1,12 +1,11 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, a synthetic objective comparison over deterministic toy meshes, a focused CPD-like cost-guided merge-search smoke over one deterministic toy mesh, a deterministic expected-failure synthetic workbench for known CPD-paper gaps, an opt-in offline `capped_cylinder` geometry proposal proxy, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The objective report summarizes primitive budget, volume proxy, raw Eq.4-like and AABB-normalized merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, component/fallback labels, and Eq.4 alignment metadata for that CPD-like output. The synthetic comparison reuses the same report on three in-memory fixtures to inspect topology-only versus component-merge accounting. The cost-guided smoke uses AABB-normalized merge-excess as a decision-making cost and reports old/new diagnostic accounting on `cost_guided_pair_choice`. The expected-failure workbench reports whether expected limitation flags are observed on three known-gap fixtures; `smoke_passed` means those expected limitations were reported, not that the decomposition succeeded. The capped-cylinder proxy has a named offline objective-report smoke where the unsupported paper primitive gap decreases from 3 to 2, with `frustum` and `trapezoidal_prism` still unsupported. The contact canary maps the historical 32 bed proposals to Newton box descriptors and produces one representative box contact; Newton mapping for `capped_cylinder` remains unsupported. The drop/settle smoke maps the historical 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps the historical 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. The Newton-native primitive bundle now maps and constructs diagnostic shapes for a synthetic package containing `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, a synthetic objective comparison over deterministic toy meshes, a focused CPD-like cost-guided merge-search smoke over one deterministic toy mesh, a deterministic expected-failure synthetic workbench for known CPD-paper gaps, an opt-in offline `capped_cylinder` geometry proposal proxy, a contact-only Newton canary, and two named Newton task smokes: drop/settle and sphere-rain contact-density proxy. The clean local Newton Python environment has `smoke_passed` readiness evidence, and the capped bed USD smoke produces 32 restricted primitive proposals from 256 extracted triangles. The objective report summarizes primitive budget, volume proxy, raw Eq.4-like and AABB-normalized merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, component/fallback labels, and Eq.4 alignment metadata for that CPD-like output. The synthetic comparison reuses the same report on three in-memory fixtures to inspect topology-only versus component-merge accounting. The cost-guided smoke uses AABB-normalized merge-excess as a decision-making cost and reports old/new diagnostic accounting on `cost_guided_pair_choice`. The expected-failure workbench reports whether expected limitation flags are observed on three known-gap fixtures; `smoke_passed` means those expected limitations were reported, not that the decomposition succeeded. The capped-cylinder proxy has a named offline objective-report smoke where the unsupported paper primitive gap decreases from 3 to 2, with `frustum` and `trapezoidal_prism` still unsupported. The contact canary maps the historical 32 bed proposals to Newton box descriptors and produces one representative box contact; Newton mapping for `capped_cylinder` remains unsupported. The drop/settle smoke maps the historical 32 proposals, drops the compound package on a static plane, and records contact, final-speed, and support-height metrics. The sphere-rain smoke maps the historical 32 proposals as a static package, drops 9 probe spheres, and records package-probe contact-density proxy metrics. The Newton-native primitive bundle maps and constructs diagnostic shapes for a synthetic package containing `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison now lets the CPD-like fitter choose simple `cylinder`, `cone`, and `ellipsoid` proposals on three deterministic synthetic meshes and declares bed plus Franka as the next real-USD scope. A separate Franka/simple robot USD smoke opens the local Franka asset and runs capped first-mesh CPD-like geometry smoke. The component-merge gate reports merge policy, component counts, virtual merge attempts, and normalized excess-volume accounting while remaining below full CPD reproduction. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: compare the native-supported runtime path against the current
-`box`/`sphere`/`capsule` CPD-like generator path on synthetic packages before broadening asset
-claims or teaching the CPD-like generator to emit new native kinds. Keep `capped_cylinder`,
-`frustum`, and `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and
-diagnostic records exist.
+Current next action: run the old/new native-fitting comparison on capped bed and capped Franka USD
+meshes under explicit face caps, then use Newton contact canary before broader drop/settle or
+sphere-rain task smokes. Keep `capped_cylinder`, `frustum`, and `trapezoidal_prism` in the
+offline paper-alignment lane until separate mapping and diagnostic records exist.
 
 ## DeepDive Package
 
@@ -37,6 +36,9 @@ diagnostic records exist.
 - [Newton-native primitive bundle explainer](reference/newton-native-primitive-bundle-explainer.md):
   plain-language explanation of what the latest `cylinder`/`cone`/`ellipsoid` runtime diagnostic
   bundle adds to the CPD paper story, and what it does not claim.
+- [Newton-native fitting comparison](reference/newton-native-fitting-comparison.md):
+  plain-language explanation of the opt-in synthetic comparison where simple native fitters emit
+  `cylinder`, `cone`, and `ellipsoid`, while bed and Franka remain next-scope real USD assets.
 
 ## Source Intake And Planning
 
@@ -90,6 +92,8 @@ diagnostic records exist.
   `cone`, and `ellipsoid`.
 - [Newton native bundle explainer docs record](records/2026-05-15-newton-native-bundle-explainer-docs.md):
   documentation update that explains the latest native runtime bundle in the CPD paper story.
+- [Newton native fitting comparison record](records/2026-05-15-newton-native-fitting-comparison.md):
+  opt-in synthetic native fitting comparison and bed/Franka next-scope declaration.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.
@@ -117,6 +121,8 @@ diagnostic records exist.
   offline lane.
 - [Newton native primitive bundle plan](superpowers/plans/2026-05-15-newton-native-primitive-bundle.md):
   TDD implementation plan for the native `cylinder`, `cone`, and `ellipsoid` runtime bundle.
+- [Newton native fitting comparison plan](superpowers/plans/2026-05-15-newton-native-fitting-comparison.md):
+  TDD implementation plan for the opt-in native fitting comparison and bed/Franka scope update.
 
 ## Configs And Artifacts
 
@@ -128,6 +134,8 @@ diagnostic records exist.
   config.
 - `configs/experiments/cpd_like_capped_cylinder_proxy.yaml`: opt-in offline capped-cylinder
   proxy objective-report smoke config.
+- `configs/experiments/newton_native_fitting_comparison.yaml`: opt-in synthetic native fitting
+  comparison config that includes bed and Franka as next-scope real USD roles.
 - `npc-compile --run-cpd-like-synthetic-comparison`: command-only deterministic synthetic
   objective comparison, recorded in `experiments/registry.yaml` without a config file.
 - `npc-compile --run-cpd-like-cost-guided-synthetic-comparison`: command-only deterministic
@@ -135,6 +143,10 @@ diagnostic records exist.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.
+- `npc-compile --config configs/experiments/newton_native_fitting_comparison.yaml
+  --run-newton-native-fitting-comparison`: deterministic synthetic old/new comparison for opt-in
+  native `cylinder`, `cone`, and `ellipsoid` fitters, with bed and Franka listed as next-scope
+  real USD roles.
 - `scripts/env/readiness_check.py`: local environment-readiness JSON checker.
 - `experiments/registry.yaml`: experiment registry and claim-support status.
 - `assets/`, `reports/`, and `archive/`: artifact boundaries; large/generated outputs stay out
@@ -163,9 +175,10 @@ opt-in offline objective smoke where the unsupported paper primitive gap decreas
 with no Newton mapping or task-level improvement claim.
 The runtime primitive roadmap is Newton-native first: the native `cylinder`, `cone`, and
 `ellipsoid` bundle now has mapping, diagnostic construction, tests, and a dated synthetic runtime
-smoke record. This does not mean the CPD-like generator emits those kinds by default, and it does
-not add support for paper-only `capped_cylinder`, `frustum`, or `trapezoidal_prism` in Newton
-runtime.
+smoke record. The opt-in native fitting comparison can emit those kinds on three deterministic
+synthetic meshes, but this does not mean they are default asset behavior or real-USD improvement
+evidence. It does not add support for paper-only `capped_cylinder`, `frustum`, or
+`trapezoidal_prism` in Newton runtime.
 These evidence layers are not benchmark, collision-quality, whole-robot quality, real
 contact-stress, or CPD reproduction evidence.
 

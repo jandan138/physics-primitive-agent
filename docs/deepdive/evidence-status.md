@@ -66,6 +66,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   `ellipsoid`, and can run clean-env contact, drop/settle, and sphere-rain smokes for that
   synthetic package. This is diagnostic-path evidence, not broad asset evidence or proof that the
   CPD-like generator emits the new native kinds by default.
+- The current executable surface can run `cpd_like_newton_native_fitting_comparison`, an opt-in
+  deterministic synthetic comparison where the six-kind Newton-native subset selects `cylinder`,
+  `cone`, and `ellipsoid` on three toy meshes and maps the resulting one-primitive packages
+  through Newton shape mapping. This is synthetic fitting evidence, not collision-quality evidence,
+  default asset behavior, or completed bed/Franka evidence.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
@@ -114,6 +119,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   six-primitive package in the clean Newton environment: contact canaries passed for all six
   representative kinds, drop/settle completed 480 steps with max contact count 10 and no failure
   labels, and sphere-rain completed 480 steps with contact density proxy 1.0 and no failure labels.
+- The 2026-05-15 Newton native fitting comparison record reports `smoke_passed` for three
+  deterministic synthetic meshes: `cylindrical_rod` selects `cylinder`, `tapered_cone` selects
+  `cone`, and `ellipsoid_blob` selects `ellipsoid` under the opt-in six-kind subset. The record
+  also declares `bed_dev_smoke` and `franka_import_smoke` as next-scope real USD assets, not as
+  completed old/new comparison evidence.
 
 ## Current Unsupported Claims
 
@@ -135,7 +145,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   suite, or proof that all bad decompositions are caught.
 - The capped-cylinder proxy is paper-faithful primitive fitting, Newton capped-cylinder support,
   collision-quality evidence, benchmark evidence, or an asset/task improvement.
-- The CPD-like generator emits `cylinder`, `cone`, or `ellipsoid` by default.
+- The CPD-like generator emits `cylinder`, `cone`, or `ellipsoid` by default for normal asset
+  configs.
+- The opt-in native fitting comparison proves bed or Franka collision-package improvement.
 - The synthetic native primitive bundle proves broad asset quality, collision quality, benchmark
   performance, or paper-scope primitive coverage.
 - Environment-readiness diagnostics imply Newton simulation readiness.
@@ -176,11 +188,11 @@ component-merge gate with explicit merge-cost reporting, still below full CPD re
 first synthetic objective comparison now gives deterministic inspection cases for topology-only
 versus component-merge accounting. A focused cost-guided merge-search smoke now turns
 AABB-normalized merge-excess into an opt-in synthetic merge decision. A deterministic
-expected-failure workbench now converts three known CPD-paper gaps into diagnostic flags. Next use
-those expected limitations, the capped-cylinder proxy report, and the synthetic native primitive
-bundle to compare native-supported packages against the current `box`/`sphere`/`capsule` generator
-path before changing asset claims or adding LLM/VLM. Report failures and fallback behavior as
-first-class evidence.
+expected-failure workbench now converts three known CPD-paper gaps into diagnostic flags. The
+native fitting comparison now lets the synthetic workbench compare the old `box`/`sphere`/`capsule`
+subset against the six-kind Newton-native subset. Next run that old/new comparison on capped bed
+and capped Franka USD meshes before changing asset claims or adding LLM/VLM. Report failures and
+fallback behavior as first-class evidence.
 
 ## Current Non-Goals
 

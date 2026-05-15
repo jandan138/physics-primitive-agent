@@ -838,6 +838,96 @@ def test_cli_run_cpd_like_expected_failure_workbench_returns_nonzero_for_partial
     assert captured.err == ""
 
 
+def test_cli_run_newton_native_fitting_comparison_emits_json_without_config(capsys):
+    assert cli.main(["--run-newton-native-fitting-comparison"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "cpd_like_newton_native_fitting_comparison"
+    assert payload["status"] == "smoke_passed"
+    assert payload["cases"][0]["native"]["selected_primitive_kind"] == "cylinder"
+    assert [asset["role"] for asset in payload["real_usd_scope"]["assets"]] == [
+        "bed_dev_smoke",
+        "franka_import_smoke",
+    ]
+    assert captured.err == ""
+
+
+def test_cli_run_newton_native_fitting_comparison_rejects_non_finite_json(
+    capsys,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_newton_native_fitting_comparison_report",
+        lambda: {
+            "stage": "cpd_like_newton_native_fitting_comparison",
+            "status": "smoke_passed",
+            "bad": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-newton-native-fitting-comparison"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "newton_native_fitting_comparison report contains non-finite JSON values" in captured.err
+    assert "Traceback" not in captured.err
+
+
+def test_cli_run_newton_native_fitting_comparison_reads_config_subsets(tmp_path, capsys):
+    config_path = tmp_path / "native_compare.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: native_compare",
+                "  path: assets/manifests/cpd_like_smoke_assets.yaml",
+                "task:",
+                "  primary: native_primitive_fitting_comparison",
+                "cpd_like:",
+                "  legacy_primitive_subset:",
+                "    - box",
+                "    - sphere",
+                "    - capsule",
+                "    - cylinder",
+                "  native_primitive_subset:",
+                "    - box",
+                "    - sphere",
+                "    - capsule",
+                "    - cylinder",
+                "    - cone",
+                "    - ellipsoid",
+                "native_fitting_comparison:",
+                "  claim_boundary: custom_native_boundary",
+                "  evidence_level: custom_native_evidence",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-newton-native-fitting-comparison",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    cylindrical = {
+        case["case_id"]: case for case in payload["cases"]
+    }["cylindrical_rod"]
+    assert payload["status"] == "partial"
+    assert payload["claim_boundary"] == "custom_native_boundary"
+    assert payload["evidence_level"] == "custom_native_evidence"
+    assert payload["legacy_primitive_subset"] == ["box", "sphere", "capsule", "cylinder"]
+    assert cylindrical["comparison"]["native_selected_newton_extension"] is False
+
+
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

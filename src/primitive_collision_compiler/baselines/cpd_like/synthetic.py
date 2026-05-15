@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 
 import numpy as np
@@ -12,7 +13,9 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
     CPDLikeObjectiveOptions,
     build_cpd_like_objective_report,
 )
+from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
+from primitive_collision_compiler.newton.shapes import map_package_shapes
 
 SYNTHETIC_COMPARISON_CLAIM_BOUNDARY = (
     "synthetic_objective_comparison_not_collision_quality_validation"
@@ -32,6 +35,21 @@ EXPECTED_FAILURE_WORKBENCH_EVIDENCE_LEVEL = (
 )
 EXPECTED_FAILURE_WORKBENCH_STATUS_SEMANTICS = (
     "expected_limitations_reported_not_decomposition_success"
+)
+NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY = (
+    "native_fitting_comparison_not_collision_quality_validation"
+)
+NEWTON_NATIVE_FITTING_COMPARISON_EVIDENCE_LEVEL = (
+    "offline_synthetic_native_fitting_comparison_smoke"
+)
+NEWTON_NATIVE_LEGACY_SUBSET = ("box", "sphere", "capsule")
+NEWTON_NATIVE_EXTENDED_SUBSET = (
+    "box",
+    "sphere",
+    "capsule",
+    "cylinder",
+    "cone",
+    "ellipsoid",
 )
 
 
@@ -64,6 +82,15 @@ class _ExpectedFailureCase:
     expected_diagnostic_flags: tuple[str, ...]
     mesh: TriangleMesh
     policy: _PolicySpec
+    target_primitive_count: int = 1
+
+
+@dataclass(frozen=True)
+class _NativeFittingCase:
+    case_id: str
+    description: str
+    expected_native_primitive: str
+    mesh: TriangleMesh
     target_primitive_count: int = 1
 
 
@@ -120,6 +147,43 @@ def build_cpd_like_cost_guided_synthetic_comparison_report(
         "evidence_level": options.evidence_level,
         "objective_version": options.objective_version,
         "cases": case_payloads,
+    }
+
+
+def build_newton_native_fitting_comparison_report(
+    *,
+    legacy_subset: tuple[str, ...] = NEWTON_NATIVE_LEGACY_SUBSET,
+    native_subset: tuple[str, ...] = NEWTON_NATIVE_EXTENDED_SUBSET,
+    objective_options: CPDLikeObjectiveOptions | None = None,
+) -> dict[str, object]:
+    options = objective_options or CPDLikeObjectiveOptions(
+        claim_boundary=NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY,
+        evidence_level=NEWTON_NATIVE_FITTING_COMPARISON_EVIDENCE_LEVEL,
+    )
+    case_payloads = [
+        _native_fitting_case_payload(
+            case,
+            legacy_subset=legacy_subset,
+            native_subset=native_subset,
+            options=options,
+        )
+        for case in _native_fitting_cases()
+    ]
+    status = (
+        "smoke_passed"
+        if all(case["expectation_status"] == "matched" for case in case_payloads)
+        else "partial"
+    )
+    return {
+        "stage": "cpd_like_newton_native_fitting_comparison",
+        "status": status,
+        "claim_boundary": options.claim_boundary,
+        "evidence_level": options.evidence_level,
+        "objective_version": options.objective_version,
+        "legacy_primitive_subset": list(legacy_subset),
+        "native_primitive_subset": list(native_subset),
+        "cases": case_payloads,
+        "real_usd_scope": _real_usd_scope_payload(),
     }
 
 
@@ -225,6 +289,29 @@ def _cost_guided_synthetic_cases() -> tuple[_SyntheticCase, ...]:
     )
 
 
+def _native_fitting_cases() -> tuple[_NativeFittingCase, ...]:
+    return (
+        _NativeFittingCase(
+            case_id="cylindrical_rod",
+            description="Closed cylinder-like mesh with rings at both ends.",
+            expected_native_primitive="cylinder",
+            mesh=_cylindrical_rod_mesh(),
+        ),
+        _NativeFittingCase(
+            case_id="tapered_cone",
+            description="Cone-like mesh with one apex and one circular base ring.",
+            expected_native_primitive="cone",
+            mesh=_tapered_cone_mesh(),
+        ),
+        _NativeFittingCase(
+            case_id="ellipsoid_blob",
+            description="Axis-scaled octahedron used as an ellipsoid-like proxy fixture.",
+            expected_native_primitive="ellipsoid",
+            mesh=_ellipsoid_blob_mesh(),
+        ),
+    )
+
+
 def _expected_failure_cases() -> tuple[_ExpectedFailureCase, ...]:
     return (
         _ExpectedFailureCase(
@@ -313,6 +400,142 @@ def _case_payload(
         "expectation_status": expectation_status,
         "policies": policies,
         "comparison": _comparison(policies),
+    }
+
+
+def _native_fitting_case_payload(
+    case: _NativeFittingCase,
+    *,
+    legacy_subset: tuple[str, ...],
+    native_subset: tuple[str, ...],
+    options: CPDLikeObjectiveOptions,
+) -> dict[str, object]:
+    legacy = _native_fitting_policy_summary(
+        case,
+        label="legacy_box_sphere_capsule",
+        primitive_subset=legacy_subset,
+        options=options,
+    )
+    native = _native_fitting_policy_summary(
+        case,
+        label="native_six_kind",
+        primitive_subset=native_subset,
+        options=options,
+    )
+    comparison = _native_fitting_comparison(case, legacy, native)
+    expectation_status = "matched" if comparison["expectation_matched"] else "mismatched"
+    return {
+        "case_id": case.case_id,
+        "description": case.description,
+        "expected_native_primitive": case.expected_native_primitive,
+        "expectation_status": expectation_status,
+        "legacy": legacy,
+        "native": native,
+        "comparison": comparison,
+    }
+
+
+def _native_fitting_policy_summary(
+    case: _NativeFittingCase,
+    *,
+    label: str,
+    primitive_subset: tuple[str, ...],
+    options: CPDLikeObjectiveOptions,
+) -> dict[str, object]:
+    decomposition = decompose_mesh(
+        case.mesh,
+        max_primitives=case.target_primitive_count,
+        primitive_subset=primitive_subset,
+    )
+    objective = build_cpd_like_objective_report(
+        decomposition,
+        asset_id=case.case_id,
+        source_path=f"synthetic://{case.case_id}/{label}",
+        options=options,
+    ).to_dict()
+    package = package_from_cpd_like_report(
+        decomposition,
+        asset_id=f"{case.case_id}_{label}",
+        source_path=f"synthetic://{case.case_id}/{label}",
+        claim_boundary=options.claim_boundary,
+    )
+    metrics = objective["metrics"]
+    selected_kind = (
+        decomposition.primitives[0].primitive_type if decomposition.primitives else ""
+    )
+    return {
+        "label": label,
+        "status": objective["status"],
+        "primitive_subset": list(primitive_subset),
+        "selected_primitive_kind": selected_kind,
+        "primitive_count": decomposition.primitive_count,
+        "failure_labels": objective["failure_labels"],
+        "geometric_excess_proxy": metrics["geometric_excess_proxy"],
+        "paper_primitive_gap": metrics["paper_primitive_gap"],
+        "package_mapping": _package_mapping_summary(package),
+    }
+
+
+def _package_mapping_summary(package) -> dict[str, object]:
+    mappings = map_package_shapes(package)
+    status_counts = dict(Counter(mapping.status for mapping in mappings))
+    return {
+        "package_id": package.package_id,
+        "primitive_kinds": [primitive.kind for primitive in package.primitives],
+        "status_counts": status_counts,
+        "mapping_details": [mapping.to_dict() for mapping in mappings],
+    }
+
+
+def _native_fitting_comparison(
+    case: _NativeFittingCase,
+    legacy: dict[str, object],
+    native: dict[str, object],
+) -> dict[str, object]:
+    legacy_volume = float(
+        legacy["geometric_excess_proxy"]["normalized_weighted_primitive_volume"]
+    )
+    native_volume = float(
+        native["geometric_excess_proxy"]["normalized_weighted_primitive_volume"]
+    )
+    native_selected_extension = (
+        native["selected_primitive_kind"] == case.expected_native_primitive
+        and native["selected_primitive_kind"] not in set(legacy["primitive_subset"])
+    )
+    native_fully_mapped = native["package_mapping"]["status_counts"] == {"mapped": 1}
+    return {
+        "native_selected_newton_extension": native_selected_extension,
+        "native_package_fully_mapped": native_fully_mapped,
+        "native_normalized_volume_delta": float(native_volume - legacy_volume),
+        "legacy_normalized_weighted_volume": legacy_volume,
+        "native_normalized_weighted_volume": native_volume,
+        "expectation_matched": bool(
+            native_selected_extension
+            and native_fully_mapped
+            and native_volume <= legacy_volume
+        ),
+    }
+
+
+def _real_usd_scope_payload() -> dict[str, object]:
+    return {
+        "status": "scope_declared_not_run",
+        "manifest": "assets/manifests/cpd_like_smoke_assets.yaml",
+        "claim_boundary": "real_usd_scope_manifest_only_not_experiment_evidence",
+        "assets": [
+            {
+                "role": "bed_dev_smoke",
+                "asset_family": "furniture",
+                "max_source_faces": 256,
+                "purpose": "bed_usd_cpd_like_geometry_scope",
+            },
+            {
+                "role": "franka_import_smoke",
+                "asset_family": "robot",
+                "max_source_faces": 128,
+                "purpose": "franka_usd_cpd_like_geometry_scope",
+            },
+        ],
     }
 
 
@@ -607,3 +830,77 @@ def _cost_guided_pair_choice_mesh() -> TriangleMesh:
         ),
         faces=np.array([[0, 1, 2], [1, 2, 3], [4, 5, 6]]),
     )
+
+
+def _cylindrical_rod_mesh(segments: int = 12) -> TriangleMesh:
+    bottom_z = -2.0
+    top_z = 2.0
+    radius = 0.4
+    points: list[tuple[float, float, float]] = []
+    for z in (bottom_z, top_z):
+        for index in range(segments):
+            angle = 2.0 * np.pi * index / segments
+            points.append((radius * float(np.cos(angle)), radius * float(np.sin(angle)), z))
+    bottom_center = len(points)
+    points.append((0.0, 0.0, bottom_z))
+    top_center = len(points)
+    points.append((0.0, 0.0, top_z))
+
+    faces: list[tuple[int, int, int]] = []
+    for index in range(segments):
+        next_index = (index + 1) % segments
+        bottom_a = index
+        bottom_b = next_index
+        top_a = segments + index
+        top_b = segments + next_index
+        faces.append((bottom_a, bottom_b, top_b))
+        faces.append((bottom_a, top_b, top_a))
+        faces.append((bottom_center, bottom_b, bottom_a))
+        faces.append((top_center, top_a, top_b))
+    return TriangleMesh(points=np.asarray(points), faces=np.asarray(faces))
+
+
+def _tapered_cone_mesh(segments: int = 12) -> TriangleMesh:
+    base_z = -2.0
+    apex_z = 2.0
+    radius = 0.8
+    points: list[tuple[float, float, float]] = [(0.0, 0.0, apex_z)]
+    for index in range(segments):
+        angle = 2.0 * np.pi * index / segments
+        points.append((radius * float(np.cos(angle)), radius * float(np.sin(angle)), base_z))
+    base_center = len(points)
+    points.append((0.0, 0.0, base_z))
+
+    faces: list[tuple[int, int, int]] = []
+    for index in range(segments):
+        current_index = 1 + index
+        next_index = 1 + ((index + 1) % segments)
+        faces.append((0, current_index, next_index))
+        faces.append((base_center, next_index, current_index))
+    return TriangleMesh(points=np.asarray(points), faces=np.asarray(faces))
+
+
+def _ellipsoid_blob_mesh() -> TriangleMesh:
+    points = np.asarray(
+        [
+            (1.2, 0.0, 0.0),
+            (-1.2, 0.0, 0.0),
+            (0.0, 0.5, 0.0),
+            (0.0, -0.5, 0.0),
+            (0.0, 0.0, 0.25),
+            (0.0, 0.0, -0.25),
+        ]
+    )
+    faces = np.asarray(
+        [
+            (0, 2, 4),
+            (2, 1, 4),
+            (1, 3, 4),
+            (3, 0, 4),
+            (2, 0, 5),
+            (1, 2, 5),
+            (3, 1, 5),
+            (0, 3, 5),
+        ]
+    )
+    return TriangleMesh(points=points, faces=faces)

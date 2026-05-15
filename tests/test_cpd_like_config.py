@@ -199,3 +199,43 @@ def test_cpd_like_objective_report_config_is_offline_and_claim_bounded():
         "offline_cpd_like_objective_surrogate_smoke"
     )
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_newton_native_fitting_comparison_config_includes_bed_and_franka_scope():
+    config_path = Path("configs/experiments/newton_native_fitting_comparison.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "newton_native_fitting_comparison"
+    assert config.asset_path == "assets/manifests/cpd_like_smoke_assets.yaml"
+    assert config.task == "native_primitive_fitting_comparison"
+    assert config.method == "cpd_like_baseline"
+    assert config.verify == (
+        "synthetic_native_fitting_comparison",
+        "bed_usd_cpd_like_geometry_scope",
+        "franka_usd_cpd_like_geometry_scope",
+    )
+    assert config.protocol["cpd_like"]["asset_roles"] == [
+        "bed_dev_smoke",
+        "franka_import_smoke",
+    ]
+    assert config.protocol["cpd_like"]["legacy_primitive_subset"] == [
+        "box",
+        "sphere",
+        "capsule",
+    ]
+    assert config.protocol["cpd_like"]["native_primitive_subset"] == [
+        "box",
+        "sphere",
+        "capsule",
+        "cylinder",
+        "cone",
+        "ellipsoid",
+    ]
+    assert config.protocol["native_fitting_comparison"]["real_usd_roles"] == [
+        "bed_dev_smoke",
+        "franka_import_smoke",
+    ]
+    assert config.protocol["native_fitting_comparison"]["claim_boundary"] == (
+        "native_fitting_comparison_not_collision_quality_validation"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")

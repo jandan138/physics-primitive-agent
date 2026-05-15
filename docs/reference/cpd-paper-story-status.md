@@ -25,7 +25,9 @@ The repository has not reached that full result. It has reached the workbench st
 9. Newton can run narrow smoke diagnostics against the already mapped primitive package.
 10. A synthetic Newton-native package can exercise `box`, `sphere`, `capsule`, `cylinder`, `cone`,
     and `ellipsoid` through contact, drop/settle, and sphere-rain diagnostics.
-11. Records and configs can preserve exactly what was run.
+11. An opt-in native fitting comparison can make the CPD-like fitter choose simple `cylinder`,
+    `cone`, and `ellipsoid` proposals on deterministic synthetic meshes.
+12. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -34,8 +36,9 @@ from 3 to 2 in a named report. The runtime roadmap now stays Newton-native first
 `cone`, and `ellipsoid` have dated synthetic diagnostic-path evidence before any paper-only
 primitive is considered for Newton tasks.
 
-This means the reproduction infrastructure is in place. The paper-faithful decomposition and
-evaluation story still needs to be implemented.
+This means the reproduction infrastructure is in place, and the first native primitive fitting
+hook exists for synthetic toy meshes. The paper-faithful decomposition and evaluation story still
+needs to be implemented.
 
 ## Paper Story Layers
 
@@ -44,7 +47,7 @@ The CPD paper story can be read as eight layers.
 | Layer | Paper-story question | Repository status |
 | --- | --- | --- |
 | 1. Asset input | Can a complex mesh enter the pipeline? | Partially in place through USD-open and capped first-mesh extraction smokes. |
-| 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. |
+| 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. An opt-in synthetic comparison can now include simple `cylinder`, `cone`, and `ellipsoid` proxy fits. |
 | 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for one deterministic synthetic fixture only. |
 | 5. Expected limitations | Can known CPD-paper gaps stay visible before algorithmic changes? | Narrowly in place as a deterministic expected-failure synthetic workbench over three in-memory fixtures. This is diagnostic limitation accounting, not validation or benchmark evidence. |
@@ -100,6 +103,9 @@ For a plain-language explanation of this boundary, see
 
 For a plain-language explanation of the latest Newton-native runtime bundle, see
 [Newton-native primitive bundle explainer](newton-native-primitive-bundle-explainer.md).
+
+For a plain-language explanation of the latest opt-in native fitting comparison, see
+[Newton-native fitting comparison](newton-native-fitting-comparison.md).
 
 ## Is The Objective Report Paper-Consistent?
 
@@ -248,6 +254,36 @@ runtime smoke.
 can still appear in `paper_primitive_gap` accounting, but they should not enter Newton task claims
 without a separate mapping and diagnostic record.
 
+## What The Newton-Native Fitting Comparison Adds
+
+The native fitting comparison is the first narrow Layer 2 step after the runtime bundle. It lets
+the CPD-like fitter opt into the six-kind Newton-native subset:
+
+```text
+box, sphere, capsule, cylinder, cone, ellipsoid
+```
+
+and compares it against the older subset:
+
+```text
+box, sphere, capsule
+```
+
+on three deterministic toy meshes:
+
+- `cylindrical_rod`, where the native subset selects `cylinder`;
+- `tapered_cone`, where the native subset selects `cone`;
+- `ellipsoid_blob`, where the native subset selects `ellipsoid`.
+
+The report also checks that the resulting one-primitive synthetic packages map through Newton
+shape mapping. This is still a synthetic fitting smoke, not Newton task evidence and not
+collision-quality evidence.
+
+The same config now declares bed and Franka as the next real-USD scope. That scope declaration is
+not a completed real-asset result. The next concrete step is to run old/new objective reports on
+capped bed and capped Franka meshes, inspect mapping gaps and failure labels, and only then run
+Newton contact canaries or task smokes.
+
 ## What Newton Probes Mean Here
 
 Newton probes are downstream diagnostic checks. They answer a narrow question:
@@ -333,14 +369,14 @@ Avoid:
 
 The next slices should move toward runtime usefulness without overclaiming:
 
-1. Compare the native bundle against the current `box`/`sphere`/`capsule` path on synthetic
-   packages before broadening asset claims.
-2. Decide whether restricted `cylinder`, `cone`, or `ellipsoid` fitting belongs in the CPD-like
-   generator.
-3. Re-run bed and Franka smokes only after generation support has tests and a named diagnostic
-   record.
+1. Run the old/new native-fitting objective report on capped bed and capped Franka meshes.
+2. Compare primitive kind counts, volume proxy, merge-excess accounting, mapping gaps, and failure
+   labels for the real USD scope.
+3. If the old/new real USD packages map cleanly, run Newton contact canary before broader
+   drop/settle or sphere-rain task smokes.
 
 ## Claim Boundary
 
-This page adds only the narrow synthetic native-bundle diagnostic claim. It does not add
-benchmark, collision-quality, asset-wide, or paper-scope reproduction claims.
+This page adds only narrow synthetic native-bundle and opt-in synthetic native-fitting comparison
+claims. It does not add benchmark, collision-quality, completed bed/Franka old/new, asset-wide, or
+paper-scope reproduction claims.

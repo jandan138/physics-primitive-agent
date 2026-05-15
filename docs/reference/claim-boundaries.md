@@ -54,6 +54,11 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `cone`, and `ellipsoid`, with dated clean-env contact, drop/settle, and sphere-rain smoke
   evidence. This is synthetic diagnostic-path evidence, not broad asset evidence or a claim that
   the CPD-like generator emits all six kinds by default.
+- The current code can run an opt-in deterministic synthetic native fitting comparison where the
+  six-kind Newton-native subset selects `cylinder`, `cone`, and `ellipsoid` on three toy meshes
+  and maps the resulting one-primitive packages through Newton shape mapping. This is synthetic
+  fitting evidence, not collision-quality validation, default asset behavior, paper-faithful CPD
+  primitive fitting, broad asset evidence, or completed bed/Franka evidence.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
@@ -127,8 +132,9 @@ Use these only after broader benchmark records exist.
   primitive fitting implementation, Newton capped-cylinder support, collision-quality improvement,
   benchmark evidence, or asset/task improvement.
 - Do not claim broad Newton-native primitive quality for `cylinder`, `cone`, or `ellipsoid`
-  beyond the dated synthetic diagnostic-path record. Do not claim the CPD-like generator emits
-  these kinds by default until generation logic, configs, tests, and records exist.
+  beyond the dated synthetic diagnostic-path and opt-in synthetic fitting records. Do not claim
+  the CPD-like generator emits these kinds by default for normal asset configs. Do not claim bed or
+  Franka native-fitting improvement until real-USD old/new records exist.
 - Do not use CPD paper primitive-vocabulary completeness as a runtime support claim. Paper-only
   primitives remain offline diagnostics unless separately mapped and verified.
 

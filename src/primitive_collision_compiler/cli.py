@@ -14,9 +14,14 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
 )
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
+    NEWTON_NATIVE_EXTENDED_SUBSET,
+    NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY,
+    NEWTON_NATIVE_FITTING_COMPARISON_EVIDENCE_LEVEL,
+    NEWTON_NATIVE_LEGACY_SUBSET,
     build_cpd_like_cost_guided_synthetic_comparison_report,
     build_cpd_like_expected_failure_synthetic_workbench_report,
     build_cpd_like_synthetic_comparison_report,
+    build_newton_native_fitting_comparison_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError, load_first_mesh
 from primitive_collision_compiler.config import load_compile_config
@@ -68,6 +73,14 @@ def build_parser():
         "--run-cpd-like-expected-failure-workbench",
         action="store_true",
         help="run offline synthetic expected-failure workbench for known CPD-like gaps",
+    )
+    parser.add_argument(
+        "--run-newton-native-fitting-comparison",
+        action="store_true",
+        help=(
+            "run offline synthetic comparison between legacy and six-kind "
+            "Newton-native primitive fitting"
+        ),
     )
     parser.add_argument(
         "--run-newton-contact-smoke",
@@ -301,6 +314,23 @@ def main(argv=None):
             return 2
         return 0 if report["status"] == "smoke_passed" else 2
 
+    if args.run_newton_native_fitting_comparison:
+        try:
+            report = _run_newton_native_fitting_comparison(args.config)
+        except ValueError as exc:
+            print(f"npc-compile: {exc}", file=sys.stderr)
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: newton_native_fitting_comparison report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
     if args.run_newton_contact_smoke and args.config:
         try:
             config = load_compile_config(args.config)
@@ -503,6 +533,57 @@ def _asset_manifest_path(config):
     return config.asset_path
 
 
+def _run_newton_native_fitting_comparison(config_path):
+    if not config_path:
+        return build_newton_native_fitting_comparison_report()
+
+    config = load_compile_config(config_path)
+    cpd_like_section = config.protocol.get("cpd_like", {})
+    if not isinstance(cpd_like_section, dict):
+        cpd_like_section = {}
+    comparison_section = config.protocol.get("native_fitting_comparison", {})
+    if comparison_section is None:
+        comparison_section = {}
+    if not isinstance(comparison_section, dict):
+        raise ValueError("native_fitting_comparison must be a mapping")
+
+    legacy_subset = _cpd_like_named_primitive_subset(
+        cpd_like_section,
+        "legacy_primitive_subset",
+        NEWTON_NATIVE_LEGACY_SUBSET,
+    )
+    native_subset = _cpd_like_named_primitive_subset(
+        cpd_like_section,
+        "native_primitive_subset",
+        NEWTON_NATIVE_EXTENDED_SUBSET,
+    )
+    objective_options = CPDLikeObjectiveOptions(
+        objective_version=str(
+            comparison_section.get(
+                "objective_version",
+                "cpd_paper_aligned_surrogate_v0",
+            )
+        ),
+        claim_boundary=str(
+            comparison_section.get(
+                "claim_boundary",
+                NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY,
+            )
+        ),
+        evidence_level=str(
+            comparison_section.get(
+                "evidence_level",
+                NEWTON_NATIVE_FITTING_COMPARISON_EVIDENCE_LEVEL,
+            )
+        ),
+    )
+    return build_newton_native_fitting_comparison_report(
+        legacy_subset=legacy_subset,
+        native_subset=native_subset,
+        objective_options=objective_options,
+    )
+
+
 def _run_cpd_like_report(config):
     cpd_like_section = config.protocol.get("cpd_like", {})
     if not isinstance(cpd_like_section, dict):
@@ -522,12 +603,20 @@ def _run_cpd_like_report(config):
 
 
 def _cpd_like_primitive_subset(cpd_like_section):
-    value = cpd_like_section.get("primitive_subset", ("box", "sphere", "capsule"))
+    return _cpd_like_named_primitive_subset(
+        cpd_like_section,
+        "primitive_subset",
+        ("box", "sphere", "capsule"),
+    )
+
+
+def _cpd_like_named_primitive_subset(cpd_like_section, key, default):
+    value = cpd_like_section.get(key, default)
     if isinstance(value, str) or not isinstance(value, (list, tuple)):
-        raise ValueError("cpd_like.primitive_subset must be a list of strings")
+        raise ValueError(f"cpd_like.{key} must be a list of strings")
     result = tuple(str(item) for item in value)
     if not result or any(not item for item in result):
-        raise ValueError("cpd_like.primitive_subset must be a list of strings")
+        raise ValueError(f"cpd_like.{key} must be a list of strings")
     return result
 
 

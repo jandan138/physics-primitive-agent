@@ -104,6 +104,9 @@ Proposed | In progress | Complete | Failed | Superseded
   `cylinder`, `cone`, and `ellipsoid` runtime bundle.
 - [2026-05-15 Newton Native Bundle Explainer Docs](2026-05-15-newton-native-bundle-explainer-docs.md):
   plain-language documentation update for the latest native runtime bundle in the CPD paper story.
+- [2026-05-15 Newton Native Fitting Comparison](2026-05-15-newton-native-fitting-comparison.md):
+  opt-in synthetic comparison where the six-kind native subset selects `cylinder`, `cone`, and
+  `ellipsoid`, with bed and Franka declared as next-scope real USD assets.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

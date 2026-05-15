@@ -1,13 +1,20 @@
 import json
+import math
+
+import numpy as np
 
 import primitive_collision_compiler.baselines.cpd_like.synthetic as cpd_synthetic
+from primitive_collision_compiler.baselines.cpd_like.primitives import fit_best_primitive
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
     EXPECTED_FAILURE_WORKBENCH_CLAIM_BOUNDARY,
+    NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY,
     SYNTHETIC_COMPARISON_CLAIM_BOUNDARY,
     build_cpd_like_cost_guided_synthetic_comparison_report,
     build_cpd_like_expected_failure_synthetic_workbench_report,
     build_cpd_like_synthetic_comparison_report,
+    build_newton_native_fitting_comparison_report,
 )
+from primitive_collision_compiler.geometry.mesh import TriangleMesh
 
 
 def test_synthetic_comparison_report_covers_inspectable_cases():
@@ -204,3 +211,99 @@ def test_expected_failure_workbench_reports_partial_when_expected_flags_are_miss
         "unsupported_paper_primitives_present",
         "paper_alignment_surrogate_not_paper_faithful",
     ]
+
+
+def test_newton_native_fitting_comparison_selects_native_primitives():
+    report = build_newton_native_fitting_comparison_report()
+
+    assert report["stage"] == "cpd_like_newton_native_fitting_comparison"
+    assert report["status"] == "smoke_passed"
+    assert report["claim_boundary"] == NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY
+    assert [case["case_id"] for case in report["cases"]] == [
+        "cylindrical_rod",
+        "tapered_cone",
+        "ellipsoid_blob",
+    ]
+
+    expected_native = {
+        "cylindrical_rod": "cylinder",
+        "tapered_cone": "cone",
+        "ellipsoid_blob": "ellipsoid",
+    }
+    for case in report["cases"]:
+        case_id = case["case_id"]
+        assert case["expectation_status"] == "matched"
+        assert case["expected_native_primitive"] == expected_native[case_id]
+        assert case["legacy"]["selected_primitive_kind"] in {"box", "sphere", "capsule"}
+        assert case["native"]["selected_primitive_kind"] == expected_native[case_id]
+        assert case["comparison"]["native_selected_newton_extension"] is True
+        assert case["comparison"]["native_normalized_volume_delta"] <= 0.0
+        assert case["native"]["package_mapping"]["status_counts"] == {"mapped": 1}
+
+    real_scope = report["real_usd_scope"]
+    assert real_scope["status"] == "scope_declared_not_run"
+    assert real_scope["manifest"] == "assets/manifests/cpd_like_smoke_assets.yaml"
+    assert [asset["role"] for asset in real_scope["assets"]] == [
+        "bed_dev_smoke",
+        "franka_import_smoke",
+    ]
+    assert real_scope["assets"][0]["max_source_faces"] == 256
+    assert real_scope["assets"][1]["max_source_faces"] == 128
+
+
+def test_newton_native_fitting_comparison_report_is_strict_json_serializable():
+    report = build_newton_native_fitting_comparison_report()
+
+    encoded = json.dumps(report, allow_nan=False, sort_keys=True)
+
+    assert "cpd_like_newton_native_fitting_comparison" in encoded
+
+
+def test_cone_proxy_stays_finite_when_forced_on_non_cone_fixture():
+    mesh = cpd_synthetic._cylindrical_rod_mesh()
+
+    fit = fit_best_primitive(
+        mesh,
+        frozenset(range(mesh.face_count)),
+        primitive_subset=("cone",),
+    )
+
+    assert fit.primitive_type == "cone"
+    assert math.isfinite(fit.volume)
+    assert math.isfinite(fit.weighted_volume)
+    json.dumps(fit.to_dict(), allow_nan=False)
+
+
+def test_newton_native_fitting_comparison_respects_custom_legacy_subset():
+    report = build_newton_native_fitting_comparison_report(
+        legacy_subset=("box", "sphere", "capsule", "cylinder"),
+    )
+
+    cases = {case["case_id"]: case for case in report["cases"]}
+    cylindrical = cases["cylindrical_rod"]
+
+    assert report["status"] == "partial"
+    assert cylindrical["legacy"]["selected_primitive_kind"] == "cylinder"
+    assert cylindrical["native"]["selected_primitive_kind"] == "cylinder"
+    assert cylindrical["comparison"]["native_selected_newton_extension"] is False
+    assert cylindrical["expectation_status"] == "mismatched"
+
+
+def test_cylinder_proxy_floors_zero_span_volume():
+    mesh = TriangleMesh(
+        points=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0],
+            ]
+        ),
+        faces=np.array([[0, 1, 2]]),
+    )
+
+    fit = fit_best_primitive(mesh, frozenset({0}), primitive_subset=("cylinder",))
+
+    assert fit.primitive_type == "cylinder"
+    assert fit.dimensions["half_height"] > 0.0
+    assert fit.volume > 0.0
+    json.dumps(fit.to_dict(), allow_nan=False)
