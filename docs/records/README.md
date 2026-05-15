@@ -93,6 +93,8 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 CPD Capped-Cylinder Proxy](2026-05-15-cpd-capped-cylinder-proxy.md):
   opt-in offline capped-cylinder geometry proposal proxy and reduced unsupported paper primitive
   gap evidence.
+- [2026-05-15 CPD Capped-Cylinder Master Verification](2026-05-15-cpd-capped-cylinder-master-verification.md):
+  post-merge master verification for the capped-cylinder proxy slice.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.
