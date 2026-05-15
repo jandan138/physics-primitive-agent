@@ -357,6 +357,55 @@ def test_cli_run_cpd_like_component_merge_gate_emits_merge_metrics(tmp_path, cap
     assert payload["claim_boundary"] == "component_merge_gate_not_cpd_reproduction"
 
 
+def test_cli_run_cpd_like_accepts_cost_guided_merge_search_policy(tmp_path, capsys):
+    asset_path = tmp_path / "cost_guided_pair_choice.usda"
+    _write_mesh_usd(
+        asset_path,
+        [
+            (0.0, 0.0, 0.0),
+            (1.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0),
+            (10.0, 10.0, 10.0),
+            (0.05, 0.05, 0.05),
+            (1.05, 0.05, 0.05),
+            (0.05, 1.05, 0.05),
+        ],
+        [3, 3, 3],
+        [0, 1, 2, 1, 2, 3, 4, 5, 6],
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: cost_guided_pair_choice",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 2",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "  max_source_faces: 8",
+                "  component_merge: virtual_pairwise",
+                "  merge_search_policy: cost_guided_pairwise",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_cost_guided_merge_smoke"
+    assert payload["merge_policy"] == "virtual_pairwise"
+    assert payload["merge_search_policy"] == "cost_guided_pairwise"
+    assert payload["topology_merge_count"] == 0
+    assert payload["virtual_component_merge_count"] == 1
+
+
 def test_cli_run_cpd_like_objective_report_emits_json_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

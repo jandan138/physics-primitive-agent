@@ -20,6 +20,8 @@ Complete.
   choice.
 - Added `--run-cpd-like-cost-guided-synthetic-comparison` as a no-config CLI path that emits
   strict JSON.
+- Review hardening: restricted virtual component candidates to different original connected
+  components and exposed `cpd_like.merge_search_policy` through config-driven CPD-like CLI paths.
 - Updated claim-boundary, evidence, CPD story, objective-alignment, index, README, and registry
   documentation.
 
@@ -33,6 +35,10 @@ Complete.
   8 passed, 37 deselected.
 - `python -m pytest tests/test_cpd_like_decompose.py tests/test_cpd_like_synthetic.py tests/test_cli.py -q -k "cost_guided or synthetic_comparison or cpd_like_synthetic"`:
   10 passed, 48 deselected.
+- `python -m pytest tests/test_cpd_like_decompose.py tests/test_cli.py -q -k "connected_component or cost_guided_merge_search_policy"`:
+  4 passed, 52 deselected.
+- `python -m pytest tests/test_cpd_like_decompose.py tests/test_cpd_like_synthetic.py tests/test_cli.py -q -k "cost_guided or synthetic_comparison or cpd_like_synthetic or component_merge"`:
+  17 passed, 43 deselected.
 - `PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cost-guided-synthetic-comparison`:
   exit 0.
 - `python -m pytest -q`: 161 passed.

@@ -107,6 +107,12 @@ def decompose_mesh(
     component_ids: dict[int, frozenset[int]] = {
         face_index: frozenset({face_index}) for face_index in range(mesh.face_count)
     }
+    face_adjacency = mesh.adjacent_faces()
+    face_connected_component_ids = _face_connected_component_ids(face_adjacency)
+    connected_component_ids: dict[int, frozenset[int]] = {
+        face_index: frozenset({face_connected_component_ids[face_index]})
+        for face_index in range(mesh.face_count)
+    }
     fits: dict[int, PrimitiveFit] = {
         cluster_id: _with_merge_metadata(
             fit_best_primitive(mesh, face_ids, primitive_subset),
@@ -114,7 +120,6 @@ def decompose_mesh(
         )
         for cluster_id, face_ids in clusters.items()
     }
-    face_adjacency = mesh.adjacent_faces()
     mesh_aabb_volume = _mesh_aabb_volume(mesh)
     normalizer_volume = max(mesh_aabb_volume, MIN_NORMALIZATION_VOLUME)
     next_cluster_id = mesh.face_count
@@ -132,6 +137,7 @@ def decompose_mesh(
                 clusters,
                 fits,
                 component_ids,
+                connected_component_ids,
                 face_adjacency,
                 primitive_subset,
                 normalizer_volume,
@@ -153,6 +159,7 @@ def decompose_mesh(
                 clusters,
                 fits,
                 component_ids,
+                connected_component_ids,
                 next_cluster_id,
             )
             if merge_candidate.is_virtual_component_merge:
@@ -167,6 +174,7 @@ def decompose_mesh(
             clusters,
             fits,
             component_ids,
+            connected_component_ids,
             face_adjacency,
             primitive_subset,
             normalizer_volume,
@@ -178,6 +186,7 @@ def decompose_mesh(
                 clusters,
                 fits,
                 component_ids,
+                connected_component_ids,
                 next_cluster_id,
             )
             topology_merge_count += 1
@@ -193,6 +202,7 @@ def decompose_mesh(
             clusters,
             fits,
             component_ids,
+            connected_component_ids,
             face_adjacency,
             primitive_subset,
             normalizer_volume,
@@ -214,6 +224,7 @@ def decompose_mesh(
             clusters,
             fits,
             component_ids,
+            connected_component_ids,
             next_cluster_id,
         )
         virtual_component_merge_count += 1
@@ -279,6 +290,7 @@ def _best_merge(
     clusters: dict[int, frozenset[int]],
     fits: dict[int, PrimitiveFit],
     component_ids: dict[int, frozenset[int]],
+    connected_component_ids: dict[int, frozenset[int]],
     face_adjacency: dict[int, set[int]],
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
@@ -299,6 +311,10 @@ def _best_merge(
                 clusters[left_id],
                 clusters[right_id],
                 face_adjacency,
+            ):
+                continue
+            if not require_adjacency and (
+                connected_component_ids[left_id] & connected_component_ids[right_id]
             ):
                 continue
             merged_faces = clusters[left_id] | clusters[right_id]
@@ -340,6 +356,7 @@ def _best_cost_guided_merge(
     clusters: dict[int, frozenset[int]],
     fits: dict[int, PrimitiveFit],
     component_ids: dict[int, frozenset[int]],
+    connected_component_ids: dict[int, frozenset[int]],
     face_adjacency: dict[int, set[int]],
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
@@ -349,6 +366,7 @@ def _best_cost_guided_merge(
         clusters,
         fits,
         component_ids,
+        connected_component_ids,
         face_adjacency,
         primitive_subset,
         normalizer_volume,
@@ -359,6 +377,7 @@ def _best_cost_guided_merge(
         clusters,
         fits,
         component_ids,
+        connected_component_ids,
         face_adjacency,
         primitive_subset,
         normalizer_volume,
@@ -383,20 +402,27 @@ def _accept_merge(
     clusters: dict[int, frozenset[int]],
     fits: dict[int, PrimitiveFit],
     component_ids: dict[int, frozenset[int]],
+    connected_component_ids: dict[int, frozenset[int]],
     next_cluster_id: int,
 ) -> int:
     left_id = candidate.left_id
     right_id = candidate.right_id
     merged_faces = clusters[left_id] | clusters[right_id]
     merged_component_ids = component_ids[left_id] | component_ids[right_id]
+    merged_connected_component_ids = (
+        connected_component_ids[left_id] | connected_component_ids[right_id]
+    )
     del clusters[left_id]
     del clusters[right_id]
     del fits[left_id]
     del fits[right_id]
     del component_ids[left_id]
     del component_ids[right_id]
+    del connected_component_ids[left_id]
+    del connected_component_ids[right_id]
     clusters[next_cluster_id] = merged_faces
     component_ids[next_cluster_id] = merged_component_ids
+    connected_component_ids[next_cluster_id] = merged_connected_component_ids
     fits[next_cluster_id] = candidate.merged_fit
     return next_cluster_id + 1
 
@@ -407,6 +433,23 @@ def _clusters_are_adjacent(
     face_adjacency: dict[int, set[int]],
 ) -> bool:
     return any(face_adjacency[left_face] & right_faces for left_face in left_faces)
+
+
+def _face_connected_component_ids(face_adjacency: dict[int, set[int]]) -> dict[int, int]:
+    component_ids: dict[int, int] = {}
+    next_component_id = 0
+    for face_index in sorted(face_adjacency):
+        if face_index in component_ids:
+            continue
+        stack = [face_index]
+        while stack:
+            current = stack.pop()
+            if current in component_ids:
+                continue
+            component_ids[current] = next_component_id
+            stack.extend(sorted(face_adjacency[current] - component_ids.keys(), reverse=True))
+        next_component_id += 1
+    return component_ids
 
 
 def _with_merge_metadata(

@@ -515,6 +515,9 @@ def _cpd_like_primitive_subset(cpd_like_section):
 def _cpd_like_component_merge_options(cpd_like_section):
     return {
         "component_merge": str(cpd_like_section.get("component_merge", "topology_only")),
+        "merge_search_policy": str(
+            cpd_like_section.get("merge_search_policy", "topology_then_virtual")
+        ),
         "excess_volume_threshold_fraction": _optional_float_value(
             cpd_like_section.get("excess_volume_threshold_fraction"),
             "cpd_like.excess_volume_threshold_fraction",

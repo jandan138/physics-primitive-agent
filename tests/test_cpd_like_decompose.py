@@ -1,7 +1,7 @@
 import numpy as np
 
 from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
-from primitive_collision_compiler.baselines.cpd_like.primitives import fit_best_primitive
+from primitive_collision_compiler.baselines.cpd_like.primitives import PrimitiveFit, fit_best_primitive
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
 
 
@@ -235,6 +235,60 @@ def test_decompose_mesh_cost_guided_pairwise_keeps_virtual_threshold_gate():
     assert report.virtual_component_merge_count == 0
     assert report.blocked_merge_count == 1
     assert report.fallback_reason == "component_merge_threshold_blocked"
+
+
+def test_decompose_mesh_cost_guided_pairwise_skips_virtual_merge_inside_connected_component(
+    monkeypatch,
+):
+    def fake_fit(mesh, face_ids, primitive_subset):
+        source_faces = tuple(sorted(face_ids))
+        weighted_volumes = {
+            (0,): 10.0,
+            (1,): 10.0,
+            (2,): 10.0,
+            (0, 1): 100.0,
+            (1, 2): 100.0,
+            (0, 2): 1.0,
+        }
+        volume = weighted_volumes[source_faces]
+        return PrimitiveFit(
+            primitive_type="box",
+            source_faces=source_faces,
+            center=(0.0, 0.0, 0.0),
+            axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+            dimensions={"half_extents": [1.0, 1.0, 1.0]},
+            volume=volume,
+            weighted_volume=volume,
+            contains_assigned_points=True,
+        )
+
+    monkeypatch.setattr(
+        "primitive_collision_compiler.baselines.cpd_like.decompose.fit_best_primitive",
+        fake_fit,
+    )
+
+    report = decompose_mesh(
+        TriangleMesh(
+            points=np.array(
+                [
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [0.0, 1.0, 0.0],
+                    [1.0, 1.0, 0.0],
+                    [0.0, 2.0, 0.0],
+                ]
+            ),
+            faces=np.array([[0, 1, 2], [1, 2, 3], [2, 3, 4]]),
+        ),
+        max_primitives=2,
+        primitive_subset=("box",),
+        component_merge="virtual_pairwise",
+        merge_search_policy="cost_guided_pairwise",
+    )
+
+    assert report.topology_merge_count == 1
+    assert report.virtual_component_merge_count == 0
+    assert report.primitives[0].source_component_ids == (0, 1)
 
 
 def test_decompose_mesh_rejects_unknown_merge_search_policy():
