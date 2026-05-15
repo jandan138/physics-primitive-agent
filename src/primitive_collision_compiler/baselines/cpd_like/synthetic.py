@@ -4,7 +4,10 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
+from primitive_collision_compiler.baselines.cpd_like.decompose import (
+    MIN_NORMALIZATION_VOLUME,
+    decompose_mesh,
+)
 from primitive_collision_compiler.baselines.cpd_like.objective import (
     CPDLikeObjectiveOptions,
     build_cpd_like_objective_report,
@@ -20,6 +23,15 @@ COST_GUIDED_SYNTHETIC_COMPARISON_CLAIM_BOUNDARY = (
 )
 COST_GUIDED_SYNTHETIC_COMPARISON_EVIDENCE_LEVEL = (
     "offline_cpd_like_cost_guided_synthetic_comparison_smoke"
+)
+EXPECTED_FAILURE_WORKBENCH_CLAIM_BOUNDARY = (
+    "synthetic_expected_failure_workbench_not_collision_quality_validation"
+)
+EXPECTED_FAILURE_WORKBENCH_EVIDENCE_LEVEL = (
+    "offline_cpd_like_expected_failure_workbench_smoke"
+)
+EXPECTED_FAILURE_WORKBENCH_STATUS_SEMANTICS = (
+    "expected_limitations_reported_not_decomposition_success"
 )
 
 
@@ -38,6 +50,20 @@ class _SyntheticCase:
     expectation: str
     mesh: TriangleMesh
     policies: tuple[_PolicySpec, ...]
+    target_primitive_count: int = 1
+
+
+@dataclass(frozen=True)
+class _ExpectedFailureCase:
+    case_id: str
+    description: str
+    paper_story_gap: str
+    paper_gap_tags: tuple[str, ...]
+    limitation_class: str
+    next_capability_needed: str
+    expected_diagnostic_flags: tuple[str, ...]
+    mesh: TriangleMesh
+    policy: _PolicySpec
     target_primitive_count: int = 1
 
 
@@ -90,6 +116,39 @@ def build_cpd_like_cost_guided_synthetic_comparison_report(
     return {
         "stage": "cpd_like_cost_guided_synthetic_objective_comparison",
         "status": status,
+        "claim_boundary": options.claim_boundary,
+        "evidence_level": options.evidence_level,
+        "objective_version": options.objective_version,
+        "cases": case_payloads,
+    }
+
+
+def build_cpd_like_expected_failure_synthetic_workbench_report(
+    *,
+    primitive_subset: tuple[str, ...] = ("box",),
+    objective_options: CPDLikeObjectiveOptions | None = None,
+) -> dict[str, object]:
+    options = objective_options or CPDLikeObjectiveOptions(
+        claim_boundary=EXPECTED_FAILURE_WORKBENCH_CLAIM_BOUNDARY,
+        evidence_level=EXPECTED_FAILURE_WORKBENCH_EVIDENCE_LEVEL,
+    )
+    case_payloads = [
+        _expected_failure_case_payload(
+            case,
+            primitive_subset=primitive_subset,
+            options=options,
+        )
+        for case in _expected_failure_cases()
+    ]
+    status = (
+        "smoke_passed"
+        if all(case["expectation_status"] == "matched" for case in case_payloads)
+        else "partial"
+    )
+    return {
+        "stage": "cpd_like_expected_failure_synthetic_workbench",
+        "status": status,
+        "status_semantics": EXPECTED_FAILURE_WORKBENCH_STATUS_SEMANTICS,
         "claim_boundary": options.claim_boundary,
         "evidence_level": options.evidence_level,
         "objective_version": options.objective_version,
@@ -166,6 +225,71 @@ def _cost_guided_synthetic_cases() -> tuple[_SyntheticCase, ...]:
     )
 
 
+def _expected_failure_cases() -> tuple[_ExpectedFailureCase, ...]:
+    return (
+        _ExpectedFailureCase(
+            case_id="restricted_primitive_vocabulary_gap",
+            description="Adjacent square under the current restricted primitive vocabulary.",
+            paper_story_gap="restricted_primitive_vocabulary",
+            paper_gap_tags=(
+                "restricted_primitive_vocabulary",
+                "paper_scope_primitive_fitting",
+            ),
+            limitation_class="expected_primitive_fit_gap",
+            next_capability_needed="primitive_fit_extension",
+            expected_diagnostic_flags=(
+                "unsupported_paper_primitives_present",
+                "paper_alignment_surrogate_not_paper_faithful",
+            ),
+            mesh=_adjacent_square_mesh(),
+            policy=_PolicySpec(label="topology_only", component_merge="topology_only"),
+        ),
+        _ExpectedFailureCase(
+            case_id="single_proxy_wraps_disconnected_components",
+            description="Disconnected triangles merged into one proxy by virtual component merge.",
+            paper_story_gap="empty_space_wrapping_proxy",
+            paper_gap_tags=(
+                "assigned_vertex_containment_proxy_only",
+                "no_surface_distance_or_collision_benchmark",
+            ),
+            limitation_class="expected_empty_wrapper_proxy",
+            next_capability_needed="primitive_fit_extension",
+            expected_diagnostic_flags=(
+                "unsupported_paper_primitives_present",
+                "paper_alignment_surrogate_not_paper_faithful",
+                "virtual_component_merge_used",
+                "empty_space_wrap_proxy_present",
+            ),
+            mesh=_disconnected_triangles_mesh(),
+            policy=_PolicySpec(label="virtual_pairwise", component_merge="virtual_pairwise"),
+        ),
+        _ExpectedFailureCase(
+            case_id="threshold_blocks_component_merge",
+            description="Disconnected triangles with virtual component merge threshold set to zero.",
+            paper_story_gap="threshold_blocked_component_merge",
+            paper_gap_tags=(
+                "threshold_applies_only_to_virtual_component_merges",
+                "candidate_graph_restricted",
+            ),
+            limitation_class="expected_threshold_block",
+            next_capability_needed="merge_search_extension",
+            expected_diagnostic_flags=(
+                "unsupported_paper_primitives_present",
+                "paper_alignment_surrogate_not_paper_faithful",
+                "component_merge_blocked",
+                "unmerged_components",
+                "primitive_budget_not_met",
+            ),
+            mesh=_disconnected_triangles_mesh(),
+            policy=_PolicySpec(
+                label="virtual_pairwise",
+                component_merge="virtual_pairwise",
+                excess_volume_threshold_fraction=0.0,
+            ),
+        ),
+    )
+
+
 def _case_payload(
     case: _SyntheticCase,
     *,
@@ -192,12 +316,65 @@ def _case_payload(
     }
 
 
+def _expected_failure_case_payload(
+    case: _ExpectedFailureCase,
+    *,
+    primitive_subset: tuple[str, ...],
+    options: CPDLikeObjectiveOptions,
+) -> dict[str, object]:
+    policy = _policy_summary(
+        _SyntheticCase(
+            case_id=case.case_id,
+            description=case.description,
+            expectation="Expected diagnostic flags should be observed.",
+            mesh=case.mesh,
+            policies=(case.policy,),
+            target_primitive_count=case.target_primitive_count,
+        ),
+        case.policy,
+        primitive_subset=primitive_subset,
+        options=options,
+        include_extended_metrics=True,
+    )
+    expected = list(case.expected_diagnostic_flags)
+    observed = _diagnostic_flags(policy)
+    missing = [flag for flag in expected if flag not in observed]
+    unexpected = [flag for flag in observed if flag not in expected]
+    match_status = "matched" if not missing and not unexpected else "mismatched"
+    return {
+        "case_id": case.case_id,
+        "description": case.description,
+        "paper_story_gap": case.paper_story_gap,
+        "paper_gap_tags": list(case.paper_gap_tags),
+        "limitation_class": case.limitation_class,
+        "next_capability_needed": case.next_capability_needed,
+        "fixture_geometry_summary": _fixture_geometry_summary(case.mesh, policy),
+        "expected_diagnostic_flags": {
+            "expected": expected,
+            "observed": observed,
+            "missing": missing,
+            "unexpected": unexpected,
+            "match_status": match_status,
+        },
+        "expectation_status": match_status,
+        "policy": policy,
+        "metrics": {
+            "primitive_budget": policy["primitive_budget"],
+            "merge_excess_terms": policy["merge_excess_terms"],
+            "component_accounting": policy["component_accounting"],
+            "paper_primitive_gap": policy["paper_primitive_gap"],
+            "paper_alignment": policy["paper_alignment"],
+        },
+    }
+
+
 def _policy_summary(
     case: _SyntheticCase,
     policy: _PolicySpec,
     *,
     primitive_subset: tuple[str, ...],
     options: CPDLikeObjectiveOptions,
+    include_extended_metrics: bool = False,
 ) -> dict[str, object]:
     decomposition = decompose_mesh(
         case.mesh,
@@ -217,7 +394,7 @@ def _policy_summary(
     merge_excess_terms = objective["metrics"]["merge_excess_terms"]
     component_accounting = objective["metrics"]["component_accounting"]
     paper_alignment = objective["metrics"]["paper_alignment"]
-    return {
+    summary = {
         "status": objective["status"],
         "decomposition_stage": objective["decomposition_stage"],
         "primitive_count": primitive_budget["primitive_count"],
@@ -227,6 +404,68 @@ def _policy_summary(
         "component_accounting": component_accounting,
         "paper_alignment": paper_alignment,
     }
+    if include_extended_metrics:
+        summary["geometric_excess_proxy"] = objective["metrics"]["geometric_excess_proxy"]
+        summary["paper_primitive_gap"] = objective["metrics"]["paper_primitive_gap"]
+    return summary
+
+
+def _diagnostic_flags(policy: dict[str, object]) -> list[str]:
+    flags: list[str] = []
+    paper_alignment = policy["paper_alignment"]
+    paper_primitive_gap = policy["paper_primitive_gap"]
+    merge_excess_terms = policy["merge_excess_terms"]
+    component_accounting = policy["component_accounting"]
+    failure_labels = set(policy["failure_labels"])
+
+    if paper_primitive_gap["unsupported_paper_primitive_count"] > 0:
+        flags.append("unsupported_paper_primitives_present")
+    if paper_alignment["paper_faithfulness"] == "surrogate_not_paper_faithful":
+        flags.append("paper_alignment_surrogate_not_paper_faithful")
+    if component_accounting["virtual_component_merge_count"] > 0:
+        flags.append("virtual_component_merge_used")
+    if (
+        component_accounting["virtual_component_merge_count"] > 0
+        and float(merge_excess_terms["accepted_eq4_cost_sum"] or 0.0) > 0.0
+    ):
+        flags.append("empty_space_wrap_proxy_present")
+    if "component_merge_blocked" in failure_labels:
+        flags.append("component_merge_blocked")
+    if "unmerged_components" in failure_labels:
+        flags.append("unmerged_components")
+    if "primitive_budget_not_met" in failure_labels:
+        flags.append("primitive_budget_not_met")
+    return flags
+
+
+def _fixture_geometry_summary(
+    mesh: TriangleMesh,
+    policy: dict[str, object],
+) -> dict[str, object]:
+    mesh_aabb_volume = float(policy["geometric_excess_proxy"]["mesh_aabb_volume"])
+    return {
+        "point_count": int(mesh.points.shape[0]),
+        "face_count": mesh.face_count,
+        "connected_component_count": _connected_component_count(mesh),
+        "mesh_aabb_volume": mesh_aabb_volume,
+        "normalizer_floor_applied": bool(mesh_aabb_volume < MIN_NORMALIZATION_VOLUME),
+    }
+
+
+def _connected_component_count(mesh: TriangleMesh) -> int:
+    adjacency = mesh.adjacent_faces()
+    unseen = set(adjacency)
+    count = 0
+    while unseen:
+        count += 1
+        stack = [unseen.pop()]
+        while stack:
+            face_id = stack.pop()
+            for neighbor in adjacency[face_id]:
+                if neighbor in unseen:
+                    unseen.remove(neighbor)
+                    stack.append(neighbor)
+    return count
 
 
 def _comparison(policies: dict[str, dict[str, object]]) -> dict[str, object]:

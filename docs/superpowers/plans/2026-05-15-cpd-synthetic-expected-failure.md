@@ -15,7 +15,7 @@
 **Files:**
 - Modify: `tests/test_cpd_like_synthetic.py`
 
-- [ ] **Step 1: Write failing report schema test**
+- [x] **Step 1: Write failing report schema test**
 
 Add import:
 
@@ -121,7 +121,7 @@ def test_expected_failure_workbench_reports_known_cpd_gaps():
     }
 ```
 
-- [ ] **Step 2: Write failing strict JSON test**
+- [x] **Step 2: Write failing strict JSON test**
 
 Add:
 
@@ -134,7 +134,7 @@ def test_expected_failure_workbench_report_is_strict_json_serializable():
     assert "cpd_like_expected_failure_synthetic_workbench" in encoded
 ```
 
-- [ ] **Step 3: Run tests and confirm RED**
+- [x] **Step 3: Run tests and confirm RED**
 
 Run:
 
@@ -151,7 +151,7 @@ Expected: import failure because the expected-failure builder and constant do no
 - Modify: `src/primitive_collision_compiler/baselines/cpd_like/__init__.py`
 - Test: `tests/test_cpd_like_synthetic.py`
 
-- [ ] **Step 1: Add constants and public builder**
+- [x] **Step 1: Add constants and public builder**
 
 In `synthetic.py`, import the normalizer floor:
 
@@ -208,7 +208,7 @@ def build_cpd_like_expected_failure_synthetic_workbench_report(
     }
 ```
 
-- [ ] **Step 2: Add expected-failure case specs**
+- [x] **Step 2: Add expected-failure case specs**
 
 Add:
 
@@ -235,7 +235,7 @@ Add `_expected_failure_cases()` with the three cases from the design. Use these 
 ("threshold_applies_only_to_virtual_component_merges", "candidate_graph_restricted")
 ```
 
-- [ ] **Step 3: Extend policy summary**
+- [x] **Step 3: Extend policy summary**
 
 In `_policy_summary(...)`, read:
 
@@ -251,7 +251,7 @@ and include:
 "paper_primitive_gap": paper_primitive_gap,
 ```
 
-- [ ] **Step 4: Add payload and flag helpers**
+- [x] **Step 4: Add payload and flag helpers**
 
 Implement:
 
@@ -371,7 +371,7 @@ def _connected_component_count(mesh: TriangleMesh) -> int:
     return count
 ```
 
-- [ ] **Step 5: Export from package init**
+- [x] **Step 5: Export from package init**
 
 In `src/primitive_collision_compiler/baselines/cpd_like/__init__.py`, import and add to
 `__all__`:
@@ -380,7 +380,7 @@ In `src/primitive_collision_compiler/baselines/cpd_like/__init__.py`, import and
 build_cpd_like_expected_failure_synthetic_workbench_report
 ```
 
-- [ ] **Step 6: Run tests and confirm GREEN**
+- [x] **Step 6: Run tests and confirm GREEN**
 
 Run:
 
@@ -396,7 +396,7 @@ Expected: selected tests pass.
 - Modify: `src/primitive_collision_compiler/cli.py`
 - Modify: `tests/test_cli.py`
 
-- [ ] **Step 1: Write failing CLI tests**
+- [x] **Step 1: Write failing CLI tests**
 
 Add:
 
@@ -440,7 +440,7 @@ def test_cli_run_cpd_like_expected_failure_workbench_rejects_non_finite_json(
     )
 ```
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 Run:
 
@@ -450,7 +450,7 @@ python -m pytest tests/test_cli.py -q -k expected_failure_workbench
 
 Expected: parser rejects the new flag or imported builder is missing.
 
-- [ ] **Step 3: Implement CLI flag**
+- [x] **Step 3: Implement CLI flag**
 
 In `cli.py`, import the builder, add:
 
@@ -479,7 +479,7 @@ if args.run_cpd_like_expected_failure_workbench:
     return 0 if report["status"] == "smoke_passed" else 2
 ```
 
-- [ ] **Step 4: Run CLI tests and confirm GREEN**
+- [x] **Step 4: Run CLI tests and confirm GREEN**
 
 Run:
 
@@ -501,7 +501,7 @@ Expected: selected CLI tests pass.
 - Modify: `docs/records/README.md`
 - Modify: `README.md`
 
-- [ ] **Step 1: Update reference docs**
+- [x] **Step 1: Update reference docs**
 
 Document that the expected-failure workbench converts known CPD-paper gaps into deterministic
 diagnostic flags. Use:
@@ -515,7 +515,7 @@ diagnostic flags. Use:
 - `not paper-faithful CPD reproduction`;
 - `smoke_passed means expected limitations were reported, not decomposition success`.
 
-- [ ] **Step 2: Add dated record**
+- [x] **Step 2: Add dated record**
 
 Record:
 
@@ -526,7 +526,7 @@ Record:
 - claim impact;
 - next action.
 
-- [ ] **Step 3: Run documentation checks**
+- [x] **Step 3: Run documentation checks**
 
 Run:
 
@@ -542,7 +542,7 @@ Expected: both pass.
 **Files:**
 - All changed files.
 
-- [ ] **Step 1: Run targeted tests**
+- [x] **Step 1: Run targeted tests**
 
 ```bash
 python -m pytest tests/test_cpd_like_synthetic.py tests/test_cli.py -q -k "expected_failure or synthetic_comparison"
@@ -550,7 +550,7 @@ python -m pytest tests/test_cpd_like_synthetic.py tests/test_cli.py -q -k "expec
 
 Expected: selected tests pass.
 
-- [ ] **Step 2: Run full tests**
+- [x] **Step 2: Run full tests**
 
 ```bash
 python -m pytest -q
@@ -558,16 +558,16 @@ python -m pytest -q
 
 Expected: all tests pass.
 
-- [ ] **Step 3: Request focused agent review**
+- [x] **Step 3: Request focused agent review**
 
 Ask one reviewer to check report/schema/test correctness and one reviewer to check claim-boundary
 wording.
 
-- [ ] **Step 4: Fix Important/Critical findings**
+- [x] **Step 4: Fix Important/Critical findings**
 
 If review finds Important or Critical issues, fix them with tests and rerun verification.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/primitive_collision_compiler/baselines/cpd_like/synthetic.py \
@@ -592,4 +592,3 @@ git commit -m "feat: add cpd synthetic expected failure workbench"
 
 No placeholders remain. The plan keeps this slice diagnostic and does not add new primitive fitting,
 Newton execution, benchmark evaluation, general failure detection, or collision-quality claims.
-

@@ -39,6 +39,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   decision-making cost and compares old/new diagnostic accounting on deterministic synthetic
   fixture. This is not benchmark evidence, collision-quality evidence, paper-faithful
   optimization, or full CPD reproduction.
+- The current executable surface can run `cpd_like_expected_failure_synthetic_workbench`, a
+  command-only deterministic expected-failure synthetic workbench over known CPD-paper gaps. It
+  reports expected, observed, missing, and unexpected diagnostic flags for each fixture.
+  `smoke_passed` means expected limitations were reported, not decomposition success, benchmark
+  evidence, collision-quality validation, or full CPD reproduction.
 - The current CPD paper-story position is documented as a reproduction workbench, not as a
   paper-faithful implementation. See
   [CPD paper story status](../reference/cpd-paper-story-status.md).
@@ -87,6 +92,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   `cost_guided_pairwise` takes one virtual component merge with accepted normalized merge-excess
   sum `0.000055121`. This is old/new diagnostic accounting on a toy mesh, not collision-quality
   evidence.
+- The 2026-05-15 CPD synthetic expected-failure workbench record reports `smoke_passed` for three
+  deterministic known-gap fixtures: `restricted_primitive_vocabulary_gap`,
+  `single_proxy_wraps_disconnected_components`, and `threshold_blocks_component_merge`. All three
+  fixtures matched their expected diagnostic flags with no missing or unexpected flags.
 
 ## Current Unsupported Claims
 
@@ -103,6 +112,8 @@ This file separates current evidence from future claims. See [message-map.md](me
 - Full CPD paper reproduction has been implemented or evaluated.
 - The face-merge baseline is the CPD paper algorithm.
 - The component-merge gate is the CPD paper algorithm.
+- The expected-failure synthetic workbench is a general failure detector, benchmark, validation
+  suite, or proof that all bad decompositions are caught.
 - Environment-readiness diagnostics imply Newton simulation readiness.
 
 ## Future Evidence Needed
@@ -140,10 +151,11 @@ making robot-quality claims. The first CPD-like algorithmic extension is an opt-
 component-merge gate with explicit merge-cost reporting, still below full CPD reproduction. The
 first synthetic objective comparison now gives deterministic inspection cases for topology-only
 versus component-merge accounting. A focused cost-guided merge-search smoke now turns
-AABB-normalized merge-excess into an opt-in synthetic merge decision. Next broaden synthetic
-fixtures only for specific expected failure modes, then re-run bed and Franka smokes before
-changing Newton probes or adding LLM/VLM. Report failures and fallback behavior as first-class
-evidence.
+AABB-normalized merge-excess into an opt-in synthetic merge decision. A deterministic
+expected-failure workbench now converts three known CPD-paper gaps into diagnostic flags. Next use
+those expected limitations to choose one focused primitive-fitting or merge-search improvement,
+then re-run bed and Franka smokes before changing Newton probes or adding LLM/VLM. Report failures
+and fallback behavior as first-class evidence.
 
 ## Current Non-Goals
 

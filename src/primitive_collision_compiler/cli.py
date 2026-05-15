@@ -15,6 +15,7 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
     build_cpd_like_cost_guided_synthetic_comparison_report,
+    build_cpd_like_expected_failure_synthetic_workbench_report,
     build_cpd_like_synthetic_comparison_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError, load_first_mesh
@@ -62,6 +63,11 @@ def build_parser():
         "--run-cpd-like-cost-guided-synthetic-comparison",
         action="store_true",
         help="run offline synthetic objective comparison for the cost-guided merge-search smoke",
+    )
+    parser.add_argument(
+        "--run-cpd-like-expected-failure-workbench",
+        action="store_true",
+        help="run offline synthetic expected-failure workbench for known CPD-like gaps",
     )
     parser.add_argument(
         "--run-newton-contact-smoke",
@@ -276,6 +282,19 @@ def main(argv=None):
         except ValueError as exc:
             print(
                 "npc-compile: cpd_like_cost_guided_synthetic_comparison report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_expected_failure_workbench:
+        report = build_cpd_like_expected_failure_synthetic_workbench_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_expected_failure_workbench report contains "
                 f"non-finite JSON values: {exc}",
                 file=sys.stderr,
             )

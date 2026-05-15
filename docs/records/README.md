@@ -85,6 +85,9 @@ Proposed | In progress | Complete | Failed | Superseded
   component-merge accounting.
 - [2026-05-15 CPD-Like Cost-Guided Merge](2026-05-15-cpd-like-cost-guided-merge.md):
   focused CPD-like cost-guided merge-search smoke over one deterministic synthetic fixture.
+- [2026-05-15 CPD Synthetic Expected-Failure Workbench](2026-05-15-cpd-synthetic-expected-failure-workbench.md):
+  deterministic expected-failure workbench that reports known CPD-paper gaps as diagnostic
+  limitation flags.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

@@ -726,6 +726,67 @@ def test_cli_run_cpd_like_cost_guided_synthetic_comparison_rejects_non_finite_js
     assert "Traceback" not in captured.err
 
 
+def test_cli_run_cpd_like_expected_failure_workbench_emits_json_without_config(capsys):
+    assert cli.main(["--run-cpd-like-expected-failure-workbench"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "cpd_like_expected_failure_synthetic_workbench"
+    assert payload["status"] == "smoke_passed"
+    assert payload["status_semantics"] == (
+        "expected_limitations_reported_not_decomposition_success"
+    )
+    assert payload["cases"][0]["case_id"] == "restricted_primitive_vocabulary_gap"
+    assert captured.err == ""
+
+
+def test_cli_run_cpd_like_expected_failure_workbench_rejects_non_finite_json(
+    capsys,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_expected_failure_synthetic_workbench_report",
+        lambda: {
+            "stage": "cpd_like_expected_failure_synthetic_workbench",
+            "status": "smoke_passed",
+            "bad": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-expected-failure-workbench"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert (
+        "cpd_like_expected_failure_workbench report contains non-finite JSON values"
+        in captured.err
+    )
+    assert "Traceback" not in captured.err
+
+
+def test_cli_run_cpd_like_expected_failure_workbench_returns_nonzero_for_partial(
+    capsys,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_expected_failure_synthetic_workbench_report",
+        lambda: {
+            "stage": "cpd_like_expected_failure_synthetic_workbench",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-expected-failure-workbench"]) == 2
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["status"] == "partial"
+    assert captured.err == ""
+
+
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

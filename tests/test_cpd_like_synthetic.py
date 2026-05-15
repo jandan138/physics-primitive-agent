@@ -1,8 +1,11 @@
 import json
 
+import primitive_collision_compiler.baselines.cpd_like.synthetic as cpd_synthetic
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
+    EXPECTED_FAILURE_WORKBENCH_CLAIM_BOUNDARY,
     SYNTHETIC_COMPARISON_CLAIM_BOUNDARY,
     build_cpd_like_cost_guided_synthetic_comparison_report,
+    build_cpd_like_expected_failure_synthetic_workbench_report,
     build_cpd_like_synthetic_comparison_report,
 )
 
@@ -21,6 +24,8 @@ def test_synthetic_comparison_report_covers_inspectable_cases():
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert cases["adjacent_square"]["policies"]["topology_only"]["status"] == "smoke_passed"
+    assert "geometric_excess_proxy" not in cases["adjacent_square"]["policies"]["topology_only"]
+    assert "paper_primitive_gap" not in cases["adjacent_square"]["policies"]["topology_only"]
     assert cases["adjacent_square"]["policies"]["virtual_pairwise"]["status"] == "smoke_passed"
     assert cases["adjacent_square"]["comparison"][
         "primitive_count_delta_virtual_minus_topology"
@@ -86,3 +91,116 @@ def test_cost_guided_synthetic_comparison_report_is_strict_json_serializable():
     encoded = json.dumps(report, allow_nan=False, sort_keys=True)
 
     assert "cpd_like_cost_guided_synthetic_objective_comparison" in encoded
+
+
+def test_expected_failure_workbench_reports_known_cpd_gaps():
+    report = build_cpd_like_expected_failure_synthetic_workbench_report()
+
+    assert report["stage"] == "cpd_like_expected_failure_synthetic_workbench"
+    assert report["status"] == "smoke_passed"
+    assert report["status_semantics"] == (
+        "expected_limitations_reported_not_decomposition_success"
+    )
+    assert report["claim_boundary"] == EXPECTED_FAILURE_WORKBENCH_CLAIM_BOUNDARY
+    assert report["evidence_level"] == (
+        "offline_cpd_like_expected_failure_workbench_smoke"
+    )
+    assert [case["case_id"] for case in report["cases"]] == [
+        "restricted_primitive_vocabulary_gap",
+        "single_proxy_wraps_disconnected_components",
+        "threshold_blocks_component_merge",
+    ]
+
+    cases = {case["case_id"]: case for case in report["cases"]}
+    restricted = cases["restricted_primitive_vocabulary_gap"]
+    assert restricted["expectation_status"] == "matched"
+    assert restricted["limitation_class"] == "expected_primitive_fit_gap"
+    assert restricted["next_capability_needed"] == "primitive_fit_extension"
+    assert restricted["paper_gap_tags"] == [
+        "restricted_primitive_vocabulary",
+        "paper_scope_primitive_fitting",
+    ]
+    assert restricted["fixture_geometry_summary"] == {
+        "point_count": 4,
+        "face_count": 2,
+        "connected_component_count": 1,
+        "mesh_aabb_volume": 0.0,
+        "normalizer_floor_applied": True,
+    }
+    assert restricted["expected_diagnostic_flags"] == {
+        "expected": [
+            "unsupported_paper_primitives_present",
+            "paper_alignment_surrogate_not_paper_faithful",
+        ],
+        "observed": [
+            "unsupported_paper_primitives_present",
+            "paper_alignment_surrogate_not_paper_faithful",
+        ],
+        "missing": [],
+        "unexpected": [],
+        "match_status": "matched",
+    }
+    assert restricted["metrics"]["paper_primitive_gap"][
+        "unsupported_paper_primitive_count"
+    ] == 3
+
+    wrapped = cases["single_proxy_wraps_disconnected_components"]
+    assert wrapped["expectation_status"] == "matched"
+    assert wrapped["limitation_class"] == "expected_empty_wrapper_proxy"
+    assert wrapped["next_capability_needed"] == "primitive_fit_extension"
+    assert wrapped["fixture_geometry_summary"]["connected_component_count"] == 2
+    assert wrapped["expected_diagnostic_flags"]["missing"] == []
+    assert wrapped["expected_diagnostic_flags"]["unexpected"] == []
+    assert "virtual_component_merge_used" in wrapped["expected_diagnostic_flags"]["observed"]
+    assert "empty_space_wrap_proxy_present" in wrapped["expected_diagnostic_flags"]["observed"]
+    assert wrapped["policy"]["status"] == "smoke_passed"
+    assert wrapped["metrics"]["component_accounting"]["virtual_component_merge_count"] == 1
+    assert wrapped["metrics"]["merge_excess_terms"]["accepted_eq4_cost_sum"] > 0.0
+
+    blocked = cases["threshold_blocks_component_merge"]
+    assert blocked["expectation_status"] == "matched"
+    assert blocked["limitation_class"] == "expected_threshold_block"
+    assert blocked["next_capability_needed"] == "merge_search_extension"
+    assert blocked["policy"]["status"] == "partial"
+    assert blocked["expected_diagnostic_flags"] == {
+        "expected": [
+            "unsupported_paper_primitives_present",
+            "paper_alignment_surrogate_not_paper_faithful",
+            "component_merge_blocked",
+            "unmerged_components",
+            "primitive_budget_not_met",
+        ],
+        "observed": [
+            "unsupported_paper_primitives_present",
+            "paper_alignment_surrogate_not_paper_faithful",
+            "component_merge_blocked",
+            "unmerged_components",
+            "primitive_budget_not_met",
+        ],
+        "missing": [],
+        "unexpected": [],
+        "match_status": "matched",
+    }
+
+
+def test_expected_failure_workbench_report_is_strict_json_serializable():
+    report = build_cpd_like_expected_failure_synthetic_workbench_report()
+
+    encoded = json.dumps(report, allow_nan=False, sort_keys=True)
+
+    assert "cpd_like_expected_failure_synthetic_workbench" in encoded
+
+
+def test_expected_failure_workbench_reports_partial_when_expected_flags_are_missing(monkeypatch):
+    monkeypatch.setattr(cpd_synthetic, "_diagnostic_flags", lambda policy: [])
+
+    report = cpd_synthetic.build_cpd_like_expected_failure_synthetic_workbench_report()
+
+    assert report["status"] == "partial"
+    first_case = report["cases"][0]
+    assert first_case["expectation_status"] == "mismatched"
+    assert first_case["expected_diagnostic_flags"]["observed"] == []
+    assert first_case["expected_diagnostic_flags"]["missing"] == [
+        "unsupported_paper_primitives_present",
+        "paper_alignment_surrogate_not_paper_faithful",
+    ]

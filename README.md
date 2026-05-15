@@ -20,7 +20,10 @@ paper-aligned surrogate terms for that baseline without claiming collision quali
 objective comparison now reuses that report on three deterministic toy meshes to inspect
 topology-only versus component-merge accounting without adding benchmark evidence. A focused
 CPD-like cost-guided merge-search smoke now uses AABB-normalized merge-excess as a
-decision-making cost on one deterministic toy mesh and reports old/new diagnostic accounting. See
+decision-making cost on one deterministic toy mesh and reports old/new diagnostic accounting.
+The expected-failure synthetic workbench now turns three known CPD-paper gaps into deterministic
+diagnostic flags and reports whether those expected limitation flags remain visible; its
+`smoke_passed` status means expected limitations were reported, not decomposition success. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper
@@ -113,6 +116,8 @@ current basis for project framing, claim boundaries, and future implementation p
   capped first-mesh geometry smoke only.
 - No full CPD paper reproduction; the component-merge gate, Eq.4 alignment metadata, and objective
   report are restricted CPD-like baseline diagnostics, and the cost-guided merge-search smoke is a
-  restricted synthetic algorithmic smoke slice.
+  restricted synthetic algorithmic smoke slice. The expected-failure synthetic workbench is
+  diagnostic limitation accounting, not benchmark evidence, collision-quality validation, or a
+  paper-faithful CPD reproduction.
 - No generated collision artifact pipeline.
 - No claim of production readiness.

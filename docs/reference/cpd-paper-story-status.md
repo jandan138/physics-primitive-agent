@@ -18,21 +18,23 @@ The repository has not reached that full result. It has reached the workbench st
 5. A synthetic objective comparison can exercise the same accounting on inspectable toy meshes.
 6. A focused cost-guided merge-search smoke can use one objective-report term as a toy-fixture
    merge decision cost.
-7. Newton can run narrow smoke diagnostics against that package.
-8. Records and configs can preserve exactly what was run.
+7. A deterministic expected-failure workbench can keep known CPD-paper gaps visible as diagnostic
+   flags.
+8. Newton can run narrow smoke diagnostics against that package.
+9. Records and configs can preserve exactly what was run.
 
-The latest cost-guided merge change is small but important in this story. Before it, the objective
-report mostly acted like a health check after the baseline had already made its merge choices. Now
-one term from that health check, AABB-normalized merge-excess, can influence one opt-in merge choice
-on a toy mesh. In plain terms, the repository has taken the first step from "we can measure a
-merge cost" toward "we can use a merge cost to choose between merge candidates."
+The latest expected-failure workbench change is small but important in this story. It turns known
+CPD-paper gaps into deterministic diagnostic flags so the next algorithmic slice starts from a
+visible limitation rather than a vague improvement target. The preceding cost-guided merge change
+also remains important: one term from the objective health check, AABB-normalized merge-excess, can
+influence one opt-in merge choice on a toy mesh.
 
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
 
 ## Paper Story Layers
 
-The CPD paper story can be read as six layers.
+The CPD paper story can be read as seven layers.
 
 | Layer | Paper-story question | Repository status |
 | --- | --- | --- |
@@ -40,8 +42,9 @@ The CPD paper story can be read as six layers.
 | 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. |
 | 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for one deterministic synthetic fixture only. |
-| 5. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
-| 6. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
+| 5. Expected limitations | Can known CPD-paper gaps stay visible before algorithmic changes? | Narrowly in place as a deterministic expected-failure synthetic workbench over three in-memory fixtures. This is diagnostic limitation accounting, not validation or benchmark evidence. |
+| 6. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
+| 7. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
 
 ## What The Current Baseline Is
 
@@ -172,6 +175,33 @@ What it does not yet cover:
 So the right interpretation is: this is the first cost-aware decision hook in the workbench, not
 the CPD optimizer.
 
+## What The Expected-Failure Workbench Adds
+
+The expected-failure workbench is a small but important audit layer. It turns known CPD-paper gaps
+into deterministic expected limitation fixtures and diagnostic flags.
+
+The current fixture set asks three questions:
+
+- Does the current restricted `box` subset still report the missing paper primitive vocabulary and
+  paper-scope primitive-fitting gap?
+- Does a virtual component merge over disconnected triangles still expose that one proxy can wrap
+  empty space?
+- Does a zero virtual-merge threshold still expose blocked component merge, unmerged components,
+  and primitive-budget pressure?
+
+For each fixture, the report records expected, observed, missing, and unexpected flags. A
+`smoke_passed` workbench result means those expected flags matched. It does not mean the
+decomposition succeeded, and it does not validate collision quality.
+
+This layer matters because the next algorithmic slices should not be chosen blindly. The workbench
+points to two concrete next capabilities:
+
+- `primitive_fit_extension` for restricted vocabulary and empty wrapper proxy cases;
+- `merge_search_extension` for threshold-blocked component merge behavior.
+
+The workbench is still below paper-scope reproduction. It is not a benchmark, not a failure
+detector for arbitrary meshes, and not proof that the baseline catches bad decompositions.
+
 ## What Newton Probes Mean Here
 
 Newton probes are downstream diagnostic checks. They answer a narrow question:
@@ -196,6 +226,7 @@ USD assets
 -> paper-aligned surrogate objective report
 -> synthetic objective comparison
 -> focused cost-guided merge-search smoke using one objective term
+-> expected-failure workbench for known CPD-paper gaps
 -> collision package
 -> Newton smoke diagnostics
 -> dated records
@@ -207,7 +238,7 @@ The next paper-story position should be:
 USD assets or synthetic fixtures
 -> CPD-like primitive proposals
 -> objective comparison record
--> broader expected-failure synthetic fixtures or improved primitive fitting
+-> targeted primitive-fitting or merge-search improvement selected from expected-failure fixtures
 -> richer cost-guided merge or primitive-fit decision
 -> Newton task probe
 ```
@@ -223,6 +254,8 @@ Use:
 - "paper-aligned surrogate objective report";
 - "synthetic objective comparison";
 - "focused CPD-like cost-guided merge-search smoke";
+- "deterministic expected-failure synthetic workbench";
+- "expected limitation fixtures";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -233,6 +266,7 @@ Avoid:
 - "CPD optimizer implemented";
 - "collision-quality validation";
 - "benchmark result";
+- "validated expected-failure detector";
 - "safe collider";
 - "validated robot collider."
 
@@ -240,10 +274,9 @@ Avoid:
 
 The next slices should move toward the paper core without overclaiming:
 
-1. Add broader synthetic fixtures only when they expose a specific expected failure mode.
-2. Add one primitive-fitting improvement against those fixtures.
-3. Re-run bed and Franka smoke paths after the synthetic comparison shows a clear diagnostic
-   difference.
+1. Select one existing expected-failure fixture as the next algorithm target.
+2. Add one primitive-fitting or merge-search improvement against that fixture.
+3. Re-run bed and Franka smoke paths after a named synthetic diagnostic shows a clear difference.
 4. Run Newton drop/settle or sphere-rain only as downstream diagnostics, not as the primary
    optimization target.
 

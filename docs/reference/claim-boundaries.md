@@ -40,6 +40,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   uses AABB-normalized merge-excess as a decision-making cost and compares old/new diagnostic
   accounting on a deterministic synthetic fixture. This is not full CPD paper reproduction,
   paper-faithful optimization, benchmark evidence, or collision-quality validation.
+- The current code can run a deterministic expected-failure synthetic workbench over in-memory
+  fixtures that checks whether known CPD-like limitation flags remain visible. A `smoke_passed`
+  result means expected limitation flags matched observed flags, not decomposition success,
+  collision-quality validation, benchmark evidence, or full CPD paper reproduction.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
@@ -105,6 +109,9 @@ Use these only after broader benchmark records exist.
 - Do not describe the cost-guided merge-search improvement as the CPD paper optimizer or as proof
   that one decomposition is better collision geometry; it is a restricted algorithmic smoke slice
   under diagnostic objective accounting.
+- Do not describe the expected-failure synthetic workbench as a benchmark, validation, failure
+  detector, proof that the baseline catches bad decompositions, collision-quality score, safe
+  collider rejection step, or complete coverage of CPD-like limitations.
 
 ## Wording Rules
 

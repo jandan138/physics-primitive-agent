@@ -176,16 +176,45 @@ dashboard number affect one steering decision on a controlled toy road. That is 
 paper story because future CPD work needs objective-guided search, but the current scope remains a
 single restricted decision hook.
 
+## What The Expected-Failure Workbench Adds
+
+The deterministic expected-failure synthetic workbench is a second kind of offline report around
+the same objective accounting. Instead of asking "which policy looks cheaper?", it asks:
+
+```text
+For a known CPD-paper gap, does the current report still expose the expected limitation flags?
+```
+
+Each expected limitation fixture records:
+
+- the fixture id and geometry summary;
+- the known CPD-paper gap being exercised;
+- expected, observed, missing, and unexpected diagnostic flags;
+- the limitation class;
+- the next capability needed, such as primitive-fit extension or merge-search extension.
+
+The first three fixtures cover:
+
+- restricted primitive vocabulary and missing paper-scope primitive fitting;
+- a single proxy wrapping disconnected components and empty space;
+- a virtual component merge blocked by the current threshold path.
+
+`smoke_passed` means the expected limitation flags were observed with no missing or unexpected
+flags. It does not mean the decomposition is good, collision-ready, paper-faithful, or validated.
+This workbench is not benchmark evidence, not collision-quality validation, and not full CPD paper
+reproduction. It is a guardrail that keeps known baseline weaknesses visible before algorithmic
+improvements start hiding or changing them.
+
 ## Next Algorithmic Step
 
-The next step is to broaden or deepen this path only where the expected failure
-mode is clear.
+The next step is to use the expected-failure workbench to choose one narrow algorithmic change:
+either improve primitive fitting for a known vocabulary/fit gap, or improve merge search for a
+known component/threshold gap.
 
 The recommended order is:
 
-1. Add one broader synthetic fixture only if it exposes a specific expected
-   failure mode.
-2. Add one focused primitive-fitting improvement against that fixture.
+1. Pick one existing expected limitation fixture as the target.
+2. Add one focused primitive-fitting or merge-search improvement against that fixture.
 3. Compare old and new outputs with the same objective report.
 4. Re-run the bed and Franka smoke paths only after the synthetic report changes
    in a named, inspectable way.
