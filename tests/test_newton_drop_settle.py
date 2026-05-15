@@ -1,10 +1,16 @@
+import numpy as np
+
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.newton.drop_settle import (
     DROP_SETTLE_CLAIM_BOUNDARY,
     DropSettleOptions,
+    _add_dynamic_shape,
+    _support_extent_z,
+    _world_half_extents,
     evaluate_drop_settle_trace,
     run_newton_drop_settle,
 )
+from primitive_collision_compiler.reports.schema import NewtonShapeMapping
 
 
 def test_drop_settle_blocks_partial_shape_mapping():
@@ -165,3 +171,102 @@ def test_evaluate_drop_settle_trace_reports_floor_breach_from_support_height():
     assert "floor_breach" in run.failure_labels
     assert run.final_support_height == -0.02
     assert run.min_support_height == -0.20
+
+
+def test_drop_settle_builds_newton_native_dynamic_shapes():
+    builder = _RecordingBuilder()
+    wp = _FakeWarp()
+    anchor = (1.0, 2.0, 3.0)
+    mappings = (
+        _mapping(
+            "cylinder0",
+            "cylinder",
+            {"radius": 0.3, "half_height": 0.8, "axis_index": 1},
+            center=(1.0, 2.0, 4.0),
+        ),
+        _mapping(
+            "cone0",
+            "cone",
+            {"radius": 0.4, "half_height": 0.9, "axis_index": 0},
+            center=(2.0, 2.0, 3.0),
+        ),
+        _mapping(
+            "ellipsoid0",
+            "ellipsoid",
+            {"radii": [0.2, 0.4, 0.6]},
+            center=(1.0, 3.0, 3.0),
+        ),
+    )
+
+    for mapping in mappings:
+        _add_dynamic_shape(builder, mapping, wp, body=7, anchor=anchor)
+
+    assert [call[0] for call in builder.calls] == ["cylinder", "cone", "ellipsoid"]
+    assert builder.calls[0][1]["body"] == 7
+    assert builder.calls[0][1]["half_height"] == 0.8
+    assert builder.calls[1][1]["radius"] == 0.4
+    assert builder.calls[2][1]["rz"] == 0.6
+
+
+def test_drop_settle_native_world_extents_and_support_height_are_conservative():
+    cylinder = _mapping(
+        "cylinder0",
+        "cylinder",
+        {"radius": 0.3, "half_height": 0.8, "axis_index": 2},
+    )
+    cone = _mapping("cone0", "cone", {"radius": 0.4, "half_height": 0.9, "axis_index": 2})
+    ellipsoid = _mapping("ellipsoid0", "ellipsoid", {"radii": [0.2, 0.4, 0.6]})
+    world_axes = np.eye(3, dtype=float)
+
+    np.testing.assert_allclose(_world_half_extents(cylinder), [0.3, 0.3, 0.8])
+    np.testing.assert_allclose(_world_half_extents(cone), [0.4, 0.4, 0.9])
+    np.testing.assert_allclose(_world_half_extents(ellipsoid), [0.2, 0.4, 0.6])
+    assert _support_extent_z(cylinder, world_axes) == 0.8
+    assert _support_extent_z(cone, world_axes) == 0.9
+    assert _support_extent_z(ellipsoid, world_axes) == 0.6
+
+
+def _mapping(
+    primitive_id: str,
+    kind: str,
+    dimensions: dict[str, object],
+    *,
+    center: tuple[float, float, float] = (0.0, 0.0, 0.0),
+) -> NewtonShapeMapping:
+    return NewtonShapeMapping(
+        primitive_id=primitive_id,
+        kind=kind,
+        status="mapped",
+        detail="mapped",
+        center=center,
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions=dimensions,
+    )
+
+
+class _RecordingBuilder:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict[str, object]]] = []
+
+    def add_shape_cylinder(self, **kwargs):
+        self.calls.append(("cylinder", kwargs))
+
+    def add_shape_cone(self, **kwargs):
+        self.calls.append(("cone", kwargs))
+
+    def add_shape_ellipsoid(self, **kwargs):
+        self.calls.append(("ellipsoid", kwargs))
+
+
+class _FakeWarp:
+    def vec3(self, x: float, y: float, z: float) -> tuple[float, float, float]:
+        return (x, y, z)
+
+    def matrix_from_cols(self, *cols):
+        return cols
+
+    def quat_from_matrix(self, matrix):
+        return ("quat", matrix)
+
+    def transform(self, position, rotation):
+        return {"position": position, "rotation": rotation}

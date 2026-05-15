@@ -362,6 +362,23 @@ def _add_dynamic_shape(
             radius=float(dimensions["radius"]),
             half_height=float(dimensions["half_height"]),
         )
+    elif mapping.kind == "cylinder":
+        builder.add_shape_cylinder(
+            body=body,
+            xform=xform,
+            radius=float(dimensions["radius"]),
+            half_height=float(dimensions["half_height"]),
+        )
+    elif mapping.kind == "cone":
+        builder.add_shape_cone(
+            body=body,
+            xform=xform,
+            radius=float(dimensions["radius"]),
+            half_height=float(dimensions["half_height"]),
+        )
+    elif mapping.kind == "ellipsoid":
+        rx, ry, rz = (float(value) for value in dimensions["radii"])
+        builder.add_shape_ellipsoid(body=body, xform=xform, rx=rx, ry=ry, rz=rz)
     else:
         raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
 
@@ -406,6 +423,8 @@ def _world_half_extents(mapping: NewtonShapeMapping) -> np.ndarray:
     if mapping.kind == "box":
         half_extents = np.asarray(dimensions["half_extents"], dtype=float)
         return np.abs(axes) @ half_extents
+    if mapping.kind in {"cylinder", "cone", "ellipsoid"}:
+        return np.abs(axes) @ _local_half_extents(mapping)
     raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
 
 
@@ -441,6 +460,22 @@ def _support_extent_z(mapping: NewtonShapeMapping, world_axes: np.ndarray) -> fl
     if mapping.kind == "box":
         half_extents = np.asarray(dimensions["half_extents"], dtype=float)
         return float(np.abs(world_axes[2, :]) @ half_extents)
+    if mapping.kind in {"cylinder", "cone", "ellipsoid"}:
+        return float(np.abs(world_axes[2, :]) @ _local_half_extents(mapping))
+    raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
+
+
+def _local_half_extents(mapping: NewtonShapeMapping) -> np.ndarray:
+    dimensions = mapping.dimensions
+    if mapping.kind in {"cylinder", "cone"}:
+        radius = float(dimensions["radius"])
+        half_height = float(dimensions["half_height"])
+        axis_index = int(dimensions.get("axis_index", 2))
+        half_extents = np.full(3, radius, dtype=float)
+        half_extents[axis_index] = half_height
+        return half_extents
+    if mapping.kind == "ellipsoid":
+        return np.asarray(dimensions["radii"], dtype=float)
     raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
 
 
