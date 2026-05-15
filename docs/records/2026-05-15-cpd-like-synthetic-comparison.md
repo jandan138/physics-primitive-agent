@@ -25,7 +25,9 @@ Complete.
 - `python -m pytest tests/test_cpd_like_synthetic.py -q`: 2 passed.
 - `python -m pytest tests/test_cpd_like_synthetic.py tests/test_cli.py -q -k "synthetic_comparison or cpd_like_synthetic"`: 4 passed, 37 deselected.
 - `PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-synthetic-comparison`: exit 0.
-- Full-suite and docs verification are recorded after final review.
+- `python -m pytest -q`: 153 passed.
+- `python scripts/validate_docs.py`: passed.
+- `git diff --check`: passed.
 
 ## Smoke Summary
 
