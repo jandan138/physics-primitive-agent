@@ -47,6 +47,19 @@ additional_results.tex
 edited companion content should live under the site source tree, with a record linking it back to
 the original LaTeX bundle and the private republication permission that the user will provide.
 
+Before any full paper text or paper asset copy is committed for public release, the repository must
+contain a dated record with at least this permission metadata:
+
+```text
+permission_status: user_confirmed_private_permission
+permission_artifact_status: pending_user_supplied_record_or_redacted_summary
+allowed_uses: English full text, Chinese translation, paragraph annotations, figures, GitHub Pages
+```
+
+The private permission artifact itself does not need to be committed if it contains private
+correspondence. A redacted record is enough for repository governance until the user chooses to add
+the full permission artifact.
+
 ## Technology
 
 Use:
@@ -59,6 +72,11 @@ Use:
 
 The deployed output is static HTML suitable for GitHub Pages. The repository should not depend on
 a server process for the published site.
+
+Because the site will contain source-paper claims that are stronger than this repository's current
+claims, the implementation must add site-aware claim validation. The validator may not treat
+authorized CPD paper text as this project's claim, but it must verify that every paper page carries
+a visible "source paper text, not project evidence" namespace banner and draft-translation status.
 
 ## Site Structure
 
@@ -102,6 +120,13 @@ The landing route `/paper/` is a reader index, not a marketing page. It should s
 title, authors, source version, translation status, claim boundary, section progress, and direct
 links into the reading pages.
 
+Every paper route must display a source-namespace notice:
+
+```text
+The English paper text and translated text describe the CPD paper. They are not claims that this
+repository has reproduced the paper or achieved the paper's reported benchmark results.
+```
+
 ## Page Layout
 
 Use a restrained academic-reader layout with enough visual affordance to feel like a project
@@ -141,9 +166,16 @@ Semantics:
 - `explanationStatus`: initially `empty`.
 - `reproductionStatus`: initially `not_started`, except existing project-aligned sections may be
   marked `partial` only when a dated record and code path already exist.
+- `sourceNamespace`: always `cpd_paper_source_text` for imported paper paragraphs.
+- `translationProvenance`: records date, source hash, translating agent, and status.
 
 The UI must make draft translation status visible. It must not imply human-reviewed translation
 quality until a reviewer changes the status.
+
+Original CPD paper claims about performance, benchmarks, quality, or strong reported results must be rendered
+inside this source namespace. The site can say the paper reports those results. It must not say
+that this repository has reproduced those results unless a separate project reproduction record
+exists.
 
 ## Equations, Algorithms, Tables, And References
 
@@ -181,6 +213,12 @@ site/public/paper-assets/
 PNG and JPG assets can be reused directly. PDF plots should be listed with source links first; a
 later implementation pass may convert selected PDF plots to web-native images.
 
+Asset import must use a resolver that handles extension inference and case-sensitive mismatches in
+the LaTeX source. For example, a LaTeX reference such as `assets/Dungeon_level_coacd` must resolve
+to the actual checked-in source file when the bundle contains a differently cased
+`assets/Dungeon_Level_coacd.jpg`. Missing assets should produce a structured import warning, not a
+silent broken image.
+
 ## Import Script
 
 Add a script under `site/scripts/` that:
@@ -191,6 +229,8 @@ Add a script under `site/scripts/` that:
 3. Generates MDX pages with stable IDs.
 4. Keeps source file and source line metadata where practical.
 5. Does not overwrite manually edited translations unless explicitly run in a refresh mode.
+6. Emits structured warnings for unresolved images, complex tables, unresolved references, and
+   skipped appendix galleries.
 
 The first implementation may use conservative parsing rather than a full LaTeX AST. It should be
 predictable and testable: section commands, paragraph boundaries, figure references, and captions
@@ -207,6 +247,10 @@ Each translation block must preserve:
 - English original;
 - Chinese draft translation;
 - translation status;
+- source text hash;
+- translation date;
+- translating agent label;
+- prompt policy label;
 - optional reviewer note field;
 - optional reviewed-by field for later manual review.
 
@@ -263,8 +307,12 @@ The site must not claim:
 The implementation should include:
 
 - unit tests for the LaTeX import script;
+- unit tests for asset resolution, including case-sensitive mismatch handling;
 - tests that generated paragraph IDs are stable;
 - tests that pages expose draft translation status;
+- tests or validation that paper pages expose the source-namespace banner;
+- claim validation covering site-authored text and site metadata, while treating source paper
+  paragraphs as namespaced source content rather than project claims;
 - docs validation remains passing;
 - repository whitespace check remains passing;
 - a static site build command that must pass before completion.
@@ -283,16 +331,20 @@ import-script tests and document the missing Node dependency as a setup gap.
 
 ## First Implementation Slice
 
-The first implementation slice should produce:
+The first implementation slice should produce a claim-safe scaffold and importer:
 
 - the Astro site scaffold;
 - core components and layout;
 - importer tests;
 - a generated paper index;
-- complete section pages with English source and AI-assisted Chinese draft translations;
-- main-paper figures displayed or linked;
-- appendix/additional-results route present with compact linked content;
-- clear draft translation and claim-boundary banners.
+- permission/provenance record with private-permission status;
+- source-namespace and draft-translation banners;
+- asset resolver and import warnings;
+- one generated sample section with English source and AI-assisted Chinese draft translations;
+- one main-paper figure displayed or linked.
+
+The second implementation slice should expand the same structure to the full paper text,
+translations, main-paper figures, and appendix/additional-results linked route.
 
 The slice is complete only when a local static build succeeds or the remaining blocker is a
 documented missing local Node/npm dependency.
