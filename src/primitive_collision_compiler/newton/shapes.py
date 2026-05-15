@@ -6,7 +6,7 @@ from typing import Any
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.reports.schema import NewtonShapeMapping
 
-SUPPORTED_NEWTON_SHAPES = ("box", "sphere", "capsule")
+SUPPORTED_NEWTON_SHAPES = ("box", "sphere", "capsule", "cylinder", "cone", "ellipsoid")
 IDENTITY_AXES = (
     (1.0, 0.0, 0.0),
     (0.0, 1.0, 0.0),
@@ -27,8 +27,12 @@ def _map_primitive(primitive: PrimitiveSpec) -> NewtonShapeMapping:
         detail = _validate_box(dimensions)
     elif primitive.kind == "sphere":
         detail = _validate_sphere(dimensions)
-    else:
+    elif primitive.kind == "capsule":
         detail = _validate_capsule(dimensions)
+    elif primitive.kind in {"cylinder", "cone"}:
+        detail = _validate_axis_shape(dimensions, primitive.kind)
+    else:
+        detail = _validate_ellipsoid(dimensions)
     if detail:
         return _gap(primitive, dimensions, detail)
     center_detail = _validate_vector3(primitive.center, "center")
@@ -70,13 +74,26 @@ def _validate_sphere(dimensions: dict[str, Any]) -> str:
 
 
 def _validate_capsule(dimensions: dict[str, Any]) -> str:
+    return _validate_axis_shape(dimensions, "capsule")
+
+
+def _validate_axis_shape(dimensions: dict[str, Any], kind: str) -> str:
     if _as_positive_float(dimensions.get("radius")) is None:
-        return "capsule radius is required and must be positive finite"
+        return f"{kind} radius is required and must be positive finite"
     if _as_non_negative_float(dimensions.get("half_height")) is None:
-        return "capsule half_height is required and must be non-negative finite"
+        return f"{kind} half_height is required and must be non-negative finite"
     axis_index = dimensions.get("axis_index", 2)
     if axis_index not in (0, 1, 2):
-        return "capsule axis_index must be 0, 1, or 2"
+        return f"{kind} axis_index must be 0, 1, or 2"
+    return ""
+
+
+def _validate_ellipsoid(dimensions: dict[str, Any]) -> str:
+    radii = dimensions.get("radii")
+    if not isinstance(radii, list | tuple) or len(radii) != 3:
+        return "ellipsoid radii must contain three positive finite values"
+    if any(_as_positive_float(value) is None for value in radii):
+        return "ellipsoid radii must contain three positive finite values"
     return ""
 
 
