@@ -1,12 +1,13 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries, contact canaries, and gated task smokes; bed still selects boxes in both lanes, while Franka's native lane now selects 29 boxes plus 3 cylinders under the surrogate. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries with next-slice triage metadata, contact canaries, and gated task smokes; bed still selects boxes in both lanes, while Franka's native lane now selects 29 boxes plus 3 cylinders under the surrogate. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: use the candidate-loss diagnosis to decide the next primitive-fitting or
-merge-search change. The latest controlled cylinder-axis update gives one synthetic improvement
-and changes capped Franka native selection to 3 cylinders, but it is still not collision-quality
-evidence. Keep `capped_cylinder`, `frustum`, and `trapezoidal_prism` in the offline
-paper-alignment lane until separate mapping and diagnostic records exist.
+Current next action: use the candidate-loss triage to choose between a low-support native-extension
+admissibility fixture and a cylinder near-miss fitting fixture. The latest controlled cylinder-axis
+update gives one synthetic improvement and changes capped Franka native selection to 3 cylinders,
+but it is still not collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
+`trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
+records exist.
 
 ## DeepDive Package
 
@@ -149,6 +150,9 @@ paper-alignment lane until separate mapping and diagnostic records exist.
 - [Candidate loss diagnosis and cylinder axis record](records/2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md):
   controlled cylinder-axis fitting update, synthetic rerun, real-USD candidate-loss diagnosis,
   and bed/Franka Newton-gated rerun.
+- [Candidate loss triage record](records/2026-05-15-candidate-loss-triage.md):
+  next-slice triage metadata for near-miss extension candidates and low-support native-extension
+  selections in the real-USD candidate-loss diagnosis.
 - [CPD latest diagnostic loop explainer docs record](records/2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

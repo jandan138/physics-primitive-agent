@@ -144,13 +144,14 @@ experiments:
     status: complete
     config: configs/experiments/bed_franka_native_probe_comparison.yaml
     command: PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-candidate-loss-diagnosis
-    record: docs/records/2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md
+    record: docs/records/2026-05-15-candidate-loss-triage.md
     purpose: >
       Record per-selected-cluster candidate-loss diagnosis for capped bed and capped Franka
       first-mesh native lanes after the controlled cylinder-axis fitting update.
     claims_supported:
       - real-USD surrogate candidate-loss accounting under capped first-mesh scope only
       - bed native lane still selects boxes; Franka native lane selects 3 cylinders under the current surrogate
+      - next-slice triage metadata ranks near-miss and low-support native-extension targets for planning
       - no collision-quality, benchmark, whole-robot collider-quality, paper-faithful optimization, or full CPD reproduction claim
   - id: real-usd-candidate-audit
     status: complete

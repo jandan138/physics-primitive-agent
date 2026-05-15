@@ -59,6 +59,10 @@ REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL = "offline_candidate_loss_diagnosis_smoke
 LEGACY_LABEL = "legacy_box_sphere_capsule"
 NATIVE_LABEL = "native_newton_bundle"
 CANDIDATE_LOSS_TIE_TOLERANCE = 1e-12
+CANDIDATE_LOSS_NEAR_MISS_RELATIVE_GAP_THRESHOLD = 0.25
+CANDIDATE_LOSS_LOW_SUPPORT_FACE_THRESHOLD = 2
+CANDIDATE_LOSS_LOW_SUPPORT_POINT_THRESHOLD = 4
+CANDIDATE_LOSS_TRIAGE_CLAIM_BOUNDARY = "diagnostic_triage_not_collision_quality"
 
 
 @dataclass(frozen=True)
@@ -784,10 +788,152 @@ def _candidate_loss_diagnosis(
         "primitive_subset": list(decomposition.primitive_subset),
         "extension_candidate_kinds": list(extension_kinds),
         "clusters": clusters,
+        "triage": _candidate_loss_triage(clusters),
         "diagnosis_summary": {
             "likely_bottleneck_counts": dict(bottleneck_counts),
             "diagnosis_label_counts": dict(label_counts),
         },
+    }
+
+
+def _candidate_loss_triage(clusters: list[dict[str, object]]) -> dict[str, object]:
+    near_miss_targets: list[dict[str, object]] = []
+    low_support_targets: list[dict[str, object]] = []
+    for cluster in clusters:
+        selected_row = _selected_candidate_row(cluster["candidate_ranking"])
+        best_extension = cluster["best_extension_candidate"]
+        geometry = cluster["cluster_geometry"]
+        if best_extension is not None:
+            near_miss = _near_miss_target(cluster, selected_row, best_extension)
+            if near_miss is not None:
+                near_miss_targets.append(near_miss)
+        if bool(selected_row["is_extension_candidate"]):
+            face_count = int(geometry["face_count"])
+            point_count = int(geometry["point_count"])
+            if (
+                face_count <= CANDIDATE_LOSS_LOW_SUPPORT_FACE_THRESHOLD
+                or point_count <= CANDIDATE_LOSS_LOW_SUPPORT_POINT_THRESHOLD
+            ):
+                low_support_targets.append(
+                    {
+                        "cluster_index": int(cluster["cluster_index"]),
+                        "source_faces": list(cluster["source_faces"]),
+                        "selected_extension_primitive_type": selected_row["primitive_type"],
+                        "selected_rank": int(selected_row["rank"]),
+                        "source_face_count": face_count,
+                        "point_count": point_count,
+                        "cluster_geometry": geometry,
+                        "suggested_next_slice": "native_extension_admissibility_fixture",
+                    }
+                )
+
+    near_miss_targets.sort(
+        key=lambda target: (
+            float(target["relative_extension_gap"]),
+            int(target["cluster_index"]),
+        )
+    )
+    low_support_targets.sort(
+        key=lambda target: (
+            int(target["source_face_count"]),
+            int(target["point_count"]),
+            int(target["cluster_index"]),
+        )
+    )
+    near_miss_kind_counts = Counter(
+        target["best_extension_primitive_type"] for target in near_miss_targets
+    )
+    low_support_kind_counts = Counter(
+        target["selected_extension_primitive_type"] for target in low_support_targets
+    )
+    return {
+        "scope": "candidate_loss_next_slice_triage",
+        "claim_boundary": CANDIDATE_LOSS_TRIAGE_CLAIM_BOUNDARY,
+        "near_miss_relative_gap_threshold": CANDIDATE_LOSS_NEAR_MISS_RELATIVE_GAP_THRESHOLD,
+        "low_support_face_threshold": CANDIDATE_LOSS_LOW_SUPPORT_FACE_THRESHOLD,
+        "low_support_point_threshold": CANDIDATE_LOSS_LOW_SUPPORT_POINT_THRESHOLD,
+        "near_miss_cluster_count": len(near_miss_targets),
+        "near_miss_kind_counts": dict(sorted(near_miss_kind_counts.items())),
+        "top_near_miss_targets": near_miss_targets[:10],
+        "low_support_native_extension_count": len(low_support_targets),
+        "low_support_native_extension_kind_counts": dict(
+            sorted(low_support_kind_counts.items())
+        ),
+        "low_support_native_extension_targets": low_support_targets[:10],
+        "recommended_next_slice": _recommended_next_slice(
+            near_miss_targets,
+            low_support_targets,
+        ),
+    }
+
+
+def _selected_candidate_row(ranked: list[dict[str, object]]) -> dict[str, object]:
+    for row in ranked:
+        if row["selected"]:
+            return row
+    raise ValueError("candidate ranking must contain a selected row")
+
+
+def _near_miss_target(
+    cluster: dict[str, object],
+    selected_row: dict[str, object],
+    best_extension: dict[str, object],
+) -> dict[str, object] | None:
+    if bool(selected_row["is_extension_candidate"]):
+        return None
+    selected_cost = float(selected_row["normalized_weighted_volume"])
+    extension_cost = float(best_extension["normalized_weighted_volume"])
+    if (
+        selected_cost <= 0.0
+        or abs(extension_cost - selected_cost) <= CANDIDATE_LOSS_TIE_TOLERANCE
+        or extension_cost < selected_cost
+    ):
+        return None
+    relative_gap = float((extension_cost - selected_cost) / selected_cost)
+    if relative_gap > CANDIDATE_LOSS_NEAR_MISS_RELATIVE_GAP_THRESHOLD:
+        return None
+    geometry = cluster["cluster_geometry"]
+    return {
+        "cluster_index": int(cluster["cluster_index"]),
+        "source_faces": list(cluster["source_faces"]),
+        "selected_primitive_type": selected_row["primitive_type"],
+        "best_extension_primitive_type": best_extension["primitive_type"],
+        "selected_normalized_weighted_volume": selected_cost,
+        "best_extension_normalized_weighted_volume": extension_cost,
+        "selected_minus_best_extension_cost": cluster["selected_minus_best_extension_cost"],
+        "relative_extension_gap": relative_gap,
+        "source_face_count": int(geometry["face_count"]),
+        "point_count": int(geometry["point_count"]),
+        "cluster_geometry": geometry,
+        "suggested_next_slice": "primitive_fitting_near_miss_fixture",
+    }
+
+
+def _recommended_next_slice(
+    near_miss_targets: list[dict[str, object]],
+    low_support_targets: list[dict[str, object]],
+) -> dict[str, object]:
+    if low_support_targets:
+        first = low_support_targets[0]
+        return {
+            "target_type": "native_extension_low_support_admissibility",
+            "extension_kind": first["selected_extension_primitive_type"],
+            "suggested_synthetic_fixture": "low_support_native_extension_patch",
+            "claim_boundary": CANDIDATE_LOSS_TRIAGE_CLAIM_BOUNDARY,
+        }
+    if near_miss_targets:
+        first = near_miss_targets[0]
+        return {
+            "target_type": "primitive_fitting_near_miss",
+            "extension_kind": first["best_extension_primitive_type"],
+            "suggested_synthetic_fixture": (
+                f"{first['best_extension_primitive_type']}_near_miss_cluster"
+            ),
+            "claim_boundary": CANDIDATE_LOSS_TRIAGE_CLAIM_BOUNDARY,
+        }
+    return {
+        "target_type": "no_ranked_target",
+        "claim_boundary": CANDIDATE_LOSS_TRIAGE_CLAIM_BOUNDARY,
     }
 
 

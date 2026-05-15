@@ -140,6 +140,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Candidate Loss Diagnosis And Cylinder Axis](2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md):
   controlled cylinder-axis fitting update, synthetic rerun, real-USD candidate-loss diagnosis,
   and bed/Franka Newton-gated rerun.
+- [2026-05-15 Candidate Loss Triage](2026-05-15-candidate-loss-triage.md):
+  next-slice triage metadata for near-miss extension candidates and low-support native-extension
+  selections in the real-USD candidate-loss diagnosis.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

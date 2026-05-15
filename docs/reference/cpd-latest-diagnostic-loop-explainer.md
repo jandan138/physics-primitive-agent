@@ -176,6 +176,46 @@ The candidate-loss report should drive the next algorithmic slice. Read it like 
 
 This keeps the next change grounded in evidence instead of guessing.
 
+## What The Triage Metadata Adds
+
+The candidate-loss report now includes a small `triage` block. It does not change primitive
+selection. It just sorts the existing candidate-loss rows into two useful buckets:
+
+```text
+near-miss extension targets
+low-support native-extension selections
+```
+
+The near-miss bucket means:
+
+```text
+box won, but cylinder/cone/ellipsoid was close under the surrogate
+```
+
+The low-support bucket means:
+
+```text
+cylinder/cone/ellipsoid won, but the cluster has very little geometric support
+```
+
+On the current capped bed/Franka report:
+
+- bed has one `cylinder` near-miss target, with the best cylinder about `13%` more expensive than
+  the selected box under the surrogate;
+- Franka has three low-support `cylinder` selections, each from only two source faces and four
+  points;
+- Franka also has three `cylinder` near-miss box-selected clusters.
+
+That makes the next decision clearer. There are two defensible next synthetic fixtures:
+
+- `low_support_native_extension_patch`, to test whether a native extension should require more
+  geometric support before it can replace a box;
+- `cylinder_near_miss_cluster`, to test whether cylinder fitting can be improved for a real
+  box-selected cluster where cylinder is close but still loses.
+
+The triage recommendation is still planning metadata. It is not an optimizer, not a quality score,
+and not proof that cylinder is better or worse.
+
 ## Recommended Next Sequence
 
 The next few steps should be:
@@ -197,8 +237,9 @@ Good first targets are:
 - merge-search changes, if box selections look caused by bad cluster grouping rather than bad
   primitive fitting.
 
-The safest immediate recommendation is to start with candidate-loss triage and a synthetic fixture
-that mirrors one remaining high-confidence real-USD box-selection pattern.
+The safest immediate recommendation is to let the triage output choose the fixture category first.
+On the current report, that means choosing between a low-support native-extension admissibility
+fixture and a cylinder near-miss fitting fixture before changing any selection logic.
 
 ## Related Pages
 

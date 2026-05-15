@@ -233,6 +233,96 @@ def test_real_usd_candidate_loss_diagnosis_treats_near_equal_extension_cost_as_t
 
     assert cluster["diagnosis_labels"] == ["selected_box", "extension_tied_selected"]
     assert cluster["likely_bottleneck"] == "tie_or_subset_order"
+    triage = report["cases"][0]["native_candidate_loss_diagnosis"]["triage"]
+    assert triage["near_miss_cluster_count"] == 0
+    assert triage["recommended_next_slice"]["target_type"] == "no_ranked_target"
+
+
+def test_real_usd_candidate_loss_diagnosis_triages_low_support_native_extension(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_two_meshes(tmp_path)
+
+    def fake_candidates(mesh, face_ids, primitive_subset):
+        source_faces = tuple(sorted(face_ids))
+        if "cylinder" in primitive_subset:
+            return (_primitive_fit("cylinder", source_faces, 1.0),)
+        return (_primitive_fit("box", source_faces, 1.5),)
+
+    monkeypatch.setattr(real_usd_comparison, "fit_primitive_candidates", fake_candidates)
+
+    report = build_real_usd_candidate_loss_diagnosis_report(
+        manifest_path=str(manifest_path),
+        roles=("franka_import_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("cylinder",),
+        max_source_faces_by_role={"franka_import_smoke": 4},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+    )
+
+    triage = report["cases"][0]["native_candidate_loss_diagnosis"]["triage"]
+
+    assert triage["near_miss_cluster_count"] == 0
+    assert triage["low_support_native_extension_count"] == 1
+    assert triage["low_support_native_extension_kind_counts"] == {"cylinder": 1}
+    target = triage["low_support_native_extension_targets"][0]
+    assert target["selected_extension_primitive_type"] == "cylinder"
+    assert target["source_face_count"] == 4
+    assert target["point_count"] == 4
+    assert target["suggested_next_slice"] == "native_extension_admissibility_fixture"
+    assert triage["recommended_next_slice"] == {
+        "target_type": "native_extension_low_support_admissibility",
+        "extension_kind": "cylinder",
+        "suggested_synthetic_fixture": "low_support_native_extension_patch",
+        "claim_boundary": "diagnostic_triage_not_collision_quality",
+    }
+
+
+def test_real_usd_candidate_loss_diagnosis_triages_near_miss_extension_targets(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_two_meshes(tmp_path)
+
+    def fake_candidates(mesh, face_ids, primitive_subset):
+        source_faces = tuple(sorted(face_ids))
+        return (
+            _primitive_fit("box", source_faces, 1.0),
+            _primitive_fit("cylinder", source_faces, 1.08),
+            _primitive_fit("ellipsoid", source_faces, 1.60),
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "fit_primitive_candidates", fake_candidates)
+
+    report = build_real_usd_candidate_loss_diagnosis_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder", "ellipsoid"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+    )
+
+    triage = report["cases"][0]["native_candidate_loss_diagnosis"]["triage"]
+
+    assert triage["scope"] == "candidate_loss_next_slice_triage"
+    assert triage["near_miss_relative_gap_threshold"] == pytest.approx(0.25)
+    assert triage["near_miss_cluster_count"] == 1
+    assert triage["near_miss_kind_counts"] == {"cylinder": 1}
+    target = triage["top_near_miss_targets"][0]
+    assert target["cluster_index"] == 0
+    assert target["best_extension_primitive_type"] == "cylinder"
+    assert target["relative_extension_gap"] == pytest.approx(0.08)
+    assert target["suggested_next_slice"] == "primitive_fitting_near_miss_fixture"
+    assert triage["recommended_next_slice"] == {
+        "target_type": "primitive_fitting_near_miss",
+        "extension_kind": "cylinder",
+        "suggested_synthetic_fixture": "cylinder_near_miss_cluster",
+        "claim_boundary": "diagnostic_triage_not_collision_quality",
+    }
 
 
 def test_real_usd_candidate_loss_diagnosis_report_is_strict_json_serializable(tmp_path):

@@ -92,6 +92,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   records why remaining box-selected clusters beat extension candidates under the current
   surrogate and records the three Franka clusters where `cylinder` is selected. This is surrogate
   diagnostic accounting, not collision-quality evidence or whole-robot collider-quality evidence.
+  The report now also includes next-slice triage metadata for near-miss extension candidates and
+  low-support native-extension selections; that triage is planning metadata, not an optimizer or
+  quality evidence.
 - The current executable surface can run `newton_real_usd_native_contact_comparison`, which
   requires full Newton mapping before contact canaries for the capped bed and capped Franka
   old/new packages.
@@ -165,6 +168,10 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The same rerun reports candidate-loss diagnosis for capped real USDs: bed has `32` box-selected
   clusters where extension candidates are more expensive under the surrogate; Franka has `29`
   such box-selected clusters and `3` native-extension-selected clusters.
+- The same candidate-loss report now records next-slice triage metadata: bed has one
+  `cylinder` near-miss target, while Franka has three low-support `cylinder` selections plus
+  three `cylinder` near-miss targets. This sorts future synthetic-fixture choices; it does not
+  validate those primitive choices.
 - The latest diagnostic loop is explained in
   [CPD latest diagnostic loop explainer](../reference/cpd-latest-diagnostic-loop-explainer.md):
   candidate-loss diagnosis guides a controlled fitting change, synthetic checks run first, and

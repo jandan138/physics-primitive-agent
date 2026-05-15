@@ -84,6 +84,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   native lanes. It reports per-cluster selected primitive ranks, extension-candidate margins,
   simple cluster geometry hints, and likely surrogate bottleneck labels. This is diagnostic
   accounting, not collision-quality evidence, benchmark evidence, or a paper-faithful optimizer.
+- The real-USD candidate-loss diagnosis can include next-slice triage metadata. It ranks
+  near-miss extension candidates and low-support native-extension selections so the next synthetic
+  fixture can be chosen from recorded accounting. This is planning metadata, not evidence that the
+  ranked primitive kind is better.
 - The current code can run a gated real-USD Newton probe comparison for capped bed and capped
   Franka first-mesh packages: full package mapping, contact canary, then drop/settle and
   sphere-rain only after contact passes. This is named diagnostic smoke evidence under recorded
@@ -177,6 +181,8 @@ Use these only after broader benchmark records exist.
   good. It is a surrogate candidate-accounting summary over selected clusters.
 - Do not describe the real-USD candidate-loss diagnosis as a quality metric, benchmark result,
   proof that boxes or cylinders are better, or evidence that the Franka collider is good.
+- Do not describe candidate-loss triage as an optimizer or as proof of the next algorithmic
+  direction. It is a deterministic sorting aid for choosing the next synthetic diagnostic target.
 - Do not use CPD paper primitive-vocabulary completeness as a runtime support claim. Paper-only
   primitives remain offline diagnostics unless separately mapped and verified.
 
