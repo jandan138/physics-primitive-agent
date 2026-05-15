@@ -80,6 +80,15 @@ That extra-volume proxy is AABB-normalized merge-excess. On the current `cost_gu
 toy fixture, the opt-in policy chooses the lower-cost virtual component merge while the default
 policy chooses the available topology merge first.
 
+In plain terms, AABB-normalized merge-excess is the "empty wrapper space" penalty for a merge. If
+two separate face groups each fit cleanly into small primitives, but one merged primitive must be
+much larger to cover both, the merge has high excess. If the merged primitive is only slightly
+larger than the two separate primitives together, the merge has low excess.
+
+The AABB part means the extra volume is divided by the whole mesh's axis-aligned bounding-box
+volume. That makes the number a rough ratio instead of a raw volume. For example, `0.01` means the
+merge added extra primitive volume equal to about one percent of the source mesh's AABB volume.
+
 This matters because a full CPD-style method eventually needs search decisions that are guided by
 objective terms, not only by local adjacency rules. The current implementation is only the first
 auditable hook for that idea. It is not a global optimizer, not a paper-faithful objective, and not

@@ -76,6 +76,9 @@ probes or claiming collision quality.
 - [CPD cost-guided story explainer record](records/2026-05-15-cpd-cost-guided-story-explainer.md):
   documentation update that explains the cost-guided merge smoke as the first restricted
   objective-guided decision hook in the CPD paper story.
+- [AABB-normalized merge-excess explainer record](records/2026-05-15-aabb-normalized-merge-excess-explainer.md):
+  documentation update that explains the merge-excess surrogate cost used by the CPD-like
+  cost-guided smoke.
 - [Bootstrap plan](superpowers/plans/2026-05-14-deepdive-first-repo-bootstrap.md): implementation checklist.
 - [Bootstrap design](superpowers/specs/2026-05-14-deepdive-first-repo-bootstrap-design.md): original design rationale.
 - [Environment normalization design](superpowers/specs/2026-05-14-environment-normalization-design.md):

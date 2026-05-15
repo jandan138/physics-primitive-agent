@@ -122,6 +122,10 @@ The cost-guided merge smoke is the first restricted Layer 4 step. It uses one ex
 objective-report term, AABB-normalized merge-excess, to choose among merge candidates on a
 deterministic synthetic fixture.
 
+That term is an "extra wrapper volume" penalty. For a candidate merge, the baseline fits one
+primitive to the merged face group, subtracts the weighted volumes of the two separate primitives,
+and divides the result by the source mesh's AABB volume. Lower is better under this proxy.
+
 The simple mental model is:
 
 - the old/default policy says: first try merging neighboring face groups; only after those are
@@ -141,6 +145,11 @@ The dedicated `cost_guided_pair_choice` fixture compares:
 This is still below paper-scope search or optimization. It shows that one surrogate cost can affect
 a merge decision on an inspectable toy mesh. It does not prove better collision geometry,
 benchmark quality, or paper-faithful CPD behavior.
+
+On the current toy fixture, the default policy records accepted normalized merge-excess
+`0.010062106570764756`, about one percent of the mesh AABB volume. The opt-in cost-guided policy
+records `0.000055121`, about five thousandths of one percent. The smoke uses that difference only
+as diagnostic accounting for the toy decision.
 
 Why this matters for the paper story: CPD is ultimately about selecting a compact primitive set
 under geometric and collision-detection constraints. A face-merge baseline that only follows local

@@ -97,3 +97,6 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 CPD Cost-Guided Story Explainer](2026-05-15-cpd-cost-guided-story-explainer.md):
   documentation update that explains the latest cost-guided merge change in the full CPD paper
   story.
+- [2026-05-15 AABB-Normalized Merge-Excess Explainer](2026-05-15-aabb-normalized-merge-excess-explainer.md):
+  documentation update that explains the surrogate merge cost used by the CPD-like cost-guided
+  smoke.

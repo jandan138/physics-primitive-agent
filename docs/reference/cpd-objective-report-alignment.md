@@ -75,6 +75,45 @@ paper metric.
 topology merges, optional virtual component merges, and blocked component-merge
 candidates.
 
+## What AABB-Normalized Merge-Excess Means
+
+In the current CPD-like baseline, a merge candidate joins two face groups into one larger face
+group and fits one primitive to the joined group. The merge-excess proxy asks:
+
+```text
+How much larger is the new fitted primitive than the two old fitted primitives together?
+```
+
+The implementation records it as:
+
+```text
+excess_volume =
+  merged_primitive_weighted_volume
+  - left_primitive_weighted_volume
+  - right_primitive_weighted_volume
+
+normalized_excess =
+  excess_volume / source_mesh_aabb_volume
+```
+
+`source_mesh_aabb_volume` is the volume of the axis-aligned bounding box around the source mesh
+points. In plain language, it is the volume of the simple rectangular box that contains the whole
+mesh.
+
+The normalization turns an absolute volume into a rough fraction of the object's bounding-box
+volume. A normalized excess of `0.01` means the merge added extra primitive volume equal to about
+one percent of the source mesh AABB volume. A smaller value means the merge added less extra
+wrapper volume under this proxy.
+
+This is useful for comparing merge candidates because a bad merge often creates a primitive that
+spans empty space between unrelated pieces. A low merge-excess says "one primitive can cover these
+two groups without adding much extra volume." A high merge-excess says "this merge probably wraps a
+lot of empty space."
+
+This is not a collision-quality metric. It does not measure penetration, contact stability,
+surface distance, or benchmark performance. It is a geometry-only surrogate used for diagnostic
+accounting and, in the cost-guided smoke, for one opt-in toy merge decision.
+
 `containment_proxy` is the "did the assigned points fit inside the candidate?"
 check. It is deliberately narrower than full geometric containment.
 
