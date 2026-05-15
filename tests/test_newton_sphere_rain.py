@@ -4,10 +4,13 @@ from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSp
 from primitive_collision_compiler.newton.sphere_rain import (
     SPHERE_RAIN_CLAIM_BOUNDARY,
     SphereRainOptions,
+    _add_static_shape,
     _package_contact_metrics,
+    _package_bounds,
     evaluate_sphere_rain_trace,
     run_newton_sphere_rain,
 )
+from primitive_collision_compiler.reports.schema import NewtonShapeMapping
 
 
 def test_sphere_rain_blocks_partial_shape_mapping():
@@ -227,6 +230,94 @@ def test_package_contact_metrics_counts_raw_rows_and_unique_probe_shapes():
 
     assert raw_count == 3
     assert unique_probe_count == 1
+
+
+def test_sphere_rain_builds_newton_native_static_shapes():
+    builder = _RecordingBuilder()
+    wp = _FakeWarp()
+
+    for mapping in (
+        _mapping("cylinder0", "cylinder", {"radius": 0.3, "half_height": 0.8}),
+        _mapping("cone0", "cone", {"radius": 0.4, "half_height": 0.9}),
+        _mapping("ellipsoid0", "ellipsoid", {"radii": [0.2, 0.4, 0.6]}),
+    ):
+        _add_static_shape(builder, mapping, wp)
+
+    assert [call[0] for call in builder.calls] == ["cylinder", "cone", "ellipsoid"]
+    assert builder.calls[0][1]["body"] == -1
+    assert builder.calls[1][1]["radius"] == 0.4
+    assert builder.calls[2][1]["rz"] == 0.6
+
+
+def test_sphere_rain_package_bounds_include_native_primitives():
+    bounds_min, bounds_max = _package_bounds(
+        (
+            _mapping(
+                "cylinder0",
+                "cylinder",
+                {"radius": 0.3, "half_height": 0.8},
+                center=(0.0, 0.0, 0.0),
+            ),
+            _mapping(
+                "ellipsoid0",
+                "ellipsoid",
+                {"radii": [0.2, 0.4, 0.6]},
+                center=(1.0, 0.0, 0.0),
+            ),
+        )
+    )
+
+    np.testing.assert_allclose(bounds_min, [-0.3, -0.4, -0.8])
+    np.testing.assert_allclose(bounds_max, [1.2, 0.4, 0.8])
+
+
+def _mapping(
+    primitive_id: str,
+    kind: str,
+    dimensions: dict[str, object],
+    *,
+    center: tuple[float, float, float] = (0.0, 0.0, 0.0),
+) -> NewtonShapeMapping:
+    return NewtonShapeMapping(
+        primitive_id=primitive_id,
+        kind=kind,
+        status="mapped",
+        detail="mapped",
+        center=center,
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions=dimensions,
+    )
+
+
+class _RecordingBuilder:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict[str, object]]] = []
+
+    def add_shape_cylinder(self, **kwargs):
+        self.calls.append(("cylinder", kwargs))
+        return len(self.calls)
+
+    def add_shape_cone(self, **kwargs):
+        self.calls.append(("cone", kwargs))
+        return len(self.calls)
+
+    def add_shape_ellipsoid(self, **kwargs):
+        self.calls.append(("ellipsoid", kwargs))
+        return len(self.calls)
+
+
+class _FakeWarp:
+    def vec3(self, x: float, y: float, z: float) -> tuple[float, float, float]:
+        return (x, y, z)
+
+    def matrix_from_cols(self, *cols):
+        return cols
+
+    def quat_from_matrix(self, matrix):
+        return ("quat", matrix)
+
+    def transform(self, position, rotation):
+        return {"position": position, "rotation": rotation}
 
 
 class _FakeContacts:

@@ -421,6 +421,27 @@ def _add_static_shape(builder: Any, mapping: NewtonShapeMapping, wp: ModuleType)
                 half_height=float(dimensions["half_height"]),
             )
         )
+    if mapping.kind == "cylinder":
+        return int(
+            builder.add_shape_cylinder(
+                body=-1,
+                xform=xform,
+                radius=float(dimensions["radius"]),
+                half_height=float(dimensions["half_height"]),
+            )
+        )
+    if mapping.kind == "cone":
+        return int(
+            builder.add_shape_cone(
+                body=-1,
+                xform=xform,
+                radius=float(dimensions["radius"]),
+                half_height=float(dimensions["half_height"]),
+            )
+        )
+    if mapping.kind == "ellipsoid":
+        rx, ry, rz = (float(value) for value in dimensions["radii"])
+        return int(builder.add_shape_ellipsoid(body=-1, xform=xform, rx=rx, ry=ry, rz=rz))
     raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
 
 
