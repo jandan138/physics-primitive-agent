@@ -27,13 +27,19 @@ The section should state:
 - the paper reference: `CPD Eq.4 collapse cost`;
 - the Eq.4 cost shape: `V(merge(p0, p1)) - (V(p0) + V(p1))`;
 - the current report term that corresponds to that shape: `merge_excess_terms`;
-- that the current values are AABB-normalized and use current restricted primitive fits;
+- that the current values mix raw Eq.4-like deltas and AABB-normalized diagnostic costs, using
+  current restricted primitive fits;
 - that this is term-category mapping, not an Eq.4 implementation;
 - that the current implementation excludes the Eq.5 intersection term;
 - that the current implementation is a surrogate, not a paper-faithful objective or optimizer;
 - the missing workbench gaps: paper-scope primitive vocabulary, paper primitive fitting,
   priority-queue collapse search, exact containment/surface-distance evaluation, benchmark
   evaluation, and collision-quality validation.
+
+This slice also preserves raw Eq.4-like volume deltas separately from AABB-normalized diagnostic
+costs in `merge_excess_terms`. The raw terms are named `accepted_eq4_cost_*` and
+`blocked_eq4_cost_*`; the normalized terms remain `accepted_normalized_excess_*` and
+`blocked_normalized_excess_*`.
 
 ## Non-Goals
 
@@ -54,15 +60,37 @@ The section should state:
     "paper_reference": "Convex Primitive Decomposition for Collision Detection Eq.4",
     "paper_cost_name": "collapse_excess_volume",
     "paper_cost_formula_reference": "C(p0,p1)=V(merge(p0,p1))-(V(p0)+V(p1))",
+    "implemented_term_path": "metrics.merge_excess_terms",
     "current_report_terms": ["merge_excess_terms", "geometric_excess_proxy"],
-    "current_cost_units": "aabb_normalized_weighted_primitive_volume",
+    "current_cost_units": "mixed_raw_and_aabb_normalized_weighted_primitive_volume",
+    "cost_unit_terms": {
+        "metrics.merge_excess_terms.accepted_eq4_cost_*": (
+            "raw_weighted_primitive_volume_delta"
+        ),
+        "metrics.merge_excess_terms.blocked_eq4_cost_*": (
+            "raw_weighted_primitive_volume_delta"
+        ),
+        "metrics.merge_excess_terms.accepted_normalized_excess_*": (
+            "aabb_normalized_weighted_primitive_volume_delta"
+        ),
+        "metrics.merge_excess_terms.blocked_normalized_excess_*": (
+            "aabb_normalized_weighted_primitive_volume_delta"
+        ),
+        "metrics.geometric_excess_proxy.normalized_*": (
+            "aabb_normalized_weighted_primitive_volume"
+        ),
+    },
     "normalizer": "source_mesh_aabb_volume_with_minimum_epsilon",
+    "merge_cost_volume_basis": "decomposition.weighted_volume",
     "uses_primitive_type_weights": bool,
+    "objective_report_weights_applied_to_merge_history": False,
+    "paper_weighting_status": "metadata_only_or_partial",
+    "threshold_scope": "virtual_component_merges_only",
     "uses_intersection_term": False,
     "computes_paper_eq4": False,
     "paper_faithfulness": "surrogate_not_paper_faithful",
     "matches_paper_story": [...],
-    "known_gaps": [...],
+    "non_faithful_gaps": [...],
 }
 ```
 
@@ -76,8 +104,10 @@ Add tests that:
 1. `metrics` includes `paper_alignment` and stable keys.
 2. The alignment section references Eq.4 and the existing merge-excess terms.
 3. The alignment section reports `uses_primitive_type_weights` correctly.
-4. The cost-guided synthetic report surfaces the alignment section in each policy summary.
-5. JSON remains strict-serializable.
+4. Raw Eq.4-like costs and normalized diagnostic costs are both reported.
+5. Negative raw Eq.4-like costs serialize without being treated as invalid.
+6. The cost-guided synthetic report surfaces the alignment section in each policy summary.
+7. JSON remains strict-serializable.
 
 ## Documentation
 

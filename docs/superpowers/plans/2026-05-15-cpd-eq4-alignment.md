@@ -4,19 +4,77 @@
 
 **Goal:** Add structured Eq.4 paper-alignment metadata to the CPD-like objective report without changing decomposition behavior.
 
-**Architecture:** Keep the change local to the objective-report layer, with one synthetic-report pass-through for reviewability. The decomposition report remains unchanged. Documentation and records must keep the claim as paper-aligned surrogate accounting metadata, not Eq.4 implementation or paper-faithful CPD reproduction.
+**Architecture:** Add raw Eq.4-like merge deltas in the decomposition summary, then expose paper-alignment metadata in the objective-report layer with one synthetic-report pass-through for reviewability. Documentation and records must keep the claim as paper-aligned surrogate accounting metadata, not Eq.4 implementation or paper-faithful CPD reproduction.
 
 **Tech Stack:** Python dataclasses/dicts, existing CPD-like objective and synthetic report builders, pytest, Markdown records.
 
 ---
 
-### Task 1: Objective Alignment Metadata
+### Task 1: Raw Eq.4-Like Merge-Cost Accounting
+
+**Files:**
+- Modify: `src/primitive_collision_compiler/baselines/cpd_like/decompose.py`
+- Test: `tests/test_cpd_like_decompose.py`
+
+- [x] **Step 1: Write failing decomposition tests**
+
+Add tests for:
+
+- raw accepted Eq.4-like cost equals `merged.weighted_volume - left.weighted_volume - right.weighted_volume`;
+- normalized accepted cost equals raw cost divided by `normalizer_volume`;
+- negative raw Eq.4-like cost serializes without being treated as invalid.
+
+- [x] **Step 2: Run tests and confirm RED**
+
+Run:
+
+```bash
+python -m pytest tests/test_cpd_like_decompose.py -q -k eq4
+```
+
+Expected: failure because raw Eq.4-like fields do not exist.
+
+- [x] **Step 3: Implement raw and normalized summary fields**
+
+Add `accepted_eq4_costs` and `blocked_eq4_costs` alongside the existing normalized lists. Extend
+`_merge_cost_summary(...)` with:
+
+```python
+"accepted_eq4_cost_min": _min_or_none(accepted_eq4_costs),
+"accepted_eq4_cost_max": _max_or_none(accepted_eq4_costs),
+"accepted_eq4_cost_sum": float(sum(accepted_eq4_costs)),
+"blocked_eq4_cost_min": _min_or_none(blocked_eq4_costs),
+"blocked_eq4_cost_max": _max_or_none(blocked_eq4_costs),
+"blocked_eq4_cost_sum": float(sum(blocked_eq4_costs)),
+"normalization": {
+    "kind": "source_mesh_aabb_volume",
+    "floor": MIN_NORMALIZATION_VOLUME,
+    "normalizer_volume": normalizer_volume,
+    "applied_to": [
+        "accepted_normalized_excess",
+        "blocked_normalized_excess",
+        "excess_volume_threshold_fraction",
+    ],
+},
+```
+
+- [x] **Step 4: Run targeted tests and confirm GREEN**
+
+Run:
+
+```bash
+python -m pytest tests/test_cpd_like_decompose.py -q -k eq4
+```
+
+Expected: selected tests pass.
+
+### Task 2: Objective Alignment Metadata
 
 **Files:**
 - Modify: `src/primitive_collision_compiler/baselines/cpd_like/objective.py`
 - Test: `tests/test_cpd_like_objective.py`
 
-- [ ] **Step 1: Write failing objective tests**
+- [x] **Step 1: Write failing objective tests**
 
 Add assertions to `test_objective_report_preserves_stable_schema_keys`:
 
@@ -30,6 +88,7 @@ assert set(payload["metrics"]["paper_alignment"]) == {
     "paper_cost_formula_reference",
     "current_report_terms",
     "current_cost_units",
+    "cost_unit_terms",
     "normalizer",
     "uses_primitive_type_weights",
     "uses_intersection_term",
@@ -61,7 +120,26 @@ def test_objective_report_maps_merge_excess_to_cpd_eq4_boundary():
         "C(p0,p1)=V(merge(p0,p1))-(V(p0)+V(p1))"
     )
     assert "merge_excess_terms" in alignment["current_report_terms"]
-    assert alignment["current_cost_units"] == "aabb_normalized_weighted_primitive_volume"
+    assert alignment["current_cost_units"] == (
+        "mixed_raw_and_aabb_normalized_weighted_primitive_volume"
+    )
+    assert alignment["cost_unit_terms"] == {
+        "metrics.merge_excess_terms.accepted_eq4_cost_*": (
+            "raw_weighted_primitive_volume_delta"
+        ),
+        "metrics.merge_excess_terms.blocked_eq4_cost_*": (
+            "raw_weighted_primitive_volume_delta"
+        ),
+        "metrics.merge_excess_terms.accepted_normalized_excess_*": (
+            "aabb_normalized_weighted_primitive_volume_delta"
+        ),
+        "metrics.merge_excess_terms.blocked_normalized_excess_*": (
+            "aabb_normalized_weighted_primitive_volume_delta"
+        ),
+        "metrics.geometric_excess_proxy.normalized_*": (
+            "aabb_normalized_weighted_primitive_volume"
+        ),
+    }
     assert alignment["normalizer"] == "source_mesh_aabb_volume_with_minimum_epsilon"
     assert alignment["uses_primitive_type_weights"] is False
     assert alignment["uses_intersection_term"] is False
@@ -87,7 +165,7 @@ def test_objective_report_alignment_notes_report_weights_when_configured():
     assert payload["metrics"]["paper_alignment"]["uses_primitive_type_weights"] is True
 ```
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 Run:
 
@@ -97,7 +175,7 @@ python -m pytest tests/test_cpd_like_objective.py -q -k "paper_alignment or stab
 
 Expected: failure because `paper_alignment` does not exist.
 
-- [ ] **Step 3: Implement objective metadata**
+- [x] **Step 3: Implement objective metadata**
 
 Add constants and helper:
 
@@ -113,7 +191,24 @@ def _paper_alignment_metadata(*, uses_primitive_type_weights: bool) -> dict[str,
         "paper_cost_name": "collapse_excess_volume",
         "paper_cost_formula_reference": "C(p0,p1)=V(merge(p0,p1))-(V(p0)+V(p1))",
         "current_report_terms": ["merge_excess_terms", "geometric_excess_proxy"],
-        "current_cost_units": "aabb_normalized_weighted_primitive_volume",
+        "current_cost_units": "mixed_raw_and_aabb_normalized_weighted_primitive_volume",
+        "cost_unit_terms": {
+            "metrics.merge_excess_terms.accepted_eq4_cost_*": (
+                "raw_weighted_primitive_volume_delta"
+            ),
+            "metrics.merge_excess_terms.blocked_eq4_cost_*": (
+                "raw_weighted_primitive_volume_delta"
+            ),
+            "metrics.merge_excess_terms.accepted_normalized_excess_*": (
+                "aabb_normalized_weighted_primitive_volume_delta"
+            ),
+            "metrics.merge_excess_terms.blocked_normalized_excess_*": (
+                "aabb_normalized_weighted_primitive_volume_delta"
+            ),
+            "metrics.geometric_excess_proxy.normalized_*": (
+                "aabb_normalized_weighted_primitive_volume"
+            ),
+        },
         "normalizer": "source_mesh_aabb_volume_with_minimum_epsilon",
         "uses_primitive_type_weights": uses_primitive_type_weights,
         "uses_intersection_term": False,
@@ -136,7 +231,7 @@ def _paper_alignment_metadata(*, uses_primitive_type_weights: bool) -> dict[str,
 
 Add it to `metrics`.
 
-- [ ] **Step 4: Run targeted tests and confirm GREEN**
+- [x] **Step 4: Run targeted tests and confirm GREEN**
 
 Run:
 
@@ -146,13 +241,13 @@ python -m pytest tests/test_cpd_like_objective.py -q
 
 Expected: all objective tests pass.
 
-### Task 2: Synthetic Pass-Through
+### Task 3: Synthetic Pass-Through
 
 **Files:**
 - Modify: `src/primitive_collision_compiler/baselines/cpd_like/synthetic.py`
 - Test: `tests/test_cpd_like_synthetic.py`
 
-- [ ] **Step 1: Write failing synthetic test**
+- [x] **Step 1: Write failing synthetic test**
 
 Add to `test_cost_guided_synthetic_comparison_shows_old_new_merge_decision`:
 
@@ -165,7 +260,7 @@ assert case["policies"]["cost_guided_pairwise"]["paper_alignment"]["paper_faithf
 )
 ```
 
-- [ ] **Step 2: Run test and confirm RED**
+- [x] **Step 2: Run test and confirm RED**
 
 Run:
 
@@ -175,7 +270,7 @@ python -m pytest tests/test_cpd_like_synthetic.py -q -k cost_guided
 
 Expected: failure because policy summaries do not expose `paper_alignment`.
 
-- [ ] **Step 3: Include paper alignment in policy summaries**
+- [x] **Step 3: Include paper alignment in policy summaries**
 
 In `_policy_summary`, read `paper_alignment = objective["metrics"]["paper_alignment"]` and include:
 
@@ -183,7 +278,7 @@ In `_policy_summary`, read `paper_alignment = objective["metrics"]["paper_alignm
 "paper_alignment": paper_alignment,
 ```
 
-- [ ] **Step 4: Run targeted tests and confirm GREEN**
+- [x] **Step 4: Run targeted tests and confirm GREEN**
 
 Run:
 
@@ -193,7 +288,7 @@ python -m pytest tests/test_cpd_like_synthetic.py tests/test_cpd_like_objective.
 
 Expected: all selected tests pass.
 
-### Task 3: Documentation And Record
+### Task 4: Documentation And Record
 
 **Files:**
 - Create: `docs/records/2026-05-15-cpd-eq4-alignment-metadata.md`
@@ -204,7 +299,7 @@ Expected: all selected tests pass.
 - Modify: `docs/index.md`
 - Modify: `docs/records/README.md`
 
-- [ ] **Step 1: Update docs**
+- [x] **Step 1: Update docs**
 
 Use these phrases:
 
@@ -213,11 +308,11 @@ Use these phrases:
 - `not paper-faithful CPD objective or optimizer`;
 - `no new collision-quality or benchmark evidence`.
 
-- [ ] **Step 2: Add dated record**
+- [x] **Step 2: Add dated record**
 
 Record implementation, verification, artifacts, claim impact, and next action.
 
-- [ ] **Step 3: Run documentation checks**
+- [x] **Step 3: Run documentation checks**
 
 Run:
 
@@ -228,12 +323,12 @@ git diff --check
 
 Expected: both pass.
 
-### Task 4: Review, Final Verification, Commit
+### Task 5: Review, Final Verification, Commit
 
 **Files:**
 - All changed files.
 
-- [ ] **Step 1: Run full tests**
+- [x] **Step 1: Run full tests**
 
 ```bash
 python -m pytest -q
@@ -241,21 +336,25 @@ python -m pytest -q
 
 Expected: all tests pass.
 
-- [ ] **Step 2: Request focused agent review**
+- [x] **Step 2: Request focused agent review**
 
 Ask one reviewer to check Eq.4 alignment and one reviewer to check claim boundaries.
 
-- [ ] **Step 3: Fix Important/Critical findings**
+- [x] **Step 3: Fix Important/Critical findings**
 
 If review finds Important or Critical issues, fix them with tests and rerun verification.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/primitive_collision_compiler/baselines/cpd_like/objective.py \
+  src/primitive_collision_compiler/baselines/cpd_like/decompose.py \
   src/primitive_collision_compiler/baselines/cpd_like/synthetic.py \
+  tests/test_cpd_like_decompose.py \
   tests/test_cpd_like_objective.py \
   tests/test_cpd_like_synthetic.py \
+  tests/test_cli.py \
+  README.md \
   docs/records/2026-05-15-cpd-eq4-alignment-metadata.md \
   docs/reference/cpd-objective-report-alignment.md \
   docs/reference/cpd-paper-story-status.md \

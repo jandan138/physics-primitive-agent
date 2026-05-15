@@ -457,6 +457,8 @@ def test_cli_run_cpd_like_objective_report_emits_json_for_tiny_usd(tmp_path, cap
     assert payload["evidence_level"] == "offline_cpd_like_objective_surrogate_smoke"
     assert payload["metrics"]["primitive_budget"]["within_budget"] is True
     assert payload["metrics"]["geometric_excess_proxy"]["weighted_primitive_volume"] > 0.0
+    assert payload["metrics"]["paper_alignment"]["paper_equation_id"] == "Eq.4"
+    assert payload["metrics"]["paper_alignment"]["computes_paper_eq4"] is False
     assert captured.err == ""
 
 

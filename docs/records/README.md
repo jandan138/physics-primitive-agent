@@ -100,3 +100,6 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 AABB-Normalized Merge-Excess Explainer](2026-05-15-aabb-normalized-merge-excess-explainer.md):
   documentation update that explains the surrogate merge cost used by the CPD-like cost-guided
   smoke.
+- [2026-05-15 CPD Eq.4 Alignment Metadata](2026-05-15-cpd-eq4-alignment-metadata.md):
+  structured objective-report metadata that maps current surrogate merge-excess terms to the CPD
+  paper Eq.4 role without claiming Eq.4 implementation.

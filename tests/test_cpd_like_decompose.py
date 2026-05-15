@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
 from primitive_collision_compiler.baselines.cpd_like.primitives import PrimitiveFit, fit_best_primitive
@@ -49,6 +50,20 @@ def _cost_guided_pair_choice_mesh() -> TriangleMesh:
             ]
         ),
         faces=np.array([[0, 1, 2], [1, 2, 3], [4, 5, 6]]),
+    )
+
+
+def _nonplanar_adjacent_pair_mesh() -> TriangleMesh:
+    return TriangleMesh(
+        points=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 1.0, 1.0],
+            ]
+        ),
+        faces=np.array([[0, 1, 2], [0, 2, 3]]),
     )
 
 
@@ -191,6 +206,80 @@ def test_decompose_mesh_default_merge_search_keeps_topology_before_virtual():
     assert report.topology_merge_count == 1
     assert report.virtual_component_merge_count == 0
     assert report.primitives[0].source_component_ids == (0, 1)
+
+
+def test_decompose_mesh_records_raw_eq4_cost_and_normalized_cost():
+    mesh = _cost_guided_pair_choice_mesh()
+    report = decompose_mesh(
+        mesh,
+        max_primitives=2,
+        primitive_subset=("box",),
+        component_merge="virtual_pairwise",
+    )
+    left = fit_best_primitive(mesh, frozenset({0}), ("box",))
+    right = fit_best_primitive(mesh, frozenset({1}), ("box",))
+    merged = fit_best_primitive(mesh, frozenset({0, 1}), ("box",))
+    expected_raw_cost = merged.weighted_volume - left.weighted_volume - right.weighted_volume
+    expected_normalized_cost = expected_raw_cost / report.merge_cost_summary["normalizer_volume"]
+
+    assert report.merge_cost_summary["accepted_eq4_cost_sum"] == pytest.approx(
+        expected_raw_cost
+    )
+    assert report.merge_cost_summary["accepted_eq4_cost_min"] == pytest.approx(
+        expected_raw_cost
+    )
+    assert report.merge_cost_summary["accepted_eq4_cost_max"] == pytest.approx(
+        expected_raw_cost
+    )
+    assert report.merge_cost_summary["accepted_normalized_excess_sum"] == pytest.approx(
+        expected_normalized_cost
+    )
+    assert report.merge_cost_summary["normalization"] == {
+        "kind": "source_mesh_aabb_volume",
+        "floor": 1e-12,
+        "normalizer_volume": report.merge_cost_summary["normalizer_volume"],
+        "applied_to": [
+            "accepted_normalized_excess",
+            "blocked_normalized_excess",
+            "excess_volume_threshold_fraction",
+        ],
+    }
+
+
+def test_decompose_mesh_serializes_negative_raw_eq4_cost(monkeypatch):
+    def fake_fit(mesh, face_ids, primitive_subset):
+        source_faces = tuple(sorted(face_ids))
+        weighted_volumes = {
+            (0,): 10.0,
+            (1,): 10.0,
+            (0, 1): 5.0,
+        }
+        volume = weighted_volumes[source_faces]
+        return PrimitiveFit(
+            primitive_type="box",
+            source_faces=source_faces,
+            center=(0.0, 0.0, 0.0),
+            axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+            dimensions={"half_extents": [1.0, 1.0, 1.0]},
+            volume=volume,
+            weighted_volume=volume,
+            contains_assigned_points=True,
+        )
+
+    monkeypatch.setattr(
+        "primitive_collision_compiler.baselines.cpd_like.decompose.fit_best_primitive",
+        fake_fit,
+    )
+
+    report = decompose_mesh(
+        _nonplanar_adjacent_pair_mesh(),
+        max_primitives=1,
+        primitive_subset=("box",),
+    )
+
+    assert report.status == "smoke_passed"
+    assert report.merge_cost_summary["accepted_eq4_cost_sum"] == -15.0
+    assert report.merge_cost_summary["accepted_normalized_excess_sum"] == -15.0
 
 
 def test_decompose_mesh_cost_guided_pairwise_can_choose_virtual_before_topology():

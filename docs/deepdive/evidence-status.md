@@ -23,10 +23,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   exhausted, and reports AABB-normalized excess-volume accounting.
 - The current executable surface can run `cpd_like_offline_objective`, an offline
   paper-aligned surrogate objective report over the CPD-like baseline. It reports primitive-budget
-  pressure, AABB-normalized volume proxy, merge-excess accounting, assigned-point containment
-  proxy, unsupported paper primitive gaps, and component/fallback labels. This is diagnostic
-  accounting, not collision-quality evidence or full CPD reproduction. The alignment boundary is
-  documented in
+  pressure, AABB-normalized volume proxy, raw Eq.4-like and AABB-normalized merge-excess
+  accounting, assigned-point containment proxy, unsupported paper primitive gaps,
+  component/fallback labels, and structured Eq.4 alignment metadata. This is diagnostic
+  accounting, not Eq.4 implementation, collision-quality evidence, or full CPD reproduction. The
+  alignment boundary is documented in
   [CPD objective report alignment](../reference/cpd-objective-report-alignment.md): design-aligned
   with the paper story, not mathematically paper-faithful.
 - The current executable surface can run `cpd_like_synthetic_objective_comparison`, a command-only

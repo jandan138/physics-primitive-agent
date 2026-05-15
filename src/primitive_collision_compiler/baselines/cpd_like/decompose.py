@@ -129,6 +129,8 @@ def decompose_mesh(
     blocked_merge_count = 0
     accepted_merge_costs: list[float] = []
     blocked_merge_costs: list[float] = []
+    accepted_eq4_costs: list[float] = []
+    blocked_eq4_costs: list[float] = []
 
     while len(clusters) > max_primitives:
         if merge_search_policy == MERGE_SEARCH_COST_GUIDED_PAIRWISE:
@@ -153,6 +155,7 @@ def decompose_mesh(
                 fallback_reason = "component_merge_threshold_blocked"
                 blocked_merge_count += 1
                 blocked_merge_costs.append(merge_candidate.normalized_excess_volume)
+                blocked_eq4_costs.append(merge_candidate.excess_volume)
                 break
             next_cluster_id = _accept_merge(
                 merge_candidate,
@@ -167,6 +170,7 @@ def decompose_mesh(
             else:
                 topology_merge_count += 1
             accepted_merge_costs.append(merge_candidate.normalized_excess_volume)
+            accepted_eq4_costs.append(merge_candidate.excess_volume)
             continue
 
         topology_candidate = _best_merge(
@@ -191,6 +195,7 @@ def decompose_mesh(
             )
             topology_merge_count += 1
             accepted_merge_costs.append(topology_candidate.normalized_excess_volume)
+            accepted_eq4_costs.append(topology_candidate.excess_volume)
             continue
 
         if component_merge != COMPONENT_MERGE_VIRTUAL_PAIRWISE:
@@ -218,6 +223,7 @@ def decompose_mesh(
             fallback_reason = "component_merge_threshold_blocked"
             blocked_merge_count += 1
             blocked_merge_costs.append(virtual_candidate.normalized_excess_volume)
+            blocked_eq4_costs.append(virtual_candidate.excess_volume)
             break
         next_cluster_id = _accept_merge(
             virtual_candidate,
@@ -229,6 +235,7 @@ def decompose_mesh(
         )
         virtual_component_merge_count += 1
         accepted_merge_costs.append(virtual_candidate.normalized_excess_volume)
+        accepted_eq4_costs.append(virtual_candidate.excess_volume)
 
     primitives = tuple(
         sorted(
@@ -279,6 +286,8 @@ def decompose_mesh(
         merge_cost_summary=_merge_cost_summary(
             accepted_merge_costs,
             blocked_merge_costs,
+            accepted_eq4_costs,
+            blocked_eq4_costs,
             normalizer_volume,
             report_merge_trace,
         ),
@@ -473,6 +482,8 @@ def _mesh_aabb_volume(mesh: TriangleMesh) -> float:
 def _merge_cost_summary(
     accepted_costs: list[float],
     blocked_costs: list[float],
+    accepted_eq4_costs: list[float],
+    blocked_eq4_costs: list[float],
     normalizer_volume: float,
     report_merge_trace: str,
 ) -> dict[str, object]:
@@ -483,10 +494,26 @@ def _merge_cost_summary(
         "accepted_normalized_excess_min": _min_or_none(accepted_costs),
         "accepted_normalized_excess_max": _max_or_none(accepted_costs),
         "accepted_normalized_excess_sum": float(sum(accepted_costs)),
+        "accepted_eq4_cost_min": _min_or_none(accepted_eq4_costs),
+        "accepted_eq4_cost_max": _max_or_none(accepted_eq4_costs),
+        "accepted_eq4_cost_sum": float(sum(accepted_eq4_costs)),
         "blocked_merge_count": len(blocked_costs),
         "blocked_normalized_excess_min": _min_or_none(blocked_costs),
         "blocked_normalized_excess_max": _max_or_none(blocked_costs),
+        "blocked_eq4_cost_min": _min_or_none(blocked_eq4_costs),
+        "blocked_eq4_cost_max": _max_or_none(blocked_eq4_costs),
+        "blocked_eq4_cost_sum": float(sum(blocked_eq4_costs)),
         "normalizer_volume": normalizer_volume,
+        "normalization": {
+            "kind": "source_mesh_aabb_volume",
+            "floor": MIN_NORMALIZATION_VOLUME,
+            "normalizer_volume": normalizer_volume,
+            "applied_to": [
+                "accepted_normalized_excess",
+                "blocked_normalized_excess",
+                "excess_volume_threshold_fraction",
+            ],
+        },
     }
 
 

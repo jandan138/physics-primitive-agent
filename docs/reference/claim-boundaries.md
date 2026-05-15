@@ -28,6 +28,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   benchmark evidence, or collision-quality validation. "Paper-aligned" means design-aligned with
   the paper story's accounting categories, not the paper's exact objective formula or search
   procedure.
+- The current objective report can include structured Eq.4 alignment metadata that maps current
+  surrogate merge-excess fields to the CPD paper's collapse-cost role for audit. This is metadata,
+  not Eq.4 implementation, paper-faithful scoring, benchmark evidence, or collision-quality
+  validation.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper
@@ -94,6 +98,8 @@ Use these only after broader benchmark records exist.
   decomposition is good; it is diagnostic accounting for future algorithm work.
 - Do not describe "paper-aligned surrogate objective report" as equivalent to a paper-faithful
   objective implementation.
+- Do not describe Eq.4 alignment metadata as Eq.4 implementation, paper-faithful objective
+  scoring, or proof that the current merge search matches the paper.
 - Do not describe the synthetic objective comparison as benchmark evidence or proof that one merge
   policy is better; it is fixture-level diagnostic accounting.
 - Do not describe the cost-guided merge-search improvement as the CPD paper optimizer or as proof

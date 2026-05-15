@@ -72,6 +72,12 @@ def test_cost_guided_synthetic_comparison_shows_old_new_merge_decision():
     ] == 1
     assert case["comparison"]["cost_guided_chose_virtual_instead_of_topology"] is True
     assert case["comparison"]["cost_guided_accepted_excess_delta"] < 0.0
+    assert case["policies"]["topology_then_virtual"]["paper_alignment"]["paper_cost_name"] == (
+        "collapse_excess_volume"
+    )
+    assert case["policies"]["cost_guided_pairwise"]["paper_alignment"][
+        "paper_faithfulness"
+    ] == "surrogate_not_paper_faithful"
 
 
 def test_cost_guided_synthetic_comparison_report_is_strict_json_serializable():

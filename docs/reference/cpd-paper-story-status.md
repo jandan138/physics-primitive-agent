@@ -38,7 +38,7 @@ The CPD paper story can be read as six layers.
 | --- | --- | --- |
 | 1. Asset input | Can a complex mesh enter the pipeline? | Partially in place through USD-open and capped first-mesh extraction smokes. |
 | 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. |
-| 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report. It summarizes primitive budget, volume proxy, merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
+| 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for one deterministic synthetic fixture only. |
 | 5. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
 | 6. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
@@ -49,8 +49,8 @@ The current baseline is a CPD-like geometry smoke path. It groups mesh faces, fi
 primitive proposals, and records the result. It exists because later paper-faithful work will need
 the same asset intake, report schema, collision-package bridge, and Newton diagnostic plumbing.
 
-The current baseline is useful for pipeline validation. It is not a substitute for the paper's
-primitive coverage, objective formulation, optimization procedure, or benchmark evaluation.
+The current baseline is useful for pipeline diagnostic plumbing. It is not a substitute for the
+paper's primitive coverage, objective formulation, optimization procedure, or benchmark evaluation.
 
 ## What The Component-Merge Gate Adds
 
@@ -76,7 +76,8 @@ baseline algorithm. It reads a CPD-like decomposition report and emits reviewabl
 
 - primitive budget pressure;
 - AABB-normalized primitive volume proxy;
-- accepted and blocked merge excess accounting;
+- accepted and blocked raw Eq.4-like merge delta plus AABB-normalized merge excess accounting;
+- structured Eq.4 alignment metadata for audit;
 - assigned-point containment proxy;
 - unsupported paper primitive gaps;
 - component merge and fallback labels.
@@ -101,6 +102,10 @@ should block stronger interpretation.
 It does not yet implement the paper's full objective formula, search procedure, primitive
 vocabulary, containment model, collision-quality evaluation, or benchmark protocol. Treat it as a
 reviewable health check that prepares the repository for paper-aligned algorithm work.
+
+The structured Eq.4 metadata makes that boundary machine-readable. It points reviewers to the
+paper's Eq.4 collapse-cost role and to the current JSON fields that carry the analogous surrogate
+terms, while also recording `computes_paper_eq4: false` and the remaining non-faithful gaps.
 
 ## What The Synthetic Comparison Adds
 

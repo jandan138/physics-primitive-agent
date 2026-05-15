@@ -216,6 +216,7 @@ def _policy_summary(
     primitive_budget = objective["metrics"]["primitive_budget"]
     merge_excess_terms = objective["metrics"]["merge_excess_terms"]
     component_accounting = objective["metrics"]["component_accounting"]
+    paper_alignment = objective["metrics"]["paper_alignment"]
     return {
         "status": objective["status"],
         "decomposition_stage": objective["decomposition_stage"],
@@ -224,6 +225,7 @@ def _policy_summary(
         "primitive_budget": primitive_budget,
         "merge_excess_terms": merge_excess_terms,
         "component_accounting": component_accounting,
+        "paper_alignment": paper_alignment,
     }
 
 

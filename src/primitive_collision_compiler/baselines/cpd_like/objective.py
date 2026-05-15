@@ -9,6 +9,10 @@ from primitive_collision_compiler.baselines.cpd_like.decompose import CPDLikeDec
 DEFAULT_CLAIM_BOUNDARY = "offline_objective_report_not_collision_quality_validation"
 DEFAULT_EVIDENCE_LEVEL = "offline_cpd_like_objective_smoke"
 DEFAULT_OBJECTIVE_VERSION = "cpd_paper_aligned_surrogate_v0"
+PAPER_ALIGNMENT_VERSION = "cpd_eq4_alignment_metadata_v0"
+CPD_PAPER_PDF_SHA256 = (
+    "847c069dafec31e3873a6bdf9b65fa01e1058f4b34036982eaefcefe0e696f95"
+)
 MIN_NORMALIZER_VOLUME = 1e-12
 
 
@@ -112,12 +116,53 @@ def build_cpd_like_objective_report(
                 "accepted_normalized_excess_max",
                 None,
             ),
+            "accepted_eq4_cost_sum": merge_cost_summary.get(
+                "accepted_eq4_cost_sum",
+                None,
+            ),
+            "accepted_eq4_cost_min": merge_cost_summary.get(
+                "accepted_eq4_cost_min",
+                None,
+            ),
+            "accepted_eq4_cost_max": merge_cost_summary.get(
+                "accepted_eq4_cost_max",
+                None,
+            ),
             "blocked_merge_count": decomposition.blocked_merge_count,
             "blocked_normalized_excess_max": merge_cost_summary.get(
                 "blocked_normalized_excess_max",
                 None,
             ),
+            "blocked_eq4_cost_sum": merge_cost_summary.get(
+                "blocked_eq4_cost_sum",
+                None,
+            ),
+            "blocked_eq4_cost_min": merge_cost_summary.get(
+                "blocked_eq4_cost_min",
+                None,
+            ),
+            "blocked_eq4_cost_max": merge_cost_summary.get(
+                "blocked_eq4_cost_max",
+                None,
+            ),
+            "normalization": merge_cost_summary.get(
+                "normalization",
+                {
+                    "kind": "source_mesh_aabb_volume",
+                    "floor": MIN_NORMALIZER_VOLUME,
+                    "normalizer_volume": normalizer_volume,
+                    "applied_to": [
+                        "accepted_normalized_excess",
+                        "blocked_normalized_excess",
+                        "excess_volume_threshold_fraction",
+                    ],
+                },
+            ),
         },
+        "paper_alignment": _paper_alignment_metadata(
+            claim_boundary=str(options.claim_boundary),
+            uses_primitive_type_weights=bool(primitive_type_weights),
+        ),
         "containment": {
             "contained_primitive_count": contained_primitive_count,
             "uncontained_primitive_count": uncontained_primitive_count,
@@ -166,6 +211,76 @@ def build_cpd_like_objective_report(
             "max_source_faces": max_source_faces,
         },
     )
+
+
+def _paper_alignment_metadata(
+    *,
+    claim_boundary: str,
+    uses_primitive_type_weights: bool,
+) -> dict[str, object]:
+    return {
+        "alignment_version": PAPER_ALIGNMENT_VERSION,
+        "metadata_scope": "term_category_mapping_not_eq4_implementation",
+        "paper_id": "knodt_gao_2026_convex_primitive_decomposition_for_collision_detection",
+        "paper_version": "arxiv_2602.07369v1",
+        "paper_pdf_sha256": CPD_PAPER_PDF_SHA256,
+        "paper_section": "3.3 Optimal Primitive Selection",
+        "paper_equation_id": "Eq.4",
+        "paper_reference": "Convex Primitive Decomposition for Collision Detection Eq.4",
+        "paper_cost_name": "collapse_excess_volume",
+        "paper_cost_formula_reference": "C(p0,p1)=V(merge(p0,p1))-(V(p0)+V(p1))",
+        "implemented_term_path": "metrics.merge_excess_terms",
+        "current_report_terms": [
+            "metrics.merge_excess_terms",
+            "metrics.geometric_excess_proxy",
+        ],
+        "current_cost_units": "mixed_raw_and_aabb_normalized_weighted_primitive_volume",
+        "cost_unit_terms": {
+            "metrics.merge_excess_terms.accepted_eq4_cost_*": (
+                "raw_weighted_primitive_volume_delta"
+            ),
+            "metrics.merge_excess_terms.blocked_eq4_cost_*": (
+                "raw_weighted_primitive_volume_delta"
+            ),
+            "metrics.merge_excess_terms.accepted_normalized_excess_*": (
+                "aabb_normalized_weighted_primitive_volume_delta"
+            ),
+            "metrics.merge_excess_terms.blocked_normalized_excess_*": (
+                "aabb_normalized_weighted_primitive_volume_delta"
+            ),
+            "metrics.geometric_excess_proxy.normalized_*": (
+                "aabb_normalized_weighted_primitive_volume"
+            ),
+        },
+        "normalizer": "source_mesh_aabb_volume_with_minimum_epsilon",
+        "merge_cost_volume_basis": "decomposition.weighted_volume",
+        "uses_primitive_type_weights": uses_primitive_type_weights,
+        "objective_report_weights_applied_to_merge_history": False,
+        "paper_weighting_status": "metadata_only_or_partial",
+        "threshold_scope": "virtual_component_merges_only",
+        "uses_intersection_term": False,
+        "computes_paper_eq4": False,
+        "paper_faithfulness": "surrogate_not_paper_faithful",
+        "claim_boundary": claim_boundary,
+        "matches_paper_story": [
+            "excess_volume_difference_shape",
+            "aabb_relative_threshold_accounting",
+            "primitive_type_weight_hook",
+        ],
+        "non_faithful_gaps": [
+            "restricted_primitive_vocabulary",
+            "paper_weights_not_fully_reproduced",
+            "paper_scope_primitive_fitting",
+            "paper_scope_priority_queue_collapse_search",
+            "candidate_graph_restricted",
+            "threshold_applies_only_to_virtual_component_merges",
+            "no_intersection_volume_eq5",
+            "assigned_vertex_containment_proxy_only",
+            "no_redundant_primitive_culling",
+            "no_surface_distance_or_collision_benchmark",
+            "toy_or_capped_asset_scope",
+        ],
+    }
 
 
 def _validated_weights(value: Mapping[str, float] | None) -> dict[str, float]:

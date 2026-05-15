@@ -75,6 +75,10 @@ paper metric.
 topology merges, optional virtual component merges, and blocked component-merge
 candidates.
 
+`paper_alignment` is the "how does this report relate to the paper?" map. It records the paper
+source, Eq.4 reference, which current JSON terms correspond to that paper-story role, and which
+paper-faithful parts are still missing. This is metadata for audit, not a new score.
+
 ## What AABB-Normalized Merge-Excess Means
 
 In the current CPD-like baseline, a merge candidate joins two face groups into one larger face
@@ -113,6 +117,40 @@ lot of empty space."
 This is not a collision-quality metric. It does not measure penetration, contact stability,
 surface distance, or benchmark performance. It is a geometry-only surrogate used for diagnostic
 accounting and, in the cost-guided smoke, for one opt-in toy merge decision.
+
+## What The Eq.4 Alignment Metadata Adds
+
+The paper's Eq.4 collapse cost has the shape:
+
+```text
+C(p0,p1)=V(merge(p0,p1))-(V(p0)+V(p1))
+```
+
+The report now separates two related quantities:
+
+- raw Eq.4-like volume delta: `accepted_eq4_cost_*` and `blocked_eq4_cost_*`;
+- AABB-normalized diagnostic cost: `accepted_normalized_excess_*` and
+  `blocked_normalized_excess_*`.
+
+The raw delta keeps the paper-shaped volume difference visible. The normalized value keeps the
+repo's existing diagnostic behavior: divide by the source mesh AABB volume, with a small floor for
+degenerate planar meshes, so thresholds and reports are scale-aware.
+
+The `paper_alignment` metadata also records:
+
+- `metadata_scope`: this is term-category mapping, not Eq.4 implementation;
+- `implemented_term_path`: the current JSON path is `metrics.merge_excess_terms`;
+- `current_cost_units`: mixed raw and AABB-normalized weighted primitive volume;
+- `cost_unit_terms`: which JSON paths are raw volume deltas and which are normalized diagnostics;
+- `merge_cost_volume_basis`: the current merge history uses `decomposition.weighted_volume`;
+- `objective_report_weights_applied_to_merge_history`: false, because report-time weights do not
+  rewrite historical merge decisions;
+- `threshold_scope`: virtual component merges only;
+- `computes_paper_eq4`: false;
+- `non_faithful_gaps`: the remaining gaps before paper-faithful objective/search claims.
+
+This keeps the report honest. It says "this is where the current surrogate cost touches the paper
+story" without claiming the paper objective has been implemented.
 
 `containment_proxy` is the "did the assigned points fit inside the candidate?"
 check. It is deliberately narrower than full geometric containment.
@@ -162,6 +200,7 @@ stable report, then ask whether Newton diagnostics reveal new failure modes.
 Use:
 
 - "paper-aligned surrogate objective report";
+- "structured Eq.4 alignment metadata";
 - "diagnostic accounting for future CPD reproduction work";
 - "design-aligned with the paper story";
 - "focused CPD-like cost-guided merge-search smoke";
@@ -172,6 +211,7 @@ Avoid:
 
 - "paper objective reproduced";
 - "CPD objective implemented";
+- "Eq.4 implemented";
 - "CPD optimizer implemented";
 - "decomposition quality validated";
 - "collision quality score";

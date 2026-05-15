@@ -25,7 +25,8 @@ decision-making cost on one deterministic toy mesh and reports old/new diagnosti
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper
 story. See `docs/reference/cpd-objective-report-alignment.md` for why the objective report is
-design-aligned with the paper story but not yet a paper-faithful objective implementation. The
+design-aligned with the paper story, now including structured Eq.4 alignment metadata, but not yet
+a paper-faithful objective implementation. The
 clean local Newton Python environment has recorded readiness evidence, but the
 repository does not yet produce benchmark results, broad asset/task evidence, whole-robot
 collider-quality evidence, real contact-stress measurement, or a production collision compiler.
@@ -110,8 +111,8 @@ current basis for project framing, claim boundaries, and future implementation p
   recorded capped bed drop/settle and sphere-rain contact-density proxy diagnostics.
 - No whole-robot collider-quality or articulated-dynamics evidence; the Franka path is import and
   capped first-mesh geometry smoke only.
-- No full CPD paper reproduction; the component-merge gate and objective report are restricted
-  CPD-like baseline diagnostics, and the cost-guided merge-search smoke is a restricted synthetic
-  algorithmic smoke slice.
+- No full CPD paper reproduction; the component-merge gate, Eq.4 alignment metadata, and objective
+  report are restricted CPD-like baseline diagnostics, and the cost-guided merge-search smoke is a
+  restricted synthetic algorithmic smoke slice.
 - No generated collision artifact pipeline.
 - No claim of production readiness.
