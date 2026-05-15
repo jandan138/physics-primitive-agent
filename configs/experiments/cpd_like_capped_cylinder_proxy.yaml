@@ -1,0 +1,37 @@
+asset:
+  id: grscenes_bed_0a85b986_capped_cylinder_proxy
+  path: assets/manifests/cpd_like_smoke_assets.yaml
+task:
+  primary: collision_proxy_diagnostic
+compile:
+  method: cpd_like_baseline
+  max_primitives: 32
+  allowed_fallback:
+    - convex_hull
+  verify:
+    - cpd_like_objective_report
+  keep_visual: false
+cpd_like:
+  paper: Convex Primitive Decomposition for Collision Detection
+  asset_manifest: assets/manifests/cpd_like_smoke_assets.yaml
+  asset_role: bed_dev_smoke
+  primitive_subset:
+    - capped_cylinder
+  unsupported_primitives:
+    - frustum
+    - trapezoidal_prism
+  max_source_faces: 256
+  decomposition_stage: cpd_like_component_merge_gate
+  component_merge: virtual_pairwise
+  excess_volume_threshold_fraction: 1.0
+  report_merge_trace: summary
+  claim_boundary: capped_cylinder_proxy_not_paper_faithful_or_newton_supported
+cpd_like_objective:
+  objective_version: cpd_paper_aligned_surrogate_v0
+  claim_boundary: capped_cylinder_proxy_objective_not_collision_quality_validation
+  evidence_level: offline_cpd_like_capped_cylinder_proxy_smoke
+  primitive_type_weights:
+    capped_cylinder: 1.0
+report:
+  output_dir: reports/generated/cpd_like_capped_cylinder_proxy
+  evidence_level: offline_cpd_like_capped_cylinder_proxy_smoke

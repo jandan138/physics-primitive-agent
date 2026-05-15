@@ -205,16 +205,35 @@ This workbench is not benchmark evidence, not collision-quality validation, and 
 reproduction. It is a guardrail that keeps known baseline weaknesses visible before algorithmic
 improvements start hiding or changing them.
 
+## What The Capped-Cylinder Proxy Adds
+
+The opt-in offline `capped_cylinder` geometry proposal proxy changes the primitive-vocabulary
+accounting in one named report. When the capped-cylinder proxy config requests only
+`capped_cylinder`, the `paper_primitive_gap` field reports:
+
+```text
+unsupported_paper_primitive_count = 2
+unsupported_paper_primitives = ["frustum", "trapezoidal_prism"]
+```
+
+That is useful because the objective report can now distinguish "not requested in this run" from
+"still outside the restricted proposal vocabulary" for one paper primitive category. It remains a
+surrogate report: the proxy uses an axis-span/radial fit with hemisphere caps, not a paper-faithful
+primitive-fitting method.
+
+No Newton mapping or task-level improvement is implied. `capped_cylinder` remains outside the
+Newton-mapped primitive set until a separate mapping implementation and diagnostic record exist.
+
 ## Next Algorithmic Step
 
-The next step is to use the expected-failure workbench to choose one narrow algorithmic change:
-either improve primitive fitting for a known vocabulary/fit gap, or improve merge search for a
-known component/threshold gap.
+The next step is to choose one narrow follow-up after the capped-cylinder proxy: either another
+primitive-vocabulary proxy, a primitive-fit quality fixture, or a merge-search improvement against
+a known expected-failure case.
 
 The recommended order is:
 
-1. Pick one existing expected limitation fixture as the target.
-2. Add one focused primitive-fitting or merge-search improvement against that fixture.
+1. Pick one existing expected limitation or primitive-vocabulary gap as the target.
+2. Add one focused primitive-fitting, vocabulary, or merge-search improvement against that target.
 3. Compare old and new outputs with the same objective report.
 4. Re-run the bed and Franka smoke paths only after the synthetic report changes
    in a named, inspectable way.
@@ -233,6 +252,7 @@ Use:
 - "diagnostic accounting for future CPD reproduction work";
 - "design-aligned with the paper story";
 - "focused CPD-like cost-guided merge-search smoke";
+- "opt-in offline capped-cylinder geometry proposal proxy";
 - "not a paper-faithful objective implementation";
 - "not collision-quality evidence."
 
@@ -242,6 +262,8 @@ Avoid:
 - "CPD objective implemented";
 - "Eq.4 implemented";
 - "CPD optimizer implemented";
+- "paper-faithful capped cylinder support";
+- "Newton supports capped cylinders";
 - "decomposition quality validated";
 - "collision quality score";
 - "benchmark metric."

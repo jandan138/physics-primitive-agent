@@ -14,8 +14,9 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can report config dry-runs, USD asset-open smoke diagnostics,
   Newton source import diagnostics, and environment-readiness diagnostics.
 - The current executable surface can run a geometry-only CPD-like face-merge smoke path that
-  extracts a USD mesh, fits restricted `box`/`sphere`/`capsule` primitive candidates, greedily
-  merges adjacent face groups by weighted excess volume, and emits a JSON diagnostic report.
+  extracts a USD mesh, fits restricted `box`/`sphere`/`capsule` primitive candidates plus an
+  opt-in offline `capped_cylinder` proposal proxy, greedily merges adjacent face groups by
+  weighted excess volume, and emits a JSON diagnostic report.
   The plain-language explanation is in
   [CPD-like face-merge explainer](../reference/cpd-like-face-merge-explainer.md).
 - The current executable surface can run an opt-in geometry-only CPD-like component-merge gate
@@ -44,6 +45,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   reports expected, observed, missing, and unexpected diagnostic flags for each fixture.
   `smoke_passed` means expected limitations were reported, not decomposition success, benchmark
   evidence, collision-quality validation, or full CPD reproduction.
+- The current executable surface can run an opt-in offline capped-cylinder proxy objective smoke.
+  In that named report, the unsupported paper primitive gap decreases from 3 to 2:
+  `frustum` and `trapezoidal_prism` remain unsupported. This is not Newton support,
+  collision-quality evidence, paper-faithful primitive fitting, or full CPD reproduction.
 - The current CPD paper-story position is documented as a reproduction workbench, not as a
   paper-faithful implementation. See
   [CPD paper story status](../reference/cpd-paper-story-status.md).
@@ -96,6 +101,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   deterministic known-gap fixtures: `restricted_primitive_vocabulary_gap`,
   `single_proxy_wraps_disconnected_components`, and `threshold_blocks_component_merge`. All three
   fixtures matched their expected diagnostic flags with no missing or unexpected flags.
+- The 2026-05-15 CPD capped-cylinder proxy record reports `smoke_passed` for the opt-in offline
+  capped bed objective smoke: 32/32 primitive budget, 32/32 assigned-point containment proxy,
+  unsupported paper primitive count 2, and remaining unsupported paper primitive types
+  `frustum` and `trapezoidal_prism`.
 
 ## Current Unsupported Claims
 
@@ -114,6 +123,8 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The component-merge gate is the CPD paper algorithm.
 - The expected-failure synthetic workbench is a general failure detector, benchmark, validation
   suite, or proof that all bad decompositions are caught.
+- The capped-cylinder proxy is paper-faithful primitive fitting, Newton capped-cylinder support,
+  collision-quality evidence, benchmark evidence, or an asset/task improvement.
 - Environment-readiness diagnostics imply Newton simulation readiness.
 
 ## Future Evidence Needed
@@ -153,9 +164,10 @@ first synthetic objective comparison now gives deterministic inspection cases fo
 versus component-merge accounting. A focused cost-guided merge-search smoke now turns
 AABB-normalized merge-excess into an opt-in synthetic merge decision. A deterministic
 expected-failure workbench now converts three known CPD-paper gaps into diagnostic flags. Next use
-those expected limitations to choose one focused primitive-fitting or merge-search improvement,
-then re-run bed and Franka smokes before changing Newton probes or adding LLM/VLM. Report failures
-and fallback behavior as first-class evidence.
+those expected limitations and the capped-cylinder proxy report to choose one focused
+primitive-vocabulary or primitive-fit quality improvement, then re-run bed and Franka smokes before
+changing Newton probes or adding LLM/VLM. Report failures and fallback behavior as first-class
+evidence.
 
 ## Current Non-Goals
 

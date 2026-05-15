@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import pi
 
 import numpy as np
@@ -8,8 +8,9 @@ from numpy.typing import NDArray
 
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
 
-SUPPORTED_PRIMITIVES = ("box", "sphere", "capsule")
-UNSUPPORTED_PAPER_PRIMITIVES = ("capped_cylinder", "frustum", "trapezoidal_prism")
+SUPPORTED_PRIMITIVES = ("box", "sphere", "capsule", "capped_cylinder")
+PAPER_SCOPE_PRIMITIVES = ("capped_cylinder", "frustum", "trapezoidal_prism")
+UNSUPPORTED_PAPER_PRIMITIVES = PAPER_SCOPE_PRIMITIVES
 MIN_DIMENSION = 1e-6
 CONTAINMENT_TOLERANCE = 1e-8
 
@@ -54,7 +55,6 @@ def fit_best_primitive(
         raise ValueError("face_ids must not be empty")
 
     requested = tuple(dict.fromkeys(primitive_subset))
-    unsupported_requested = [primitive for primitive in requested if primitive not in SUPPORTED_PRIMITIVES]
     supported_requested = [primitive for primitive in requested if primitive in SUPPORTED_PRIMITIVES]
     if not supported_requested:
         raise ValueError("primitive_subset must include at least one supported primitive")
@@ -62,26 +62,17 @@ def fit_best_primitive(
     points = _assigned_points(mesh, face_ids)
     axes = _candidate_axes(mesh, face_ids)
     candidates = [
-        _fit_primitive(primitive, points, axes, tuple(sorted(face_ids)))
-        for primitive in supported_requested
-    ]
-    best = min(candidates, key=lambda fit: (fit.weighted_volume, fit.primitive_type))
-    if unsupported_requested:
-        unsupported = tuple(dict.fromkeys((*best.unsupported_primitives, *unsupported_requested)))
-        return PrimitiveFit(
-            primitive_type=best.primitive_type,
-            source_faces=best.source_faces,
-            center=best.center,
-            axes=best.axes,
-            dimensions=best.dimensions,
-            volume=best.volume,
-            weighted_volume=best.weighted_volume,
-            contains_assigned_points=best.contains_assigned_points,
-            unsupported_primitives=unsupported,
-            source_component_ids=best.source_component_ids,
-            cost_weight=best.cost_weight,
+        (
+            order,
+            _fit_primitive(primitive, points, axes, tuple(sorted(face_ids))),
         )
-    return best
+        for order, primitive in enumerate(supported_requested)
+    ]
+    best = min(candidates, key=lambda item: (item[1].weighted_volume, item[0]))[1]
+    return replace(
+        best,
+        unsupported_primitives=_unsupported_paper_primitives_for_subset(requested),
+    )
 
 
 def _fit_primitive(
@@ -96,7 +87,19 @@ def _fit_primitive(
         return _fit_sphere(points, axes, source_faces)
     if primitive_type == "capsule":
         return _fit_capsule(points, axes, source_faces)
+    if primitive_type == "capped_cylinder":
+        return _fit_capped_cylinder(points, axes, source_faces)
     raise ValueError(f"unsupported primitive type: {primitive_type}")
+
+
+def _unsupported_paper_primitives_for_subset(requested: tuple[str, ...]) -> tuple[str, ...]:
+    requested_set = set(requested)
+    supported_set = set(SUPPORTED_PRIMITIVES)
+    return tuple(
+        primitive
+        for primitive in PAPER_SCOPE_PRIMITIVES
+        if primitive not in requested_set or primitive not in supported_set
+    )
 
 
 def _assigned_points(mesh: TriangleMesh, face_ids: frozenset[int]) -> NDArray[np.float64]:
@@ -197,6 +200,48 @@ def _fit_capsule(
         center=_vector_to_tuple(center),
         axes=_axes_to_tuple(axes),
         dimensions={"radius": radius, "half_height": half_height, "axis_index": axis_index},
+        volume=volume,
+        weighted_volume=volume,
+        contains_assigned_points=contains,
+    )
+
+
+def _fit_capped_cylinder(
+    points: NDArray[np.float64],
+    axes: NDArray[np.float64],
+    source_faces: tuple[int, ...],
+) -> PrimitiveFit:
+    local = points @ axes
+    spans = local.max(axis=0) - local.min(axis=0)
+    axis_index = int(np.argmax(spans))
+    axis = axes[:, axis_index]
+    projections = points @ axis
+    projection_min = float(projections.min())
+    projection_max = float(projections.max())
+    segment_center_projection = (projection_min + projection_max) * 0.5
+    centroid = points.mean(axis=0)
+    perpendicular_center = centroid - axis * float(centroid @ axis)
+    center = perpendicular_center + axis * segment_center_projection
+    axial_offsets = np.outer(projections - segment_center_projection, axis)
+    radial_vectors = points - center - axial_offsets
+    radial_distances = np.linalg.norm(radial_vectors, axis=1)
+    radius = max(float(radial_distances.max(initial=0.0)), MIN_DIMENSION)
+    half_height = max((projection_max - projection_min) * 0.5, 0.0)
+    cylinder_length = half_height * 2.0
+    volume = float(pi * radius**2 * cylinder_length + (4.0 / 3.0) * pi * radius**3)
+    contains = bool(_capsule_contains(points, axis, center, half_height, radius))
+    return PrimitiveFit(
+        primitive_type="capped_cylinder",
+        source_faces=source_faces,
+        center=_vector_to_tuple(center),
+        axes=_axes_to_tuple(axes),
+        dimensions={
+            "radius": radius,
+            "half_height": half_height,
+            "axis_index": axis_index,
+            "cap_model": "hemisphere_caps",
+            "proxy_fit": "axis_span_radial_proxy",
+        },
         volume=volume,
         weighted_volume=volume,
         contains_assigned_points=contains,

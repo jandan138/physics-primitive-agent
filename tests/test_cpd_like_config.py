@@ -34,6 +34,24 @@ def test_cpd_like_baseline_preserves_newton_and_cpd_sections():
     assert config.protocol["report"]["evidence_level"] == "newton_contact_canary_smoke"
 
 
+def test_cpd_like_capped_cylinder_proxy_config_is_offline_only():
+    config = load_compile_config("configs/experiments/cpd_like_capped_cylinder_proxy.yaml")
+
+    assert config.asset_id == "grscenes_bed_0a85b986_capped_cylinder_proxy"
+    assert config.verify == ("cpd_like_objective_report",)
+    assert "newton" not in config.protocol
+    assert "newton_diagnostic" not in config.protocol
+    assert config.protocol["cpd_like"]["primitive_subset"] == ["capped_cylinder"]
+    assert config.protocol["cpd_like"]["unsupported_primitives"] == [
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    assert config.protocol["cpd_like"]["decomposition_stage"] == "cpd_like_component_merge_gate"
+    assert config.protocol["cpd_like_objective"]["primitive_type_weights"] == {
+        "capped_cylinder": 1.0
+    }
+
+
 def test_smoke_asset_manifest_records_paths_without_committing_assets():
     manifest = yaml.safe_load(Path("assets/manifests/cpd_like_smoke_assets.yaml").read_text())
 

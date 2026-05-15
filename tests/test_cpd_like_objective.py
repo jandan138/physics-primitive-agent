@@ -72,6 +72,31 @@ def test_objective_report_summarizes_smoke_passed_decomposition():
     assert payload["decomposition"]["primitive_count"] == 1
 
 
+def test_objective_report_counts_capped_cylinder_as_opt_in_supported_proxy():
+    decomposition = decompose_mesh(
+        _square_mesh(),
+        max_primitives=1,
+        primitive_subset=("capped_cylinder",),
+    )
+
+    payload = build_cpd_like_objective_report(
+        decomposition,
+        asset_id="square_capped_cylinder",
+        source_path="tests/generated/square.usda",
+        max_source_faces=8,
+    ).to_dict()
+
+    assert payload["metrics"]["paper_primitive_gap"]["current_primitive_subset"] == [
+        "capped_cylinder"
+    ]
+    assert payload["metrics"]["paper_primitive_gap"]["unsupported_paper_primitives"] == [
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    assert payload["metrics"]["paper_primitive_gap"]["unsupported_paper_primitive_count"] == 2
+    assert payload["decomposition"]["primitive_count"] == 1
+
+
 def test_objective_report_preserves_stable_schema_keys():
     decomposition = decompose_mesh(_square_mesh(), max_primitives=1, primitive_subset=("box",))
 

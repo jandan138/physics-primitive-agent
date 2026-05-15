@@ -91,3 +91,13 @@ experiments:
     claims_supported:
       - expected CPD-like limitation flags on deterministic synthetic fixtures only
       - no collision-quality, benchmark, broad asset/task, general failure-detection, paper-faithful optimization, or full CPD reproduction claim
+  - id: cpd-like-capped-cylinder-proxy
+    status: complete
+    config: configs/experiments/cpd_like_capped_cylinder_proxy.yaml
+    record: docs/records/2026-05-15-cpd-capped-cylinder-proxy.md
+    purpose: >
+      Run an opt-in offline capped-cylinder geometry proposal proxy and record the reduced
+      unsupported paper primitive vocabulary gap in the CPD-like objective report.
+    claims_supported:
+      - offline geometry-only capped-cylinder proposal proxy smoke only
+      - no Newton support, collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim

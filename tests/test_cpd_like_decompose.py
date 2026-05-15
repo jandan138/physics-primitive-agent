@@ -67,6 +67,31 @@ def _nonplanar_adjacent_pair_mesh() -> TriangleMesh:
     )
 
 
+def _long_bar_mesh() -> TriangleMesh:
+    return TriangleMesh(
+        points=np.array(
+            [
+                [0.0, -0.1, -0.1],
+                [4.0, -0.1, -0.1],
+                [4.0, 0.1, -0.1],
+                [0.0, 0.1, -0.1],
+                [0.0, -0.1, 0.1],
+                [4.0, -0.1, 0.1],
+                [4.0, 0.1, 0.1],
+                [0.0, 0.1, 0.1],
+            ]
+        ),
+        faces=np.array(
+            [
+                [0, 1, 2],
+                [0, 2, 3],
+                [4, 5, 6],
+                [4, 6, 7],
+            ]
+        ),
+    )
+
+
 def test_fit_best_primitive_records_supported_and_unsupported_types():
     fit = fit_best_primitive(_square_mesh(), frozenset({0, 1}), ("box", "sphere", "capsule"))
 
@@ -111,6 +136,51 @@ def test_capsule_fitting_uses_translated_group_center():
     assert fit.primitive_type == "capsule"
     assert fit.contains_assigned_points is True
     assert fit.dimensions["radius"] < 0.11
+
+
+def test_fit_best_primitive_supports_capped_cylinder_proxy():
+    fit = fit_best_primitive(_long_bar_mesh(), frozenset({0, 1, 2, 3}), ("capped_cylinder",))
+
+    assert fit.primitive_type == "capped_cylinder"
+    assert fit.contains_assigned_points is True
+    assert fit.dimensions["radius"] > 0.0
+    assert fit.dimensions["half_height"] > 0.0
+    assert fit.dimensions["axis_index"] in (0, 1, 2)
+    assert fit.dimensions["cap_model"] == "hemisphere_caps"
+    assert fit.dimensions["proxy_fit"] == "axis_span_radial_proxy"
+    assert fit.volume > 0.0
+    assert fit.weighted_volume == fit.volume
+    assert fit.unsupported_primitives == ("frustum", "trapezoidal_prism")
+
+
+def test_fit_best_primitive_tracks_requested_capped_cylinder_support():
+    box_only = fit_best_primitive(_square_mesh(), frozenset({0, 1}), ("box",))
+    mixed = fit_best_primitive(_square_mesh(), frozenset({0, 1}), ("box", "capped_cylinder"))
+
+    assert box_only.unsupported_primitives == (
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    )
+    assert mixed.unsupported_primitives == ("frustum", "trapezoidal_prism")
+
+
+def test_fit_best_primitive_uses_subset_order_to_break_equal_proxy_ties():
+    mesh = _long_bar_mesh()
+
+    capped_first = fit_best_primitive(
+        mesh,
+        frozenset({0, 1, 2, 3}),
+        ("capped_cylinder", "capsule"),
+    )
+    capsule_first = fit_best_primitive(
+        mesh,
+        frozenset({0, 1, 2, 3}),
+        ("capsule", "capped_cylinder"),
+    )
+
+    assert capped_first.primitive_type == "capped_cylinder"
+    assert capsule_first.primitive_type == "capsule"
 
 
 def test_decompose_mesh_merges_adjacent_square_to_requested_count():

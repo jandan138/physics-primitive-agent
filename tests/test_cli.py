@@ -462,6 +462,57 @@ def test_cli_run_cpd_like_objective_report_emits_json_for_tiny_usd(tmp_path, cap
     assert captured.err == ""
 
 
+def test_cli_run_cpd_like_objective_report_accepts_capped_cylinder_proxy(tmp_path, capsys):
+    asset_path = tmp_path / "quad.usda"
+    _write_mesh_usd(
+        asset_path,
+        [(0, 0, 0), (2, 0, 0), (2, 0.2, 0), (0, 0.2, 0)],
+        [4],
+        [0, 1, 2, 3],
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: tiny_capped_cylinder_proxy",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "  verify:",
+                "    - cpd_like_objective_report",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - capped_cylinder",
+                "  max_source_faces: 8",
+                "cpd_like_objective:",
+                "  objective_version: cpd_paper_aligned_surrogate_v0",
+                "  claim_boundary: capped_cylinder_proxy_objective_not_collision_quality_validation",
+                "  evidence_level: offline_cpd_like_capped_cylinder_proxy_smoke",
+                "  primitive_type_weights:",
+                "    capped_cylinder: 1.0",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like-objective-report"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "cpd_like_offline_objective"
+    assert payload["metrics"]["paper_primitive_gap"]["unsupported_paper_primitive_count"] == 2
+    assert payload["metrics"]["paper_primitive_gap"]["unsupported_paper_primitives"] == [
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    assert payload["decomposition"]["primitive_count"] == 1
+    assert captured.err == ""
+
+
 def test_cli_run_cpd_like_objective_report_returns_json_for_partial_decomposition(
     tmp_path,
     capsys,

@@ -18,7 +18,7 @@ to state that this is primitive-vocabulary accounting rather than paper-faithful
 **Files:**
 - Modify: `tests/test_cpd_like_decompose.py`
 
-- [ ] **Step 1: Write failing capped-cylinder proxy test**
+- [x] **Step 1: Write failing capped-cylinder proxy test**
 
 Add this helper near the other mesh helpers:
 
@@ -66,7 +66,7 @@ def test_fit_best_primitive_supports_capped_cylinder_proxy():
     assert fit.unsupported_primitives == ("frustum", "trapezoidal_prism")
 ```
 
-- [ ] **Step 2: Write failing unsupported-gap accounting test**
+- [x] **Step 2: Write failing unsupported-gap accounting test**
 
 Add:
 
@@ -83,7 +83,7 @@ def test_fit_best_primitive_tracks_requested_capped_cylinder_support():
     assert mixed.unsupported_primitives == ("frustum", "trapezoidal_prism")
 ```
 
-- [ ] **Step 3: Write failing tie-break test**
+- [x] **Step 3: Write failing tie-break test**
 
 Add:
 
@@ -106,7 +106,7 @@ def test_fit_best_primitive_uses_subset_order_to_break_equal_proxy_ties():
     assert capsule_first.primitive_type == "capsule"
 ```
 
-- [ ] **Step 4: Run primitive tests and confirm RED**
+- [x] **Step 4: Run primitive tests and confirm RED**
 
 ```bash
 python -m pytest tests/test_cpd_like_decompose.py -q -k "capped_cylinder or unsupported_gap or equal_proxy"
@@ -121,7 +121,7 @@ treats it as unsupported.
 - Modify: `src/primitive_collision_compiler/baselines/cpd_like/primitives.py`
 - Test: `tests/test_cpd_like_decompose.py`
 
-- [ ] **Step 1: Add vocabulary constants and requested-gap helper**
+- [x] **Step 1: Add vocabulary constants and requested-gap helper**
 
 Update imports:
 
@@ -150,7 +150,7 @@ def _unsupported_paper_primitives_for_subset(requested: tuple[str, ...]) -> tupl
     )
 ```
 
-- [ ] **Step 2: Preserve primitive subset order for ties**
+- [x] **Step 2: Preserve primitive subset order for ties**
 
 Replace candidate selection in `fit_best_primitive(...)` with:
 
@@ -172,7 +172,7 @@ Replace candidate selection in `fit_best_primitive(...)` with:
 Remove the old `unsupported_requested` merge-return block. Keep the existing validation that at
 least one supported primitive is requested.
 
-- [ ] **Step 3: Add capped-cylinder dispatch and fitter**
+- [x] **Step 3: Add capped-cylinder dispatch and fitter**
 
 Add to `_fit_primitive(...)`:
 
@@ -226,7 +226,7 @@ def _fit_capped_cylinder(
     )
 ```
 
-- [ ] **Step 4: Run primitive tests and confirm GREEN**
+- [x] **Step 4: Run primitive tests and confirm GREEN**
 
 ```bash
 python -m pytest tests/test_cpd_like_decompose.py -q -k "capped_cylinder or unsupported_gap or equal_proxy"
@@ -243,7 +243,7 @@ Expected: selected tests pass.
 - Modify: `tests/test_cpd_like_config.py`
 - Create: `configs/experiments/cpd_like_capped_cylinder_proxy.yaml`
 
-- [ ] **Step 1: Write objective gap test**
+- [x] **Step 1: Write objective gap test**
 
 Add to `tests/test_cpd_like_objective.py`:
 
@@ -273,7 +273,7 @@ def test_objective_report_counts_capped_cylinder_as_opt_in_supported_proxy():
     assert payload["decomposition"]["primitive_count"] == 1
 ```
 
-- [ ] **Step 2: Write Newton mapping boundary test**
+- [x] **Step 2: Write Newton mapping boundary test**
 
 Add to `tests/test_newton_shapes.py`:
 
@@ -303,7 +303,7 @@ def test_map_package_shapes_keeps_capped_cylinder_as_mapping_gap():
     assert "unsupported primitive kind: capped_cylinder" in mappings[0].detail
 ```
 
-- [ ] **Step 3: Add new offline config**
+- [x] **Step 3: Add new offline config**
 
 Create `configs/experiments/cpd_like_capped_cylinder_proxy.yaml`:
 
@@ -347,7 +347,7 @@ report:
   evidence_level: offline_cpd_like_capped_cylinder_proxy_smoke
 ```
 
-- [ ] **Step 4: Write config test**
+- [x] **Step 4: Write config test**
 
 Add to `tests/test_cpd_like_config.py`:
 
@@ -369,7 +369,7 @@ def test_cpd_like_capped_cylinder_proxy_config_is_offline_only():
     }
 ```
 
-- [ ] **Step 5: Write CLI objective test**
+- [x] **Step 5: Write CLI objective test**
 
 Add to `tests/test_cli.py` after the objective-report CLI tests:
 
@@ -425,7 +425,7 @@ def test_cli_run_cpd_like_objective_report_accepts_capped_cylinder_proxy(tmp_pat
     assert captured.err == ""
 ```
 
-- [ ] **Step 6: Run selected tests and confirm RED**
+- [x] **Step 6: Run selected tests and confirm RED**
 
 ```bash
 python -m pytest tests/test_cpd_like_objective.py tests/test_newton_shapes.py tests/test_cli.py tests/test_cpd_like_config.py -q -k "capped_cylinder"
@@ -441,11 +441,11 @@ Expected: failures because config and primitive support are not implemented yet.
 - Test: `tests/test_cpd_like_objective.py`, `tests/test_newton_shapes.py`, `tests/test_cli.py`,
   `tests/test_cpd_like_config.py`
 
-- [ ] **Step 1: Add offline config**
+- [x] **Step 1: Add offline config**
 
 Create `configs/experiments/cpd_like_capped_cylinder_proxy.yaml` exactly as specified in Task 3.
 
-- [ ] **Step 2: Run selected tests and confirm GREEN**
+- [x] **Step 2: Run selected tests and confirm GREEN**
 
 ```bash
 python -m pytest tests/test_cpd_like_decompose.py tests/test_cpd_like_objective.py tests/test_newton_shapes.py tests/test_cli.py tests/test_cpd_like_config.py -q -k "capped_cylinder or unsupported_gap or equal_proxy"
@@ -453,7 +453,7 @@ python -m pytest tests/test_cpd_like_decompose.py tests/test_cpd_like_objective.
 
 Expected: selected tests pass.
 
-- [ ] **Step 3: Run the real offline config smoke**
+- [x] **Step 3: Run the real offline config smoke**
 
 ```bash
 PYTHONPATH=src python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_capped_cylinder_proxy.yaml --run-cpd-like-objective-report
@@ -476,7 +476,7 @@ Expected: exit 0, strict JSON, stage `cpd_like_offline_objective`, evidence leve
 - Modify: `docs/records/README.md`
 - Modify: `experiments/registry.yaml`
 
-- [ ] **Step 1: Update canonical claim docs**
+- [x] **Step 1: Update canonical claim docs**
 
 Add safe wording:
 
@@ -493,7 +493,7 @@ Add forbidden wording:
 - no "collision quality improved";
 - no "benchmark result".
 
-- [ ] **Step 2: Add record**
+- [x] **Step 2: Add record**
 
 Create `docs/records/2026-05-15-cpd-capped-cylinder-proxy.md` with:
 
@@ -505,7 +505,7 @@ Create `docs/records/2026-05-15-cpd-capped-cylinder-proxy.md` with:
 - verification commands;
 - claim impact and next action.
 
-- [ ] **Step 3: Update registry**
+- [x] **Step 3: Update registry**
 
 Add `experiments/registry.yaml` entry:
 
@@ -522,7 +522,7 @@ Add `experiments/registry.yaml` entry:
       - no Newton support, collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
 ```
 
-- [ ] **Step 4: Run doc checks**
+- [x] **Step 4: Run doc checks**
 
 ```bash
 python scripts/validate_docs.py
@@ -536,7 +536,7 @@ Expected: both pass.
 **Files:**
 - All changed files.
 
-- [ ] **Step 1: Run targeted tests**
+- [x] **Step 1: Run targeted tests**
 
 ```bash
 python -m pytest tests/test_cpd_like_decompose.py tests/test_cpd_like_objective.py tests/test_newton_shapes.py tests/test_cli.py tests/test_cpd_like_config.py -q -k "capped_cylinder or unsupported_gap or equal_proxy"
@@ -544,7 +544,7 @@ python -m pytest tests/test_cpd_like_decompose.py tests/test_cpd_like_objective.
 
 Expected: selected tests pass.
 
-- [ ] **Step 2: Run full tests**
+- [x] **Step 2: Run full tests**
 
 ```bash
 python -m pytest -q
@@ -552,16 +552,16 @@ python -m pytest -q
 
 Expected: all tests pass.
 
-- [ ] **Step 3: Request focused agent review**
+- [x] **Step 3: Request focused agent review**
 
 Ask one reviewer to inspect primitive fitting/schema/CLI behavior and one reviewer to inspect docs
 and claim boundaries.
 
-- [ ] **Step 4: Fix Critical/Important/Medium findings**
+- [x] **Step 4: Fix Critical/Important/Medium findings**
 
 If review finds issues, fix them, re-run the relevant targeted tests, and request re-review.
 
-- [ ] **Step 5: Commit implementation**
+- [x] **Step 5: Commit implementation**
 
 ```bash
 git add configs/experiments/cpd_like_capped_cylinder_proxy.yaml \

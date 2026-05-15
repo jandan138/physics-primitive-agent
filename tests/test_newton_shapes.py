@@ -47,6 +47,31 @@ def test_map_package_shapes_reports_mapping_gap_for_bad_dimensions():
     assert "radius" in mappings[0].detail
 
 
+def test_map_package_shapes_keeps_capped_cylinder_as_mapping_gap():
+    package = CollisionPackage(
+        package_id="pkg",
+        asset_id="asset",
+        primitives=(
+            PrimitiveSpec(
+                primitive_id="capped-cylinder0",
+                kind="capped_cylinder",
+                dimensions={
+                    "radius": 0.25,
+                    "half_height": 1.0,
+                    "axis_index": 0,
+                    "cap_model": "hemisphere_caps",
+                    "proxy_fit": "axis_span_radial_proxy",
+                },
+            ),
+        ),
+    )
+
+    mappings = map_package_shapes(package)
+
+    assert mappings[0].status == "mapping_gap"
+    assert "unsupported primitive kind: capped_cylinder" in mappings[0].detail
+
+
 def test_map_package_shapes_rejects_nonfinite_values_and_bad_axes():
     package = CollisionPackage(
         package_id="pkg",

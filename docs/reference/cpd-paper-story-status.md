@@ -20,21 +20,24 @@ The repository has not reached that full result. It has reached the workbench st
    merge decision cost.
 7. A deterministic expected-failure workbench can keep known CPD-paper gaps visible as diagnostic
    flags.
-8. Newton can run narrow smoke diagnostics against that package.
-9. Records and configs can preserve exactly what was run.
+8. An opt-in offline `capped_cylinder` proxy can reduce the named unsupported paper primitive gap
+   from 3 to 2.
+9. Newton can run narrow smoke diagnostics against the already mapped primitive package.
+10. Records and configs can preserve exactly what was run.
 
-The latest expected-failure workbench change is small but important in this story. It turns known
-CPD-paper gaps into deterministic diagnostic flags so the next algorithmic slice starts from a
-visible limitation rather than a vague improvement target. The preceding cost-guided merge change
-also remains important: one term from the objective health check, AABB-normalized merge-excess, can
-influence one opt-in merge choice on a toy mesh.
+The latest capped-cylinder proxy change is small but important in this story. It responds to the
+expected-failure workbench's primitive-vocabulary gap by adding one opt-in offline proposal proxy
+and recording that the unsupported paper primitive gap can decrease from 3 to 2 in a named report.
+The preceding expected-failure and cost-guided changes remain important: one keeps known
+limitations visible, and one lets AABB-normalized merge-excess influence one opt-in merge choice
+on a toy mesh.
 
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
 
 ## Paper Story Layers
 
-The CPD paper story can be read as seven layers.
+The CPD paper story can be read as eight layers.
 
 | Layer | Paper-story question | Repository status |
 | --- | --- | --- |
@@ -43,8 +46,9 @@ The CPD paper story can be read as seven layers.
 | 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for one deterministic synthetic fixture only. |
 | 5. Expected limitations | Can known CPD-paper gaps stay visible before algorithmic changes? | Narrowly in place as a deterministic expected-failure synthetic workbench over three in-memory fixtures. This is diagnostic limitation accounting, not validation or benchmark evidence. |
-| 6. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded assets. |
-| 7. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
+| 6. Primitive vocabulary | Can one missing paper primitive category enter a restricted proposal lane? | Narrowly in place as an opt-in offline `capped_cylinder` proxy. This reduces the unsupported paper primitive count from 3 to 2 in one named report, but it is not paper-faithful primitive fitting. |
+| 7. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded mapped primitives. `capped_cylinder` is not Newton-mapped in this slice. |
+| 8. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
 
 ## What The Current Baseline Is
 
@@ -202,6 +206,21 @@ points to two concrete next capabilities:
 The workbench is still below paper-scope reproduction. It is not a benchmark, not a failure
 detector for arbitrary meshes, and not proof that the baseline catches bad decompositions.
 
+## What The Capped-Cylinder Proxy Adds
+
+The capped-cylinder proxy is the first direct response to the primitive-vocabulary gap. It adds an
+opt-in offline `capped_cylinder` geometry proposal proxy and a named objective-report smoke. In
+that report, the unsupported paper primitive count decreases from 3 to 2:
+`frustum` and `trapezoidal_prism` remain unsupported.
+
+This is useful because it moves one paper primitive category from "outside the proposal vocabulary"
+to "available in a restricted report lane." It is still not paper-faithful primitive fitting. The
+proxy is marked as `axis_span_radial_proxy` with `hemisphere_caps`, and it does not imply
+surface-distance quality, collision quality, or benchmark performance.
+
+Newton integration is intentionally unchanged. `capped_cylinder` remains a Newton mapping gap until
+a separate Newton mapping and task-level diagnostic record exists.
+
 ## What Newton Probes Mean Here
 
 Newton probes are downstream diagnostic checks. They answer a narrow question:
@@ -227,8 +246,9 @@ USD assets
 -> synthetic objective comparison
 -> focused cost-guided merge-search smoke using one objective term
 -> expected-failure workbench for known CPD-paper gaps
--> collision package
--> Newton smoke diagnostics
+-> opt-in capped-cylinder proxy objective report (offline only; not Newton-mapped)
+-> historical mapped collision package using Newton-supported primitives
+-> Newton smoke diagnostics for recorded mapped primitives
 -> dated records
 ```
 
@@ -238,9 +258,9 @@ The next paper-story position should be:
 USD assets or synthetic fixtures
 -> CPD-like primitive proposals
 -> objective comparison record
--> targeted primitive-fitting or merge-search improvement selected from expected-failure fixtures
+-> targeted primitive-vocabulary or primitive-fit quality improvement
 -> richer cost-guided merge or primitive-fit decision
--> Newton task probe
+-> Newton task probe only after mapping support and a named diagnostic record
 ```
 
 ## Safe Current Wording
@@ -256,6 +276,8 @@ Use:
 - "focused CPD-like cost-guided merge-search smoke";
 - "deterministic expected-failure synthetic workbench";
 - "expected limitation fixtures";
+- "opt-in offline capped-cylinder geometry proposal proxy";
+- "primitive-vocabulary accounting for a restricted proposal baseline";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -267,6 +289,8 @@ Avoid:
 - "collision-quality validation";
 - "benchmark result";
 - "validated expected-failure detector";
+- "paper-faithful capped cylinder support";
+- "Newton supports capped cylinders";
 - "safe collider";
 - "validated robot collider."
 
@@ -274,11 +298,11 @@ Avoid:
 
 The next slices should move toward the paper core without overclaiming:
 
-1. Select one existing expected-failure fixture as the next algorithm target.
-2. Add one primitive-fitting or merge-search improvement against that fixture.
+1. Select the next primitive-vocabulary or primitive-fit quality target after capped-cylinder.
+2. Add one primitive-fitting or merge-search improvement against a named fixture.
 3. Re-run bed and Franka smoke paths after a named synthetic diagnostic shows a clear difference.
-4. Run Newton drop/settle or sphere-rain only as downstream diagnostics, not as the primary
-   optimization target.
+4. Run Newton drop/settle or sphere-rain only after the relevant primitive kinds are mappable and
+   the mapping has its own diagnostic record.
 
 ## Claim Boundary
 

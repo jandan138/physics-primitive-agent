@@ -32,13 +32,15 @@ The repository has reached a narrow slice of layer 3:
 - Layer 2 exists only as a simple CPD-like baseline, not the paper algorithm.
 - Layer 2 now has one opt-in extension: a component-merge gate that can try disconnected-component
   pairwise merges after topological adjacency merges are exhausted.
+- Layer 2 also has one restricted cost-guided merge-search smoke over a deterministic toy mesh.
+- Layer 2 now has an opt-in offline capped-cylinder proposal proxy that reduces the named
+  unsupported paper primitive gap from 3 to 2 without adding Newton mapping.
 - Layer 3 now has an offline paper-aligned surrogate objective report over the capped bed
   CPD-like baseline.
 - Layer 3 also has a command-only synthetic objective comparison over deterministic toy meshes.
-- Layer 4 now has one restricted cost-guided merge-search smoke over a deterministic toy mesh.
 - Layer 3 has a contact-only Newton canary plus two named capped-bed task smokes: drop/settle and
   sphere-rain contact-density proxy.
-- Layer 4 has not started.
+- Benchmark evaluation has not started.
 
 ## What Face-Merge Means
 
@@ -47,7 +49,8 @@ In this repository, a mesh is treated as many triangle faces. The face-merge bas
 1. Load a bounded number of source faces from the USD mesh.
 2. Build adjacency between faces that share an edge.
 3. Start from small face groups.
-4. Fit restricted candidate primitives, currently `box`, `sphere`, and `capsule`.
+4. Fit restricted candidate primitives, currently `box`, `sphere`, `capsule`, and an opt-in
+   offline `capped_cylinder` proxy.
 5. Greedily merge adjacent face groups when the merged candidate has acceptable weighted excess
    volume.
 6. Stop at the primitive budget and emit a diagnostic report.
@@ -94,6 +97,20 @@ objective terms, not only by local adjacency rules. The current implementation i
 auditable hook for that idea. It is not a global optimizer, not a paper-faithful objective, and not
 collision-quality evidence.
 
+## What The Capped-Cylinder Proxy Adds
+
+The capped-cylinder proxy is the first primitive-vocabulary extension. It is opt-in and offline:
+the new named objective report requests `capped_cylinder` proposals, records that
+`capped_cylinder` is no longer counted as an unsupported paper primitive for that run, and keeps
+`frustum` and `trapezoidal_prism` as unsupported.
+
+The proxy is deliberately labeled in output dimensions with `cap_model: hemisphere_caps` and
+`proxy_fit: axis_span_radial_proxy`. That makes the boundary explicit: this is a geometry proposal
+proxy for accounting and future fitting work, not paper-faithful primitive fitting.
+
+Newton mapping is unchanged. A `capped_cylinder` package primitive remains a Newton mapping gap
+until a separate Newton mapping and task-level diagnostic record exists.
+
 ## Why This Exists First
 
 This baseline is useful because it exercises the pipeline that a real CPD reproduction will need:
@@ -123,6 +140,9 @@ For the current capped bed smoke:
 - CPD-like offline objective smoke: 32/32 primitive budget, 32/32 assigned-point containment
   proxy, accepted normalized merge-excess sum `0.000996148870132146`, and 3 unsupported paper
   primitive types still outside the baseline;
+- CPD-like capped-cylinder proxy objective smoke: 32/32 primitive budget, 32/32 assigned-point
+  containment proxy, unsupported paper primitive count 2, with `frustum` and
+  `trapezoidal_prism` still unsupported and no Newton mapping claim;
 - CPD-like synthetic objective comparison: three in-memory fixtures record topology-only versus
   component-merge accounting, including disconnected and blocked-merge labels;
 - CPD-like cost-guided merge smoke: one in-memory fixture records old/new diagnostic accounting
@@ -182,8 +202,10 @@ Avoid:
 The next useful step is not to strengthen the claim on this baseline. The repository now has the
 second asset-class smoke, the small CPD-like component-merge gate, an offline paper-aligned
 surrogate objective report, deterministic synthetic comparison cases, and one focused
-cost-guided merge-search smoke. The next paper-story slice should add a specific expected-failure
-synthetic fixture or one primitive-fitting improvement, then re-run bed and Franka smoke paths
-before changing Newton probes or making any collision-quality claim. Paper-faithful CPD
-decomposition work should still avoid full reproduction claims until primitive coverage, benchmark
-settings, and dated experiment records exist.
+cost-guided merge-search smoke, a deterministic expected-failure workbench, and one opt-in offline
+capped-cylinder proxy report. The next paper-story slice should choose one named primitive-fit
+quality, primitive-vocabulary, or merge-search target, then re-run bed and Franka smoke paths only
+after a diagnostic change is visible. Newton probes should not be broadened for new primitive kinds
+until mapping support and a dated diagnostic record exist. Paper-faithful CPD decomposition work
+should still avoid full reproduction claims until primitive coverage, benchmark settings, and
+dated experiment records exist.
