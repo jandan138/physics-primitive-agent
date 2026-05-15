@@ -88,6 +88,8 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 CPD Synthetic Expected-Failure Workbench](2026-05-15-cpd-synthetic-expected-failure-workbench.md):
   deterministic expected-failure workbench that reports known CPD-paper gaps as diagnostic
   limitation flags.
+- [2026-05-15 CPD Expected-Failure Master Verification](2026-05-15-cpd-expected-failure-master-verification.md):
+  post-merge master verification for the expected-failure workbench slice.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

@@ -69,6 +69,8 @@ changes in a named, inspectable way.
 - [CPD synthetic expected-failure workbench record](records/2026-05-15-cpd-synthetic-expected-failure-workbench.md):
   command-only deterministic expected-failure workbench that reports known CPD-paper gaps as
   diagnostic flags.
+- [CPD expected-failure master verification record](records/2026-05-15-cpd-expected-failure-master-verification.md):
+  post-merge master verification for the expected-failure workbench slice.
 - [CPD objective alignment and next steps record](records/2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation update that clarifies objective-report paper alignment and the next algorithmic
   slices.
