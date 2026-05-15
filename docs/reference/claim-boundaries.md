@@ -26,6 +26,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, and
   component/fallback labels. This is not full CPD paper reproduction, paper-faithful optimization,
   benchmark evidence, or collision-quality validation.
+- The current code can run a command-only deterministic synthetic objective comparison over
+  in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
+  inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper
+  reproduction, or collision-quality validation.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
@@ -82,6 +86,8 @@ Use these only after broader benchmark records exist.
   baseline extension and report-audit slice.
 - Do not describe the offline objective report as a collision-quality metric or proof that the
   decomposition is good; it is diagnostic accounting for future algorithm work.
+- Do not describe the synthetic objective comparison as benchmark evidence or proof that one merge
+  policy is better; it is fixture-level diagnostic accounting.
 
 ## Wording Rules
 

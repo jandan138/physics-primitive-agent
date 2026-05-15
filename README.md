@@ -16,7 +16,9 @@ capped bed CPD-like package. A separate Franka/simple robot smoke opens the loca
 runs capped first-mesh CPD-like geometry proposals. An opt-in CPD-like component-merge gate now
 reports disconnected-component merge candidates and normalized excess-volume accounting while
 remaining below full CPD reproduction. An offline CPD-like objective report now summarizes
-paper-aligned surrogate terms for that baseline without claiming collision quality. See
+paper-aligned surrogate terms for that baseline without claiming collision quality. A synthetic
+objective comparison now reuses that report on three deterministic toy meshes to inspect
+topology-only versus component-merge accounting without adding benchmark evidence. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

@@ -15,8 +15,9 @@ The repository has not reached that full result. It has reached the workbench st
 2. A simple CPD-like face-merge baseline can produce primitive proposals.
 3. Those proposals can be wrapped as a collision package.
 4. An offline objective report can summarize paper-aligned surrogate geometry terms.
-5. Newton can run narrow smoke diagnostics against that package.
-6. Records and configs can preserve exactly what was run.
+5. A synthetic objective comparison can exercise the same accounting on inspectable toy meshes.
+6. Newton can run narrow smoke diagnostics against that package.
+7. Records and configs can preserve exactly what was run.
 
 This means the reproduction infrastructure is in place. The paper-faithful decomposition and
 evaluation story still needs to be implemented.
@@ -76,6 +77,20 @@ This is a paper-aligned surrogate report, not a paper-faithful objective impleme
 future merge-search and primitive-fitting work stable comparison fields before those algorithms
 change.
 
+## What The Synthetic Comparison Adds
+
+The synthetic objective comparison is the first inspectable toy-mesh layer around the objective
+report. It runs the same report on three deterministic in-memory fixtures:
+
+- adjacent square;
+- disconnected pair;
+- blocked disconnected pair.
+
+For each fixture it records topology-only and `virtual_pairwise` component-merge accounting. The
+disconnected fixture no longer reports the topology-only unmerged-component label under
+`virtual_pairwise`; the blocked fixture records the `component_merge_blocked` label. These are
+fixture-level diagnostic differences, not proof that one policy is better collision geometry.
+
 ## What Newton Probes Mean Here
 
 Newton probes are downstream diagnostic checks. They answer a narrow question:
@@ -98,6 +113,7 @@ The current position is:
 USD assets
 -> CPD-like primitive proposals
 -> paper-aligned surrogate objective report
+-> synthetic objective comparison
 -> collision package
 -> Newton smoke diagnostics
 -> dated records
@@ -106,11 +122,11 @@ USD assets
 The next paper-story position should be:
 
 ```text
-USD assets
+USD assets or synthetic fixtures
 -> CPD-like primitive proposals
+-> objective comparison record
 -> improved fitting or merge search
 -> Newton task probe
--> comparison record
 ```
 
 ## Safe Current Wording
@@ -122,6 +138,7 @@ Use:
 - "paper-story infrastructure for CPD reproduction";
 - "component-merge gate for audit-friendly merge-cost reporting";
 - "paper-aligned surrogate objective report";
+- "synthetic objective comparison";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -138,11 +155,10 @@ Avoid:
 
 The next slices should move toward the paper core without overclaiming:
 
-1. Add small synthetic meshes where the expected primitive decomposition is inspectable.
-2. Compare topology-only and component-merge gate outputs using the same report schema.
-3. Add one improved primitive-fitting or merge-search step only after the objective report is
-   stable.
-4. Run Newton drop/settle or sphere-rain only as a downstream diagnostic, not as the primary
+1. Add one improved primitive-fitting or merge-search step against the synthetic comparison
+   harness.
+2. Add broader synthetic fixtures only when they expose a specific expected failure mode.
+3. Run Newton drop/settle or sphere-rain only as a downstream diagnostic, not as the primary
    optimization target.
 
 ## Claim Boundary

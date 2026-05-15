@@ -26,6 +26,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   pressure, AABB-normalized volume proxy, merge-excess accounting, assigned-point containment
   proxy, unsupported paper primitive gaps, and component/fallback labels. This is diagnostic
   accounting, not collision-quality evidence or full CPD reproduction.
+- The current executable surface can run `cpd_like_synthetic_objective_comparison`, a command-only
+  deterministic synthetic comparison over three in-memory toy meshes. It compares topology-only
+  and component-merge objective accounting for inspection. This is not benchmark evidence,
+  collision-quality evidence, or full CPD reproduction.
 - The current CPD paper-story position is documented as a reproduction workbench, not as a
   paper-faithful implementation. See
   [CPD paper story status](../reference/cpd-paper-story-status.md).
@@ -64,6 +68,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   accepted normalized merge-excess sum `0.000996148870132146`, normalized weighted primitive
   volume `0.0009961811821648128`, and 3 unsupported paper primitive types still outside the
   baseline.
+- The 2026-05-15 CPD-like synthetic comparison record reports `smoke_passed` for three
+  deterministic in-memory fixtures: adjacent square, disconnected pair, and blocked disconnected
+  pair. It records fixture-level topology-only versus component-merge objective accounting without
+  adding benchmark or collision-quality claims.
 
 ## Current Unsupported Claims
 
@@ -86,7 +94,7 @@ This file separates current evidence from future claims. See [message-map.md](me
 
 For the 0-4 week proof point:
 
-- small synthetic meshes with inspectable expected decompositions;
+- broader small synthetic meshes with inspectable expected decompositions;
 - per-run or DLC-worker readiness report with status `smoke_passed` from the selected worker
   Python;
 - asset list with source, license, scale, and hashes;
@@ -114,10 +122,11 @@ proposal smoke path exists, a contact-only Newton canary exists, and the first t
 smokes exist for the capped bed asset: drop/settle and sphere-rain contact-density proxy. A narrow
 Franka USD-open and first-mesh CPD-like geometry smoke now broadens asset-class intake without
 making robot-quality claims. The first CPD-like algorithmic extension is an opt-in
-component-merge gate with explicit merge-cost reporting, still below full CPD reproduction. Next
-broaden CPD-like algorithm evidence with small synthetic inspection cases and objective-report
-comparisons before changing Newton probes or adding LLM/VLM. Report failures and fallback behavior
-as first-class evidence.
+component-merge gate with explicit merge-cost reporting, still below full CPD reproduction. The
+first synthetic objective comparison now gives deterministic inspection cases for topology-only
+versus component-merge accounting. Next use that harness to guide one focused primitive-fitting or
+merge-search improvement before changing Newton probes or adding LLM/VLM. Report failures and
+fallback behavior as first-class evidence.
 
 ## Current Non-Goals
 

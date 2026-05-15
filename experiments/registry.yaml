@@ -57,3 +57,14 @@ experiments:
     claims_supported:
       - offline CPD-like objective diagnostic smoke only
       - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
+  - id: cpd-like-synthetic-objective-comparison
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-synthetic-comparison
+    record: docs/records/2026-05-15-cpd-like-synthetic-comparison.md
+    purpose: >
+      Run command-only deterministic synthetic fixtures for topology-only versus component-merge
+      objective accounting. This entry intentionally has no config because the meshes are
+      in-memory fixtures defined in source.
+    claims_supported:
+      - synthetic CPD-like objective diagnostic comparison only
+      - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim

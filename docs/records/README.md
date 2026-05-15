@@ -80,6 +80,9 @@ Proposed | In progress | Complete | Failed | Superseded
   opt-in disconnected-component merge gate and merge-cost reporting for the CPD-like baseline.
 - [2026-05-15 CPD-Like Objective Report](2026-05-15-cpd-like-objective-report.md):
   offline paper-aligned surrogate objective report for the capped bed CPD-like baseline.
+- [2026-05-15 CPD-Like Synthetic Comparison](2026-05-15-cpd-like-synthetic-comparison.md):
+  command-only deterministic synthetic objective comparison for topology-only versus
+  component-merge accounting.
 - [2026-05-15 Three-Slice Final Verification](2026-05-15-three-slice-final-verification.md):
   final verification and review-fix record for sphere-rain, Franka smoke, and component-merge
   gate.
