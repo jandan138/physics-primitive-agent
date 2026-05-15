@@ -150,3 +150,34 @@ def test_cpd_like_component_merge_gate_config_is_opt_in_and_claim_bounded():
     assert config.protocol["cpd_like"]["claim_boundary"] == "component_merge_gate_not_cpd_reproduction"
     assert config.protocol["report"]["evidence_level"] == "geometry_only_cpd_like_component_merge_smoke"
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_cpd_like_objective_report_config_is_offline_and_claim_bounded():
+    config_path = Path("configs/experiments/cpd_like_objective_report.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "grscenes_bed_0a85b986_objective_report"
+    assert config.task == "collision_proxy_diagnostic"
+    assert config.method == "cpd_like_baseline"
+    assert config.max_primitives == 32
+    assert config.verify == ("cpd_like_objective_report",)
+    assert config.protocol["cpd_like"]["component_merge"] == "virtual_pairwise"
+    assert config.protocol["cpd_like"]["asset_role"] == "bed_dev_smoke"
+    assert config.protocol["cpd_like_objective"]["objective_version"] == (
+        "cpd_paper_aligned_surrogate_v0"
+    )
+    assert config.protocol["cpd_like_objective"]["claim_boundary"] == (
+        "offline_objective_report_not_collision_quality_validation"
+    )
+    assert config.protocol["cpd_like_objective"]["evidence_level"] == (
+        "offline_cpd_like_objective_surrogate_smoke"
+    )
+    assert config.protocol["cpd_like_objective"]["primitive_type_weights"] == {
+        "box": 1.0,
+        "sphere": 1.0,
+        "capsule": 1.0,
+    }
+    assert config.protocol["report"]["evidence_level"] == (
+        "offline_cpd_like_objective_surrogate_smoke"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")

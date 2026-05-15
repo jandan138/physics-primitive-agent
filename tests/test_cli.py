@@ -346,6 +346,84 @@ def test_cli_run_cpd_like_component_merge_gate_emits_merge_metrics(tmp_path, cap
     assert payload["claim_boundary"] == "component_merge_gate_not_cpd_reproduction"
 
 
+def test_cli_run_cpd_like_objective_report_emits_json_for_tiny_usd(tmp_path, capsys):
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    asset_path = tmp_path / "quad.usda"
+    stage = Usd.Stage.CreateNew(str(asset_path))
+    mesh = UsdGeom.Mesh.Define(stage, "/Quad")
+    mesh.CreatePointsAttr([(0, 0, 0), (1, 0, 0), (1, 1, 0), (0, 1, 0)])
+    mesh.CreateFaceVertexCountsAttr([4])
+    mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 3])
+    stage.GetRootLayer().Save()
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: tiny_quad_objective",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 1",
+                "  verify:",
+                "    - cpd_like_objective_report",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "  max_source_faces: 8",
+                "cpd_like_objective:",
+                "  objective_version: cpd_paper_aligned_surrogate_v0",
+                "  claim_boundary: offline_objective_report_not_collision_quality_validation",
+                "  evidence_level: offline_cpd_like_objective_surrogate_smoke",
+                "  primitive_type_weights:",
+                "    box: 1.0",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like-objective-report"]) == 0
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "cpd_like_offline_objective"
+    assert payload["status"] == "smoke_passed"
+    assert payload["asset_id"] == "tiny_quad_objective"
+    assert payload["source_path"] == str(asset_path)
+    assert payload["claim_boundary"] == "offline_objective_report_not_collision_quality_validation"
+    assert payload["evidence_level"] == "offline_cpd_like_objective_surrogate_smoke"
+    assert payload["metrics"]["primitive_budget"]["within_budget"] is True
+    assert payload["metrics"]["geometric_excess_proxy"]["weighted_primitive_volume"] > 0.0
+    assert captured.err == ""
+
+
+def test_cli_run_cpd_like_objective_report_rejects_malformed_weights(tmp_path, capsys):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: bad_objective",
+                "  path: assets/example.usda",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "cpd_like_objective:",
+                "  primitive_type_weights: box",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like-objective-report"]) == 2
+
+    captured = capsys.readouterr()
+    assert "cpd_like_objective.primitive_type_weights must be a mapping" in captured.err
+    assert "Traceback" not in captured.err
+
+
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

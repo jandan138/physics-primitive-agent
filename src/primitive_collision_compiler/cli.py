@@ -8,6 +8,10 @@ from pathlib import Path
 
 from primitive_collision_compiler.assets.usd_smoke import inspect_usd_asset, load_asset_manifest
 from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
+from primitive_collision_compiler.baselines.cpd_like.objective import (
+    CPDLikeObjectiveOptions,
+    build_cpd_like_objective_report,
+)
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
 from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError, load_first_mesh
 from primitive_collision_compiler.config import load_compile_config
@@ -39,6 +43,11 @@ def build_parser():
         "--run-cpd-like",
         action="store_true",
         help="run the geometry-only CPD-like face-merge smoke path",
+    )
+    parser.add_argument(
+        "--run-cpd-like-objective-report",
+        action="store_true",
+        help="run CPD-like geometry and emit an offline paper-aligned surrogate objective report",
     )
     parser.add_argument(
         "--run-newton-contact-smoke",
@@ -179,6 +188,51 @@ def main(argv=None):
 
     if args.run_cpd_like:
         print("npc-compile: --run-cpd-like requires --config.", file=sys.stderr)
+        return 2
+
+    if args.run_cpd_like_objective_report and args.config:
+        try:
+            config = load_compile_config(args.config)
+            objective_section = config.protocol.get("cpd_like_objective", {})
+            if objective_section is None:
+                objective_section = {}
+            if not isinstance(objective_section, dict):
+                raise ValueError("cpd_like_objective must be a mapping")
+            objective_options = _cpd_like_objective_options(objective_section)
+        except ValueError as exc:
+            print(f"npc-compile: {exc}", file=sys.stderr)
+            return 2
+
+        try:
+            cpd_like_report, source_path, max_source_faces = _run_cpd_like_report(config)
+            report = build_cpd_like_objective_report(
+                cpd_like_report,
+                asset_id=config.asset_id or Path(config.asset_path).stem,
+                source_path=source_path,
+                max_source_faces=max_source_faces,
+                options=objective_options,
+            )
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "cpd_like_offline_objective",
+                        "status": "dependency_gap"
+                        if "dependency_gap" in str(exc)
+                        else "smoke_failed",
+                        "asset_id": config.asset_id or Path(config.asset_path).stem,
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+
+        print(json.dumps(report.to_dict(), sort_keys=True))
+        return 0 if report.status == "smoke_passed" else 2
+
+    if args.run_cpd_like_objective_report:
+        print("npc-compile: --run-cpd-like-objective-report requires --config.", file=sys.stderr)
         return 2
 
     if args.run_newton_contact_smoke and args.config:
@@ -420,6 +474,51 @@ def _cpd_like_component_merge_options(cpd_like_section):
         ),
         "report_merge_trace": str(cpd_like_section.get("report_merge_trace", "summary")),
     }
+
+
+def _cpd_like_objective_options(objective_section):
+    return CPDLikeObjectiveOptions(
+        objective_version=str(
+            objective_section.get(
+                "objective_version",
+                "cpd_paper_aligned_surrogate_v0",
+            )
+        ),
+        primitive_type_weights=_primitive_type_weights(
+            objective_section.get("primitive_type_weights")
+        ),
+        claim_boundary=str(
+            objective_section.get(
+                "claim_boundary",
+                "offline_objective_report_not_collision_quality_validation",
+            )
+        ),
+        evidence_level=str(
+            objective_section.get(
+                "evidence_level",
+                "offline_cpd_like_objective_smoke",
+            )
+        ),
+    )
+
+
+def _primitive_type_weights(value):
+    if value in (None, ""):
+        return None
+    if not isinstance(value, dict):
+        raise ValueError("cpd_like_objective.primitive_type_weights must be a mapping")
+    result = {}
+    for primitive_type, raw_weight in value.items():
+        primitive_name = str(primitive_type)
+        if not primitive_name:
+            raise ValueError("cpd_like_objective.primitive_type_weights keys must be non-empty")
+        weight = _float_value(raw_weight, "cpd_like_objective.primitive_type_weights")
+        if weight < 0.0:
+            raise ValueError(
+                "cpd_like_objective.primitive_type_weights values must be finite non-negative numbers"
+            )
+        result[primitive_name] = weight
+    return result
 
 
 def _cpd_like_stage(component_merge):
