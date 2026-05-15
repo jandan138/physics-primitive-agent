@@ -269,19 +269,36 @@ def _add_static_shape(builder: Any, mapping: NewtonShapeMapping, wp: ModuleType)
             radius=float(dimensions["radius"]),
             half_height=float(dimensions["half_height"]),
         )
+    elif mapping.kind == "cylinder":
+        builder.add_shape_cylinder(
+            body=-1,
+            xform=xform,
+            radius=float(dimensions["radius"]),
+            half_height=float(dimensions["half_height"]),
+        )
+    elif mapping.kind == "cone":
+        builder.add_shape_cone(
+            body=-1,
+            xform=xform,
+            radius=float(dimensions["radius"]),
+            half_height=float(dimensions["half_height"]),
+        )
+    elif mapping.kind == "ellipsoid":
+        rx, ry, rz = (float(value) for value in dimensions["radii"])
+        builder.add_shape_ellipsoid(body=-1, xform=xform, rx=rx, ry=ry, rz=rz)
     else:
         raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
 
 
 def _shape_quat(mapping: NewtonShapeMapping, wp: ModuleType):
     axes = mapping.axes
-    if mapping.kind == "capsule":
-        axes = _capsule_axes(mapping)
+    if mapping.kind in {"capsule", "cylinder", "cone"}:
+        axes = _axis_shape_axes(mapping)
     matrix = wp.matrix_from_cols(*(_wp_vec3(wp, axis) for axis in axes))
     return wp.quat_from_matrix(matrix)
 
 
-def _capsule_axes(mapping: NewtonShapeMapping) -> tuple[tuple[float, float, float], ...]:
+def _axis_shape_axes(mapping: NewtonShapeMapping) -> tuple[tuple[float, float, float], ...]:
     axes = np.asarray(mapping.axes, dtype=float)
     axis_index = int(mapping.dimensions.get("axis_index", 2))
     z_axis = _normalize(axes[axis_index])
@@ -297,8 +314,10 @@ def _probe_radius(mapping: NewtonShapeMapping) -> float:
     dimensions = mapping.dimensions
     if mapping.kind == "sphere":
         return max(float(dimensions["radius"]) * 0.5, 1e-3)
-    if mapping.kind == "capsule":
+    if mapping.kind in {"capsule", "cylinder", "cone"}:
         return max(float(dimensions["radius"]) * 0.5, 1e-3)
+    if mapping.kind == "ellipsoid":
+        return max(min(float(value) for value in dimensions["radii"]) * 0.5, 1e-3)
     half_extents = [float(value) for value in dimensions["half_extents"]]
     return max(min(half_extents) * 0.5, 1e-3)
 

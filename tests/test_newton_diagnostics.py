@@ -3,9 +3,12 @@ import types
 
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.newton.diagnostics import (
+    _add_static_shape,
     _import_newton_runtime,
+    _probe_radius,
     run_newton_contact_smoke,
 )
+from primitive_collision_compiler.reports.schema import NewtonShapeMapping
 
 
 def test_newton_contact_smoke_reports_mapping_gap_without_supported_shapes():
@@ -102,3 +105,86 @@ def test_newton_contact_smoke_reports_representative_canary_scope(tmp_path):
     assert payload["metrics"]["mapped_primitive_count"] == 3
     assert payload["metrics"]["mapped_type_count"] == 2
     assert payload["metrics"]["full_package_contact_coverage"] is False
+
+
+def test_contact_canary_builds_newton_native_static_shapes():
+    builder = _RecordingBuilder()
+    wp = _FakeWarp()
+    mappings = (
+        _mapping(
+            "cylinder0",
+            "cylinder",
+            {"radius": 0.3, "half_height": 0.8, "axis_index": 1},
+        ),
+        _mapping(
+            "cone0",
+            "cone",
+            {"radius": 0.4, "half_height": 0.9, "axis_index": 0},
+        ),
+        _mapping("ellipsoid0", "ellipsoid", {"radii": [0.2, 0.4, 0.6]}),
+    )
+
+    for mapping in mappings:
+        _add_static_shape(builder, mapping, wp)
+
+    assert [call[0] for call in builder.calls] == ["cylinder", "cone", "ellipsoid"]
+    assert builder.calls[0][1]["body"] == -1
+    assert builder.calls[0][1]["radius"] == 0.3
+    assert builder.calls[1][1]["half_height"] == 0.9
+    assert builder.calls[2][1]["rx"] == 0.2
+    assert builder.calls[2][1]["ry"] == 0.4
+    assert builder.calls[2][1]["rz"] == 0.6
+
+
+def test_contact_canary_probe_radius_uses_native_bundle_dimensions():
+    assert _probe_radius(
+        _mapping("cylinder0", "cylinder", {"radius": 0.3, "half_height": 0.8})
+    ) == 0.15
+    assert _probe_radius(_mapping("cone0", "cone", {"radius": 0.4, "half_height": 0.9})) == 0.2
+    assert _probe_radius(_mapping("ellipsoid0", "ellipsoid", {"radii": [0.2, 0.4, 0.6]})) == 0.1
+
+
+def _mapping(
+    primitive_id: str,
+    kind: str,
+    dimensions: dict[str, object],
+    *,
+    center: tuple[float, float, float] = (0.0, 0.0, 0.0),
+) -> NewtonShapeMapping:
+    return NewtonShapeMapping(
+        primitive_id=primitive_id,
+        kind=kind,
+        status="mapped",
+        detail="mapped",
+        center=center,
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions=dimensions,
+    )
+
+
+class _RecordingBuilder:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, dict[str, object]]] = []
+
+    def add_shape_cylinder(self, **kwargs):
+        self.calls.append(("cylinder", kwargs))
+
+    def add_shape_cone(self, **kwargs):
+        self.calls.append(("cone", kwargs))
+
+    def add_shape_ellipsoid(self, **kwargs):
+        self.calls.append(("ellipsoid", kwargs))
+
+
+class _FakeWarp:
+    def vec3(self, x: float, y: float, z: float) -> tuple[float, float, float]:
+        return (x, y, z)
+
+    def matrix_from_cols(self, *cols):
+        return cols
+
+    def quat_from_matrix(self, matrix):
+        return ("quat", matrix)
+
+    def transform(self, position, rotation):
+        return {"position": position, "rotation": rotation}
