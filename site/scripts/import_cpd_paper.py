@@ -138,6 +138,8 @@ def parse_latex_blocks(text: str) -> list[dict[str, str]]:
 def clean_inline_latex(value: str) -> str:
     value = value.replace("~", " ")
     value = _replace_href_commands(value)
+    value = re.sub(r"\$?\^\s*\\?downarrow\$?", " ↓", value)
+    value = re.sub(r"\$?\^\s*\\?uparrow\$?", " ↑", value)
     value = re.sub(r"\\paragraph\*?\{([^}]+)\}", r"\1:", value)
     value = re.sub(r"\\label\{[^}]+\}", "", value)
     value = re.sub(r"\\color\{[^}]+\}\s*", "", value)
@@ -170,6 +172,9 @@ def clean_inline_latex(value: str) -> str:
         "\\cdot": "*",
         "\\inR": "in R",
         "\\infty": "infinity",
+        "\\downarrow": "↓",
+        "\\uparrow": "↑",
+        "\\rightarrow": "→",
         "\\Delta": "Delta",
         "\\delta": "delta",
         "\\alpha": "alpha",

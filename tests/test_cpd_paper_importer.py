@@ -203,6 +203,13 @@ def test_clean_inline_latex_removes_reader_hostile_tokens():
     )
 
 
+def test_clean_inline_latex_renders_direction_markers():
+    importer = _load_importer()
+
+    assert importer.clean_inline_latex(r"frame times$^\downarrow$") == "frame times ↓"
+    assert importer.clean_inline_latex(r"帧时间$^\downarrow$") == "帧时间 ↓"
+
+
 def test_imported_experiment_translation_ids_stay_semantically_aligned():
     importer = _load_importer()
     source = REPO_ROOT / "docs" / "tmp" / "papers" / "arXiv-2602.07369v1"
