@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add an opt-in CPD-like cost-guided merge-search smoke and compare it against the current topology-then-virtual behavior on deterministic synthetic fixtures.
+**Goal:** Add an opt-in CPD-like cost-guided merge-search smoke and compare it against the current topology-then-virtual behavior on a deterministic synthetic fixture.
 
 **Architecture:** Preserve the current default decomposition behavior. Add a new merge-search policy inside `decompose.py`, expose it through objective accounting, then add a dedicated synthetic report and CLI path that exercise only in-memory toy meshes under strict claim boundaries.
 
@@ -17,7 +17,7 @@
 - Modify: `src/primitive_collision_compiler/baselines/cpd_like/objective.py`
 - Test: `tests/test_cpd_like_decompose.py`
 
-- [ ] **Step 1: Write failing decomposition tests**
+- [x] **Step 1: Write failing decomposition tests**
 
 Add a helper mesh to `tests/test_cpd_like_decompose.py`:
 
@@ -115,7 +115,7 @@ def test_decompose_mesh_rejects_unknown_merge_search_policy():
         raise AssertionError("unknown merge_search_policy should be rejected")
 ```
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 Run:
 
@@ -125,7 +125,7 @@ python -m pytest tests/test_cpd_like_decompose.py -q -k "cost_guided or merge_se
 
 Expected: failure because `merge_search_policy` and report field do not exist.
 
-- [ ] **Step 3: Implement minimal decomposition support**
+- [x] **Step 3: Implement minimal decomposition support**
 
 Modify `decompose.py`:
 
@@ -140,7 +140,7 @@ Modify `decompose.py`:
 
 Modify `objective.py` so `metrics["component_accounting"]` includes `merge_search_policy`.
 
-- [ ] **Step 4: Run targeted tests and confirm GREEN**
+- [x] **Step 4: Run targeted tests and confirm GREEN**
 
 Run:
 
@@ -159,7 +159,7 @@ Expected: selected tests pass.
 - Test: `tests/test_cpd_like_synthetic.py`
 - Test: `tests/test_cli.py`
 
-- [ ] **Step 1: Write failing synthetic and CLI tests**
+- [x] **Step 1: Write failing synthetic and CLI tests**
 
 In `tests/test_cpd_like_synthetic.py`, import `build_cpd_like_cost_guided_synthetic_comparison_report`
 and add:
@@ -221,7 +221,7 @@ def test_cli_run_cpd_like_cost_guided_synthetic_comparison_rejects_non_finite_js
     assert "Traceback" not in captured.err
 ```
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 Run:
 
@@ -231,7 +231,7 @@ python -m pytest tests/test_cpd_like_synthetic.py tests/test_cli.py -q -k "cost_
 
 Expected: import/parser failures because the report builder and CLI flag do not exist.
 
-- [ ] **Step 3: Implement report and CLI**
+- [x] **Step 3: Implement report and CLI**
 
 Modify `synthetic.py`:
 
@@ -252,7 +252,7 @@ Modify `cli.py`:
 - emit strict JSON with `allow_nan=False`;
 - return `0` only when status is `smoke_passed`.
 
-- [ ] **Step 4: Run targeted tests and confirm GREEN**
+- [x] **Step 4: Run targeted tests and confirm GREEN**
 
 Run:
 
@@ -276,15 +276,15 @@ Expected: selected tests pass.
 - Modify: `README.md`
 - Modify: `experiments/registry.yaml`
 
-- [ ] **Step 1: Update docs and registry**
+- [x] **Step 1: Update docs and registry**
 
 Use the phrase `focused CPD-like cost-guided merge-search smoke`. State that it uses
-AABB-normalized merge-excess as a decision-making cost on deterministic synthetic fixtures.
+AABB-normalized merge-excess as a decision-making cost on a deterministic synthetic fixture.
 
 Do not use the words `validated`, `benchmark`, `paper-faithful`, or `better collision geometry`
 as supported claims.
 
-- [ ] **Step 2: Run command smoke**
+- [x] **Step 2: Run command smoke**
 
 Run:
 
@@ -294,7 +294,7 @@ PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cost-gu
 
 Expected: exit 0 and JSON with stage `cpd_like_cost_guided_synthetic_objective_comparison`.
 
-- [ ] **Step 3: Run full verification**
+- [x] **Step 3: Run full verification**
 
 Run:
 
@@ -306,7 +306,7 @@ git diff --check
 
 Expected: all pass.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 Run:
 

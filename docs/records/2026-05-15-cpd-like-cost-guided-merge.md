@@ -41,7 +41,7 @@ Complete.
   17 passed, 43 deselected.
 - `PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cost-guided-synthetic-comparison`:
   exit 0.
-- `python -m pytest -q`: 161 passed.
+- `python -m pytest -q`: 163 passed.
 - `python scripts/validate_docs.py`: passed.
 - `git diff --check`: passed.
 
@@ -75,11 +75,10 @@ Generated JSON output was not committed.
 
 ## Claim Impact
 
-This supports only a focused CPD-like cost-guided merge-search smoke over deterministic synthetic
-fixtures and any explicitly re-run capped smoke assets. It is diagnostic accounting for future CPD
-reproduction work, not full CPD paper reproduction, paper-faithful optimization, collision-quality
-validation, benchmark evidence, broad asset/task evidence, robot collider quality, or
-safety/deployment evidence.
+This supports only a focused CPD-like cost-guided merge-search smoke over one deterministic
+synthetic fixture. It is diagnostic accounting for future CPD reproduction work, not full CPD paper
+reproduction, paper-faithful optimization, collision-quality validation, benchmark evidence, broad
+asset/task evidence, robot collider quality, or safety/deployment evidence.
 
 ## Next Action
 

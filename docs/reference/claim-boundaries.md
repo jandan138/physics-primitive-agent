@@ -34,7 +34,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   reproduction, or collision-quality validation.
 - The current code can run a focused geometry-only CPD-like cost-guided merge-search smoke that
   uses AABB-normalized merge-excess as a decision-making cost and compares old/new diagnostic
-  accounting on deterministic synthetic fixtures. This is not full CPD paper reproduction,
+  accounting on a deterministic synthetic fixture. This is not full CPD paper reproduction,
   paper-faithful optimization, benchmark evidence, or collision-quality validation.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.

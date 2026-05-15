@@ -36,7 +36,7 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run `cpd_like_cost_guided_synthetic_objective_comparison`, a
   focused CPD-like cost-guided merge-search smoke that turns AABB-normalized merge-excess into a
   decision-making cost and compares old/new diagnostic accounting on deterministic synthetic
-  fixtures. This is not benchmark evidence, collision-quality evidence, paper-faithful
+  fixture. This is not benchmark evidence, collision-quality evidence, paper-faithful
   optimization, or full CPD reproduction.
 - The current CPD paper-story position is documented as a reproduction workbench, not as a
   paper-faithful implementation. See
