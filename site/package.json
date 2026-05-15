@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
-    "astro": "^6.3.3"
-  },
-  "devDependencies": {}
+    "astro": "^6.3.3",
+    "katex": "^0.16.46"
+  }
 }

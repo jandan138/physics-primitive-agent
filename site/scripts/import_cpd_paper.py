@@ -107,15 +107,17 @@ def parse_latex_blocks(text: str) -> list[dict[str, str]]:
                 {"type": "subsection", "title": clean_inline_latex(subsection_match.group(1))}
             )
             continue
-        begin_match = BEGIN_RE.search(line)
-        if begin_match:
-            prefix = line[: begin_match.start()].strip()
+        begin_match = None
+        if not _has_open_inline_math(" ".join(paragraph_lines)):
+            begin_match = _find_display_environment_begin(line)
+        if begin_match is not None:
+            prefix = line[:begin_match].strip()
             if prefix:
                 if _looks_like_latex_control(prefix):
                     blocks.append({"type": "latex_control", "text": prefix})
                 else:
                     paragraph_lines.append(prefix)
-            start_environment(line, begin_match.start())
+            start_environment(line, begin_match)
             continue
         if line in {"{", "}"}:
             if paragraph_lines:
@@ -140,6 +142,25 @@ def clean_inline_latex(value: str) -> str:
     value = _replace_href_commands(value)
     value = re.sub(r"\$?\^\s*\\?downarrow\$?", " ↓", value)
     value = re.sub(r"\$?\^\s*\\?uparrow\$?", " ↑", value)
+    value = _remove_nested_script_math_markers(value)
+    cleaned_parts: list[str] = []
+    for kind, part in _split_inline_math(value):
+        if kind == "math":
+            cleaned_parts.append(f"${_clean_inline_math_latex(part)}$")
+        else:
+            cleaned_parts.append(_clean_plain_latex(part))
+    value = "".join(cleaned_parts)
+    value = re.sub(r"\s+", " ", value)
+    return value.strip()
+
+
+def _remove_nested_script_math_markers(value: str) -> str:
+    value = re.sub(r"(?<=[A-Za-z0-9}])\$_([^$]+)\$", r"_\1", value)
+    value = re.sub(r"(?<=[A-Za-z0-9}])\$\^([^$]+)\$", r"^\1", value)
+    return value
+
+
+def _clean_plain_latex(value: str) -> str:
     value = re.sub(r"\\paragraph\*?\{([^}]+)\}", r"\1:", value)
     value = re.sub(r"\\label\{[^}]+\}", "", value)
     value = re.sub(r"\\color\{[^}]+\}\s*", "", value)
@@ -193,8 +214,128 @@ def clean_inline_latex(value: str) -> str:
     value = re.sub(r"\bref:[A-Za-z]+:([A-Za-z0-9_.-]+)", r"\1", value)
     value = re.sub(r"\bref:([A-Za-z0-9_.:-]+)", lambda match: _clean_ref_label(match.group(1)), value)
     value = re.sub(r"\\([A-Za-z]+)", r"\1", value)
+    return value
+
+
+def _clean_inline_math_latex(value: str) -> str:
+    value = value.replace("$", "")
+    value = value.replace("\\slash", "/")
+    value = value.replace("\\_", "_")
+    value = value.replace("\\%", "%")
+    value = re.sub(r"\\num\{([^{}]+)\}", r"\1", value)
+    value = re.sub(r"\\inR(?=[^A-Za-z]|$)", r"\\in\\mathbb{R}", value)
+    value = re.sub(r"\\inZ(?=[^A-Za-z]|$)", r"\\in\\mathbb{Z}", value)
+    value = re.sub(r"\\top(?=[A-Za-z])", r"\\top ", value)
+    value = re.sub(r"\\textbf\{([A-Za-z]+)_([A-Za-z0-9]+)\}", r"\\mathbf{\1}_{\2}", value)
+    value = _clean_text_macros_inside_math(value)
     value = re.sub(r"\s+", " ", value)
     return value.strip()
+
+
+def _clean_text_macros_inside_math(value: str) -> str:
+    previous = None
+    while previous != value:
+        previous = value
+        value = re.sub(r"\\text\{([^{}]*)\}", lambda match: f"\\text{{{_clean_math_text_content(match.group(1))}}}", value)
+    return value
+
+
+def _clean_math_text_content(value: str) -> str:
+    return (
+        value.replace("\\slash", "/")
+        .replace("\\rightarrow", "→")
+        .replace("\\leftarrow", "←")
+        .replace("\\&", "&")
+    )
+
+
+def _split_inline_math(value: str) -> list[tuple[str, str]]:
+    parts: list[tuple[str, str]] = []
+    text_start = 0
+    math_start: int | None = None
+    brace_depth = 0
+    escaped = False
+    index = 0
+    while index < len(value):
+        char = value[index]
+        if char == "\\" and not escaped:
+            escaped = True
+            index += 1
+            continue
+        if math_start is not None and not escaped:
+            if char == "{":
+                brace_depth += 1
+            elif char == "}" and brace_depth > 0:
+                brace_depth -= 1
+        if char == "$" and not escaped:
+            if math_start is None:
+                if text_start < index:
+                    parts.append(("text", value[text_start:index]))
+                math_start = index + 1
+                brace_depth = 0
+            elif brace_depth == 0:
+                parts.append(("math", value[math_start:index]))
+                math_start = None
+                text_start = index + 1
+        escaped = False
+        index += 1
+    if math_start is not None:
+        parts.append(("text", value[text_start:]))
+    elif text_start < len(value):
+        parts.append(("text", value[text_start:]))
+    return parts
+
+
+def _find_display_environment_begin(line: str) -> int | None:
+    math = False
+    brace_depth = 0
+    escaped = False
+    index = 0
+    while index < len(line):
+        char = line[index]
+        if char == "\\" and not escaped:
+            if not math and BEGIN_RE.match(line, index):
+                return index
+            escaped = True
+            index += 1
+            continue
+        if math and not escaped:
+            if char == "{":
+                brace_depth += 1
+            elif char == "}" and brace_depth > 0:
+                brace_depth -= 1
+        if char == "$" and not escaped:
+            if not math:
+                math = True
+                brace_depth = 0
+            elif brace_depth == 0:
+                math = False
+        escaped = False
+        index += 1
+    return None
+
+
+def _has_open_inline_math(value: str) -> bool:
+    math = False
+    brace_depth = 0
+    escaped = False
+    for char in value:
+        if char == "\\" and not escaped:
+            escaped = True
+            continue
+        if math and not escaped:
+            if char == "{":
+                brace_depth += 1
+            elif char == "}" and brace_depth > 0:
+                brace_depth -= 1
+        if char == "$" and not escaped:
+            if not math:
+                math = True
+                brace_depth = 0
+            elif brace_depth == 0:
+                math = False
+        escaped = False
+    return math
 
 
 def _replace_href_commands(value: str) -> str:

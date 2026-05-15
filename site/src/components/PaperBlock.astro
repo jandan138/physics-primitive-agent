@@ -1,5 +1,6 @@
 ---
 import StatusBadge from "./StatusBadge.astro";
+import { renderRichText } from "../lib/richText";
 
 interface Props {
   id: string;
@@ -37,6 +38,8 @@ const provenanceLabel =
     : translationProvenance;
 const sourceNamespaceLabel =
   sourceNamespace === "cpd_paper_source_text" ? "CPD paper source text" : sourceNamespace;
+const originalHtml = renderRichText(original);
+const translationHtml = renderRichText(translation);
 ---
 
 <article class="paper-block" id={id} data-source-namespace={sourceNamespace}>
@@ -49,8 +52,8 @@ const sourceNamespaceLabel =
       <StatusBadge label={reproductionStatusLabel} />
     </div>
   </header>
-  <div class="paper-block__original" lang="en">{original}</div>
-  <div class="paper-block__translation" lang="zh-Hans">{translation}</div>
+  <div class="paper-block__original" lang="en"><Fragment set:html={originalHtml} /></div>
+  <div class="paper-block__translation" lang="zh-Hans"><Fragment set:html={translationHtml} /></div>
   <footer class="paper-block__status">
     <span>Draft translation provenance: {provenanceLabel}</span>
     <span> / Source namespace: {sourceNamespaceLabel}</span>

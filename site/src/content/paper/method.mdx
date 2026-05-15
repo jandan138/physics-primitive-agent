@@ -13,8 +13,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="method-p001"
   section="Method"
-  original="Given an input mesh $M = (V, F), V$_i$ in R^3, F_i subseteq V, |F_i| &gt;= 3$, with each face a polygon of three or more vertices, we output a set of primitives $P, |P| &lt;= N$ where $NinZ_+$ is a user-defined target positive number of primitives. In our implementation, $P$ can be a capped cylinder, a capsule, a sphere, an isosceles trapezoidal prism, a frustum, or an oriented bounding box. Our approach follows traditional quadric mesh reduction [qem] and constructs a linear operator, in our case a $3x 3$ matrix, corresponding to each primitive. Linear operators support addition, $(f+g)(x) = f(x) + g(x)$, and scalar multiplication, $kf(x) = f(kx), k in R$. Bold text indicates a vector in $R^3$."
-  translation="给定输入网格 $M = (V, F), V$_i$ in R^3, F_i subseteq V, |F_i| &gt;= 3$，其中每个面都是包含三个或更多顶点的多边形，我们输出一组 primitives $P, |P| &lt;= N$，其中 $NinZ_+$ 是用户定义的目标 primitive 正整数数量。在我们的实现中，$P$ 可以是 capped cylinder、capsule、sphere、isosceles trapezoidal prism、frustum 或 oriented bounding box。我们的方法遵循传统 quadric mesh reduction [qem]，并为每个 primitive 构造一个 linear operator；在我们的情形中，它是一个 $3x 3$ 矩阵。Linear operators 支持加法，$(f+g)(x) = f(x) + g(x)$，以及标量乘法，$kf(x) = f(kx), k in R$。粗体文本表示 $R^3$ 中的向量。"
+  original="Given an input mesh $\mathbb{M} = (V, F), \mathbf{V}_{i} \in\mathrm{R}^3, F_i \subseteq V, |F_i| \geq 3$, with each face a polygon of three or more vertices, we output a set of primitives $P, |P| \leq N$ where $N\in\mathbb{Z}_+$ is a user-defined target positive number of primitives. In our implementation, $P$ can be a capped cylinder, a capsule, a sphere, an isosceles trapezoidal prism, a frustum, or an oriented bounding box. Our approach follows traditional quadric mesh reduction [qem] and constructs a linear operator, in our case a $3\times 3$ matrix, corresponding to each primitive. Linear operators support addition, $(f+g)(\vect{x}) = f(\vect{x}) + g(\vect{x})$, and scalar multiplication, $kf(\vect{x}) = f(k\vect{x}), k \in\mathbb{R}$. Bold text indicates a vector in $\mathbb{R}^3$."
+  translation="给定输入网格 $M = (V, F), V_i \in\mathbb{R}^3, F_i \subseteq V, |F_i| \geq 3$，其中每个面都是包含三个或更多顶点的多边形，我们输出一组 primitives $P, |P| \leq N$，其中 $N\in\mathbb{Z}_+$ 是用户定义的目标 primitive 正整数数量。在我们的实现中，$P$ 可以是 capped cylinder、capsule、sphere、isosceles trapezoidal prism、frustum 或 oriented bounding box。我们的方法遵循传统 quadric mesh reduction [qem]，并为每个 primitive 构造一个 linear operator；在我们的情形中，它是一个 $3\times 3$ 矩阵。Linear operators 支持加法，$(f+g)(x) = f(x) + g(x)$，以及标量乘法，$kf(x) = f(kx), k \in\mathbb{R}$。粗体文本表示 $R^3$ 中的向量。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -85,8 +85,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="method-p004"
   section="Method"
-  original="Our linear operator corresponding to a primitive is a $3 x 3$ area-weighted matrix per face of the input mesh, $Q$. We define $Q = nn^top$, $n^top n = 1, nin R^3$. $nn^topin R^{3x3}$ is the outer product of the normal of a face with itself, which characterizes each face's plane. $Q$ is a subset of QEM's metric, $QEM(x) = x^top(nn^top)x - 2 n^top(p^topx)x + (p - x)^top(p - x)$, with the linear and constant terms dropped since they identify position. We do not need positions since we use the vertices within each primitive to compute positions directly. To derive a primitive from $Q$, we use $Q$'s eigendecomposition $Q = WLambda W^{-1}, Lambda = diag("
-  translation="我们对应于一个 primitive 的 linear operator 是输入网格每个面的 $3 x 3$ 面积加权矩阵 $Q$。我们定义 $Q = nn^top$，$n^top n = 1, nin R^3$。$nn^topin R^{3x3}$ 是一个面的法向量与自身的外积，用于刻画该面的平面。$Q$ 是 QEM 度量的一部分，$QEM(x) = x^top(nn^top)x - 2 n^top(p^topx)x + (p - x)^top(p - x)$；其中线性项和常数项被去除，因为它们标识位置。我们不需要位置项，因为我们直接使用每个 primitive 内的顶点来计算位置。为了从 $Q$ 推导 primitive，我们使用 $Q$ 的 eigendecomposition $Q = WLambda W^{-1}, Lambda = diag("
+  original="Our linear operator corresponding to a primitive is a $3 \times 3$ area-weighted matrix per face of the input mesh, $Q$. We define $Q = \vect{n}\vect{n}^\top$, $\vect{n}^\top \vect{n} = 1, \vect{n}\in\mathbb{R}^3$. $\vect{n}\vect{n}^\top\in\mathbb{R}^{3\times3}$ is the outer product of the normal of a face with itself, which characterizes each face's plane. $Q$ is a subset of QEM's metric, $\text{QEM}(\vect{x}) = \vect{x}^\top(\vect{n}\vect{n}^\top)\vect{x} - 2 \vect{n}^\top(\vect{p}^\top\vect{x})\vect{x} + (\vect{p} - \vect{x})^\top(\vect{p} - \vect{x})$, with the linear and constant terms dropped since they identify position. We do not need positions since we use the vertices within each primitive to compute positions directly. To derive a primitive from $Q$, we use $Q$'s eigendecomposition $Q = W\Lambda W^{-1}, \Lambda = \text{diag}(\begin{bmatrix}\lambda_2 &amp; \lambda_1 &amp; \lambda_0 \end{bmatrix}), W = \begin{bmatrix} \vect{w}_2 &amp; \vect{w}_1 &amp; \vect{w}_0 \end{bmatrix}^\top, |\lambda_2| \geq |\lambda_1| \geq |\lambda_0|$: for a single face, $Q$'s largest eigenvector $Q\vect{w}_2 = \lambda_2 \vect{w}_2$ is the face's area-weighted normal. When adding another face $Q_a + Q_b$, the largest eigenvector $\vect{w}_{2,a+b}$ corresponds to the largest shared direction of both faces' normals, and the second $\vect{w}_{1,a+b}$ will be the shared component orthogonal to the first. When adding faces, the largest eigenvector corresponds to the largest area-weighted direction that the faces are oriented towards, and the others will be orthogonal. The orthogonal basis of eigenvectors $\vect{w}_2,\vect{w}_1,\vect{w}_0$ defines an oriented bounding box which bounds the corresponding set of faces. We provide a visualization of $Q$ defined per input face and the eigendecomposition of output primitives in the inset figure. An analysis of this operators eigendecomposition and its relation to principal curvature is provided in [quadric_based_polygonal_surface_simplification]."
+  translation="我们对应于一个 primitive 的 linear operator 是输入网格每个面的 $3 \times 3$ 面积加权矩阵 $Q$。我们定义 $Q = nn^\top$，$n^\top n = 1, n\in\mathbb{R}^3$。$nn^\top\in\mathbb{R}^{3\times3}$ 是一个面的法向量与自身的外积，用于刻画该面的平面。$Q$ 是 QEM 度量的一部分，$\text{QEM}(x) = x^\top(nn^\top)x - 2 n^\top(p^\top x)x + (p - x)^\top(p - x)$；其中线性项和常数项被去除，因为它们标识位置。我们不需要位置项，因为我们直接使用每个 primitive 内的顶点来计算位置。为了从 $Q$ 推导 primitive，我们使用 $Q$ 的 eigendecomposition $Q = W\Lambda W^{-1}, \Lambda = \text{diag}(\begin{bmatrix}\lambda_2 &amp; \lambda_1 &amp; \lambda_0 \end{bmatrix}), W = \begin{bmatrix} \vect{w}_2 &amp; \vect{w}_1 &amp; \vect{w}_0 \end{bmatrix}^\top, |\lambda_2| \geq |\lambda_1| \geq |\lambda_0|$：对于单个面，$Q$ 的最大特征向量 $Qw_2 = \lambda_2 w_2$ 是该面的面积加权法向量。当加入另一个面 $Q_a + Q_b$ 时，最大特征向量 $w_{2,a+b}$ 对应于两个面法向量最大的共享方向，第二个特征向量 $w_{1,a+b}$ 则是与第一个方向正交的共享分量。合并面时，最大特征向量对应于这些面所朝向的最大面积加权方向，其余特征向量与之正交。由特征向量 $w_2,w_1,w_0$ 构成的正交基定义了一个 oriented bounding box，用于包围对应的面集合。我们在插图中可视化了按输入面定义的 $Q$，以及输出 primitives 的 eigendecomposition。关于该 operator 的 eigendecomposition 及其与 principal curvature 的关系，见 [quadric_based_polygonal_surface_simplification] 中的分析。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -94,42 +94,14 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l002" label="Method / bmatrix / method-l002">
-
-```latex
-\begin{bmatrix}\lambda_2 & \lambda_1 & \lambda_0 \end{bmatrix}),
-```
-
-</LatexBlock>
-
-<LatexBlock id="method-l003" label="Method / bmatrix / method-l003">
-
-```latex
-\begin{bmatrix} \vect{w}_2 & \vect{w}_1 & \vect{w}_0 \end{bmatrix}^\top,
-```
-
-</LatexBlock>
-
-<PaperBlock
-  id="method-p005"
-  section="Method"
-  original="|lambda_2| &gt;= |lambda_1| &gt;= |lambda_0|$: for a single face, $Q$'s largest eigenvector $Qw_2 = lambda_2 w_2$ is the face's area-weighted normal. When adding another face $Q_a + Q_b$, the largest eigenvector $w_{2,a+b}$ corresponds to the largest shared direction of both faces' normals, and the second $w_{1,a+b}$ will be the shared component orthogonal to the first. When adding faces, the largest eigenvector corresponds to the largest area-weighted direction that the faces are oriented towards, and the others will be orthogonal. The orthogonal basis of eigenvectors $w_2,w_1,w_0$ defines an oriented bounding box which bounds the corresponding set of faces. We provide a visualization of $Q$ defined per input face and the eigendecomposition of output primitives in the inset figure. An analysis of this operators eigendecomposition and its relation to principal curvature is provided in [quadric_based_polygonal_surface_simplification]."
-  translation="$|lambda_2| &gt;= |lambda_1| &gt;= |lambda_0|$：对于单个面，$Q$ 的最大特征向量 $Qw_2 = lambda_2 w_2$ 是该面的面积加权法向量。当加入另一个面 $Q_a + Q_b$ 时，最大特征向量 $w_{2,a+b}$ 对应于两个面法向量最大的共享方向，第二个特征向量 $w_{1,a+b}$ 则是与第一个方向正交的共享分量。合并面时，最大特征向量对应于这些面所朝向的最大面积加权方向，其余特征向量与之正交。由特征向量 $w_2,w_1,w_0$ 构成的正交基定义了一个 oriented bounding box，用于包围对应的面集合。我们在插图中可视化了按输入面定义的 $Q$，以及输出 primitives 的 eigendecomposition。关于该 operator 的 eigendecomposition 及其与 principal curvature 的关系，见 [quadric_based_polygonal_surface_simplification] 中的分析。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<FigurePanel id="method-l004-figure"
-  title="Method / SCfigure / method-l004"
+<FigurePanel id="method-l002-figure"
+  title="Method / SCfigure / method-l002"
   caption="A visualization of the area weighted $Q$ of an input mesh (shown in blue), and our approach's output primitives. The output primitives from our approach are aligned with the faces they enclose. In the output, cylinders are yellow, oriented boxes are green, and eigenvectors of the input $Q$ for each face are red arrows."
   images={["paper-assets/plots/eigen_input.webp", "paper-assets/assets/elbow_output.webp"]}
 />
 
 <PaperBlock
-  id="method-p006"
+  id="method-p005"
   section="Method"
   original="A visualization of the area weighted $Q$ of an input mesh (shown in blue), and our approach's output primitives. The output primitives from our approach are aligned with the faces they enclose. In the output, cylinders are yellow, oriented boxes are green, and eigenvectors of the input $Q$ for each face are red arrows."
   translation="输入网格（蓝色）中面积加权 $Q$ 的可视化，以及我们方法的输出 primitives。我们方法输出的 primitives 与其包围的面对齐。在输出中，cylinders 为黄色，oriented boxes 为绿色，每个输入面 $Q$ 的特征向量以红色箭头表示。"
@@ -141,7 +113,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p007"
+  id="method-p006"
   section="Method"
   original="We arrived upon this generalization while crafting an operator for cylinders. Instead of more parameters, the smallest eigenvalue's eigenvector closely aligns with the cylinder's axis. We then observed other eigenvectors align with reasonable bounding boxes for shapes and can serve as orientations. This operator identifies an orientation that aligns closely with the largest area-weighted tangent and normal of the enclosed faces. This operator is not globally optimal, but gives good approximations. An illustration of the eigenvectors that correspond to primitives is shown in the inset below."
   translation="我们在为 cylinders 构造 operator 时得到了这一泛化。与引入更多参数相比，最小特征值对应的特征向量会与 cylinder 的轴线紧密对齐。随后我们观察到，其他特征向量也会与形状的合理 bounding boxes 对齐，并可作为方向使用。该 operator 识别出一种方向，它与被包围面中最大的面积加权切向量和法向量紧密对齐。该 operator 不是全局最优的，但能给出良好的近似。与 primitives 对应的特征向量示意见下方插图。"
@@ -152,14 +124,14 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<FigurePanel id="method-l005-figure"
-  title="Method / wrapfigure / method-l005"
+<FigurePanel id="method-l003-figure"
+  title="Method / wrapfigure / method-l003"
   caption="Source-paper figure."
   images={["paper-assets/plots/cube_diagram.webp", "paper-assets/plots/cylinder_diagram_crop.webp"]}
 />
 
 <PaperBlock
-  id="method-p008"
+  id="method-p007"
   section="Method"
   original="For OBBs and isosceles trapezoidal prisms eigenvectors align with faces. For capsules and cylinders, one eigenvector is aligned with the cylinder's direction, and other eigenvectors will lie orthogonal to this axis."
   translation="对于 OBBs 和 isosceles trapezoidal prisms，特征向量与面对齐。对于 capsules 和 cylinders，一个特征向量与 cylinder 的方向对齐，其他特征向量则位于与该轴正交的方向上。"
@@ -171,10 +143,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p009"
+  id="method-p008"
   section="Method"
-  original="Face Normal Computation: For a triangle $v_0, v_1, v_2$, the normal is given by the cross-product of the edges: $n_tri = (v_2 - v_0) x (v_1 - v_0)$. For quads (faces with four vertices) the face's normal is not well-defined if the quad is non-planar. To compute an approximate normal for both planar and non-planar quads, we define the normal of a quad $v_0, v_1, v_2, v_3$ as the cross-product of the diagonals: $ n_quad = frac{ (v_0 - v_2)x(v_1 - v_3) }{ lVert (v_0 - v_2)x(v_1 - v_3) rVert_2 } $. For planar quads, this is exactly correct. For polygons with more than four vertices, we create a triangle fan rooted at the 0th vertex with separate normals per triangle."
-  translation="面法向计算：对于三角形 $v_0, v_1, v_2$，法向量由边的叉积给出：$n_tri = (v_2 - v_0) x (v_1 - v_0)$。对于 quads（包含四个顶点的面），如果 quad 非平面，则其面法向量没有良好定义。为了同时为平面和非平面 quads 计算近似法向量，我们将 quad $v_0, v_1, v_2, v_3$ 的法向量定义为对角线的叉积：$ n_quad = frac{ (v_0 - v_2)x(v_1 - v_3) }{ lVert (v_0 - v_2)x(v_1 - v_3) rVert_2 } $。对于平面 quads，这一定义完全正确。对于包含四个以上顶点的多边形，我们以第 0 个顶点为根构造三角扇，并为每个三角形分别计算法向量。"
+  original="Face Normal Computation: For a triangle $\vect{v}_0, \vect{v}_1, \vect{v}_2$, the normal is given by the cross-product of the edges: $\vect{n}_\text{tri} = (\vect{v}_2 - \vect{v}_0) \times (\vect{v}_1 - \vect{v}_0)$. For quads (faces with four vertices) the face's normal is not well-defined if the quad is non-planar. To compute an approximate normal for both planar and non-planar quads, we define the normal of a quad $\vect{v}_0, \vect{v}_1, \vect{v}_2, \vect{v}_3$ as the cross-product of the diagonals: $\vect{n}_\text{quad} = \frac{ (\vect{v}_0 - \vect{v}_2)\times(\vect{v}_1 - \vect{v}_3) }{ \lVert (\vect{v}_0 - \vect{v}_2)\times(\vect{v}_1 - \vect{v}_3) \rVert_2 }$. For planar quads, this is exactly correct. For polygons with more than four vertices, we create a triangle fan rooted at the 0th vertex with separate normals per triangle."
+  translation="面法向计算：对于三角形 $v_0, v_1, v_2$，法向量由边的叉积给出：$n_\text{tri} = (v_2 - v_0) \times (v_1 - v_0)$。对于 quads（包含四个顶点的面），如果 quad 非平面，则其面法向量没有良好定义。为了同时为平面和非平面 quads 计算近似法向量，我们将 quad $v_0, v_1, v_2, v_3$ 的法向量定义为对角线的叉积：$n_\text{quad} = \frac{ (v_0 - v_2)\times(v_1 - v_3) }{ \lVert (v_0 - v_2)\times(v_1 - v_3) \rVert_2 }$。对于平面 quads，这一定义完全正确。对于包含四个以上顶点的多边形，我们以第 0 个顶点为根构造三角扇，并为每个三角形分别计算法向量。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -185,10 +157,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 ### Primitive Construction from Linear Operators
 
 <PaperBlock
-  id="method-p010"
+  id="method-p009"
   section="Method"
-  original="To convert $Q$ into a primitive, we first decompose it into its eigenvectors: $w_0, w_1, w_2 in R^3, w_i^top w_j = 0 iff i != j, w_i^top w_i = 1$, $Qw_i = lambda_iw_i, |lambda_0|&lt;=|lambda_1|&lt;=|lambda_2|$, implemented using the eigendecomposition described in [SingularValue3x3]. With these eigenvectors as the axes, we fit all additional parameters for each primitive by expanding them to fully enclose the corresponding mesh faces."
-  translation="为了将 $Q$ 转换为一个 primitive，我们首先将其分解为特征向量：$w_0, w_1, w_2 in R^3, w_i^top w_j = 0 iff i != j, w_i^top w_i = 1$，$Qw_i = lambda_iw_i, |lambda_0|&lt;=|lambda_1|&lt;=|lambda_2|$，实现上使用 [SingularValue3x3] 中描述的 eigendecomposition。以这些特征向量作为轴，我们通过扩展每个 primitive 来完全包围对应的网格面，从而拟合所有其他参数。"
+  original="To convert $Q$ into a primitive, we first decompose it into its eigenvectors: $\vect{w}_0, \vect{w}_1, \vect{w}_2 \in\mathbb{R}^3, \vect{w}_i^\top \vect{w}_j = 0 \text{ iff } i \neq j, \vect{w}_i^\top \vect{w}_i = 1$, $Q\vect{w}_i = \lambda_i\vect{w}_i, |\lambda_0|\leq|\lambda_1|\leq|\lambda_2|$, implemented using the eigendecomposition described in [SingularValue3x3]. With these eigenvectors as the axes, we fit all additional parameters for each primitive by expanding them to fully enclose the corresponding mesh faces."
+  translation="为了将 $Q$ 转换为一个 primitive，我们首先将其分解为特征向量：$w_0, w_1, w_2 \in\mathbb{R}^3, w_i^\top w_j = 0 \text{ iff } i \neq j, w_i^\top w_i = 1$，$Qw_i = \lambda_iw_i, |\lambda_0|\leq|\lambda_1|\leq|\lambda_2|$，实现上使用 [SingularValue3x3] 中描述的 eigendecomposition。以这些特征向量作为轴，我们通过扩展每个 primitive 来完全包围对应的网格面，从而拟合所有其他参数。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -197,10 +169,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p011"
+  id="method-p010"
   section="Method"
-  original="Our approach supports arbitrary primitives which satisfy an interface. Primitives must have efficient volume computation, be constructible as zero-volume elements with a given orientation and position, and support strictly increasing their parameters to enclose an unordered set of points. For our implementation, we use oriented bounding boxes, spheres, capped cylinders, capsules, frustums, and isosceles trapezoidal prisms, shown in Fig. primitives. We outline our implementation of the interface for each primitive below. For each primitive, the points it subsumes are denoted as $p_iin R^{nx3}$. We informally define subsuming as when a primitive must enclose a point. This does not include points primitives enclose but are not required to."
-  translation="我们的方法支持满足接口要求的任意 primitives。Primitives 必须能够高效计算体积，能够在给定方向和位置下构造为零体积元素，并支持严格增大其参数以包围一组无序点。在我们的实现中，我们使用 oriented bounding boxes、spheres、capped cylinders、capsules、frustums 和 isosceles trapezoidal prisms，如 Fig. primitives 所示。下面概述每个 primitive 的接口实现。对于每个 primitive，其 subsume 的点记为 $p_iin R^{nx3}$。我们非正式地将 subsuming 定义为 primitive 必须包围某个点的情形。这不包括 primitive 包围了但并非必须包围的点。"
+  original="Our approach supports arbitrary primitives which satisfy an interface. Primitives must have efficient volume computation, be constructible as zero-volume elements with a given orientation and position, and support strictly increasing their parameters to enclose an unordered set of points. For our implementation, we use oriented bounding boxes, spheres, capped cylinders, capsules, frustums, and isosceles trapezoidal prisms, shown in Fig. primitives. We outline our implementation of the interface for each primitive below. For each primitive, the points it subsumes are denoted as $\vect{p}_i\in\mathbb{R}^{n\times3}$. We informally define subsuming as when a primitive must enclose a point. This does not include points primitives enclose but are not required to."
+  translation="我们的方法支持满足接口要求的任意 primitives。Primitives 必须能够高效计算体积，能够在给定方向和位置下构造为零体积元素，并支持严格增大其参数以包围一组无序点。在我们的实现中，我们使用 oriented bounding boxes、spheres、capped cylinders、capsules、frustums 和 isosceles trapezoidal prisms，如 Fig. primitives 所示。下面概述每个 primitive 的接口实现。对于每个 primitive，其 subsume 的点记为 $p_i\in\mathbb{R}^{n\times3}$。我们非正式地将 subsuming 定义为 primitive 必须包围某个点的情形。这不包括 primitive 包围了但并非必须包围的点。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -208,14 +180,14 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<FigurePanel id="method-l006-figure"
-  title="Method / figure / method-l006"
+<FigurePanel id="method-l004-figure"
+  title="Method / figure / method-l004"
   caption="Primitives supported in our approach. First, axes are computed as the eigendecomposition of a quadric, $a_z$ corresponds to the minimum eigenvalue's eigenvector, $a_x$ the max. These axes are then used to compute an oriented bounding box (OBB). The OBB's center $c$ and the axes are then used to fit all other primitives."
   images={["paper-assets/plots/primitives.webp"]}
 />
 
 <PaperBlock
-  id="method-p012"
+  id="method-p011"
   section="Method"
   original="Primitives supported in our approach. First, axes are computed as the eigendecomposition of a quadric, $a_z$ corresponds to the minimum eigenvalue's eigenvector, $a_x$ the max. These axes are then used to compute an oriented bounding box (OBB). The OBB's center $c$ and the axes are then used to fit all other primitives."
   translation="我们方法支持的 primitives。首先，通过 quadric 的 eigendecomposition 计算轴，其中 $a_z$ 对应于最小特征值的特征向量，$a_x$ 对应于最大特征值的特征向量。随后使用这些轴计算 oriented bounding box（OBB）。接着使用 OBB 的中心 $c$ 和这些轴来拟合所有其他 primitives。"
@@ -227,10 +199,22 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
+  id="method-p012"
+  section="Method"
+  original="Oriented Bounding Boxes: Oriented bounding boxes are the foundation of all other primitives since they do not require an initial position and their position can be used for other primitives. The bounds ($u_x,u_y,u_z,l_x,l_y,l_z\in\mathbb{R}$) of OBBs are computed per axis as $u_i = \max_{\vect{p}\in P}(\vect{v}_i^\top \vect{p})$ and $l_i =\min_{\vect{p}\in P}(\vect{v}_i^\top\vect{p}), i\in \{x , y, z\}$. The half-extent along each axis is $h_i = \max(\frac{1}{2}(u_i - l_i), 1e-3)$, where $1e-3$ is included to prevent degenerate volumes. We apply the same clamping to parameters for other shapes. The center of the OBB is $c_i = \frac{1}{2} (u_i + l_i)$, the volume is $8\Pi_{i=1}^3 h_i$, with a factor of 8 since $h_i$ are half-extents. OBBs are fit first, as other primitives initialize their position to the center of the OBB."
+  translation="Oriented Bounding Boxes：OBB 是所有其他 primitives 的基础，因为它们不需要初始位置，且其位置可用于其他 primitives。OBB 的边界（$u_x,u_y,u_z,l_x,l_y,l_z\in\mathbb{R}$）按轴计算为 $u_i = \max_{p\in P}(v_i^\top p)$ 和 $l_i =\min_{p\in P}(v_i^\top p), i\in \{x , y, z\}$。沿每个轴的 half-extent 为 $h_i = \max(\frac{1}{2}(u_i - l_i), 1e-3)$，其中包含 $1e-3$ 是为了防止退化体积。我们对其他形状的参数应用相同的 clamp。OBB 的中心为 $c_i = \frac{1}{2} (u_i + l_i)$，体积为 $8\Pi_{i=1}^3 h_i$；因 $h_i$ 是 half-extents，所以有因子 8。OBB 会首先拟合，因为其他 primitives 会将其位置初始化为 OBB 的中心。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
   id="method-p013"
   section="Method"
-  original="Oriented Bounding Boxes: Oriented bounding boxes are the foundation of all other primitives since they do not require an initial position and their position can be used for other primitives. The bounds ($u_x,u_y,u_z,l_x,l_y,l_zin R$) of OBBs are computed per axis as $u_i = max_{pin P}(v_i^top p)$ and $l_i =min_{pin P}(v_i^topp), iin \{x , y, z\}$. The half-extent along each axis is $h_i = max(frac{1}{2}(u_i - l_i), 1e-3)$, where $1e-3$ is included to prevent degenerate volumes. We apply the same clamping to parameters for other shapes. The center of the OBB is $c_i = frac{1}{2} (u_i + l_i)$, the volume is $8Pi_{i=1}^3 h_i$, with a factor of 8 since $h_i$ are half-extents. OBBs are fit first, as other primitives initialize their position to the center of the OBB."
-  translation="Oriented Bounding Boxes：OBB 是所有其他 primitives 的基础，因为它们不需要初始位置，且其位置可用于其他 primitives。OBB 的边界（$u_x,u_y,u_z,l_x,l_y,l_zin R$）按轴计算为 $u_i = max_{pin P}(v_i^top p)$ 和 $l_i =min_{pin P}(v_i^topp), iin \{x , y, z\}$。沿每个轴的 half-extent 为 $h_i = max(frac{1}{2}(u_i - l_i), 1e-3)$，其中包含 $1e-3$ 是为了防止退化体积。我们对其他形状的参数应用相同的 clamp。OBB 的中心为 $c_i = frac{1}{2} (u_i + l_i)$，体积为 $8Pi_{i=1}^3 h_i$；因 $h_i$ 是 half-extents，所以有因子 8。OBB 会首先拟合，因为其他 primitives 会将其位置初始化为 OBB 的中心。"
+  original="Spheres: Spheres are the simplest primitive, starting from a fixed center $\vect{c}$ (from the previously computed OBB), the radius is $r = \max_{\vect{p}\in P}(\lVert \vect{c} - \vect{p}\rVert_2)$. The volume of a sphere is $\frac{4}{3}\pi r^3$. Spheres are the cheapest primitive for collision detection, and are used despite their coarse shape."
+  translation="Spheres：Spheres 是最简单的 primitive，从固定中心 $c$（来自先前计算的 OBB）开始，半径为 $r = \max_{p\in P}(\lVert c - p\rVert_2)$。Sphere 的体积为 $\frac{4}{3}\pi r^3$。Spheres 是碰撞检测中代价最低的 primitive，尽管形状较粗略，我们仍使用它们。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -241,8 +225,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="method-p014"
   section="Method"
-  original="Spheres: Spheres are the simplest primitive, starting from a fixed center $c$ (from the previously computed OBB), the radius is $r = max_{pin P}(lVert c - prVert_2)$. The volume of a sphere is $frac{4}{3}pi r^3$. Spheres are the cheapest primitive for collision detection, and are used despite their coarse shape."
-  translation="Spheres：Spheres 是最简单的 primitive，从固定中心 $c$（来自先前计算的 OBB）开始，半径为 $r = max_{pin P}(lVert c - prVert_2)$。Sphere 的体积为 $frac{4}{3}pi r^3$。Spheres 是碰撞检测中代价最低的 primitive，尽管形状较粗略，我们仍使用它们。"
+  original="Capped Cylinders: For capped cylinders with a fixed axis $\vect{a}, \vect{a}^\top\vect{a} = 1$ and a point on the axis, $\vect{p}_\text{cyl}$, we derive the height and radius:"
+  translation="Capped Cylinders：对于具有固定轴 $a, a^\top a = 1$ 以及轴上一点 $p_\text{cyl}$ 的 capped cylinders，我们推导其高度和半径："
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -250,19 +234,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<PaperBlock
-  id="method-p015"
-  section="Method"
-  original="Capped Cylinders: For capped cylinders with a fixed axis $a, a^topa = 1$ and a point on the axis, $p_cyl$, we derive the height and radius:"
-  translation="Capped Cylinders：对于具有固定轴 $a, a^topa = 1$ 以及轴上一点 $p_cyl$ 的 capped cylinders，我们推导其高度和半径："
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<LatexBlock id="method-l007" label="Method / align / method-l007">
+<LatexBlock id="method-l005" label="Method / align / method-l005">
 
 ```latex
 \begin{align}
@@ -274,10 +246,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 </LatexBlock>
 
 <PaperBlock
-  id="method-p016"
+  id="method-p015"
   section="Method"
-  original="The cylinder's volume is $pi r^2 h$. We compute 1 cylinder per axis, and choose the cylinder with minimal cost."
-  translation="Cylinder 的体积为 $pi r^2 h$。我们为每个轴计算 1 个 cylinder，并选择代价最小的 cylinder。"
+  original="The cylinder's volume is $\pi r^2 h$. We compute 1 cylinder per axis, and choose the cylinder with minimal cost."
+  translation="Cylinder 的体积为 $\pi r^2 h$。我们为每个轴计算 1 个 cylinder，并选择代价最小的 cylinder。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -286,10 +258,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p017"
+  id="method-p016"
   section="Method"
-  original="Capsules: Capsules are similar to cylinders, with a fixed axis $a such that a^topa = 1$ and point on $a$, $p_cap$, the radius computation is the same as a capped cylinder. There is a slight difference for the height, taking into consideration that the ends of the capsules are spheres, and the equation for the height is adjusted as follows:"
-  translation="Capsules：Capsules 与 cylinders 类似，具有固定轴 $a such that a^topa = 1$ 和轴上一点 $p_cap$；半径计算与 capped cylinder 相同。高度存在细微差异，因为 capsules 的两端是球体，因此高度方程调整如下："
+  original="Capsules: Capsules are similar to cylinders, with a fixed axis $\vect{a} \text{ such that } \vect{a}^\top\vect{a} = 1$ and point on $\vect{a}$, $\vect{p}_\text{cap}$, the radius computation is the same as a capped cylinder. There is a slight difference for the height, taking into consideration that the ends of the capsules are spheres, and the equation for the height is adjusted as follows:"
+  translation="Capsules：Capsules 与 cylinders 类似，具有固定轴 $a \text{ such that } a^\top a = 1$ 和轴上一点 $p_\text{cap}$；半径计算与 capped cylinder 相同。高度存在细微差异，因为 capsules 的两端是球体，因此高度方程调整如下："
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -297,7 +269,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l008" label="Method / align / method-l008">
+<LatexBlock id="method-l006" label="Method / align / method-l006">
 
 ```latex
 \begin{align}
@@ -310,7 +282,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 </LatexBlock>
 
 <PaperBlock
-  id="method-p018"
+  id="method-p017"
   section="Method"
   original="Capsules are supported in downstream physics applications due to their ease of computing distance, which is why we include them. Similar to cylinders, we compute one capsule per axis."
   translation="Capsules 由于易于计算距离而受到下游物理应用支持，这也是我们包含它们的原因。与 cylinders 类似，我们为每个轴计算一个 capsule。"
@@ -322,10 +294,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p019"
+  id="method-p018"
   section="Method"
-  original="Frustum: To capture conical structures, we also implement frustums. Frustums are initialized from the axis of the minimum cost cylinder, with a position on the base $p$, and axis $a$. The height is set identically to cylinders. The radius of the top and bottom faces are set using the algorithm shown in. Alg. frustum. The volume of the output frustum is given by $frac{pi h}{3}(r_top^2 + r_top r_bot + r_bot^2)$."
-  translation="Frustum：为了捕捉锥形结构，我们也实现了 frustums。Frustums 由最小代价 cylinder 的轴初始化，包含底面上的位置 $p$ 和轴 $a$。高度设置与 cylinders 完全相同。顶面和底面的半径使用 Alg. frustum 所示算法设置。输出 frustum 的体积为 $frac{pi h}{3}(r_top^2 + r_top r_bot + r_bot^2)$。"
+  original="Frustum: To capture conical structures, we also implement frustums. Frustums are initialized from the axis of the minimum cost cylinder, with a position on the base $\vect{p}$, and axis $\vect{a}$. The height is set identically to cylinders. The radius of the top and bottom faces are set using the algorithm shown in. Alg. frustum. The volume of the output frustum is given by $\frac{\pi h}{3}(r_\text{top}^2 + r_\text{top} r_\text{bot} + r_\text{bot}^2)$."
+  translation="Frustum：为了捕捉锥形结构，我们也实现了 frustums。Frustums 由最小代价 cylinder 的轴初始化，包含底面上的位置 $p$ 和轴 $a$。高度设置与 cylinders 完全相同。顶面和底面的半径使用 Alg. frustum 所示算法设置。输出 frustum 的体积为 $\frac{\pi h}{3}(r_\text{top}^2 + r_\text{top} r_\text{bot} + r_\text{bot}^2)$。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -334,7 +306,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p020"
+  id="method-p019"
   section="Method"
   original="Isosceles Trapezoidal Prisms: Finally, we implement isosceles trapezoidal prisms. No prior work uses explicit trapezoidal prisms, but we found buildings often have gable roofs that resemble a triangular prism and are poorly modeled by other primitives. We found isosceles triangular prisms to be numerically unstable because of the singularity (zero-width side) for subsuming sets of points. Instead, isosceles trapezoidal prisms can closely approximate a triangular prism and are numerically stable."
   translation="Isosceles Trapezoidal Prisms：最后，我们实现 isosceles trapezoidal prisms。此前没有工作使用显式的 trapezoidal prisms，但我们发现建筑物常有类似 triangular prism 的山墙屋顶，而其他 primitives 对其建模效果较差。我们发现 isosceles triangular prisms 在数值上不稳定，因为在 subsume 点集时存在奇异性（零宽度侧边）。相比之下，isosceles trapezoidal prisms 可以紧密近似 triangular prism，并且数值稳定。"
@@ -346,10 +318,22 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
+  id="method-p020"
+  section="Method"
+  original="Given the orthogonal basis $\vect{a}_x, \vect{a}_y, \vect{a}_z$ and center $\vect{c}$, we check all 6 possible orderings of axes and compute the half-extents $(h_x, h_y, h_{zt}, h_{zb}\in\mathbb{R})$, where $h_{zt}$, $h_{zb}$ are along the axis $\vect{a}_z$ on $+\vect{a}_y, -\vect{a}_y$ respectively. $h_x$ and $h_y$ are computed identically to OBBs as $\max(\vect{a}_x^\top(\vect{p}-\vect{c})) \text{ and } \max(\vect{a}_y^\top(\vect{p}-\vect{c}))$."
+  translation="给定正交基 $a_x, a_y, a_z$ 和中心 $c$，我们检查全部 6 种可能的轴排序，并计算 half-extents $(h_x, h_y, h_{zt}, h_{zb}\in\mathbb{R})$，其中 $h_{zt}$、$h_{zb}$ 分别是沿 $+a_y$、$-a_y$ 上的 $a_z$ 轴方向的 half-extents。$h_x$ 和 $h_y$ 的计算与 OBB 相同，分别为 $\max(a_x^\top(p-c)) \text{ and } \max(a_y^\top(p-c))$。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
   id="method-p021"
   section="Method"
-  original="Given the orthogonal basis $a_x, a_y, a_z$ and center $c$, we check all 6 possible orderings of axes and compute the half-extents $(h_x, h_y, h_{zt}, h_{zb}in R)$, where $h_{zt}$, $h_{zb}$ are along the axis $a_z$ on $+a_y, -a_y$ respectively. $h_x$ and $h_y$ are computed identically to OBBs as $max(a_x^top(p-c)) and max(a_y^top(p-c))$."
-  translation="给定正交基 $a_x, a_y, a_z$ 和中心 $c$，我们检查全部 6 种可能的轴排序，并计算 half-extents $(h_x, h_y, h_{zt}, h_{zb}in R)$，其中 $h_{zt}$、$h_{zb}$ 分别是沿 $+a_y$、$-a_y$ 上的 $a_z$ 轴方向的 half-extents。$h_x$ 和 $h_y$ 的计算与 OBB 相同，分别为 $max(a_x^top(p-c)) and max(a_y^top(p-c))$。"
+  original="Pseudocode for computing $h_{zt}, h_{zb}$ is given in the Appendix, Alg. isotrap. The volume of the resulting trapezoidal prism is $4h_x h_y (h_{zt} + h_{zb})$, with the factor of 4 as $h_\bullet$ are half-extents."
+  translation="计算 $h_{zt}, h_{zb}$ 的伪代码见 Appendix 中的 Alg. isotrap。所得 trapezoidal prism 的体积为 $4h_x h_y (h_{zt} + h_{zb})$；因 $h_\bullet$ 是 half-extents，所以有因子 4。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -359,18 +343,6 @@ import LatexBlock from "../../components/LatexBlock.astro";
 
 <PaperBlock
   id="method-p022"
-  section="Method"
-  original="Pseudocode for computing $h_{zt}, h_{zb}$ is given in the Appendix, Alg. isotrap. The volume of the resulting trapezoidal prism is $4h_x h_y (h_{zt} + h_{zb})$, with the factor of 4 as $h_bullet$ are half-extents."
-  translation="计算 $h_{zt}, h_{zb}$ 的伪代码见 Appendix 中的 Alg. isotrap。所得 trapezoidal prism 的体积为 $4h_x h_y (h_{zt} + h_{zb})$；因 $h_bullet$ 是 half-extents，所以有因子 4。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<PaperBlock
-  id="method-p023"
   section="Method"
   original="Our construction of isosceles trapezoidal prisms is fast because it uses an unordered stream of points without allocation, but is not optimal. We chose this tradeoff as it is recomputed every collapse."
   translation="我们的 isosceles trapezoidal prisms 构造速度很快，因为它使用无分配的无序点流，但它不是最优的。我们选择这一折中，是因为每次 collapse 都会重新计算它。"
@@ -382,7 +354,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p024"
+  id="method-p023"
   section="Method"
   original="An implementation can be extended with additional shapes depending on what is accepted in the downstream application. Our approach does not require that primitives be optimal, since only relative costs between primitives matters. Furthermore, for specific kinds of shapes it is possible that more optimal algorithms can be used, such as exact OBBs and spheres [o_rourke_minimal_enclosing], but for the other primitives exact algorithms are unknown. Since only a few primitives have exact algorithm our approach uses a more general fit."
   translation="实现可以根据下游应用接受的形状扩展更多 shapes。我们的方法不要求 primitives 是最优的，因为重要的只是 primitives 之间的相对代价。此外，对于某些特定形状，可以使用更优的算法，例如 exact OBBs 和 spheres [o_rourke_minimal_enclosing]；但对于其他 primitives，尚无已知的 exact algorithms。由于只有少数 primitives 有 exact algorithm，我们的方法采用更通用的拟合方式。"
@@ -394,7 +366,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p025"
+  id="method-p024"
   section="Method"
   original="Face-Based Mesh Reduction: [qem] and [sqem] rely on merging vertices to approximate positions on the input mesh, and the surface is defined by the edges and faces connecting these vertices, but our approach uses discrete primitives to represent the input's surface. Allowing each vertex to be covered by only one primitive does not cover the surface, leaving holes in the output. For example, consider the output primitives if no edges are contracted: the output would be small primitives around each vertex, a poor approximation of the input shape. To remedy this, primitives subsume faces of the mesh, similar to [hierarchical_face_clustering_on_polygonal_surfaces]. Each primitive covers all vertices of each face it subsumes, allowing vertices to be covered by multiple primitives and the union of all primitives covers the mesh's surface. We show the poor output of using one primitive per vertex in Sec. ablate-vertex-face-merging, Fig. ablate-vertex-merging."
   translation="基于面的网格简化：[qem] 和 [sqem] 依赖合并顶点来近似输入网格上的位置，曲面由连接这些顶点的边和面定义；但我们的方法使用离散 primitives 表示输入表面。若允许每个顶点只被一个 primitive 覆盖，则无法覆盖整个表面，会在输出中留下孔洞。例如，考虑没有收缩任何边时的输出 primitives：输出将是围绕每个顶点的小 primitives，这是对输入形状的较差近似。为了解决这个问题，primitives 会 subsume 网格的面，类似于 [hierarchical_face_clustering_on_polygonal_surfaces]。每个 primitive 覆盖其 subsume 的每个面的所有顶点，使顶点可以被多个 primitives 覆盖，并且所有 primitives 的并集覆盖网格表面。我们在 Sec. ablate-vertex-face-merging, Fig. ablate-vertex-merging 中展示了每个顶点使用一个 primitive 的较差输出。"
@@ -408,7 +380,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 ### Optimal Primitive Selection
 
 <PaperBlock
-  id="method-p026"
+  id="method-p025"
   section="Method"
   original="Given possible primitives that enclose a point set, we must decide which primitive is best. We measure best in two ways: the geometric tightness of the primitive, as measured by the additional volume introduced when merging two shapes and an abstract cost function for downstream applications, such as the cost of collision detection. For our implementation, we select parameters that balance geometric similarity and support in physics engines."
   translation="给定可包围某个点集的候选 primitives，我们必须决定哪一个 primitive 最好。我们用两种方式度量“最好”：其一是 primitive 的几何紧致度，即合并两个形状时引入的额外体积；其二是面向下游应用的抽象代价函数，例如碰撞检测代价。在我们的实现中，我们选择能够平衡几何相似性和物理引擎支持的参数。"
@@ -420,7 +392,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p027"
+  id="method-p026"
   section="Method"
   original="Collapse Cost Function: Our end-goal is to approximate the input mesh as closely as possible for collisions; we want collision primitives to be as tight-fitting to the input surface as possible. To measure this, we minimize the excess volume introduced by each primitive merge. This leads to the following cost function for merging two primitives $p_0, p_1$:"
   translation="Collapse Cost Function：我们的最终目标是尽可能紧密地为碰撞近似输入网格；我们希望 collision primitives 尽可能 tight-fitting 到输入表面。为了度量这一点，我们最小化每次 primitive merge 引入的 excess volume。这得到以下用于合并两个 primitives $p_0, p_1$ 的代价函数："
@@ -431,7 +403,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l009" label="Method / equation / method-l009">
+<LatexBlock id="method-l007" label="Method / equation / method-l007">
 
 ```latex
 \begin{equation}\label{eq:exact_cost}
@@ -442,7 +414,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 </LatexBlock>
 
 <PaperBlock
-  id="method-p028"
+  id="method-p027"
   section="Method"
   original="where $V(p)$ is the volume defined by the primitive $p$. This cost function penalizes excess volume introduced by merging two primitives, and promotes removing primitives which overlap. When this cost-function is 0, there is no penalty to merge two primitives together, and when it is negative it will reduce the total volume of the shape. Usually, this cost-function will be positive, indicating an increase in volume due to merging. Like QEM, we collect all edges between mesh elements in one priority queue, and iteratively take the minimum cost contraction. For each mesh element, we store the volume of its primitive and update the volume after each collapse."
   translation="其中 $V(p)$ 是 primitive $p$ 定义的体积。该代价函数惩罚合并两个 primitives 时引入的 excess volume，并鼓励移除重叠的 primitives。当该 cost-function 为 0 时，合并两个 primitives 没有惩罚；当其为负时，它会降低形状的总体积。通常，该 cost-function 为正，表示合并导致体积增加。与 QEM 类似，我们将网格元素之间的所有边收集到一个 priority queue 中，并迭代取出最小代价 contraction。对于每个网格元素，我们存储其 primitive 的体积，并在每次 collapse 后更新体积。"
@@ -454,7 +426,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p029"
+  id="method-p028"
   section="Method"
   original="Overlapping Primitives: Eq. exact-cost does not account for double-counted volume of intersecting primitives, which would instead lead to the following cost function:"
   translation="Overlapping Primitives：Eq. exact_cost 没有考虑相交 primitives 的重复计数体积；若考虑这一点，则会得到以下代价函数："
@@ -465,7 +437,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l010" label="Method / equation / method-l010">
+<LatexBlock id="method-l008" label="Method / equation / method-l008">
 
 ```latex
 \begin{equation}\label{eq:cost_with_isect}
@@ -476,10 +448,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 </LatexBlock>
 
 <PaperBlock
-  id="method-p030"
+  id="method-p029"
   section="Method"
-  original="This primary reason we do not include the volume of the intersection is because such a computation is expensive, especially if computed exactly using mesh booleans, and we experimentally find little quality increase when adding in this term. Even an approximate approach, such as rejection sampling, incurs a high penalty. In practice, primitives do not overlap much, especially for clean meshes designed for games. Despite Eq. exact-cost's simplicity, it performs well in practice, and we leave exploration of alternatives to future work. We ablate Eq. exact-cost against Eq. cost-with-isect using rejection sampling in Sec. ablate-isect, Fig. ablate-isect, and find minuscule improvement but high computational cost, at least 30$x$ the wall-clock time."
-  translation="我们不包含交集体积的主要原因是这种计算代价高昂，特别是若使用 mesh booleans 进行精确计算；而实验上我们发现加入该项带来的质量提升很小。即使采用 rejection sampling 等近似方法，也会产生很高的代价。实践中，primitives 的重叠并不多，尤其是对于为游戏设计的干净网格。尽管 Eq. exact_cost 很简单，它在实践中表现良好，我们将替代方案的探索留给未来工作。我们在 Sec. ablate-isect, Fig. ablate-isect 中使用 rejection sampling 对比消融 Eq. exact_cost 与 Eq. cost_with_isect，发现改进极小但计算成本很高，wall-clock time 至少增加 30$x$。"
+  original="This primary reason we do not include the volume of the intersection is because such a computation is expensive, especially if computed exactly using mesh booleans, and we experimentally find little quality increase when adding in this term. Even an approximate approach, such as rejection sampling, incurs a high penalty. In practice, primitives do not overlap much, especially for clean meshes designed for games. Despite Eq. exact-cost's simplicity, it performs well in practice, and we leave exploration of alternatives to future work. We ablate Eq. exact-cost against Eq. cost-with-isect using rejection sampling in Sec. ablate-isect, Fig. ablate-isect, and find minuscule improvement but high computational cost, at least 30$\times$ the wall-clock time."
+  translation="我们不包含交集体积的主要原因是这种计算代价高昂，特别是若使用 mesh booleans 进行精确计算；而实验上我们发现加入该项带来的质量提升很小。即使采用 rejection sampling 等近似方法，也会产生很高的代价。实践中，primitives 的重叠并不多，尤其是对于为游戏设计的干净网格。尽管 Eq. exact_cost 很简单，它在实践中表现良好，我们将替代方案的探索留给未来工作。我们在 Sec. ablate-isect, Fig. ablate-isect 中使用 rejection sampling 对比消融 Eq. exact_cost 与 Eq. cost_with_isect，发现改进极小但计算成本很高，wall-clock time 至少增加 30$\times$。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -488,7 +460,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p031"
+  id="method-p030"
   section="Method"
   original="Handling Different Primitive Costs.: In downstream applications, geometric fit is not the only consideration, as primitive variants incur different costs. For example, physics engines have primitives for boxes, capsules, and spheres giving them better performance. When merging primitives based only on volume though, prisms often have lower volume than OBBs, a subset of trapezoidal prisms with $h_{zt} = h_{zb}$, which may lead to lower simulation performance. To incorporate preferences over shape variants, we combine our cost function with a user-provided weighting: $V'(p) = k(p) V(p)$. $k(p)$ depends on the type of primitive, and can be set per target application. We use a weight of 1.05 for cylinders, 1.4 for trapezoidal prisms, 1.0 for capsules, spheres and bounding boxes, and 2.1 for frustums. Our weighting heavily prefers bounding boxes, capsules and spheres due to their support in physics engines. We penalize cylinders, as when they have small radius and large height there is little visible difference between cylinders and capsules, but capsules are more performant. Depending on use case, this weighting can be tuned, but these values strike a good balance between performance and geometric accuracy. We ablate our choice of weights as compared to a uniform and alternative weighting in Sec. ablate-primitive-costs, Fig. ablate-primitive-cost."
   translation="处理不同 Primitive Costs：在下游应用中，几何拟合并不是唯一考虑因素，因为不同 primitive 变体会产生不同代价。例如，物理引擎通常有 boxes、capsules 和 spheres 的 primitives，因此性能更好。然而，当仅基于体积合并 primitives 时，prisms 往往比 OBBs 体积更小；OBBs 是满足 $h_{zt} = h_{zb}$ 的 trapezoidal prisms 子集，这可能导致较低的仿真性能。为了纳入对形状变体的偏好，我们将代价函数与用户提供的权重结合：$V'(p) = k(p) V(p)$。$k(p)$ 取决于 primitive 类型，并可针对目标应用设置。我们对 cylinders 使用 1.05 的权重，对 trapezoidal prisms 使用 1.4，对 capsules、spheres 和 bounding boxes 使用 1.0，对 frustums 使用 2.1。由于 bounding boxes、capsules 和 spheres 在物理引擎中受到支持，我们的权重强烈偏好它们。我们惩罚 cylinders，因为当它们半径小且高度大时，cylinders 与 capsules 的视觉差异很小，但 capsules 性能更高。根据用例，该权重可以调整；但这些数值在性能与几何精度之间取得了良好平衡。我们在 Sec. ablate-primitive-costs, Fig. ablate-primitive-cost 中将所选权重与 uniform 和 alternative weighting 进行了消融比较。"
@@ -500,7 +472,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p032"
+  id="method-p031"
   section="Method"
   original="The choice of primitives in downstream applications is dependent on use case. For example, in a platformer or first-person shooter which requires precise control it may be better to use expensive colliders to keep accuracy. For cases such as a puzzle game, it may be fine to use coarser boxes. We believe that currently there is no one correct answer for which primitives to use in all cases, and that consideration must be taken case by case."
   translation="下游应用中的 primitive 选择取决于用例。例如，在需要精确控制的平台游戏或第一人称射击游戏中，使用较昂贵的 colliders 来保持精度可能更好。对于 puzzle game 等场景，使用较粗略的 boxes 可能已经足够。我们认为，目前不存在适用于所有情形的唯一正确 primitive 选择，必须逐案考虑。"
@@ -512,7 +484,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p033"
+  id="method-p032"
   section="Method"
   original="Termination: Termination happens when there are no more collapsible edges or the target number of primitives is reached. Since our approach always decreases the number of primitives, our approach is guaranteed to terminate. After termination, we output parameters for all primitives or quantize primitives to a mesh."
   translation="Termination：当不再存在可 collapse 的边，或达到目标 primitives 数量时，过程终止。由于我们的方法总是减少 primitives 的数量，因此保证会终止。终止后，我们输出所有 primitives 的参数，或将 primitives quantize 为 mesh。"
@@ -524,7 +496,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p034"
+  id="method-p033"
   section="Method"
   original="Like QEM [qem], our approach relies on the user providing the target number of primitives, which affects the ability to represent the input mesh."
   translation="与 QEM [qem] 类似，我们的方法依赖用户提供目标 primitive 数量，这会影响表示输入网格的能力。"
@@ -536,7 +508,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p035"
+  id="method-p034"
   section="Method"
   original="Excess Volume Thresholding: Manually tuning the number of primitives gives good results, but may provide insufficient control over order of merges. Furthermore, some merges introduce more volume than merging two disconnected components. To allow better control of order, we add an optional user-defined excess volume threshold, relative to the volume of the axis-aligned bounding box of the input. If combining two primitives increases the volume above this threshold, that merge is prevented. This can be used to prune undesirable merges with less manual tuning."
   translation="Excess Volume Thresholding：手动调节 primitives 数量可以得到良好结果，但可能无法充分控制 merge 顺序。此外，某些 merge 引入的体积可能比合并两个断开的组件还要多。为了更好地控制顺序，我们加入了一个可选的用户定义 excess volume threshold，它相对于输入的 axis-aligned bounding box 体积定义。如果组合两个 primitives 导致体积增加超过该 threshold，则禁止该 merge。这可用于在较少手动调节的情况下剪除不理想的 merges。"
@@ -550,7 +522,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 ### Implementation Details
 
 <PaperBlock
-  id="method-p036"
+  id="method-p035"
   section="Method"
   original="Removing Redundant Primitives: After termination, we observe that sometimes the points subsumed by one primitive are fully enclosed by a larger primitive, and there is no point to maintain nested primitives since they incur computation without functionality. These primitives can be culled after our approach, by checking if all points subsumed for each primitive are entirely within another primitive. We perform a concurrent pairwise check after simplification and cull internal primitives, with negligible impact to the total execution cost."
   translation="Removing Redundant Primitives：终止后，我们观察到有时一个 primitive 所 subsume 的点会被一个更大的 primitive 完全包围；此时维护嵌套 primitives 没有意义，因为它们只带来计算开销而没有功能。可以在我们的方法之后剔除这些 primitives，方法是检查每个 primitive 所 subsume 的所有点是否完全位于另一个 primitive 内。我们在简化后执行并发的 pairwise check 并剔除内部 primitives，对总执行成本的影响可以忽略不计。"
@@ -562,10 +534,22 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
+  id="method-p036"
+  section="Method"
+  original="Coplanar Vertices: For coplanar faces, the quadric may have degenerate eigenvectors, a problem inherited from the original QEM. To fix this, we add a quadric in the tangent space. For quads, we define a tangent basis that follows the directions of the quad. To handle general quads including non-planar ones, we use the following as the tangent direction $\vect{t}$ given vertices $\vect{v}_0, \vect{v}_1, \vect{v}_2, \vect{v}_3$: $\vect{t} = \vect{v}_0 - \vect{v}_2 + \vect{v}_1 - \vect{v}_3$. This is the halfway vector between the quad's two diagonals, which follow the direction of the quad's edges if it is regular and planar, and gives a reasonable value otherwise. Quads are specially handled due to their prevalence in game assets."
+  translation="Coplanar Vertices：对于共面 faces，quadric 可能具有退化的特征向量，这是从原始 QEM 继承的问题。为修复这一点，我们在切空间中加入一个 quadric。对于 quads，我们定义一个遵循 quad 方向的切向基。为了处理包含非平面情形的一般 quads，给定顶点 $v_0, v_1, v_2, v_3$，我们使用以下向量作为切向方向 $t$：$t = v_0 - v_2 + v_1 - v_3$。这是 quad 两条对角线之间的 halfway vector；若 quad 是规则且平面的，它会沿着 quad 边的方向，否则也会给出合理值。由于 quads 在游戏资产中很常见，我们对其进行了特殊处理。"
+  translationStatus="draft_ai_assisted"
+  explanationStatus="paragraph"
+  reproductionStatus="not_started"
+  sourceNamespace="cpd_paper_source_text"
+  translationProvenance="codex_draft_2026-05-15"
+/>
+
+<PaperBlock
   id="method-p037"
   section="Method"
-  original="Coplanar Vertices: For coplanar faces, the quadric may have degenerate eigenvectors, a problem inherited from the original QEM. To fix this, we add a quadric in the tangent space. For quads, we define a tangent basis that follows the directions of the quad. To handle general quads including non-planar ones, we use the following as the tangent direction $t$ given vertices $v_0, v_1, v_2, v_3$: $t = v_0 - v_2 + v_1 - v_3$. This is the halfway vector between the quad's two diagonals, which follow the direction of the quad's edges if it is regular and planar, and gives a reasonable value otherwise. Quads are specially handled due to their prevalence in game assets."
-  translation="Coplanar Vertices：对于共面 faces，quadric 可能具有退化的特征向量，这是从原始 QEM 继承的问题。为修复这一点，我们在切空间中加入一个 quadric。对于 quads，我们定义一个遵循 quad 方向的切向基。为了处理包含非平面情形的一般 quads，给定顶点 $v_0, v_1, v_2, v_3$，我们使用以下向量作为切向方向 $t$：$t = v_0 - v_2 + v_1 - v_3$。这是 quad 两条对角线之间的 halfway vector；若 quad 是规则且平面的，它会沿着 quad 边的方向，否则也会给出合理值。由于 quads 在游戏资产中很常见，我们对其进行了特殊处理。"
+  original="We treat triangles $t$ with counterclockwise edges $\vect{e}_0, \vect{e}_1,\vect{e}_2 \in \mathbb{R}^3, \lVert \vect{e}_0 \rVert_2 &lt; \lVert \vect{e}_1 \rVert_2 &lt; \lVert \vect{e}_2 \rVert_2$ as half of a regular quad, where $\vect{e}_2$ corresponds to one of the quads diagonals, by computing the equivalent of the above equation using the triangle's edges: $\vect{t}_0 = \frac{1}{2} (\vect{e}_0 - \vect{e}_1 + \vect{e}_2)$. We flip the sign of the tangent based on the orientation of the vertex $\vect{v}\notin e_2$: $\vect{t} = (-\vect{t}_0) \text{ if } (\vect{v} - \vect{v}_{\in e_2})\cdot(\vect{e}_2\times \vect{n}) &lt; 0 \text{ else } \vect{t}_0$, where $n$ is the normal of the corresponding face and $\vect{v}_{\in e_2}$ is one of the vertices of $e_2$. This is designed for quad meshes which were triangulated, such as when a mesh is imported into UE [UE5]."
+  translation="我们将具有逆时针边 $e_0, e_1,e_2 \in R^3, \lVert e_0 \rVert_2 &lt; \lVert e_1 \rVert_2 &lt; \lVert e_2 \rVert_2$ 的三角形 $t$ 视为规则 quad 的一半，其中 $e_2$ 对应于 quad 的一条对角线，并使用三角形边计算上述方程的等价形式：$t_0 = \frac{1}{2} (e_0 - e_1 + e_2)$。我们根据顶点 $v\notin e_2$ 的方向翻转切向量符号：$t = (-t_0) \text{ if } (v - v_{\in e_2})\cdot(e_2\times n) &lt; 0 \text{ else } t_0$，其中 $n$ 是对应面的法向量，$v_{\in e_2}$ 是 $e_2$ 的一个顶点。这是为已经三角化的 quad meshes 设计的，例如网格导入 UE [UE5] 时的情况。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -576,8 +560,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="method-p038"
   section="Method"
-  original="We treat triangles $t$ with counterclockwise edges $e_0, e_1,e_2 in R^3, lVert e_0 rVert_2 &lt; lVert e_1 rVert_2 &lt; lVert e_2 rVert_2$ as half of a regular quad, where $e_2$ corresponds to one of the quads diagonals, by computing the equivalent of the above equation using the triangle's edges: $t_0 = frac{1}{2} (e_0 - e_1 + e_2)$. We flip the sign of the tangent based on the orientation of the vertex $vnotin e_2$: $t = (-t_0) if (v - v_{in e_2})*(e_2x n) &lt; 0 else t_0$, where $n$ is the normal of the corresponding face and $v_{in e_2}$ is one of the vertices of $e_2$. This is designed for quad meshes which were triangulated, such as when a mesh is imported into UE [UE5]."
-  translation="我们将具有逆时针边 $e_0, e_1,e_2 in R^3, lVert e_0 rVert_2 &lt; lVert e_1 rVert_2 &lt; lVert e_2 rVert_2$ 的三角形 $t$ 视为规则 quad 的一半，其中 $e_2$ 对应于 quad 的一条对角线，并使用三角形边计算上述方程的等价形式：$t_0 = frac{1}{2} (e_0 - e_1 + e_2)$。我们根据顶点 $vnotin e_2$ 的方向翻转切向量符号：$t = (-t_0) if (v - v_{in e_2})*(e_2x n) &lt; 0 else t_0$，其中 $n$ 是对应面的法向量，$v_{in e_2}$ 是 $e_2$ 的一个顶点。这是为已经三角化的 quad meshes 设计的，例如网格导入 UE [UE5] 时的情况。"
+  original="We add the weighted outer product of $\vect{t}$ to $Q$, to help improve stability: $Q' = Q + \epsilon \vect{t}\vect{t}^\top$. This reduces error in ambiguous cases, but may reduce adherence to the input in other cases. We show an ablation of one example where it improves the output quality in Sec. ablate-tangent-quadric, Fig. ablate-tangent-quadric. We decide per mesh whether to include this factor."
+  translation="我们将 $t$ 的加权外积加入 $Q$，以帮助提升稳定性：$Q' = Q + \epsilon tt^\top$。这会减少歧义情形中的误差，但在其他情形中可能降低对输入的贴合度。我们在 Sec. ablate-tangent-quadric, Fig. ablate-tangent-quadric 中展示了一个该项改善输出质量的示例消融。我们按 mesh 决定是否包含该因子。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -587,18 +571,6 @@ import LatexBlock from "../../components/LatexBlock.astro";
 
 <PaperBlock
   id="method-p039"
-  section="Method"
-  original="We add the weighted outer product of $t$ to $Q$, to help improve stability: $Q' = Q + epsilon tt^top$. This reduces error in ambiguous cases, but may reduce adherence to the input in other cases. We show an ablation of one example where it improves the output quality in Sec. ablate-tangent-quadric, Fig. ablate-tangent-quadric. We decide per mesh whether to include this factor."
-  translation="我们将 $t$ 的加权外积加入 $Q$，以帮助提升稳定性：$Q' = Q + epsilon tt^top$。这会减少歧义情形中的误差，但在其他情形中可能降低对输入的贴合度。我们在 Sec. ablate-tangent-quadric, Fig. ablate-tangent-quadric 中展示了一个该项改善输出质量的示例消融。我们按 mesh 决定是否包含该因子。"
-  translationStatus="draft_ai_assisted"
-  explanationStatus="paragraph"
-  reproductionStatus="not_started"
-  sourceNamespace="cpd_paper_source_text"
-  translationProvenance="codex_draft_2026-05-15"
-/>
-
-<PaperBlock
-  id="method-p040"
   section="Method"
   original="Vertex Deduplication: A common pitfall we find when running our approach on uncleaned meshes is that vertices may be overlapped. This can happen due to kitbashing or modeling of parts which are later combined. We show deduplicating such vertices can change the output result in Sec. merge-vertices, Fig. ablate-vertex-merging. Merging these duplicate vertices by distance is similar to non-edge contractions in [qem] (also known as virtual edge collapses). A recent preprint [simplifying_wild_tris] explored virtual edge collapses between distinct components, and we leave exploration of alternative virtual edge collapses to future work."
   translation="Vertex Deduplication：我们在未清理网格上运行该方法时发现，一个常见陷阱是顶点可能重叠。这可能由 kitbashing 或后续组合的部件建模导致。我们在 Sec. merge-vertices, Fig. ablate-vertex-merging 中展示了对此类顶点进行 deduplicate 会改变输出结果。按距离合并这些重复顶点类似于 [qem] 中的 non-edge contractions（也称为 virtual edge collapses）。近期预印本 [simplifying_wild_tris] 探索了不同组件之间的 virtual edge collapses，我们将替代 virtual edge collapses 的探索留给未来工作。"
@@ -610,10 +582,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p041"
+  id="method-p040"
   section="Method"
-  original="Pairwise Component Merging: After performing reduction based on the connectivity of primitives, there may be no remaining edges even if the target number of primitives is not met due to disconnected components. To meet the target number of primitives, edges are added to create a fully-connected graph and decimation is continued. Theoretically, this is costly since the number of edges is $frac{1}{2} |C|(|C| - 1) O(C^2)$, where $|C|$ is the number of components in the input. In practice, we observe the number of components for many meshes is small, and all pairs can be computed quickly. In cases where it is intractable, edges can be culled based on excess volume thresholding from Sec. excess-volume-thresh."
-  translation="Pairwise Component Merging：在基于 primitives 连通性执行 reduction 后，如果由于 disconnected components 而没有剩余边，即使尚未达到目标 primitives 数量也会停止。为了达到目标 primitives 数量，会添加边以创建 fully-connected graph，并继续 decimation。理论上，这一过程代价较高，因为边数为 $frac{1}{2} |C|(|C| - 1) ~ O(C^2)$，其中 $|C|$ 是输入中 components 的数量。实践中，我们观察到许多网格的 components 数量较少，所有 pair 都能快速计算。在不可处理的情形中，可以基于 Sec. excess_volume_thresh 中的 excess volume thresholding 来剔除边。"
+  original="Pairwise Component Merging: After performing reduction based on the connectivity of primitives, there may be no remaining edges even if the target number of primitives is not met due to disconnected components. To meet the target number of primitives, edges are added to create a fully-connected graph and decimation is continued. Theoretically, this is costly since the number of edges is $\frac{1}{2} |C|(|C| - 1) \approx O(C^2)$, where $|C|$ is the number of components in the input. In practice, we observe the number of components for many meshes is small, and all pairs can be computed quickly. In cases where it is intractable, edges can be culled based on excess volume thresholding from Sec. excess-volume-thresh."
+  translation="Pairwise Component Merging：在基于 primitives 连通性执行 reduction 后，如果由于 disconnected components 而没有剩余边，即使尚未达到目标 primitives 数量也会停止。为了达到目标 primitives 数量，会添加边以创建 fully-connected graph，并继续 decimation。理论上，这一过程代价较高，因为边数为 $\frac{1}{2} |C|(|C| - 1) \approx O(C^2)$，其中 $|C|$ 是输入中 components 的数量。实践中，我们观察到许多网格的 components 数量较少，所有 pair 都能快速计算。在不可处理的情形中，可以基于 Sec. excess_volume_thresh 中的 excess volume thresholding 来剔除边。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -622,7 +594,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p042"
+  id="method-p041"
   section="Method"
   original="We find if the input mesh has separate components, this may help our approach, as separate components often delineate distinct convex objects which should not be merged, and note that constraining collapses to existing topology has not hindered prior work [qem_hoppe, sqem, silhouette_clipping, hierarchical_face_clustering_on_polygonal_surfaces]. Vertex deduplication and pairwise merges also mitigate effects of input topology."
   translation="我们发现，如果输入网格具有分离 components，这可能有助于我们的方法，因为分离 components 往往划定了不应合并的不同凸对象；并且我们注意到，将 collapses 约束到现有拓扑并未阻碍先前工作 [qem_hoppe, sqem, silhouette_clipping, hierarchical_face_clustering_on_polygonal_surfaces]。Vertex deduplication 和 pairwise merges 也会缓解输入拓扑的影响。"
@@ -634,7 +606,7 @@ import LatexBlock from "../../components/LatexBlock.astro";
 />
 
 <PaperBlock
-  id="method-p043"
+  id="method-p042"
   section="Method"
   original="Collapsible Primitive Data Structure: Triangle mesh reduction requires bookkeeping for each faces' indices, but our implementation does not need to retain faces. Instead, we must manage which faces are subsumed by which primitive, for which we use a forest of cyclic linked-lists. We initialize one list per primitive, with each primitive subsuming a single face. When merging two primitives, we select an arbitrary node from each list, and swap pointers to their next element, merging the two lists together. This allows for $O(1)$ merging with efficient iteration of groups at the cost of pointer chasing. We also use Disjoint Set Unions [UnionFind] for quickly identifying which faces have been merged together, allowing for fast pruning of deleted edges in the priority queue."
   translation="Collapsible Primitive Data Structure：三角网格 reduction 需要维护每个 face 的索引簿记，但我们的实现不需要保留 faces。相反，我们必须管理哪些 faces 被哪些 primitive subsume；为此，我们使用 cyclic linked-lists 的森林。我们为每个 primitive 初始化一个 list，每个 primitive subsume 单个 face。合并两个 primitives 时，我们从每个 list 中选择一个任意节点，并交换它们指向下一个元素的指针，从而将两个 lists 合并在一起。这允许 $O(1)$ 合并，并能高效迭代 groups，代价是 pointer chasing。我们还使用 Disjoint Set Unions [UnionFind] 快速识别哪些 faces 已合并在一起，从而能够快速剪除 priority queue 中已删除的 edges。"

@@ -1,4 +1,6 @@
 ---
+import { renderRichText } from "../lib/richText";
+
 interface Props {
   id: string;
   title: string;
@@ -22,12 +24,13 @@ const withBase = (path: string) => {
 };
 const resolvedImages = images.map(withBase);
 const resolvedSource = source ? withBase(source) : "";
+const captionHtml = renderRichText(caption);
 ---
 
 <figure class="figure-panel" id={id}>
   <figcaption class="figure-panel__caption">
     <strong>{title}</strong>
-    <span>{caption}</span>
+    <span><Fragment set:html={captionHtml} /></span>
   </figcaption>
   {resolvedImages.length > 0 ? (
     <div class="figure-panel__grid">

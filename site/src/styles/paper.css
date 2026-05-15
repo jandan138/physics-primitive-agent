@@ -232,6 +232,18 @@ body {
   overflow-wrap: anywhere;
 }
 
+.paper-block .katex,
+.figure-panel .katex {
+  font-size: 1em;
+}
+
+.paper-block math,
+.figure-panel math {
+  font-family: math, "STIX Two Math", "Cambria Math", "Latin Modern Math", "Noto Sans Math", "DejaVu Serif", serif;
+  font-size: 1em;
+  line-height: 1;
+}
+
 .figure-panel__caption {
   display: grid;
   gap: 6px;

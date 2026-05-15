@@ -1,5 +1,6 @@
 from pathlib import Path
 import importlib.util
+import re
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -208,6 +209,134 @@ def test_clean_inline_latex_renders_direction_markers():
 
     assert importer.clean_inline_latex(r"frame times$^\downarrow$") == "frame times ↓"
     assert importer.clean_inline_latex(r"帧时间$^\downarrow$") == "帧时间 ↓"
+
+
+def test_clean_inline_latex_preserves_nested_inline_math_for_renderer():
+    importer = _load_importer()
+
+    cleaned = importer.clean_inline_latex(
+        r"Given $\mathbb{M} = (V, F), \textbf{V$_i$} \in\mathrm{R}^3, "
+        r"F_i \subseteq V, |F_i| \geq 3$ and $N\in\mathbb{Z}_+$."
+    )
+
+    assert r"\mathbb{M}" in cleaned
+    assert r"\mathbf{V}_{i}" in cleaned
+    assert r"\in\mathrm{R}^3" in cleaned
+    assert r"\subseteq V" in cleaned
+    assert r"N\in\mathbb{Z}_+" in cleaned
+    assert "V$_i$" not in cleaned
+    assert r"\textbf{V_i}" not in cleaned
+    assert "NinZ_+" not in cleaned
+    assert cleaned.count("$") == 4
+
+
+def test_clean_inline_latex_normalizes_math_aliases_for_renderer():
+    importer = _load_importer()
+
+    cleaned = importer.clean_inline_latex(
+        r"Use $N\inZ_+$, $(h_x, h_y \inR)$, $a^\topa = 1$, $p^\topx$, and $v_i^\topp$."
+    )
+
+    assert r"N\in\mathbb{Z}_+" in cleaned
+    assert r"h_y \in\mathbb{R}" in cleaned
+    assert r"a^\top a = 1" in cleaned
+    assert r"p^\top x" in cleaned
+    assert r"v_i^\top p" in cleaned
+    assert r"\inR" not in cleaned
+    assert r"\inZ" not in cleaned
+    assert r"\topa" not in cleaned
+    assert r"\topx" not in cleaned
+    assert r"\topp" not in cleaned
+
+
+def test_clean_inline_latex_normalizes_nested_subscript_dollars_inside_math():
+    importer = _load_importer()
+
+    cleaned = importer.clean_inline_latex(r"给定输入网格 $M = (V, F), V$_i$ \inR^3$.")
+
+    assert r"$M = (V, F), V_i \in\mathbb{R}^3$" in cleaned
+    assert "V$_i$" not in cleaned
+    assert cleaned.count("$") == 2
+
+
+def test_clean_inline_latex_keeps_math_commands_for_renderer():
+    importer = _load_importer()
+
+    cleaned = importer.clean_inline_latex(
+        r"Distance is $\frac{\text{Hausdorff\slash Chamfer New $\rightarrow$ Input}}"
+        r"{\lVert\text{Bounding Box Diag}\rVert_2}$ and runtime is O($n\log n$)."
+    )
+
+    assert r"\frac" in cleaned
+    assert r"\lVert" in cleaned
+    assert r"\text{Hausdorff/ Chamfer New → Input}" in cleaned
+    assert r"n\log n" in cleaned
+    assert re.search(r"(?<!\\)\bfrac\{", cleaned) is None
+    assert re.search(r"(?<!\\)\blVert", cleaned) is None
+    assert "$→$" not in cleaned
+
+
+def test_clean_inline_latex_strips_unsupported_num_macro_inside_math():
+    importer = _load_importer()
+
+    cleaned = importer.clean_inline_latex(
+        r"The half-extent is $h_i = \max(\frac{1}{2}(u_i - l_i), \num{1e-3})$."
+    )
+
+    assert r"\num" not in cleaned
+    assert r"1e-3" in cleaned
+    assert r"\frac" in cleaned
+
+
+def test_parser_does_not_split_inline_bmatrix_from_paragraph():
+    importer = _load_importer()
+
+    blocks = importer.parse_latex_blocks(
+        r"We use $Q = W\Lambda W^{-1}, \Lambda = \text{diag}("
+        r"\begin{bmatrix}\lambda_2 & \lambda_1 & \lambda_0 \end{bmatrix})$ "
+        "before continuing."
+    )
+
+    assert [block["type"] for block in blocks] == ["paragraph"]
+    assert r"\begin{bmatrix}" in blocks[0]["text"]
+    assert "before continuing" in blocks[0]["text"]
+
+
+def test_imported_reader_text_has_no_known_broken_math_artifacts():
+    importer = _load_importer()
+    source = REPO_ROOT / "docs" / "tmp" / "papers" / "arXiv-2602.07369v1"
+    translations = importer.load_translations(REPO_ROOT / "site" / "src" / "data" / "translations")
+    sections = importer.import_sections(source)
+
+    rendered_reader_strings = []
+    for section in sections:
+        for block in section["blocks"]:
+            if not importer.is_translatable_block(block):
+                continue
+            rendered_reader_strings.append(importer.clean_inline_latex(str(block["text"])))
+            rendered_reader_strings.append(
+                importer.clean_inline_latex(translations.get(str(block["id"]), ""))
+            )
+
+    combined = "\n".join(rendered_reader_strings)
+    broken_artifact_patterns = [
+        r"NinZ_\+",
+        r"(?<!\\)nn\^top",
+        r"(?<!\\)Sigma pp\^top",
+        r"(?<!\\)\bfrac\{",
+        r"(?<!\\)\blVert",
+        r"(?<!\\)\brVert",
+        r"(?<!\\)nlog n",
+        r"\$→\$",
+        r"(?<!\\)WLambda",
+        r"\\num",
+        r"\\inR",
+        r"\\inZ",
+        r"\\top[A-Za-z]",
+        r"\\textbf\{[^}]*_",
+    ]
+    for artifact_pattern in broken_artifact_patterns:
+        assert re.search(artifact_pattern, combined) is None
 
 
 def test_imported_experiment_translation_ids_stay_semantically_aligned():
