@@ -49,10 +49,11 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   two. This is primitive-vocabulary accounting for a restricted proposal baseline, not
   paper-faithful CPD primitive fitting, Newton support, benchmark evidence, or collision-quality
   validation.
-- The current primitive roadmap is Newton-native first. The next runtime expansion should add
-  `cylinder`, `cone`, and `ellipsoid` as one verified native analytic bundle before considering
-  paper-only primitives such as `frustum` or `trapezoidal_prism` for runtime use. This is a
-  planning claim, not current runtime support for those new primitive kinds.
+- The current primitive roadmap is Newton-native first. The code can map and construct diagnostic
+  Newton shapes for a synthetic package containing `box`, `sphere`, `capsule`, `cylinder`,
+  `cone`, and `ellipsoid`, with dated clean-env contact, drop/settle, and sphere-rain smoke
+  evidence. This is synthetic diagnostic-path evidence, not broad asset evidence or a claim that
+  the CPD-like generator emits all six kinds by default.
 - The current code can run a contact-only Newton canary for representative Newton-mapped primitive
   types from a CPD-like collision package. This is not task-level simulation evidence.
 - The current code can run the named `newton_drop_settle` task-level smoke diagnostic for the
@@ -80,7 +81,8 @@ Use these only after a dated record links them to Phase 0 assets, configs, logs,
 - A baseline comparison includes primitive count, fallback ratio, step time, contact count, and
   penetration or jitter measurements.
 - A generated collision package is simulation-checked for a named task in a named environment,
-  beyond the recorded capped-bed drop/settle and sphere-rain smokes.
+  beyond the recorded capped-bed drop/settle and sphere-rain smokes and the synthetic native
+  bundle smoke.
 - A DLC-worker or experiment-specific Python/Newton environment has passed readiness checks for a
   named source checkout and hardware environment.
 
@@ -124,9 +126,9 @@ Use these only after broader benchmark records exist.
 - Do not describe the capped-cylinder proxy as paper-faithful capped-cylinder support, CPD
   primitive fitting implementation, Newton capped-cylinder support, collision-quality improvement,
   benchmark evidence, or asset/task improvement.
-- Do not claim Newton runtime support for `cylinder`, `cone`, or `ellipsoid` from this repository's
-  collision package path until mapping, diagnostic construction, tests, and a dated Newton
-  diagnostic record exist.
+- Do not claim broad Newton-native primitive quality for `cylinder`, `cone`, or `ellipsoid`
+  beyond the dated synthetic diagnostic-path record. Do not claim the CPD-like generator emits
+  these kinds by default until generation logic, configs, tests, and records exist.
 - Do not use CPD paper primitive-vocabulary completeness as a runtime support claim. Paper-only
   primitives remain offline diagnostics unless separately mapped and verified.
 

@@ -224,27 +224,30 @@ primitive-fitting method.
 No Newton mapping or task-level improvement is implied. `capped_cylinder` remains outside the
 Newton-mapped primitive set until a separate mapping implementation and diagnostic record exist.
 
-## Next Algorithmic Step
+## Current Runtime Primitive Step
 
-The next step should not be another paper-vocabulary proxy. The project should separate runtime
-primitive support from paper-alignment accounting:
+The next step after the capped-cylinder proxy was not another paper-vocabulary proxy. The project
+separated runtime primitive support from paper-alignment accounting:
 
 - runtime lane: Newton-native analytic primitives first;
 - offline lane: paper primitive gap accounting and CPD-story diagnostics.
 
-The next runtime slice should add `cylinder`, `cone`, and `ellipsoid` together as a native analytic
-bundle. That bundle is more useful than chasing `frustum` or `trapezoidal_prism` because it aligns
-with Newton's builder surface and can be exercised by contact canary, drop/settle, and sphere-rain
-diagnostics.
+The native runtime bundle now maps and constructs diagnostic Newton shapes for `cylinder`, `cone`,
+and `ellipsoid` alongside the existing `box`, `sphere`, and `capsule` path. A synthetic six-kind
+package has clean-env `smoke_passed` evidence for contact canary, drop/settle, and sphere-rain.
+That is more useful than chasing `frustum` or `trapezoidal_prism` in runtime because it aligns with
+Newton's builder surface and can be exercised by existing diagnostics.
 
-The recommended order is:
+The recommended order now is:
 
 1. Keep `capped_cylinder` in the offline paper-alignment lane.
-2. Write a native primitive bundle plan for `cylinder`, `cone`, and `ellipsoid`.
-3. Add mapping, builder calls, bounds, support-height estimates, and per-kind tests together.
-4. Compare old and new native-supported packages with the same objective report.
-5. Use Newton drop/settle or sphere-rain only after the bundle has full mapping coverage and a
-   dated diagnostic record.
+2. Compare old and new native-supported synthetic packages with the same objective report.
+3. Decide whether the CPD-like generator should learn restricted `cylinder`, `cone`, or
+   `ellipsoid` fitting.
+4. Re-run bed and Franka smokes only after generation logic has mapping tests and a named
+   diagnostic record.
+5. Keep `frustum` and `trapezoidal_prism` as paper-gap accounting until separate runtime mapping
+   and diagnostic records exist.
 
 That keeps the story disciplined: first improve the decomposition logic under a
 stable report, then ask whether Newton diagnostics reveal new failure modes.
@@ -261,6 +264,7 @@ Use:
 - "opt-in offline capped-cylinder geometry proposal proxy";
 - "Newton-native primitive roadmap";
 - "native analytic primitive bundle";
+- "synthetic native primitive diagnostic-path smoke";
 - "paper-alignment offline lane";
 - "not a paper-faithful objective implementation";
 - "not collision-quality evidence."
@@ -273,8 +277,8 @@ Avoid:
 - "CPD optimizer implemented";
 - "paper-faithful capped cylinder support";
 - "Newton supports capped cylinders";
-- "Newton supports cylinder, cone, or ellipsoid from this compiler path" before a dated diagnostic
-  record exists;
+- "broad Newton-native primitive quality";
+- "CPD-like generator emits cylinder, cone, and ellipsoid by default";
 - "paper primitive vocabulary is runtime-supported";
 - "decomposition quality validated";
 - "collision quality score";
@@ -282,6 +286,6 @@ Avoid:
 
 ## Claim Boundary
 
-This page does not add a new supported claim. It clarifies how to interpret the
-existing objective report while preserving the repository's current boundary:
-CPD reproduction workbench, not full CPD paper reproduction.
+This page adds only the narrow synthetic native-bundle diagnostic-path claim documented in the
+dated record. It preserves the larger boundary: CPD reproduction workbench, not full CPD paper
+reproduction.

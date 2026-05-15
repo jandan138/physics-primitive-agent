@@ -61,6 +61,11 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run `newton_sphere_rain`, a named task-level Newton smoke
   diagnostic over the capped bed CPD-like collision package, with explicit solver settings,
   sphere-grid initial conditions, package-probe contact-density proxy metrics, and failure labels.
+- The current executable surface can map and construct Newton diagnostic shapes for a synthetic
+  native primitive bundle containing `box`, `sphere`, `capsule`, `cylinder`, `cone`, and
+  `ellipsoid`, and can run clean-env contact, drop/settle, and sphere-rain smokes for that
+  synthetic package. This is diagnostic-path evidence, not broad asset evidence or proof that the
+  CPD-like generator emits the new native kinds by default.
 - The current clean local Python/Newton environment-readiness evidence is `smoke_passed` for
   `/cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310`, Newton source commit
   `96713fa965463b69c229a4d30582c733ff3526bb`, and local RTX 4090 hardware.
@@ -105,12 +110,17 @@ This file separates current evidence from future claims. See [message-map.md](me
   capped bed objective smoke: 32/32 primitive budget, 32/32 assigned-point containment proxy,
   unsupported paper primitive count 2, and remaining unsupported paper primitive types
   `frustum` and `trapezoidal_prism`.
+- The 2026-05-15 Newton native primitive bundle record reports `smoke_passed` for a synthetic
+  six-primitive package in the clean Newton environment: contact canaries passed for all six
+  representative kinds, drop/settle completed 480 steps with max contact count 10 and no failure
+  labels, and sphere-rain completed 480 steps with contact density proxy 1.0 and no failure labels.
 
 ## Current Unsupported Claims
 
 - General primitive fitting quality across arbitrary assets has not been evaluated.
 - Task-level Newton diagnostic evidence beyond the recorded capped bed drop/settle and
-  sphere-rain contact-density proxy smokes has not been evaluated.
+  sphere-rain contact-density proxy smokes plus the synthetic native bundle smoke has not been
+  evaluated.
 - Real contact-stress measurement has not been implemented or calibrated.
 - Whole-robot collider quality, articulation-aware robot simulation, and aggregate robot-class
   evidence have not been evaluated.
@@ -125,6 +135,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   suite, or proof that all bad decompositions are caught.
 - The capped-cylinder proxy is paper-faithful primitive fitting, Newton capped-cylinder support,
   collision-quality evidence, benchmark evidence, or an asset/task improvement.
+- The CPD-like generator emits `cylinder`, `cone`, or `ellipsoid` by default.
+- The synthetic native primitive bundle proves broad asset quality, collision quality, benchmark
+  performance, or paper-scope primitive coverage.
 - Environment-readiness diagnostics imply Newton simulation readiness.
 
 ## Future Evidence Needed
@@ -164,10 +177,10 @@ first synthetic objective comparison now gives deterministic inspection cases fo
 versus component-merge accounting. A focused cost-guided merge-search smoke now turns
 AABB-normalized merge-excess into an opt-in synthetic merge decision. A deterministic
 expected-failure workbench now converts three known CPD-paper gaps into diagnostic flags. Next use
-those expected limitations and the capped-cylinder proxy report to choose one focused
-primitive-vocabulary or primitive-fit quality improvement, then re-run bed and Franka smokes before
-changing Newton probes or adding LLM/VLM. Report failures and fallback behavior as first-class
-evidence.
+those expected limitations, the capped-cylinder proxy report, and the synthetic native primitive
+bundle to compare native-supported packages against the current `box`/`sphere`/`capsule` generator
+path before changing asset claims or adding LLM/VLM. Report failures and fallback behavior as
+first-class evidence.
 
 ## Current Non-Goals
 

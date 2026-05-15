@@ -99,6 +99,9 @@ Proposed | In progress | Complete | Failed | Superseded
   completion audit for the minimal CPD-like diagnostic workbench goal.
 - [2026-05-15 Newton-Native Primitive Policy](2026-05-15-newton-native-primitive-policy.md):
   policy update that makes runtime primitive expansion Newton-native first.
+- [2026-05-15 Newton Native Primitive Bundle](2026-05-15-newton-native-primitive-bundle.md):
+  mapping, builder dispatch, bounds, and clean-env synthetic smoke evidence for the native
+  `cylinder`, `cone`, and `ellipsoid` runtime bundle.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.
