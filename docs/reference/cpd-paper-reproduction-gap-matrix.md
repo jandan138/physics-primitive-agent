@@ -7,7 +7,9 @@ experiment evidence, and not a claim that the paper algorithm has been reproduce
 For the plain-language pipeline map, see
 [CPD pipeline step-by-step explainer](cpd-pipeline-step-by-step-explainer.md). For current claim
 limits, see [Claim Boundaries](claim-boundaries.md). For the planned fixture-scoped offline lane,
-see [CPD paper-faithful offline lane spec](cpd-paper-faithful-offline-lane-spec.md).
+see [CPD paper-faithful offline lane spec](cpd-paper-faithful-offline-lane-spec.md). For the
+current fixture-breadth plan, see
+[CPD paper fixture-breadth expansion plan](cpd-paper-fixture-breadth-expansion-plan.md).
 
 ## Scope
 
@@ -137,9 +139,10 @@ starts, the benchmark spec should preserve these paper-side requirements:
 
 ## Recommended Next Slice
 
-The next implementation slice should be offline only:
+The fixture-breadth expansion plan now exists as a documentation-only planning artifact. The next
+implementation slice should be offline only:
 
-1. Write `paper_fixture_breadth_expansion_plan` from the scope-audit blockers.
-2. Decide which partial fixture-scope rows need the smallest next synthetic fixture expansion.
+1. Implement `paper_fixture_breadth_batch_a` from the fixture-breadth plan.
+2. Add only the source/preprocess/intake/operator fixtures planned for Batch A.
 3. Keep Newton, bed, Franka, package generation, and benchmark work out of scope until the offline
    lane produces a changed package boundary with dated mapping and diagnostic records.

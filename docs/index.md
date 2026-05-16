@@ -47,10 +47,10 @@ duplicate-vertex preprocessing fixture are fixture-scoped audit data, not a full
 now also records `paper_faithful_offline_scope_audit`, a criteria table that keeps the lane
 `partial`, leaves `paper_faithful_offline_supported: false`, and advances the next gate to
 `paper_fixture_breadth_expansion_plan`.
-The next paper-lane gate is fixture-breadth expansion, not a
-capped bed/Franka rerun
-unless a separate real package change is introduced and passes full mapping, contact-canary,
-task-gate, and dated-record gates. The
+The fixture-breadth expansion plan is now a documentation-only planning artifact; the next code
+slice is `paper_fixture_breadth_batch_a` for source/preprocess/intake/operator fixtures, not a
+capped bed/Franka rerun unless a separate real package change is introduced and passes full
+mapping, contact-canary, task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
 collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
 `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
@@ -63,6 +63,9 @@ records exist.
 - [CPD paper-faithful offline lane spec](reference/cpd-paper-faithful-offline-lane-spec.md):
   planned fixture-scoped offline lane for paper mechanics before real USD, Newton, or benchmark
   expansion.
+- [CPD paper fixture-breadth expansion plan](reference/cpd-paper-fixture-breadth-expansion-plan.md):
+  documentation-only plan that maps the nine blocking scope-audit rows to future synthetic
+  fixture batches and recommends Batch A as the next code slice.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -103,6 +106,8 @@ records exist.
 - [CPD paper faithful offline scope audit record](records/2026-05-16-cpd-paper-faithful-offline-scope-audit.md):
   dated implementation record for the offline scope-audit criteria table that keeps the lane
   partial and points the next gate to fixture-breadth expansion.
+- [CPD paper fixture-breadth expansion plan record](records/2026-05-16-cpd-paper-fixture-breadth-expansion-plan.md):
+  dated documentation record for the offline-only synthetic fixture-breadth plan.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
   asset permission-evidence validation without changing reproduction or benchmark evidence.
@@ -140,6 +145,9 @@ records exist.
   offline-only specification for the planned fixture-scoped paper operator, primitive-fit,
   collapse-cost, search, and postprocessing lane before any real-USD, Newton, or benchmark
   expansion.
+- [CPD paper fixture-breadth expansion plan](reference/cpd-paper-fixture-breadth-expansion-plan.md):
+  offline-only planning artifact that maps the current scope-audit blockers to the next planned
+  synthetic fixture batches.
 - [CPD objective report alignment](reference/cpd-objective-report-alignment.md):
   plain-language boundary between design-aligned surrogate objective accounting and a
   paper-faithful CPD objective implementation.
@@ -434,7 +442,9 @@ records exist.
   audit, one quad plus one five-vertex polygon intake policy audit, and one exact-coordinate
   duplicate-vertex preprocessing audit. It also records a scope-audit table with
   `decision: remain_partial` and next gate `paper_fixture_breadth_expansion_plan`, and does not
-  run Newton, real USD, package generation, or benchmarks.
+  run Newton, real USD, package generation, or benchmarks. The fixture-breadth expansion plan now
+  documents `paper_fixture_breadth_batch_a` as the next code slice, while this command remains a
+  partial report.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.

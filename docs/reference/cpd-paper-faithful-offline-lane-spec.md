@@ -5,6 +5,8 @@ implementation. It is not an implementation record. It does not add benchmark, N
 real-asset evidence.
 
 For the gap matrix, see [CPD paper reproduction gap matrix](cpd-paper-reproduction-gap-matrix.md).
+For the current fixture-breadth plan, see
+[CPD paper fixture-breadth expansion plan](cpd-paper-fixture-breadth-expansion-plan.md).
 For claim limits on the planned `paper_faithful_offline` status, see
 [Claim Boundaries](claim-boundaries.md).
 
@@ -583,9 +585,12 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 The next paper-lane gate is:
 
 ```text
-paper_fixture_breadth_expansion_plan
--> read the nine blocking rows from `paper_faithful_offline_scope_audit`
--> choose the smallest additional synthetic fixtures needed to broaden those rows
--> keep package generation, Newton, real USD, and benchmarks out of scope unless a later package
-   boundary changes
+paper_fixture_breadth_batch_a
+-> add source/preprocess/intake/operator fixture breadth
+-> keep report status partial
+-> keep package generation, Newton, real USD, and benchmarks out of scope
 ```
+
+The documentation-only fixture-breadth expansion plan defines later B-E batches, but Batch A is
+the next code slice because it broadens mesh policy, source-face accounting, and operator
+evidence used by every later primitive-fit and search fixture.

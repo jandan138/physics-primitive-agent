@@ -65,7 +65,10 @@ The repository has not reached that full result. It has reached the workbench st
 23. The same report now includes a scope-audit criteria table that decides the current fixture
     scope must remain `partial`, keeps `paper_faithful_offline_supported: false`, and points the
     next paper-lane gate to `paper_fixture_breadth_expansion_plan`.
-24. Records and configs can preserve exactly what was run.
+24. A documentation-only fixture-breadth expansion plan now turns that gate into planned
+    synthetic fixture batches and recommends `paper_fixture_breadth_batch_a` as the next code
+    slice.
+25. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -90,7 +93,9 @@ merge/search, `CollisionPackage`, Newton mapping, task smokes, and benchmark cla
 
 For the current row-by-row paper reproduction gap and the offline-first lane that should close
 the next gap, see [CPD paper reproduction gap matrix](cpd-paper-reproduction-gap-matrix.md) and
-[CPD paper-faithful offline lane spec](cpd-paper-faithful-offline-lane-spec.md).
+[CPD paper-faithful offline lane spec](cpd-paper-faithful-offline-lane-spec.md). For the current
+synthetic fixture plan, see
+[CPD paper fixture-breadth expansion plan](cpd-paper-fixture-breadth-expansion-plan.md).
 
 ## Paper Story Layers
 
@@ -357,13 +362,15 @@ That partial report now records:
   `decision: remain_partial`, nine blocking fixture-scope criteria, non-blocking
   package/Newton/real-USD/benchmark boundary rows, and next gate
   `paper_fixture_breadth_expansion_plan`.
+- a documentation-only fixture-breadth expansion plan that maps those nine blocking rows to
+  planned synthetic fixture batches and recommends `paper_fixture_breadth_batch_a` next.
 
 This closes the narrow capsule axis-policy audit gap and adds the first topology-only
 priority-queue trace plus component-pair accepted/blocked toy events, postprocess culling,
 source-face intake policy fixtures, OBB/sphere fit-faithfulness rows, and exact-overlap
 duplicate-vertex preprocessing inside the report. The scope audit then records why these remain
-fixture-scoped and why the lane is still not `paper_faithful_offline`. The next paper-lane gate is
-`paper_fixture_breadth_expansion_plan`.
+fixture-scoped and why the lane is still not `paper_faithful_offline`. The fixture-breadth plan
+has now documented the next code slice as `paper_fixture_breadth_batch_a`.
 
 ## What The Newton-Native Policy Changes
 
@@ -558,7 +565,8 @@ local USD mirrors or synthetic fixtures
 -> OBB/sphere fit-faithfulness audit, still without package/Newton/real-USD
 -> exact-coordinate duplicate-vertex preprocessing audit, still without package/Newton/real-USD
 -> scope-audit criteria table, still without package/Newton/real-USD
--> next: paper_fixture_breadth_expansion_plan
+-> fixture-breadth expansion plan, documentation-only
+-> next: paper_fixture_breadth_batch_a
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -609,6 +617,7 @@ Use:
 - "offline OBB/sphere fit-faithfulness audit";
 - "offline paper scope-audit criteria table";
 - "fixture-breadth expansion plan";
+- "planned synthetic fixture-breadth batches";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -633,13 +642,12 @@ Avoid:
 
 ## Recommended Next Slices
 
-The immediate next slice should now turn the completed scope audit into a fixture-breadth plan,
-without adding stronger evaluation claims:
+The fixture-breadth expansion plan now exists. The immediate next code slice should implement
+Batch A without adding stronger evaluation claims:
 
-1. Read the nine blocking rows from `paper_faithful_offline_scope_audit`.
-2. Choose the smallest additional synthetic fixtures needed to broaden preprocessing, source-face
-   intake, operator, primitive-fit, cost, queue, target/threshold, component-pair, and postprocess
-   evidence.
+1. Implement `paper_fixture_breadth_batch_a`.
+2. Add only `paper_mixed_face_preprocess_operator`, `paper_degenerate_preprocess_face_drop`, and
+   `paper_concave_polygon_rejected`.
 3. Keep the lane `partial` unless a later fixture-breadth implementation and dated records justify
    narrower bounded wording.
 4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,

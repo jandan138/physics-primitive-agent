@@ -99,6 +99,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_fixture_breadth_expansion_plan`. This is scope accounting for the offline paper lane, not
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, or collision-quality validation.
+- The current documentation can define an offline-only fixture-breadth expansion plan for the nine
+  blocking scope-audit rows and recommend `paper_fixture_breadth_batch_a` as the next code slice.
+  This is not executable evidence and does not implement new fixtures, package generation, Newton
+  runtime support, real-USD evidence, benchmark evidence, or collision-quality validation.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

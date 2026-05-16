@@ -240,12 +240,18 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Faithful Offline Scope Audit](2026-05-16-cpd-paper-faithful-offline-scope-audit.md):
   partial command-only scope-audit criteria table that keeps the offline paper lane partial and
   advances the next gate to fixture-breadth expansion.
+- [2026-05-16 CPD Paper Fixture Breadth Expansion Plan](2026-05-16-cpd-paper-fixture-breadth-expansion-plan.md):
+  documentation-only plan that maps the nine scope-audit blockers to future synthetic fixture
+  batches and recommends Batch A as the next code slice.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
 - [2026-05-15 CPD Paper Companion MVP](2026-05-15-cpd-paper-companion-mvp.md):
   Astro + MDX bilingual paper companion scaffold with source-paper claim namespacing and
   permission-record-pending AI-assisted draft translation status.
+- [2026-05-15 CPD Paper Companion Permission Assertion](2026-05-15-cpd-paper-permission-assertion.md):
+  source-paper companion permission assertion note that keeps draft translation and reproduction
+  claims separated until formal authorization evidence is supplied.
 - [2026-05-15 CPD Full Text Import And Translation](2026-05-15-cpd-full-text-import-translation.md):
   full-section CPD companion import with AI-assisted draft translations, gated source LaTeX
   blocks, and `not_started` reproduction states.

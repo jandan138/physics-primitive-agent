@@ -66,6 +66,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
   package generation, not real-USD evidence, not benchmark evidence, and not collision-quality
   validation.
+- The documentation can define a fixture-breadth expansion plan for the nine blocking
+  scope-audit rows and can recommend `paper_fixture_breadth_batch_a` as the next offline code
+  slice. This is a planning artifact only. It does not implement new fixtures, does not change
+  `cpd_paper_offline_report`, does not support `paper_faithful_offline`, and does not add package
+  generation, Newton runtime, real-USD, benchmark, collision-quality, deployment, or safety
+  evidence.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper

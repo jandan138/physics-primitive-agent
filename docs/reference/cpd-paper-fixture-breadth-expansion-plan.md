@@ -1,0 +1,118 @@
+# CPD Paper Fixture Breadth Expansion Plan
+
+This page turns the completed `paper_faithful_offline_scope_audit` blockers into planned
+synthetic fixture coverage. It is a planning document, not experiment evidence, not a new
+implementation, and not a claim that `paper_faithful_offline` is supported.
+
+For the current scope-audit result, see
+[CPD paper faithful offline scope audit](../records/2026-05-16-cpd-paper-faithful-offline-scope-audit.md).
+For the row-by-row paper gap map, see
+[CPD paper reproduction gap matrix](cpd-paper-reproduction-gap-matrix.md).
+
+## Scope
+
+The plan answers:
+
+- which blocking paper-lane criteria need more synthetic fixture breadth;
+- which future fixture ids should be added first;
+- what each fixture must record when implemented;
+- which claims remain blocked.
+
+The plan does not:
+
+- add new fixtures to `cpd_paper_offline_report`;
+- generate a `CollisionPackage`;
+- run Newton;
+- load bed, Franka, or other real USD assets;
+- run benchmarks;
+- support collision-quality, deployment, or safety-certification claims.
+
+## Source Blockers
+
+The scope audit keeps these nine criteria blocking before stronger offline wording:
+
+| Blocking criterion | Current blocker meaning |
+| --- | --- |
+| `source_mesh_and_preprocessing_policy` | Current preprocessing evidence is one exact-overlap toy fixture, not broad mesh cleanup. |
+| `source_face_intake_policy` | Current non-triangle source-face evidence is one quad and one convex five-vertex polygon. |
+| `operator_q_audit` | Operator evidence exists for named fixtures, but not enough degeneracy or source-policy breadth. |
+| `primitive_vocabulary_and_fit` | All six paper primitive names have audit rows, but fitting breadth is limited. |
+| `paper_collapse_cost_and_weighting` | Cost evidence is narrow and uses one zero-threshold blocked fixture. |
+| `greedy_priority_queue_trace` | Queue traces are toy-scoped and do not cover enough ordering and stale-entry behavior. |
+| `target_count_and_threshold_stop` | Target and threshold stops are narrow, with no positive nonzero threshold fixture. |
+| `component_pair_edge_handling` | Component-pair evidence has one accepted and one blocked all-pairs case only. |
+| `enclosed_primitive_postprocess` | Postprocess evidence is one explicit identity-axis OBB canary. |
+
+## Fixture Batches
+
+The next implementation work should use small batches rather than one broad algorithm change.
+
+| Batch | Planned fixture ids | Primary blockers covered | Purpose |
+| --- | --- | --- | --- |
+| A. Source/preprocess/intake/operator breadth | `paper_mixed_face_preprocess_operator`, `paper_degenerate_preprocess_face_drop`, `paper_concave_polygon_rejected` | source mesh/preprocessing, source-face intake, operator `Q` | Broaden mesh policy beyond current exact-overlap and simple convex source-face fixtures. |
+| B. Primitive fit breadth | `paper_rotated_box_fit`, `paper_offset_sphere_fit`, `paper_off_axis_capsule_fit`, `paper_flat_capped_cylinder_axis_fit`, `paper_tapered_frustum_fit`, `paper_asymmetric_trapezoid_fit` | primitive vocabulary and fit | Broaden all six paper primitive names beyond current named minimal cases without changing Newton runtime support. |
+| C. Cost/search/stop breadth | `paper_branching_cost_order`, `paper_equal_cost_queue_tie`, `paper_nonzero_threshold_block` | collapse cost, priority queue, target/threshold stop | Test cost ordering, queue tie/stale behavior, and nonzero finite threshold blocking. |
+| D. Component-pair breadth | `paper_component_pair_multi_candidate_order`, `paper_component_pair_cap_skipped` | component-pair edge handling, target/threshold stop | Broaden disconnected-component pair insertion beyond one accepted and one blocked all-pairs case. |
+| E. Postprocess breadth | `paper_rotated_nested_primitive`, `paper_cross_type_enclosure_boundary` | enclosed primitive postprocess | Broaden postprocess from one explicit identity-axis OBB canary to additional containment boundaries. |
+
+Batch A is the recommended first implementation batch. It broadens source mesh policy,
+source-face intake, and operator accounting at the same time, while still staying offline-only.
+
+## Fixture Rows
+
+| Fixture id | Covers | Geometry idea | Future report additions | Future tests | Non-goals | Claim boundary |
+| --- | --- | --- | --- | --- | --- | --- |
+| `paper_mixed_face_preprocess_operator` | source mesh/preprocessing, source-face intake, operator `Q` | One small source mesh containing a triangle, a quad, and a convex five-vertex polygon, with one exact duplicate coordinate pair shared across source-face boundaries. | Source-face arities, original vertex ids, deduplicated vertex ids, generated triangle ids, per-generated-triangle `Q`, source-face aggregate `Q`, aggregate eigenvalues/eigenvectors, and before/after component accounting. | Assert source-face ids survive preprocessing and fan triangulation; assert aggregate `Q` equals the sum of generated triangle `Q` rows; assert aggregate eigen fields exist and are finite. | No general polygon mesh support, no nonzero-distance cleanup, no Newton mapping. | Fixture-scoped operator/source-policy breadth only. |
+| `paper_degenerate_preprocess_face_drop` | source mesh/preprocessing, operator `Q` | Exact-coordinate deduplication collapses one source triangle into a degenerate face while another face remains valid. | Dropped source-face id, drop reason `degenerate_after_preprocessing`, retained source-face ids, before/after face count, no executable `Q` row for the dropped face, retained-face eigenvalues/eigenvectors, and degeneracy label. | Assert the degenerate face is dropped deterministically; assert it cannot contribute `Q`, primitive-fit, or queue rows; assert retained-face operator eigen fields remain finite. | No broad mesh repair, no topology healing, no runtime package generation. | Deterministic dropped-face accounting only. |
+| `paper_concave_polygon_rejected` | source-face intake policy | One concave non-triangle source face that the current conservative fan policy must reject for this lane. | Source-face arity, case-local failure label `source_face_intake_unsupported_concave_polygon`, no generated triangles, and `case_status: unsupported_fixture_policy`. | Assert the report does not silently fan-triangulate concave input; assert the unsupported label is case-local and does not become a top-level report failure label. | No general concave polygon triangulation claim. | Conservative unsupported-intake accounting only. |
+| `paper_rotated_box_fit` | primitive vocabulary and fit | A rotated cuboid-like point set whose OBB should not use identity world axes. | Paper OBB axes, projected bounds, local/world center, containment checks, and volume formula for a non-axis-aligned fixture. | Assert axes are orthonormal and non-identity; assert all points are contained under the projected-bounds OBB. | No Newton runtime package or collision-quality claim. | Offline OBB fit breadth only. |
+| `paper_offset_sphere_fit` | primitive vocabulary and fit | Point set whose paper sphere center comes from an offset OBB center rather than the world origin or point centroid. | OBB-derived sphere center, unclamped and clamped radius, containment checks, volume formula, and paper weight. | Assert the sphere center equals the paper OBB center and differs from the point centroid for the fixture. | No runtime sphere execution from this offline row. | Offline sphere fit breadth only. |
+| `paper_off_axis_capsule_fit` | primitive vocabulary and fit | Elongated point set around a non-world-aligned axis. | Three capsule axis candidates, selected axis id, radius, cap-adjusted height, paper weight, and containment status. | Assert the selected capsule axis follows the operator-basis policy and records dimensions with positive radius and height. | No runtime capsule execution from this offline row. | Offline capsule fit breadth only. |
+| `paper_flat_capped_cylinder_axis_fit` | primitive vocabulary and fit | Flat-capped cylinder point set whose best axis is not a world basis axis. | Three capped-cylinder axis candidates, selected axis id, radius, height, flat-cap formula, paper weight, containment status, and offline-only runtime boundary. | Assert a capped-cylinder-specific row exists, records flat-cap semantics, and remains distinct from Newton `cylinder`. | No Newton capped-cylinder support or cylinder approximation policy. | Offline capped-cylinder fit breadth only. |
+| `paper_tapered_frustum_fit` | primitive vocabulary and fit | Tapered point set with different top and bottom radii along a declared axis. | Frustum axis policy, top/bottom radius fields, height, volume formula, paper weight, containment status, and offline-only runtime boundary. | Assert unequal radii are recorded and the fixture remains offline-only. | No Newton cone approximation policy. | Offline frustum fit breadth only. |
+| `paper_asymmetric_trapezoid_fit` | primitive vocabulary and fit | Wedge-like point set that exercises six axis orderings for the trapezoidal-prism audit row. | Axis-order candidate table, selected ordering, side lengths, volume formula, paper weight, containment status, and offline-only runtime boundary. | Assert all six orderings are considered or explicitly reported with deterministic reasons. | No convex-hull adapter or Newton mapping. | Offline trapezoidal-prism fit breadth only. |
+| `paper_branching_cost_order` | collapse cost, priority queue | A four-face branching topology with two initial adjacent candidates and known cost ordering. | Candidate table with raw `paper_base_cost`, weighted priority cost, queue keys, first pop, accepted merge, and updated neighbor insertion. | Assert the lower weighted priority candidate is popped first and base cost remains separately recorded. | No benchmark or merge-policy superiority claim. | Toy cost-order accounting only. |
+| `paper_equal_cost_queue_tie` | priority queue | Two equal-cost adjacent candidates whose deterministic tie key decides first pop; one later entry becomes stale after a merge. | Equal priority costs, deterministic tie key fields, accepted event, stale-prune event, and final active groups. | Assert repeated report generation gives the same event order and stale-entry label. | No alternative optimizer or lookahead behavior. | Toy queue determinism accounting only. |
+| `paper_nonzero_threshold_block` | target/threshold stop, collapse cost | Candidate merge with positive paper base cost and a positive finite threshold lower than that cost. | Nonzero threshold value, threshold metric, blocked event, stop reason, and accepted count `0` for the blocked candidate. | Assert the block is caused by a nonzero finite threshold, not the previous zero-threshold canary. | No threshold policy tuning or benchmark claim. | Toy threshold-stop accounting only. |
+| `paper_component_pair_multi_candidate_order` | component-pair edge handling, target/threshold stop | Three disconnected components produce multiple component-pair candidates after topology edges cannot reach the target. | Component-pair candidate count, queue keys, selected pair, accepted merge, and final component count. | Assert more than one component-pair candidate is considered and the selected pair follows the recorded priority. | No broad real-asset disconnected-component evidence. | Toy component-pair ordering only. |
+| `paper_component_pair_cap_skipped` | component-pair edge handling | More component pairs exist than a future configured pair cap permits. | Attempted pair count, cap value, skipped pair count greater than zero, skipped pair ids or deterministic skipped policy, and stop reason. | Assert skipped pairs are counted and do not disappear from accounting. | No production-scale pair search optimization. | Toy skipped-pair accounting only. |
+| `paper_rotated_nested_primitive` | enclosed primitive postprocess | Inner and outer OBBs share a rotated non-identity axis frame, with the inner primitive fully enclosed. | Rotated axes, inner and outer ids, corner containment status, before/after count, and cull reason. | Assert the inner OBB is culled only after all transformed corners are contained. | No general containment library claim. | Toy postprocess containment breadth only. |
+| `paper_cross_type_enclosure_boundary` | enclosed primitive postprocess | A sphere or capsule lies inside an OBB, or the report explicitly marks cross-type culling unsupported. | Containment test type, supported or unsupported label, cull/no-cull decision, and claim boundary. | Assert cross-type containment is either implemented with a deterministic check or explicitly blocked with no silent cull. | No broad redundant primitive removal quality claim. | Toy cross-type containment boundary only. |
+
+## Recommended First Code Slice
+
+The next code slice should be:
+
+```text
+paper_fixture_breadth_batch_a
+-> add `paper_mixed_face_preprocess_operator`
+-> add `paper_degenerate_preprocess_face_drop`
+-> add `paper_concave_polygon_rejected`
+-> update `cpd_paper_offline_report` while keeping `status: partial`
+-> no package generation, Newton, real USD, or benchmark work
+```
+
+Batch A is first because it improves the source mesh, source-face intake, and operator criteria
+that every later primitive-fit and search fixture depends on.
+
+## Claim Boundary
+
+This plan supports only this statement:
+
+```text
+The repository has a documented offline-only fixture-breadth expansion plan for the blocking
+scope-audit criteria.
+```
+
+It does not support:
+
+- implemented fixture breadth;
+- `paper_faithful_offline`;
+- full CPD paper reproduction;
+- package generation;
+- Newton runtime support;
+- real-USD evidence;
+- benchmark evidence;
+- collision-quality validation;
+- deployment readiness;
+- safety certification.
