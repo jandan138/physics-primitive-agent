@@ -257,6 +257,17 @@ experiments:
       - partial fixture-scoped offline source-face intake policy audit only
       - records fan triangulation, source vertex ids, generated triangle vertex triples, source-face remap, and source-face aggregate operator matrices on one quad and one five-vertex polygon toy fixture
       - no general polygon mesh implementation claim, paper_faithful_offline claim, full CPD reproduction claim, Newton runtime execution, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-obb-sphere-fit-faithfulness
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-obb-sphere-fit-faithfulness.md
+    purpose: >
+      Extend the command-only partial offline CPD paper-lane audit with paper-shaped OBB and
+      sphere fit-audit rows for named deterministic toy fixtures.
+    claims_supported:
+      - partial fixture-scoped offline OBB/sphere fit audit only
+      - records paper operator-eigenbasis OBB projected bounds, OBB world center, 1e-3 clamp, sphere radius from the OBB center, tiny-radius clamp coverage, axis matrix layout metadata, containment checks, formulas, and candidate uniqueness on deterministic toy fixtures
+      - no paper_faithful_offline claim, full CPD reproduction claim, Newton runtime execution, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

@@ -59,7 +59,8 @@ implemented, and it is still a `partial` report rather than `paper_faithful_offl
 | `paper_cpd_collapse_trace` | Priority-queue merge steps, costs, stale entries, and stop reason. |
 | `paper_cpd_postprocess_audit` | Enclosed-primitive culling and before/after primitive counts. |
 | `paper_polygon_quad_intake_policy_audit` | Explicit triangle, quad, and polygon intake policy before stronger paper-lane wording. |
-| `paper_obb_sphere_fit_faithfulness_audit` | Audit whether OBB and sphere rows are paper-faithful fits or still surrogate rows. |
+| `paper_obb_sphere_fit_faithfulness_audit` | Offline fixture-scoped paper-shaped OBB and sphere fit audit rows. |
+| `paper_duplicate_vertex_preprocessing_audit` | Offline duplicate/overlapped vertex preprocessing policy and remap audit. |
 | `paper_faithful_offline` | Report status allowed only after the required tests and dated records exist. |
 
 ## Canonical Paper Mechanics Checklist
@@ -289,12 +290,12 @@ operator matrices for planar, convex, non-degenerate, consistently wound toy fac
 
 Before `paper_faithful_offline` wording, record:
 
-- whether `oriented_bounding_box` uses the paper operator eigenbasis and point containment
-  construction rather than the current CPD-like surrogate row;
-- whether `sphere` uses the paper OBB center and enclosing radius construction rather than the
-  current CPD-like surrogate row;
+- whether `oriented_bounding_box` uses the paper operator eigenbasis, projected vertex bounds,
+  `1e-3` parameter clamp, world-space OBB center, containment check, and volume formula;
+- whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
+  clamped to `1e-3`;
 - fixture scope for the comparison;
-- failure label `paper_obb_sphere_fit_faithfulness_missing` until this policy has tests and a
+- failure label `paper_duplicate_vertex_preprocessing_missing` after this policy has tests and a
   dated record.
 
 ## Minimal Synthetic Fixture Set
@@ -311,6 +312,7 @@ The first paper lane should use small synthetic fixtures before any real USD:
 | `paper_three_face_chain` | Three connected face groups with two topology edges. | Deterministic priority-queue pops, eager stale pruning, updated neighbor insertion, and target-count stop reason. |
 | `paper_disconnected_components` | Two disconnected components above target primitive count, with topology unable to reduce them. | Threshold-disabled component-pair edge insertion first, then threshold behavior in a separate gate. |
 | `paper_nested_primitive` | A smaller primitive fully enclosed by a larger one. | Postprocessing cull audit. |
+| `paper_tiny_sphere_clamp` | One tiny triangle with radius below the primitive parameter clamp. | OBB/sphere `1e-3` parameter clamp accounting. |
 | `paper_quad_face_intake` | One quad source face fan-triangulated into two triangles. | Source-face remap and operator ownership policy. |
 | `paper_polygon_face_intake` | One five-vertex source face fan-triangulated into three triangles. | Source-face remap and operator ownership policy. |
 
@@ -334,8 +336,8 @@ These fixtures are not benchmark assets. They are unit-test-grade checks for the
 8. Postprocess gate: enclosed primitive culling is tested independently.
 9. Polygon/quad intake policy gate: non-triangle face policy, source-face remap, and operator
    ownership are explicit and tested.
-10. OBB/sphere fit faithfulness gate: current OBB and sphere rows are either paper-faithful for the
-    declared fixture scope or explicitly recorded as remaining surrogates.
+10. OBB/sphere fit faithfulness gate: OBB and sphere rows use the paper construction for the
+    declared fixture scope or explicitly record why they remain surrogates.
 11. Record gate: a dated record states the fixture scope and verification commands.
 
 Only after these gates should a separate package-adaptation slice be planned.
@@ -364,10 +366,11 @@ paper_single_box + paper_two_face_merge
 -> no Newton
 ```
 
-This gives the smallest useful evidence slice that the offline lane can compute paper-side operator,
-primitive-fit, and cost fields before implementing full priority-queue search, real USD, or
-benchmark tasks. The audited primitive rows are explicitly labeled as current surrogates/proxies;
-they are not paper-faithful primitive fitting.
+At the time of this first slice, this gave the smallest useful evidence slice that the offline lane
+could compute paper-side operator, primitive-fit, and cost fields before implementing full
+priority-queue search, real USD, or benchmark tasks. That first-slice record labeled the audited
+primitive rows as current surrogates/proxies; later slices replace some of those rows inside the
+same command report.
 
 ## Second Implementation Slice
 
@@ -415,8 +418,8 @@ paper_single_box + paper_two_face_merge + paper_frustum_like + paper_trapezoid_p
 This slice replaces the paper-lane capsule row with an offline axis-policy audit row. Capsule is a
 Newton-native primitive, so the row can record `newton_runtime_kind: capsule`, but the command still
 does not generate a package or call Newton. The report is still not `paper_faithful_offline`
-because later search, postprocess, polygon/quad intake, and OBB/sphere fit-faithfulness gates are
-not implemented in that slice.
+because later search, postprocess, polygon/quad intake, OBB/sphere fit-faithfulness, and
+duplicate-vertex preprocessing gates are not implemented in that slice.
 
 ## Fifth Implementation Slice
 
@@ -498,18 +501,35 @@ This slice records a conservative source-face intake policy for planar, convex, 
 consistently wound toy faces. It keeps executable geometry as `TriangleMesh` and does not claim a
 general polygon mesh implementation.
 
+## Tenth Implementation Slice
+
+The tenth implementation slice is now:
+
+```text
+paper_obb_sphere_fit_faithfulness_audit
+-> offline paper-shaped OBB rows with projected vertex bounds, world-space center, 1e-3 clamp,
+   and volume formula
+-> offline paper-shaped sphere rows using the OBB world center and clamped max-distance radius
+-> tiny clamp fixture exercising sphere radius clamping below 1e-3
+-> uniqueness checks so OBB/sphere rows replace current surrogate rows rather than duplicate them
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice records the OBB/sphere paper construction for named toy fixtures only. It does not make
+the report `paper_faithful_offline` because duplicate-vertex preprocessing and broader offline lane
+coverage remain unresolved.
+
 ## Next Implementation Slice
 
 The next paper-lane gate is:
 
 ```text
-paper_obb_sphere_fit_faithfulness_audit
--> audit current OBB and sphere fit rows against the paper construction requirements
--> preserve explicit surrogate labels if they are not paper-faithful
+paper_duplicate_vertex_preprocessing_audit
+-> audit duplicate/overlapped vertex preprocessing and source-face remap behavior
 -> keep status partial until tests and dated records exist
 -> no package generation, Newton, real USD, or benchmarks
 ```
 
-This is the narrowest next algorithmic gate after polygon/quad intake policy. It should not be
+This is the narrowest next algorithmic gate after OBB/sphere fit-faithfulness. It should not be
 broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun until
 the offline report records a changed paper-lane package boundary.

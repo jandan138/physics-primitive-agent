@@ -64,6 +64,7 @@ After this slice:
   - `primitive_parameter_lower_clamp: 0.001`;
   - dimensions containing `lower_bounds`, `upper_bounds`, `half_extents`, `paper_center_local`,
     `paper_center_world`, and `axis_order_policy`;
+  - `axis_matrix_layout: rows_are_axes`;
   - `volume_formula: 8*hx*hy*hz`;
   - `contains_assigned_points: true` for the current deterministic nondegenerate fixtures.
 - every `sphere` row should have:
@@ -107,9 +108,12 @@ Add tests that fail before implementation and pass after:
   `paper_single_box`;
 - sphere candidate rows use the OBB world center and clamp the max point distance to at least
   `1e-3` for `paper_single_box`;
+- `paper_tiny_sphere_clamp` exercises the sphere radius clamp path when the unclamped radius is
+  below `1e-3`;
 - the same OBB/sphere formula helper is checked on a non-axis-aligned fixture such as
   `paper_three_face_chain` so transposed-axis and local/world-center mistakes are visible;
 - every primitive audit contains unique `paper_primitive` names;
+- report metadata labels operator eigenvectors as column vectors and primitive axes as row vectors;
 - merge-cost and queue-trace tests continue to assert deterministic event order, finite costs,
   selected primitive identity fields, and queue keys after the OBB/sphere volume change;
 - all package/Newton/real-USD/benchmark triggers remain false.

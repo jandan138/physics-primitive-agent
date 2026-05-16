@@ -1527,6 +1527,8 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["status"] == "partial"
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
+    assert payload["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
+    assert payload["next_required_gate"] == "paper_duplicate_vertex_preprocessing_audit"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1537,12 +1539,44 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_three_face_chain",
         "paper_disconnected_components",
         "paper_component_pair_threshold_blocked",
+        "paper_tiny_sphere_clamp",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
         "paper_nested_primitive",
         "paper_quad_face_intake",
         "paper_polygon_face_intake",
     ]
+    single_box = payload["cases"][0]
+    candidate_names = [
+        row["paper_primitive"]
+        for row in single_box["primitive_fit_audit"]["candidates"]
+    ]
+    assert len(candidate_names) == len(set(candidate_names))
+    candidates = {row["paper_primitive"]: row for row in single_box["primitive_fit_audit"]["candidates"]}
+    assert candidates["oriented_bounding_box"]["implementation_status"] == (
+        "paper_shaped_offline_fit_audit"
+    )
+    assert candidates["oriented_bounding_box"]["axis_matrix_layout"] == "rows_are_axes"
+    assert candidates["oriented_bounding_box"]["primitive_parameter_lower_clamp"] == 1e-3
+    assert candidates["oriented_bounding_box"]["center"]
+    assert candidates["oriented_bounding_box"]["axes"]
+    obb_dims = candidates["oriented_bounding_box"]["dimensions"]
+    assert obb_dims["lower_bounds"]
+    assert obb_dims["upper_bounds"]
+    assert obb_dims["paper_center_local"]
+    assert obb_dims["paper_center_world"] == candidates["oriented_bounding_box"]["center"]
+    assert obb_dims["axis_order_policy"] == "descending_abs_q_eigenvalue"
+    assert obb_dims["volume_formula"] == "8*hx*hy*hz"
+    assert candidates["sphere"]["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert candidates["sphere"]["primitive_parameter_lower_clamp"] == 1e-3
+    assert candidates["sphere"]["center"] == candidates["oriented_bounding_box"]["center"]
+    assert candidates["sphere"]["axes"] == candidates["oriented_bounding_box"]["axes"]
+    sphere_dims = candidates["sphere"]["dimensions"]
+    assert sphere_dims["radius"]
+    assert sphere_dims["unclamped_radius"]
+    assert sphere_dims["center_source"] == "paper_obb_center"
+    assert sphere_dims["radius_source"] == "max_distance_from_obb_center_clamped"
+    assert sphere_dims["volume_formula"] == "4/3*pi*r^3"
 
 
 def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):

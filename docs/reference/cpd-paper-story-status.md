@@ -56,7 +56,7 @@ The repository has not reached that full result. It has reached the workbench st
     primitive fitting/selection, merge/search, offline diagnostics, and recorded Newton task-smoke
     status without rerunning source reports, USD loading, real assets, or Newton tasks.
 22. A command-only partial `cpd_paper_offline_report` can audit the first paper-lane toy fixtures
-    with paper-side operator fields, current surrogate OBB/sphere rows, a paper-shaped capsule
+    with paper-side operator fields, offline paper-shaped OBB/sphere rows, a paper-shaped capsule
     axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, collapse-cost
     fields, a topology-only priority-queue trace, threshold-disabled and finite-threshold
     component-pair traces, and one explicit enclosed-primitive postprocess cull audit.
@@ -98,7 +98,7 @@ The CPD paper story can be read as eight layers.
 | 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the paper collapse-cost rule plus primitive weighting. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Partially audited in the paper offline lane through toy priority-queue and component-pair traces. This is still not full paper-scope search or benchmark evidence. |
 | 5. Expected limitations | Can known CPD-paper gaps stay visible before algorithmic changes? | Narrowly in place as a deterministic expected-failure synthetic workbench over three in-memory fixtures. This is diagnostic limitation accounting, not validation or benchmark evidence. |
-| 6. Primitive vocabulary | Can paper primitive categories enter a restricted proposal lane? | Narrowly in place in two different lanes: the older CPD-like objective report has an opt-in offline `capped_cylinder` proxy, and the partial paper offline report now has current surrogate OBB/sphere rows, a paper-shaped capsule axis row, and offline-only flat capped-cylinder/frustum/trapezoidal-prism audit rows. This is still not paper-faithful primitive fitting. |
+| 6. Primitive vocabulary | Can paper primitive categories enter a restricted proposal lane? | Narrowly in place in two different lanes: the older CPD-like objective report has an opt-in offline `capped_cylinder` proxy, and the partial paper offline report now has offline paper-shaped OBB/sphere rows, a paper-shaped capsule axis row, and offline-only flat capped-cylinder/frustum/trapezoidal-prism audit rows. This is still not full paper-faithful primitive fitting. |
 | 7. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded mapped primitives. The synthetic native bundle also covers `cylinder`, `cone`, and `ellipsoid`; `capped_cylinder` is not Newton-mapped in this slice. |
 | 8. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
 
@@ -323,7 +323,9 @@ to audit paper-side mechanics before any package generation or Newton runtime wo
 That partial report now records:
 
 - paper-side operator fields on named toy fixtures;
-- current surrogate OBB and sphere rows;
+- offline paper-shaped OBB and sphere rows with projected vertex bounds, OBB world center, `1e-3`
+  clamp, sphere radius from the OBB center, and `paper_tiny_sphere_clamp` coverage for the radius
+  clamp path;
 - a paper-shaped capsule row with one candidate per operator axis;
 - offline-only flat capped-cylinder, frustum, and trapezoidal-prism rows;
 - paper base collapse cost and separate weighted-priority cost fields for the first merge-cost
@@ -344,10 +346,10 @@ That partial report now records:
   source-face remap, and source-face aggregate operator matrices.
 
 This closes the narrow capsule axis-policy audit gap and adds the first topology-only
-priority-queue trace plus component-pair accepted/blocked toy events, postprocess culling, and
-source-face intake policy fixtures inside the report, but it does not make the lane
-`paper_faithful_offline`. The next paper-lane gate is
-`paper_obb_sphere_fit_faithfulness_audit`.
+priority-queue trace plus component-pair accepted/blocked toy events, postprocess culling,
+source-face intake policy fixtures, and OBB/sphere fit-faithfulness rows inside the report, but it
+does not make the lane `paper_faithful_offline`. The next paper-lane gate is
+`paper_duplicate_vertex_preprocessing_audit`.
 
 ## What The Newton-Native Policy Changes
 
@@ -539,7 +541,8 @@ local USD mirrors or synthetic fixtures
 -> finite-threshold component-pair blocked audit, still without package/Newton/real-USD
 -> enclosed-primitive postprocess cull audit, still without package/Newton/real-USD
 -> polygon/quad source-face intake policy audit, still without package/Newton/real-USD
--> next: paper_obb_sphere_fit_faithfulness_audit
+-> OBB/sphere fit-faithfulness audit, still without package/Newton/real-USD
+-> next: paper_duplicate_vertex_preprocessing_audit
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -587,6 +590,7 @@ Use:
 - "finite-threshold component-pair blocked audit";
 - "offline enclosed-primitive postprocess cull audit";
 - "offline polygon/quad source-face intake policy audit";
+- "offline OBB/sphere fit-faithfulness audit";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -614,10 +618,10 @@ Avoid:
 The immediate next slice should now make the algorithm itself more paper-aligned without adding
 stronger evaluation claims:
 
-1. Add `paper_obb_sphere_fit_faithfulness_audit` for the current OBB and sphere rows.
-2. Build it first on synthetic toy meshes with explicit paper-construction versus surrogate
-   labeling.
-3. Keep the lane `partial` until the fit-faithfulness audit has tests and a dated record.
+1. Add `paper_duplicate_vertex_preprocessing_audit` for overlapped or duplicate vertices.
+2. Build it first on synthetic toy meshes with explicit before/after vertex and source-face remap
+   accounting.
+3. Keep the lane `partial` until duplicate-vertex preprocessing has tests and a dated record.
 4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 5. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality

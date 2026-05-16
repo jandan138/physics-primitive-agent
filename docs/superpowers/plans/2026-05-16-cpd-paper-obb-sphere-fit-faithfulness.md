@@ -23,19 +23,19 @@ package generation, no Newton runtime, no real USD, and no benchmark claim.
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `tests/test_cli.py`
 
-- [ ] Update `test_cpd_paper_offline_report_failure_labels_point_to_obb_sphere_fit_gap` to expect:
+- [x] Update `test_cpd_paper_offline_report_failure_labels_point_to_obb_sphere_fit_gap` to expect:
 
 ```python
 assert report["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
 ```
 
-- [ ] Update `test_cpd_paper_offline_report_next_gate_is_obb_sphere_fit_audit` to expect:
+- [x] Update `test_cpd_paper_offline_report_next_gate_is_obb_sphere_fit_audit` to expect:
 
 ```python
 assert report["next_required_gate"] == "paper_duplicate_vertex_preprocessing_audit"
 ```
 
-- [ ] In `test_cpd_paper_offline_report_covers_first_toy_slice`, update the top-level assertions:
+- [x] In `test_cpd_paper_offline_report_covers_first_toy_slice`, update the top-level assertions:
 
 ```python
 assert report["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
@@ -45,7 +45,9 @@ assert "paper_obb_sphere_fit_faithfulness_audit" in report["paper_faithfulness"]
 ]
 ```
 
-- [ ] Replace the current single-box OBB surrogate assertions with paper-row assertions:
+- [x] Assert the report case set includes `paper_tiny_sphere_clamp`.
+
+- [x] Replace the current single-box OBB surrogate assertions with paper-row assertions:
 
 ```python
 box = [
@@ -57,6 +59,7 @@ assert box["implementation_status"] == "paper_shaped_offline_fit_audit"
 assert box["current_implementation_kind"] == "offline_paper_oriented_bounding_box_fit"
 assert box["fit_model"] == "paper_operator_eigenbasis_projected_bounds"
 assert box["axis_selection_policy"] == "paper_q_eigenbasis"
+assert box["axis_matrix_layout"] == "rows_are_axes"
 assert box["primitive_parameter_lower_clamp"] == 1e-3
 assert box["newton_runtime_kind"] == "box"
 assert box["contains_assigned_points"] is True
@@ -71,7 +74,7 @@ assert box_dims["axis_order_policy"] == "descending_abs_q_eigenvalue"
 assert box_dims["half_extents"] == box["dimensions"]["half_extents"]
 ```
 
-- [ ] Add explicit OBB formula checks for `paper_single_box`:
+- [x] Add explicit OBB formula checks for `paper_single_box`:
 
 ```python
 axes = box["axes"]
@@ -98,23 +101,22 @@ expected_box_volume = 8.0 * half_extents[0] * half_extents[1] * half_extents[2]
 assert abs(box["volume"] - expected_box_volume) < 1e-9
 ```
 
-- [ ] Add a helper `_assert_paper_obb_sphere_rows(case, points)` and call it for both
-  `paper_single_box` and the non-axis-aligned `paper_three_face_chain`. The helper must recompute
+- [x] Add a helper `_assert_paper_obb_sphere_rows(case, points)` and call it for both
+  `paper_single_box` and the non-axis-aligned `paper_quad_face_intake`. The helper must recompute
   projected bounds from the emitted row axes, compare `paper_center_world`, compare half-extents,
   compare OBB volume, compare sphere center to OBB center, and compare sphere radius to
-  `max(max_distance, 1e-3)`. Use these chain points:
+  `max(max_distance, 1e-3)`. Use these quad points:
 
 ```python
-three_face_chain_points = [
+quad_face_points = [
     [0.0, 0.0, 0.0],
     [1.0, 0.0, 0.0],
-    [0.0, 1.0, 0.0],
     [1.0, 1.0, 0.0],
-    [2.0, 1.0, 0.0],
+    [0.0, 1.0, 0.0],
 ]
 ```
 
-- [ ] Add sphere paper-row assertions immediately after the OBB assertions:
+- [x] Add sphere paper-row assertions immediately after the OBB assertions:
 
 ```python
 sphere = [
@@ -148,7 +150,21 @@ assert abs(sphere_dims["radius"] - expected_radius) < 1e-9
 assert abs(sphere["volume"] - (4.0 / 3.0) * pi * expected_radius**3) < 1e-9
 ```
 
-- [ ] Add a uniqueness assertion for every primitive fit audit in every case:
+- [x] Add a clamp-path assertion for `paper_tiny_sphere_clamp`:
+
+```python
+tiny_sphere = _candidate_by_paper_primitive(
+    cases["paper_tiny_sphere_clamp"]["primitive_fit_audit"],
+    "sphere",
+)
+assert tiny_sphere["dimensions"]["unclamped_radius"] < 1e-3
+assert tiny_sphere["dimensions"]["radius"] == 1e-3
+```
+
+- [x] Assert `operator_audit.merged_group.eigenvector_matrix_layout == "columns_are_eigenvectors"`
+  and primitive candidate `axis_matrix_layout == "rows_are_axes"`.
+
+- [x] Add a uniqueness assertion for every primitive fit audit in every case:
 
 ```python
 for case in cases.values():
@@ -157,7 +173,7 @@ for case in cases.values():
         assert len(paper_primitives) == len(set(paper_primitives))
 ```
 
-- [ ] Strengthen merge-cost and queue-trace regression assertions:
+- [x] Strengthen merge-cost and queue-trace regression assertions:
 
 ```python
 assert cost["left_primitive"] == cost["left_fit_audit"]["selected"]["paper_primitive"]
@@ -178,11 +194,11 @@ for event in events:
     ]
 ```
 
-- [ ] Update `tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json` so it expects
+- [x] Update `tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json` so it expects
   the new top-level failure label and next gate while preserving the same case list. Also assert the
   emitted JSON for `paper_single_box` contains paper-shaped OBB and sphere rows with clamps `1e-3`.
 
-- [ ] Run:
+- [x] Run:
 
 ```bash
 python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_offline_report_failure_labels_point_to_obb_sphere_fit_gap tests/test_cpd_paper_offline.py::test_cpd_paper_offline_report_next_gate_is_obb_sphere_fit_audit tests/test_cpd_paper_offline.py::test_cpd_paper_offline_report_covers_first_toy_slice tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json -q
@@ -197,13 +213,13 @@ OBB/sphere surrogate metadata.
 
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] Add a paper-lane clamp constant near the existing paper constants:
+- [x] Add a paper-lane clamp constant near the existing paper constants:
 
 ```python
 PAPER_PRIMITIVE_MIN_DIMENSION = 1e-3
 ```
 
-- [ ] Add `_paper_obb_fit(mesh, face_group)` below `_primitive_fit_audit_payload`:
+- [x] Add `_paper_obb_fit(mesh, face_group)` below `_primitive_fit_audit_payload`:
 
 ```python
 def _paper_obb_fit(
@@ -243,7 +259,7 @@ def _paper_obb_fit(
     )
 ```
 
-- [ ] Extend `_offline_paper_candidate_payload(...)` with an optional
+- [x] Extend `_offline_paper_candidate_payload(...)` with an optional
   `primitive_parameter_lower_clamp: float = MIN_DIMENSION` parameter and use that value in the
   emitted row:
 
@@ -251,7 +267,7 @@ def _paper_obb_fit(
 "primitive_parameter_lower_clamp": primitive_parameter_lower_clamp,
 ```
 
-- [ ] Add `_paper_sphere_fit(mesh, face_group, obb_row)` below `_paper_obb_fit`:
+- [x] Add `_paper_sphere_fit(mesh, face_group, obb_row)` below `_paper_obb_fit`:
 
 ```python
 def _paper_sphere_fit(
@@ -288,7 +304,7 @@ def _paper_sphere_fit(
     )
 ```
 
-- [ ] Replace the first two candidate rows in `_primitive_fit_audit_payload`:
+- [x] Replace the first two candidate rows in `_primitive_fit_audit_payload`:
 
 ```python
 obb_row = _paper_obb_fit(mesh, face_group)
@@ -302,7 +318,7 @@ Then keep appending capsule, capped cylinder, frustum, and trapezoidal prism row
 order. Do not append the new OBB/sphere rows after the shared CPD-like rows; the report must contain
 only one candidate row per `paper_primitive`.
 
-- [ ] Advance report labels in `build_cpd_paper_offline_report()`:
+- [x] Advance report labels in `build_cpd_paper_offline_report()`:
 
 ```python
 missing_before_paper_faithful = [
@@ -314,7 +330,7 @@ missing_before_paper_faithful = [
 "paper_obb_sphere_fit_faithfulness_audit",
 ```
 
-- [ ] Run the RED command from Task 1 again.
+- [x] Run the RED command from Task 1 again.
 
 Expected: all selected tests pass.
 
@@ -331,12 +347,12 @@ Expected: all selected tests pass.
 - Modify: `experiments/registry.yaml`
 - Create: `docs/records/2026-05-16-cpd-paper-obb-sphere-fit-faithfulness.md`
 
-- [ ] Update current-status wording to say OBB/sphere are now paper-shaped offline fit-audit rows
+- [x] Update current-status wording to say OBB/sphere are now paper-shaped offline fit-audit rows
   for named toy fixtures.
-- [ ] Keep `status: partial` and `paper_faithful_offline_supported: false`.
-- [ ] Add `paper_duplicate_vertex_preprocessing_missing` as the current failure label.
-- [ ] Make `paper_duplicate_vertex_preprocessing_audit` the next gate.
-- [ ] Add a registry entry:
+- [x] Keep `status: partial` and `paper_faithful_offline_supported: false`.
+- [x] Add `paper_duplicate_vertex_preprocessing_missing` as the current failure label.
+- [x] Make `paper_duplicate_vertex_preprocessing_audit` the next gate.
+- [x] Add a registry entry:
 
 ```yaml
 - id: cpd-paper-obb-sphere-fit-faithfulness
@@ -349,7 +365,7 @@ Include claims limited to fixture-scoped offline OBB/sphere fit audit only, with
 `paper_faithful_offline`, full CPD reproduction, Newton runtime, package generation, real-USD,
 collision-quality, benchmark, deployment, or safety-certification claim.
 
-- [ ] Create the dated record with:
+- [x] Create the dated record with:
   - status `Complete`;
   - implementation summary;
   - RED/GREEN focused pytest command;
@@ -361,19 +377,19 @@ collision-quality, benchmark, deployment, or safety-certification claim.
 
 ### Task 4: Verification And Multi-Agent Review
 
-- [ ] Run focused pytest:
+- [x] Run focused pytest:
 
 ```bash
 python -m pytest tests/test_cpd_paper_offline.py tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json tests/test_cli.py::test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json -q
 ```
 
-- [ ] Run CLI smoke:
+- [x] Run CLI smoke:
 
 ```bash
 python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
 ```
 
-- [ ] Run full verification:
+- [x] Run full verification:
 
 ```bash
 python -m pytest -q
@@ -382,37 +398,37 @@ python scripts/validate_site_claims.py
 git diff --check
 ```
 
-- [ ] Request multi-agent review for:
+- [x] Request multi-agent review for:
   - paper alignment of OBB and sphere formulas;
   - test coverage and report schema clarity;
   - docs and claim-boundary consistency.
 
-- [ ] Fix all Critical and Important review findings, then rerun the relevant focused tests and
+- [x] Fix all Critical and Important review findings, then rerun the relevant focused tests and
   final verification commands.
 
 ### Task 5: Commit And Push
 
-- [ ] Commit the spec and plan checkpoint:
+- [x] Commit the spec and plan checkpoint:
 
 ```bash
 git add docs/superpowers/specs/2026-05-16-cpd-paper-obb-sphere-fit-faithfulness-design.md docs/superpowers/plans/2026-05-16-cpd-paper-obb-sphere-fit-faithfulness.md
 git commit -m "docs: plan CPD paper OBB sphere fit audit"
 ```
 
-- [ ] Commit implementation after review and verification:
+- [x] Commit implementation after review and verification:
 
 ```bash
 git add src/primitive_collision_compiler/baselines/cpd_paper/offline.py tests/test_cpd_paper_offline.py tests/test_cli.py docs/index.md docs/reference/claim-boundaries.md docs/reference/cpd-paper-reproduction-gap-matrix.md docs/reference/cpd-paper-faithful-offline-lane-spec.md docs/reference/cpd-paper-story-status.md docs/records/README.md docs/records/2026-05-16-cpd-paper-obb-sphere-fit-faithfulness.md experiments/registry.yaml docs/superpowers/plans/2026-05-16-cpd-paper-obb-sphere-fit-faithfulness.md
 git commit -m "feat: audit CPD paper OBB sphere fitting"
 ```
 
-- [ ] Push `main`:
+- [x] Push `main`:
 
 ```bash
 git push
 ```
 
-- [ ] Confirm worktree is clean:
+- [x] Confirm worktree is clean:
 
 ```bash
 git status --short

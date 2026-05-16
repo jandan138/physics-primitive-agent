@@ -8,16 +8,107 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
 )
 
 
-def test_cpd_paper_offline_report_failure_labels_point_to_obb_sphere_fit_gap():
+def test_cpd_paper_offline_report_failure_labels_point_to_duplicate_vertex_gap():
     report = build_cpd_paper_offline_report()
 
-    assert report["failure_labels"] == ["paper_obb_sphere_fit_faithfulness_missing"]
+    assert report["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
 
 
-def test_cpd_paper_offline_report_next_gate_is_obb_sphere_fit_audit():
+def test_cpd_paper_offline_report_next_gate_is_duplicate_vertex_audit():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_obb_sphere_fit_faithfulness_audit"
+    assert report["next_required_gate"] == "paper_duplicate_vertex_preprocessing_audit"
+
+
+def _candidate_by_paper_primitive(audit, paper_primitive):
+    rows = [
+        row for row in audit["candidates"] if row["paper_primitive"] == paper_primitive
+    ]
+    assert len(rows) == 1
+    return rows[0]
+
+
+def _assert_paper_obb_sphere_rows(case, points):
+    audit = case["primitive_fit_audit"]
+    box = _candidate_by_paper_primitive(audit, "oriented_bounding_box")
+    sphere = _candidate_by_paper_primitive(audit, "sphere")
+
+    assert box["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert box["current_implementation_kind"] == "offline_paper_oriented_bounding_box_fit"
+    assert box["fit_model"] == "paper_operator_eigenbasis_projected_bounds"
+    assert box["axis_selection_policy"] == "paper_q_eigenbasis"
+    assert box["axis_matrix_layout"] == "rows_are_axes"
+    assert box["primitive_parameter_lower_clamp"] == 1e-3
+    assert box["newton_runtime_kind"] == "box"
+    assert box["contains_assigned_points"] is True
+    assert box["fit_failure_reason"] is None
+    box_dims = box["dimensions"]
+    assert box_dims["volume_formula"] == "8*hx*hy*hz"
+    assert box_dims["paper_center_world"] == box["center"]
+    assert box_dims["axis_order_policy"] == "descending_abs_q_eigenvalue"
+
+    axes = box["axes"]
+    local = [
+        [sum(point[index] * axis[index] for index in range(3)) for axis in axes]
+        for point in points
+    ]
+    lower = [min(row[index] for row in local) for index in range(3)]
+    upper = [max(row[index] for row in local) for index in range(3)]
+    center_local = [(lower[index] + upper[index]) * 0.5 for index in range(3)]
+    half_extents = [
+        max((upper[index] - lower[index]) * 0.5, 1e-3)
+        for index in range(3)
+    ]
+    center = [
+        sum(axes[axis_index][coord] * center_local[axis_index] for axis_index in range(3))
+        for coord in range(3)
+    ]
+    assert all(
+        abs(box_dims["lower_bounds"][index] - lower[index]) < 1e-9
+        for index in range(3)
+    )
+    assert all(
+        abs(box_dims["upper_bounds"][index] - upper[index]) < 1e-9
+        for index in range(3)
+    )
+    assert all(
+        abs(box_dims["paper_center_local"][index] - center_local[index]) < 1e-9
+        for index in range(3)
+    )
+    assert all(
+        abs(box_dims["paper_center_world"][index] - center[index]) < 1e-9
+        for index in range(3)
+    )
+    assert all(
+        abs(box_dims["half_extents"][index] - half_extents[index]) < 1e-9
+        for index in range(3)
+    )
+    assert all(abs(box["center"][index] - center[index]) < 1e-9 for index in range(3))
+    expected_box_volume = 8.0 * half_extents[0] * half_extents[1] * half_extents[2]
+    assert abs(box["volume"] - expected_box_volume) < 1e-9
+
+    assert sphere["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert sphere["current_implementation_kind"] == "offline_paper_sphere_fit"
+    assert sphere["fit_model"] == "paper_obb_center_max_distance_radius"
+    assert sphere["axis_selection_policy"] == "paper_obb_center"
+    assert sphere["primitive_parameter_lower_clamp"] == 1e-3
+    assert sphere["newton_runtime_kind"] == "sphere"
+    assert sphere["contains_assigned_points"] is True
+    assert sphere["fit_failure_reason"] is None
+    assert sphere["axes"] == box["axes"]
+    sphere_dims = sphere["dimensions"]
+    assert sphere_dims["center_source"] == "paper_obb_center"
+    assert sphere_dims["radius_source"] == "max_distance_from_obb_center_clamped"
+    assert sphere_dims["volume_formula"] == "4/3*pi*r^3"
+    assert sphere["center"] == box["center"]
+    unclamped_radius = max(
+        sqrt(sum((point[index] - box["center"][index]) ** 2 for index in range(3)))
+        for point in points
+    )
+    expected_radius = max(unclamped_radius, 1e-3)
+    assert abs(sphere_dims["unclamped_radius"] - unclamped_radius) < 1e-9
+    assert abs(sphere_dims["radius"] - expected_radius) < 1e-9
+    assert abs(sphere["volume"] - (4.0 / 3.0) * pi * expected_radius**3) < 1e-9
 
 
 def _assert_intake_case(case, *, arity, generated_triangles):
@@ -143,8 +234,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithful_offline_supported"] is False
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
-    assert report["failure_labels"] == ["paper_obb_sphere_fit_faithfulness_missing"]
-    assert report["next_required_gate"] == "paper_obb_sphere_fit_faithfulness_audit"
+    assert report["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
+    assert report["next_required_gate"] == "paper_duplicate_vertex_preprocessing_audit"
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]
@@ -160,6 +251,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert "paper_polygon_quad_intake_policy_audit" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
+    assert "paper_obb_sphere_fit_faithfulness_audit" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
@@ -168,6 +262,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_three_face_chain",
         "paper_disconnected_components",
         "paper_component_pair_threshold_blocked",
+        "paper_tiny_sphere_clamp",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
         "paper_nested_primitive",
@@ -175,6 +270,10 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_polygon_face_intake",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
+    for case in cases.values():
+        for audit in case["primitive_fit_audits"]:
+            paper_primitives = [row["paper_primitive"] for row in audit["candidates"]]
+            assert len(paper_primitives) == len(set(paper_primitives))
 
     single_box = cases["paper_single_box"]
     assert single_box["source_mesh"]["face_arity_policy"] == "triangle_only_fixture"
@@ -183,7 +282,44 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert single_box["operator_audit"]["epsilon"] == 1e-6
     assert single_box["operator_audit"]["faces"][0]["q_matrix"]
     assert single_box["operator_audit"]["merged_group"]["eigenvalues"]
-    assert abs(single_box["primitive_fit_audit"]["selected"]["volume"] - 1.0) < 3e-6
+    assert single_box["operator_audit"]["merged_group"]["eigenvector_matrix_layout"] == (
+        "columns_are_eigenvectors"
+    )
+    assert abs(single_box["primitive_fit_audit"]["selected"]["volume"] - 1.0) < 3e-3
+
+    single_box_points = [
+        [0.0, 0.0, 0.0],
+        [2.0, 0.0, 0.0],
+        [2.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.5],
+        [2.0, 0.0, 0.5],
+        [2.0, 1.0, 0.5],
+        [0.0, 1.0, 0.5],
+    ]
+    quad_face_points = [
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [1.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+    ]
+    tiny_sphere_clamp_points = [
+        [0.0, 0.0, 0.0],
+        [0.0001, 0.0, 0.0],
+        [0.0, 0.0001, 0.0],
+    ]
+    _assert_paper_obb_sphere_rows(single_box, single_box_points)
+    _assert_paper_obb_sphere_rows(cases["paper_quad_face_intake"], quad_face_points)
+    _assert_paper_obb_sphere_rows(
+        cases["paper_tiny_sphere_clamp"],
+        tiny_sphere_clamp_points,
+    )
+    tiny_sphere = _candidate_by_paper_primitive(
+        cases["paper_tiny_sphere_clamp"]["primitive_fit_audit"],
+        "sphere",
+    )
+    assert tiny_sphere["dimensions"]["unclamped_radius"] < 1e-3
+    assert tiny_sphere["dimensions"]["radius"] == 1e-3
 
     primitive_types = {
         row["paper_primitive"] for row in single_box["primitive_fit_audit"]["candidates"]
@@ -196,19 +332,11 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "frustum",
         "trapezoidal_prism",
     }
-    box = [
-        row
-        for row in single_box["primitive_fit_audit"]["candidates"]
-        if row["paper_primitive"] == "oriented_bounding_box"
-    ][0]
-    assert box["implementation_status"] == "current_surrogate_not_paper_faithful"
-    assert box["fit_model"] == "current_cpd_like_surrogate_fit"
-    assert box["primitive_parameter_lower_clamp"] == 1e-6
-    capsule = [
-        row
-        for row in single_box["primitive_fit_audit"]["candidates"]
-        if row["paper_primitive"] == "capsule"
-    ][0]
+    box = _candidate_by_paper_primitive(
+        single_box["primitive_fit_audit"],
+        "oriented_bounding_box",
+    )
+    capsule = _candidate_by_paper_primitive(single_box["primitive_fit_audit"], "capsule")
     assert capsule["implementation_status"] == "paper_shaped_offline_fit_audit"
     assert capsule["fit_model"] == "paper_capsule_min_volume_over_axes_with_spherical_cap_height"
     assert capsule["axis_selection_policy"] == "min_volume_capsule_axis"
@@ -232,16 +360,6 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert capsule_selected_axis_row["capsule_volume"] == min(capsule_axis_volumes)
     assert capsule_selected_axis_row["capsule_volume"] == capsule["volume"]
     assert capsule_selected_axis_row["contains_assigned_points"] is True
-    single_box_points = [
-        [0.0, 0.0, 0.0],
-        [2.0, 0.0, 0.0],
-        [2.0, 1.0, 0.0],
-        [0.0, 1.0, 0.0],
-        [0.0, 0.0, 0.5],
-        [2.0, 0.0, 0.5],
-        [2.0, 1.0, 0.5],
-        [0.0, 1.0, 0.5],
-    ]
     axis_point = box["center"]
     for candidate in capsule_dims["paper_capsule_axis_candidates"]:
         axis = capsule["axes"][candidate["axis_index"]]
@@ -266,11 +384,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     )
     assert abs(capsule["volume"] - expected_capsule_volume) < 1e-9
     assert abs(capsule["weighted_volume"] - capsule["volume"]) < 1e-9
-    capped = [
-        row
-        for row in single_box["primitive_fit_audit"]["candidates"]
-        if row["paper_primitive"] == "capped_cylinder"
-    ][0]
+    capped = _candidate_by_paper_primitive(single_box["primitive_fit_audit"], "capped_cylinder")
     assert capped["implementation_status"] == "paper_shaped_offline_fit_audit"
     assert capped["fit_model"] == "paper_flat_capped_cylinder_min_volume_over_axes"
     assert capped["newton_runtime_kind"] == "offline_only_unmapped"
@@ -314,17 +428,16 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert cost["intersection_volume_term_included"] is False
     assert cost["paper_weights"]["capped_cylinder"] == 1.05
     assert cost["priority_queue_policy"] == "greedy_single_pop_fixture"
+    assert cost["left_primitive"] == cost["left_fit_audit"]["selected"]["paper_primitive"]
+    assert cost["right_primitive"] == cost["right_fit_audit"]["selected"]["paper_primitive"]
+    assert cost["merged_primitive"] == cost["merged_fit_audit"]["selected"]["paper_primitive"]
     assert cost["left_fit_audit"]["source_faces"] == [0]
     assert cost["right_fit_audit"]["source_faces"] == [1]
     assert cost["merged_fit_audit"]["source_faces"] == [0, 1]
     assert cost["left_fit_audit"]["candidates"]
     assert cost["right_fit_audit"]["candidates"]
     assert cost["merged_fit_audit"]["candidates"]
-    merge_frustum = [
-        row
-        for row in merge_case["primitive_fit_audit"]["candidates"]
-        if row["paper_primitive"] == "frustum"
-    ][0]
+    merge_frustum = _candidate_by_paper_primitive(merge_case["primitive_fit_audit"], "frustum")
     assert merge_frustum["contains_assigned_points"] is True
     assert merge_frustum["fit_failure_reason"] is None
 
@@ -376,6 +489,18 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         assert "paper_base_cost" in event
         assert "weighted_priority_cost" in event
         assert "queue_key" in event
+        assert event["left_primitive"]
+        assert event["right_primitive"]
+        assert event["merged_primitive"]
+        assert isfinite(event["paper_base_cost"])
+        assert isfinite(event["weighted_priority_cost"])
+        assert event["queue_key"] == [
+            event["weighted_priority_cost"],
+            event["paper_base_cost"],
+            event["source_faces_left"],
+            event["source_faces_right"],
+            event["insertion_order"],
+        ]
         assert "source_faces_left" in event
         assert "source_faces_right" in event
         assert event["edge_source"] == "topology"

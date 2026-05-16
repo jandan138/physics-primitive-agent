@@ -8,7 +8,6 @@ from numpy.typing import NDArray
 
 from primitive_collision_compiler.baselines.cpd_like.primitives import (
     MIN_DIMENSION,
-    fit_primitive_candidates,
 )
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
 
@@ -20,6 +19,7 @@ CPD_PAPER_OFFLINE_STATUS_SEMANTICS = (
     "fixture_scoped_paper_mechanics_audit_not_full_reproduction"
 )
 PAPER_Q_EPSILON = 1e-6
+PAPER_PRIMITIVE_MIN_DIMENSION = 1e-3
 PAPER_PRIMITIVE_WEIGHTS = {
     "oriented_bounding_box": 1.0,
     "sphere": 1.0,
@@ -28,7 +28,6 @@ PAPER_PRIMITIVE_WEIGHTS = {
     "frustum": 2.1,
     "trapezoidal_prism": 1.4,
 }
-_CURRENT_PRIMITIVE_SUBSET = ("box", "sphere")
 _AUDITED_PAPER_PRIMITIVES = (
     "oriented_bounding_box",
     "sphere",
@@ -83,7 +82,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
-        "paper_obb_sphere_fit_faithfulness",
+        "paper_duplicate_vertex_preprocessing",
     ]
     return {
         "stage": "cpd_paper_offline_report",
@@ -102,7 +101,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_obb_sphere_fit_faithfulness_audit",
+        "next_required_gate": "paper_duplicate_vertex_preprocessing_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -115,6 +114,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "component_pair_threshold_blocking_audit",
                 "postprocess_enclosed_primitive_culling_audit",
                 "paper_polygon_quad_intake_policy_audit",
+                "paper_obb_sphere_fit_faithfulness_audit",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -282,6 +282,7 @@ def _group_operator_payload(
         "q_matrix": _matrix(operator),
         "eigenvalues": [float(value) for value in sorted_values],
         "eigenvectors": _matrix(sorted_vectors),
+        "eigenvector_matrix_layout": "columns_are_eigenvectors",
         "degeneracy_labels": _operator_degeneracy_labels(operator),
     }
     if source_face_intake_audit is not None:
@@ -295,8 +296,11 @@ def _primitive_fit_audit_payload(
     face_group: frozenset[int],
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
 ) -> dict[str, object]:
-    candidates = fit_primitive_candidates(mesh, face_group, _CURRENT_PRIMITIVE_SUBSET)
-    rows = [_candidate_payload(candidate) for candidate in candidates]
+    obb_row = _paper_obb_candidate_payload(mesh, face_group)
+    rows = [
+        obb_row,
+        _paper_sphere_candidate_payload(mesh, face_group, obb_row),
+    ]
     rows.append(_paper_capsule_candidate_payload(mesh, face_group))
     rows.append(_flat_capped_cylinder_candidate_payload(mesh, face_group))
     rows.append(_frustum_candidate_payload(mesh, face_group))
@@ -320,6 +324,80 @@ def _primitive_fit_audit_payload(
         payload["generated_triangle_face_ids"] = generated_triangle_face_ids
         payload["source_face_ids"] = source_face_ids
     return payload
+
+
+def _paper_obb_candidate_payload(
+    mesh: TriangleMesh,
+    face_group: frozenset[int],
+) -> dict[str, object]:
+    points = _assigned_points(mesh, face_group)
+    axes = _candidate_axes(mesh, face_group)
+    local = points @ axes
+    lower = local.min(axis=0)
+    upper = local.max(axis=0)
+    center_local = (lower + upper) * 0.5
+    half_extents = np.maximum(
+        (upper - lower) * 0.5,
+        PAPER_PRIMITIVE_MIN_DIMENSION,
+    )
+    center = axes @ center_local
+    volume = float(8.0 * np.prod(half_extents))
+    contains = bool(np.all(np.abs(local - center_local) <= half_extents + 1e-8))
+    return _offline_paper_candidate_payload(
+        paper_primitive="oriented_bounding_box",
+        current_implementation_kind="offline_paper_oriented_bounding_box_fit",
+        fit_model="paper_operator_eigenbasis_projected_bounds",
+        axis_selection_policy="paper_q_eigenbasis",
+        center=center,
+        axes=axes,
+        dimensions={
+            "lower_bounds": _vector(lower),
+            "upper_bounds": _vector(upper),
+            "paper_center_local": _vector(center_local),
+            "paper_center_world": _vector(center),
+            "half_extents": _vector(half_extents),
+            "axis_order_policy": "descending_abs_q_eigenvalue",
+            "volume_formula": "8*hx*hy*hz",
+        },
+        volume=volume,
+        contains_assigned_points=contains,
+        newton_runtime_kind="box",
+        primitive_parameter_lower_clamp=PAPER_PRIMITIVE_MIN_DIMENSION,
+    )
+
+
+def _paper_sphere_candidate_payload(
+    mesh: TriangleMesh,
+    face_group: frozenset[int],
+    obb_row: dict[str, object],
+) -> dict[str, object]:
+    points = _assigned_points(mesh, face_group)
+    center = np.asarray(obb_row["center"], dtype=np.float64)
+    axes = np.asarray(obb_row["axes"], dtype=np.float64).T
+    distances = np.linalg.norm(points - center, axis=1)
+    unclamped_radius = float(distances.max(initial=0.0))
+    radius = max(unclamped_radius, PAPER_PRIMITIVE_MIN_DIMENSION)
+    volume = float((4.0 / 3.0) * pi * radius**3)
+    contains = bool(np.all(distances <= radius + 1e-8))
+    return _offline_paper_candidate_payload(
+        paper_primitive="sphere",
+        current_implementation_kind="offline_paper_sphere_fit",
+        fit_model="paper_obb_center_max_distance_radius",
+        axis_selection_policy="paper_obb_center",
+        center=center,
+        axes=axes,
+        dimensions={
+            "radius": radius,
+            "center_source": "paper_obb_center",
+            "radius_source": "max_distance_from_obb_center_clamped",
+            "unclamped_radius": unclamped_radius,
+            "volume_formula": "4/3*pi*r^3",
+        },
+        volume=volume,
+        contains_assigned_points=contains,
+        newton_runtime_kind="sphere",
+        primitive_parameter_lower_clamp=PAPER_PRIMITIVE_MIN_DIMENSION,
+    )
 
 
 def _candidate_payload(candidate) -> dict[str, object]:
@@ -356,6 +434,7 @@ def _offline_paper_candidate_payload(
     volume: float,
     contains_assigned_points: bool,
     newton_runtime_kind: str = "offline_only_unmapped",
+    primitive_parameter_lower_clamp: float = MIN_DIMENSION,
 ) -> dict[str, object]:
     weight = PAPER_PRIMITIVE_WEIGHTS[paper_primitive]
     return {
@@ -366,12 +445,13 @@ def _offline_paper_candidate_payload(
         "fit_model": fit_model,
         "paper_primitive_variant": paper_primitive,
         "axis_selection_policy": axis_selection_policy,
-        "primitive_parameter_lower_clamp": MIN_DIMENSION,
+        "primitive_parameter_lower_clamp": primitive_parameter_lower_clamp,
         "containment_tolerance": 1e-8,
         "fit_failure_reason": None if contains_assigned_points else "assigned_points_not_contained",
         "newton_runtime_kind": newton_runtime_kind,
         "center": _vector(center),
         "axes": _matrix(axes.T),
+        "axis_matrix_layout": "rows_are_axes",
         "dimensions": dimensions,
         "volume": float(volume),
         "paper_weight": float(weight),
@@ -1044,8 +1124,9 @@ def _assigned_points(mesh: TriangleMesh, face_group: frozenset[int]) -> NDArray[
 
 def _candidate_axes(mesh: TriangleMesh, face_group: frozenset[int]) -> NDArray[np.float64]:
     operator = _group_operator(mesh, face_group)
-    _, eigenvectors = np.linalg.eigh(operator)
-    axes = eigenvectors[:, ::-1]
+    eigenvalues, eigenvectors = np.linalg.eigh(operator)
+    order = np.argsort(np.abs(eigenvalues))[::-1]
+    axes = eigenvectors[:, order]
     if np.linalg.det(axes) < 0:
         axes[:, -1] *= -1.0
     return axes
@@ -1544,6 +1625,12 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             component_pair_excess_volume_threshold=0.0,
         ),
         _PaperToyCase(
+            case_id="paper_tiny_sphere_clamp",
+            description="tiny triangle fixture exercising paper OBB/sphere primitive-parameter clamp",
+            mesh=_tiny_sphere_clamp_mesh(),
+            face_groups=(frozenset({0}),),
+        ),
+        _PaperToyCase(
             case_id="paper_frustum_like",
             description="tapered triangle mesh for first offline frustum fit audit",
             mesh=_frustum_like_mesh(),
@@ -1668,6 +1755,19 @@ def _disconnected_components_mesh() -> TriangleMesh:
         ],
         dtype=np.int64,
     )
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _tiny_sphere_clamp_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [0.0001, 0.0, 0.0],
+            [0.0, 0.0001, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array([[0, 1, 2]], dtype=np.int64)
     return TriangleMesh(points=points, faces=faces)
 
 

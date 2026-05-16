@@ -31,17 +31,19 @@ lookahead-changed package pair are now complete under recorded settings. The fir
 fixture-scoped `cpd_paper_offline_report` slice is now implemented as a command-only partial
 offline paper-lane audit over `paper_single_box`, `paper_two_face_merge`,
 `paper_three_face_chain`, `paper_disconnected_components`, `paper_component_pair_threshold_blocked`,
-`paper_frustum_like`, `paper_trapezoid_prism_like`, `paper_nested_primitive`,
+`paper_tiny_sphere_clamp`, `paper_frustum_like`, `paper_trapezoid_prism_like`,
+`paper_nested_primitive`,
 `paper_quad_face_intake`, and `paper_polygon_face_intake`. It records paper operator,
-primitive-fit subset, left/right/merged merge-cost inputs, an offline paper-shaped capsule axis
-audit row, offline-only flat capped-cylinder/frustum/trapezoidal-prism candidate rows,
+primitive-fit subset, left/right/merged merge-cost inputs, offline paper-shaped OBB/sphere fit
+audit rows, an offline paper-shaped capsule axis audit row, offline-only flat
+capped-cylinder/frustum/trapezoidal-prism candidate rows,
 base-collapse-cost versus weighted-priority-cost fields, a topology-only priority-queue trace with
 eager stale pruning, a threshold-disabled component-pair insertion trace, a finite-threshold
 component-pair blocked trace, an explicit identity-axis OBB enclosed-primitive postprocess cull
 audit, and a fan-triangulated quad/polygon source-face intake policy audit while keeping Newton,
 bed/Franka, package generation, and benchmark work out of scope. The audited primitive rows,
-postprocess cull, and intake policy are fixture-scoped audit data, not paper-faithful fitting or a
-full decomposition. The next paper-lane gate is `paper_obb_sphere_fit_faithfulness_audit`, not a
+postprocess cull, and intake policy are fixture-scoped audit data, not a full decomposition. The
+next paper-lane gate is `paper_duplicate_vertex_preprocessing_audit`, not a
 capped bed/Franka rerun
 unless a separate real package change is introduced and passes full mapping, contact-canary,
 task-gate, and dated-record gates. The
@@ -88,6 +90,9 @@ records exist.
 - [CPD paper polygon/quad intake policy record](records/2026-05-16-cpd-paper-polygon-quad-intake-policy.md):
   dated implementation record for the offline fan-triangulated quad and polygon source-face intake
   policy audit in the partial `cpd_paper_offline_report`.
+- [CPD paper OBB/sphere fit-faithfulness record](records/2026-05-16-cpd-paper-obb-sphere-fit-faithfulness.md):
+  dated implementation record for the offline paper-shaped OBB/sphere fit audit in the partial
+  `cpd_paper_offline_report`.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
   asset permission-evidence validation without changing reproduction or benchmark evidence.
@@ -408,10 +413,11 @@ records exist.
   USD loading, real assets, or Newton tasks.
 - `npc-compile --run-cpd-paper-offline-report`: command-only partial offline paper-lane audit over
   `paper_single_box`, `paper_two_face_merge`, `paper_three_face_chain`,
-  `paper_disconnected_components`, `paper_component_pair_threshold_blocked`, `paper_frustum_like`,
-  `paper_trapezoid_prism_like`, `paper_nested_primitive`, `paper_quad_face_intake`, and
+  `paper_disconnected_components`, `paper_component_pair_threshold_blocked`,
+  `paper_tiny_sphere_clamp`, `paper_frustum_like`, `paper_trapezoid_prism_like`,
+  `paper_nested_primitive`, `paper_quad_face_intake`, and
   `paper_polygon_face_intake`; exits successfully when the JSON report is emitted, returns
-  `status: partial`, records current surrogate OBB/sphere rows, an offline paper-shaped capsule
+  `status: partial`, records offline paper-shaped OBB/sphere rows, an offline paper-shaped capsule
   axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, topology-only
   priority-queue trace fields, a threshold-disabled component-pair insertion trace, a
   finite-threshold component-pair blocked trace, one explicit enclosed-primitive postprocess cull
