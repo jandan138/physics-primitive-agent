@@ -23,12 +23,12 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert set(report["failure_labels"]) == {
         "polygon_and_quad_face_policy_missing",
-        "paper_flat_capped_cylinder_fit_missing",
+        "paper_capsule_axis_policy_missing",
         "full_priority_queue_trace_missing",
         "component_pair_edge_insertion_missing",
         "postprocess_enclosed_primitive_culling_missing",
     }
-    assert report["next_required_gate"] == "paper_flat_capped_cylinder_fit_audit"
+    assert report["next_required_gate"] == "paper_capsule_axis_policy_audit"
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
@@ -71,9 +71,28 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         for row in single_box["primitive_fit_audit"]["candidates"]
         if row["paper_primitive"] == "capped_cylinder"
     ][0]
-    assert capped["implementation_status"] == "current_proxy_not_paper_faithful"
-    assert capped["fit_model"] == "current_axis_span_radial_proxy_with_hemisphere_caps"
-    assert capped["newton_runtime_kind"] == "unmapped_current_proxy"
+    assert capped["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert capped["fit_model"] == "paper_flat_capped_cylinder_min_volume_over_axes"
+    assert capped["newton_runtime_kind"] == "offline_only_unmapped"
+    assert capped["contains_assigned_points"] is True
+    assert capped["fit_failure_reason"] is None
+    capped_dims = capped["dimensions"]
+    assert capped_dims["cap_model"] == "flat_caps"
+    assert capped_dims["axis_selection_policy"] == "min_volume_flat_cylinder_axis"
+    assert len(capped_dims["flat_cylinder_axis_candidates"]) == 3
+    capped_axis_volumes = [
+        row["flat_cylinder_volume"]
+        for row in capped_dims["flat_cylinder_axis_candidates"]
+    ]
+    capped_selected_axis = capped_dims["selected_axis_index"]
+    capped_selected_axis_row = [
+        row
+        for row in capped_dims["flat_cylinder_axis_candidates"]
+        if row["axis_index"] == capped_selected_axis
+    ][0]
+    assert capped_selected_axis_row["flat_cylinder_volume"] == min(capped_axis_volumes)
+    assert abs(capped["volume"] - pi * capped_dims["radius"] ** 2 * capped_dims["height"]) < 1e-9
+    assert abs(capped["weighted_volume"] - capped["volume"] * 1.05) < 1e-9
     assert single_box["primitive_fit_audit"]["missing_paper_primitives"] == []
 
     merge_case = cases["paper_two_face_merge"]

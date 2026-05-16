@@ -28,8 +28,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p002"
   section="Method"
-  original="We outline our approach, starting from initializing linear operators (Sec. linear-operator) for each face of the input mesh, corresponding to one primitive per face, and describe how to convert linear operators into primitives in Sec. primitive. We then describe our greedy approach to combine topologically adjacent linear operators, using the input mesh's face adjacency as topology. Akin to QEM's edge-collapse, we use a minimal excess volume cost function to select primitives to merge (Sec. merge), and terminate once there are either no more elements to simplify or a user-defined criteria is met (Sec. terminate). We discuss the implementation details in Sec. impl-details, and the full algorithm for our approach is given in Alg. prim-mesh-reduction."
-  translation="我们概述该方法：首先为输入网格的每个面初始化 linear operators（Sec. linear_operator），对应于每个面一个 primitive；随后在 Sec. primitive 中描述如何将 linear operators 转换为 primitives。接着，我们描述一种贪心方法，使用输入网格的面邻接关系作为拓扑，将拓扑相邻的 linear operators 合并。类似于 QEM 的 edge-collapse，我们使用最小 excess volume 代价函数来选择要合并的 primitives（Sec. merge），并在没有更多元素可简化或满足用户定义准则时终止（Sec. terminate）。我们在 Sec. impl_details 中讨论实现细节，完整算法见 Alg. prim_mesh_reduction。"
+  original="We outline our approach, starting from initializing linear operators (Sec. 3.1) for each face of the input mesh, corresponding to one primitive per face, and describe how to convert linear operators into primitives in Sec. 3.2. We then describe our greedy approach to combine topologically adjacent linear operators, using the input mesh's face adjacency as topology. Akin to QEM's edge-collapse, we use a minimal excess volume cost function to select primitives to merge (Sec. 3.3), and terminate once there are either no more elements to simplify or a user-defined criteria is met (Sec. 3.3). We discuss the implementation details in Sec. 3.4, and the full algorithm for our approach is given in Alg. 1."
+  translation="我们概述该方法：首先为输入网格的每个面初始化 linear operators（Sec. 3.1），对应于每个面一个 primitive；随后在 Sec. 3.2 中描述如何将 linear operators 转换为 primitives。接着，我们描述一种贪心方法，使用输入网格的面邻接关系作为拓扑，将拓扑相邻的 linear operators 合并。类似于 QEM 的 edge-collapse，我们使用最小 excess volume 代价函数来选择要合并的 primitives（Sec. 3.3），并在没有更多元素可简化或满足用户定义准则时终止（Sec. 3.3）。我们在 Sec. 3.4 中讨论实现细节，完整算法见 Alg. 1。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -38,7 +38,7 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <AlgorithmBlock id="method-l001"
-  label="Method / algorithm / method-l001"
+  label="Algorithm 1"
   title="Convex Primitive Decomposition"
   steps={[{"kind": "note", "depth": 0, "text": "Input: Mesh = $V\\in\\mathbb{R}^3, F_i\\subseteq V$, # Prims N$\\in\\mathbb{Z}_+$"}, {"kind": "note", "depth": 0, "text": "Volume Threshold $M\\in\\mathbb{R}_+ \\stackrel{\\text{default}}{=}\\inf$"}, {"kind": "note", "depth": 0, "text": "Output: Primitives $P \\text{ s.t. } |P| \\leq$ N"}, {"kind": "note", "depth": 0, "text": "Preprocessing Remove overlapped vertices"}, {"kind": "step", "depth": 0, "text": "$\\vect{n}_i = \\text{normal}(F_i)$, $\\vect{t}_i = \\text{tangent}(F_i)$"}, {"kind": "step", "depth": 0, "text": "$Q_i$ = area($F_i$)($\\vect{n}_i \\vect{n}_i^\\top + \\epsilon\\vect{t}_i \\vect{t}_i^\\top)$, $P_i$ = Prim($Q_i$), $\\text{Vol}(f_i) = \\text{Vol}(P_i)$"}, {"kind": "step", "depth": 0, "text": "pq : Priority Queue"}, {"kind": "for", "depth": 0, "text": "For adjacent faces $f_0, f_1$ $\\in$ F: Initialize Priority Queue"}, {"kind": "step", "depth": 1, "text": "$P^* = \\text{Prim}(f_0 + f_1)$"}, {"kind": "if", "depth": 1, "text": "If Vol($P^*$) - (Vol($f_0$) + Vol($f_1$)) > M"}, {"kind": "step", "depth": 2, "text": "continue"}, {"kind": "step", "depth": 1, "text": "pq.push(priority = Vol($P^*$) - (Vol($f_0$) + Vol($f_1$)), ($P^*$, $f_0$, $f_1$) )"}, {"kind": "while", "depth": 0, "text": "While !pq.empty() and $|P| > \\text{N}$: Greedily Merge"}, {"kind": "step", "depth": 1, "text": "($P^*$, $f_0$, $f_1$) = pq.pop()"}, {"kind": "step", "depth": 1, "text": "Vol($f_0$) = Vol($f_1$) = Vol($P^*$)"}, {"kind": "step", "depth": 1, "text": "$P_{f_0} = P_{f_1} =$ $P^*$ Set both faces to new primitive"}, {"kind": "step", "depth": 1, "text": "Update Costs of Adjacent Primitives"}, {"kind": "note", "depth": 0, "text": "Postprocessing { Remove primitives enclosed by other primitives}"}, {"kind": "return", "depth": 0, "text": "Return Unique Primitives $P_i$"}]}
 />
@@ -70,7 +70,7 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <FigurePanel id="method-l002-figure"
-  title="Method / SCfigure / method-l002"
+  title="Figure 2"
   caption="A visualization of the area weighted $Q$ of an input mesh (shown in blue), and our approach's output primitives. The output primitives from our approach are aligned with the faces they enclose. In the output, cylinders are yellow, oriented boxes are green, and eigenvectors of the input $Q$ for each face are red arrows."
   images={["paper-assets/plots/eigen_input.webp", "paper-assets/assets/elbow_output.webp"]}
 />
@@ -100,8 +100,8 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <FigurePanel id="method-l003-figure"
-  title="Method / wrapfigure / method-l003"
-  caption="Source-paper figure."
+  title="Figure 3"
+  caption=""
   images={["paper-assets/plots/cube_diagram.webp", "paper-assets/plots/cylinder_diagram_crop.webp"]}
 />
 
@@ -146,8 +146,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p010"
   section="Method"
-  original="Our approach supports arbitrary primitives which satisfy an interface. Primitives must have efficient volume computation, be constructible as zero-volume elements with a given orientation and position, and support strictly increasing their parameters to enclose an unordered set of points. For our implementation, we use oriented bounding boxes, spheres, capped cylinders, capsules, frustums, and isosceles trapezoidal prisms, shown in Fig. primitives. We outline our implementation of the interface for each primitive below. For each primitive, the points it subsumes are denoted as $\vect{p}_i\in\mathbb{R}^{n\times3}$. We informally define subsuming as when a primitive must enclose a point. This does not include points primitives enclose but are not required to."
-  translation="我们的方法支持满足接口要求的任意 primitives。Primitives 必须能够高效计算体积，能够在给定方向和位置下构造为零体积元素，并支持严格增大其参数以包围一组无序点。在我们的实现中，我们使用 oriented bounding boxes、spheres、capped cylinders、capsules、frustums 和 isosceles trapezoidal prisms，如 Fig. primitives 所示。下面概述每个 primitive 的接口实现。对于每个 primitive，其 subsume 的点记为 $p_i\in\mathbb{R}^{n\times3}$。我们非正式地将 subsuming 定义为 primitive 必须包围某个点的情形。这不包括 primitive 包围了但并非必须包围的点。"
+  original="Our approach supports arbitrary primitives which satisfy an interface. Primitives must have efficient volume computation, be constructible as zero-volume elements with a given orientation and position, and support strictly increasing their parameters to enclose an unordered set of points. For our implementation, we use oriented bounding boxes, spheres, capped cylinders, capsules, frustums, and isosceles trapezoidal prisms, shown in Fig. 4. We outline our implementation of the interface for each primitive below. For each primitive, the points it subsumes are denoted as $\vect{p}_i\in\mathbb{R}^{n\times3}$. We informally define subsuming as when a primitive must enclose a point. This does not include points primitives enclose but are not required to."
+  translation="我们的方法支持满足接口要求的任意 primitives。Primitives 必须能够高效计算体积，能够在给定方向和位置下构造为零体积元素，并支持严格增大其参数以包围一组无序点。在我们的实现中，我们使用 oriented bounding boxes、spheres、capped cylinders、capsules、frustums 和 isosceles trapezoidal prisms，如 Fig. 4 所示。下面概述每个 primitive 的接口实现。对于每个 primitive，其 subsume 的点记为 $p_i\in\mathbb{R}^{n\times3}$。我们非正式地将 subsuming 定义为 primitive 必须包围某个点的情形。这不包括 primitive 包围了但并非必须包围的点。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -156,7 +156,7 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <FigurePanel id="method-l004-figure"
-  title="Method / figure / method-l004"
+  title="Figure 4"
   caption="Primitives supported in our approach. First, axes are computed as the eigendecomposition of a quadric, $a_z$ corresponds to the minimum eigenvalue's eigenvector, $a_x$ the max. These axes are then used to compute an oriented bounding box (OBB). The OBB's center $c$ and the axes are then used to fit all other primitives."
   images={["paper-assets/plots/primitives.webp"]}
 />
@@ -210,7 +210,7 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <EquationBlock id="method-l005"
-  label="Method / align / method-l005"
+  label="Equation (2)"
   latex={"\\begin{align}\n\\text{r} &= \\max\\limits_{\\vect{p}\\in P}(\\lVert(\\mathrm{I} - \\vect{a}\\vect{a}^\\top) (\\vect{p} - \\vect{p}_\\text{cyl}) \\rVert_2) \\nonumber\\\\\n\\text{h} &= \\max\\limits_{\\vect{p}\\in P}(\\vect{a}^\\top (\\vect{p} - \\vect{p}_\\text{cyl})) - \\min\\limits_{\\vect{p}\\in P}(\\vect{a}^\\top (\\vect{p} - \\vect{p}_\\text{cyl}))\n\\end{align}"}
 />
 
@@ -239,7 +239,7 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <EquationBlock id="method-l006"
-  label="Method / align / method-l006"
+  label=""
   latex={"\\begin{align}\n    r(\\vect{p}) &= \\lVert(\\mathrm{I} - \\vect{a}\\vect{a}^\\top)(\\vect{p} - \\vect{p}_\\text{cap}) \\rVert_2 \\\\\\nonumber\n    \\text{h}(\\vect{p}) &= \\vect{a}^\\top (\\vect{p} - \\vect{p}_\\text{cap}) - \\sqrt{r^2 - r(\\vect{p})^2} \\\\\\nonumber\n    \\text{height} &= \\max\\limits_{\\vect{p}\\in P}(\\text{h}(\\vect{p})) - \\min\\limits_{\\vect{p}\\in P}(\\text{h}(\\vect{p})) \\\\\\nonumber\n\\end{align}"}
 />
 
@@ -258,8 +258,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p018"
   section="Method"
-  original="Frustum: To capture conical structures, we also implement frustums. Frustums are initialized from the axis of the minimum cost cylinder, with a position on the base $\vect{p}$, and axis $\vect{a}$. The height is set identically to cylinders. The radius of the top and bottom faces are set using the algorithm shown in. Alg. frustum. The volume of the output frustum is given by $\frac{\pi h}{3}(r_\text{top}^2 + r_\text{top} r_\text{bot} + r_\text{bot}^2)$."
-  translation="Frustum：为了捕捉锥形结构，我们也实现了 frustums。Frustums 由最小代价 cylinder 的轴初始化，包含底面上的位置 $p$ 和轴 $a$。高度设置与 cylinders 完全相同。顶面和底面的半径使用 Alg. frustum 所示算法设置。输出 frustum 的体积为 $\frac{\pi h}{3}(r_\text{top}^2 + r_\text{top} r_\text{bot} + r_\text{bot}^2)$。"
+  original="Frustum: To capture conical structures, we also implement frustums. Frustums are initialized from the axis of the minimum cost cylinder, with a position on the base $\vect{p}$, and axis $\vect{a}$. The height is set identically to cylinders. The radius of the top and bottom faces are set using the algorithm shown in. Alg. 2. The volume of the output frustum is given by $\frac{\pi h}{3}(r_\text{top}^2 + r_\text{top} r_\text{bot} + r_\text{bot}^2)$."
+  translation="Frustum：为了捕捉锥形结构，我们也实现了 frustums。Frustums 由最小代价 cylinder 的轴初始化，包含底面上的位置 $p$ 和轴 $a$。高度设置与 cylinders 完全相同。顶面和底面的半径使用 Alg. 2 所示算法设置。输出 frustum 的体积为 $\frac{\pi h}{3}(r_\text{top}^2 + r_\text{top} r_\text{bot} + r_\text{bot}^2)$。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -294,8 +294,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p021"
   section="Method"
-  original="Pseudocode for computing $h_{zt}, h_{zb}$ is given in the Appendix, Alg. isotrap. The volume of the resulting trapezoidal prism is $4h_x h_y (h_{zt} + h_{zb})$, with the factor of 4 as $h_\bullet$ are half-extents."
-  translation="计算 $h_{zt}, h_{zb}$ 的伪代码见 Appendix 中的 Alg. isotrap。所得 trapezoidal prism 的体积为 $4h_x h_y (h_{zt} + h_{zb})$；因 $h_\bullet$ 是 half-extents，所以有因子 4。"
+  original="Pseudocode for computing $h_{zt}, h_{zb}$ is given in the Appendix, Alg. 3. The volume of the resulting trapezoidal prism is $4h_x h_y (h_{zt} + h_{zb})$, with the factor of 4 as $h_\bullet$ are half-extents."
+  translation="计算 $h_{zt}, h_{zb}$ 的伪代码见 Appendix 中的 Alg. 3。所得 trapezoidal prism 的体积为 $4h_x h_y (h_{zt} + h_{zb})$；因 $h_\bullet$ 是 half-extents，所以有因子 4。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -330,8 +330,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p024"
   section="Method"
-  original="Face-Based Mesh Reduction: [qem] and [sqem] rely on merging vertices to approximate positions on the input mesh, and the surface is defined by the edges and faces connecting these vertices, but our approach uses discrete primitives to represent the input's surface. Allowing each vertex to be covered by only one primitive does not cover the surface, leaving holes in the output. For example, consider the output primitives if no edges are contracted: the output would be small primitives around each vertex, a poor approximation of the input shape. To remedy this, primitives subsume faces of the mesh, similar to [hierarchical_face_clustering_on_polygonal_surfaces]. Each primitive covers all vertices of each face it subsumes, allowing vertices to be covered by multiple primitives and the union of all primitives covers the mesh's surface. We show the poor output of using one primitive per vertex in Sec. ablate-vertex-face-merging, Fig. ablate-vertex-merging."
-  translation="基于面的网格简化：[qem] 和 [sqem] 依赖合并顶点来近似输入网格上的位置，曲面由连接这些顶点的边和面定义；但我们的方法使用离散 primitives 表示输入表面。若允许每个顶点只被一个 primitive 覆盖，则无法覆盖整个表面，会在输出中留下孔洞。例如，考虑没有收缩任何边时的输出 primitives：输出将是围绕每个顶点的小 primitives，这是对输入形状的较差近似。为了解决这个问题，primitives 会 subsume 网格的面，类似于 [hierarchical_face_clustering_on_polygonal_surfaces]。每个 primitive 覆盖其 subsume 的每个面的所有顶点，使顶点可以被多个 primitives 覆盖，并且所有 primitives 的并集覆盖网格表面。我们在 Sec. ablate-vertex-face-merging, Fig. ablate-vertex-merging 中展示了每个顶点使用一个 primitive 的较差输出。"
+  original="Face-Based Mesh Reduction: [qem] and [sqem] rely on merging vertices to approximate positions on the input mesh, and the surface is defined by the edges and faces connecting these vertices, but our approach uses discrete primitives to represent the input's surface. Allowing each vertex to be covered by only one primitive does not cover the surface, leaving holes in the output. For example, consider the output primitives if no edges are contracted: the output would be small primitives around each vertex, a poor approximation of the input shape. To remedy this, primitives subsume faces of the mesh, similar to [hierarchical_face_clustering_on_polygonal_surfaces]. Each primitive covers all vertices of each face it subsumes, allowing vertices to be covered by multiple primitives and the union of all primitives covers the mesh's surface. We show the poor output of using one primitive per vertex in Sec. 5, Fig. 13."
+  translation="基于面的网格简化：[qem] 和 [sqem] 依赖合并顶点来近似输入网格上的位置，曲面由连接这些顶点的边和面定义；但我们的方法使用离散 primitives 表示输入表面。若允许每个顶点只被一个 primitive 覆盖，则无法覆盖整个表面，会在输出中留下孔洞。例如，考虑没有收缩任何边时的输出 primitives：输出将是围绕每个顶点的小 primitives，这是对输入形状的较差近似。为了解决这个问题，primitives 会 subsume 网格的面，类似于 [hierarchical_face_clustering_on_polygonal_surfaces]。每个 primitive 覆盖其 subsume 的每个面的所有顶点，使顶点可以被多个 primitives 覆盖，并且所有 primitives 的并集覆盖网格表面。我们在 Sec. 5, Fig. 13 中展示了每个顶点使用一个 primitive 的较差输出。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -366,7 +366,7 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <EquationBlock id="method-l007"
-  label="Method / equation / method-l007"
+  label="Equation (3)"
   latex={"\\begin{equation}\\label{eq:exact_cost}\n    C(p_0, p_1) = V(\\text{merge}(p_0, p_1)) - (V(p_0) + V(p_1))\n\\end{equation}"}
 />
 
@@ -385,8 +385,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p028"
   section="Method"
-  original="Overlapping Primitives: Eq. exact-cost does not account for double-counted volume of intersecting primitives, which would instead lead to the following cost function:"
-  translation="Overlapping Primitives：Eq. exact_cost 没有考虑相交 primitives 的重复计数体积；若考虑这一点，则会得到以下代价函数："
+  original="Overlapping Primitives: Eq. (3) does not account for double-counted volume of intersecting primitives, which would instead lead to the following cost function:"
+  translation="Overlapping Primitives：Eq. (3) 没有考虑相交 primitives 的重复计数体积；若考虑这一点，则会得到以下代价函数："
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -395,15 +395,15 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <EquationBlock id="method-l008"
-  label="Method / equation / method-l008"
+  label="Equation (4)"
   latex={"\\begin{equation}\\label{eq:cost_with_isect}\n    C(p_0, p_1) = V(\\text{merge}(p_0, p_1)) - (V(p_0) + V(p_1) - V(p_0 \\cap p_1))\n\\end{equation}"}
 />
 
 <PaperBlock
   id="method-p029"
   section="Method"
-  original="This primary reason we do not include the volume of the intersection is because such a computation is expensive, especially if computed exactly using mesh booleans, and we experimentally find little quality increase when adding in this term. Even an approximate approach, such as rejection sampling, incurs a high penalty. In practice, primitives do not overlap much, especially for clean meshes designed for games. Despite Eq. exact-cost's simplicity, it performs well in practice, and we leave exploration of alternatives to future work. We ablate Eq. exact-cost against Eq. cost-with-isect using rejection sampling in Sec. ablate-isect, Fig. ablate-isect, and find minuscule improvement but high computational cost, at least 30$\times$ the wall-clock time."
-  translation="我们不包含交集体积的主要原因是这种计算代价高昂，特别是若使用 mesh booleans 进行精确计算；而实验上我们发现加入该项带来的质量提升很小。即使采用 rejection sampling 等近似方法，也会产生很高的代价。实践中，primitives 的重叠并不多，尤其是对于为游戏设计的干净网格。尽管 Eq. exact_cost 很简单，它在实践中表现良好，我们将替代方案的探索留给未来工作。我们在 Sec. ablate-isect, Fig. ablate-isect 中使用 rejection sampling 对比消融 Eq. exact_cost 与 Eq. cost_with_isect，发现改进极小但计算成本很高，wall-clock time 至少增加 30$\times$。"
+  original="This primary reason we do not include the volume of the intersection is because such a computation is expensive, especially if computed exactly using mesh booleans, and we experimentally find little quality increase when adding in this term. Even an approximate approach, such as rejection sampling, incurs a high penalty. In practice, primitives do not overlap much, especially for clean meshes designed for games. Despite Eq. (3)'s simplicity, it performs well in practice, and we leave exploration of alternatives to future work. We ablate Eq. (3) against Eq. (4) using rejection sampling in Sec. 5, Fig. 18, and find minuscule improvement but high computational cost, at least 30$\times$ the wall-clock time."
+  translation="我们不包含交集体积的主要原因是这种计算代价高昂，特别是若使用 mesh booleans 进行精确计算；而实验上我们发现加入该项带来的质量提升很小。即使采用 rejection sampling 等近似方法，也会产生很高的代价。实践中，primitives 的重叠并不多，尤其是对于为游戏设计的干净网格。尽管 Eq. (3) 很简单，它在实践中表现良好，我们将替代方案的探索留给未来工作。我们在 Sec. 5, Fig. 18 中使用 rejection sampling 对比消融 Eq. (3) 与 Eq. (4)，发现改进极小但计算成本很高，wall-clock time 至少增加 30$\times$。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -414,8 +414,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p030"
   section="Method"
-  original="Handling Different Primitive Costs.: In downstream applications, geometric fit is not the only consideration, as primitive variants incur different costs. For example, physics engines have primitives for boxes, capsules, and spheres giving them better performance. When merging primitives based only on volume though, prisms often have lower volume than OBBs, a subset of trapezoidal prisms with $h_{zt} = h_{zb}$, which may lead to lower simulation performance. To incorporate preferences over shape variants, we combine our cost function with a user-provided weighting: $V'(p) = k(p) V(p)$. $k(p)$ depends on the type of primitive, and can be set per target application. We use a weight of 1.05 for cylinders, 1.4 for trapezoidal prisms, 1.0 for capsules, spheres and bounding boxes, and 2.1 for frustums. Our weighting heavily prefers bounding boxes, capsules and spheres due to their support in physics engines. We penalize cylinders, as when they have small radius and large height there is little visible difference between cylinders and capsules, but capsules are more performant. Depending on use case, this weighting can be tuned, but these values strike a good balance between performance and geometric accuracy. We ablate our choice of weights as compared to a uniform and alternative weighting in Sec. ablate-primitive-costs, Fig. ablate-primitive-cost."
-  translation="处理不同 Primitive Costs：在下游应用中，几何拟合并不是唯一考虑因素，因为不同 primitive 变体会产生不同代价。例如，物理引擎通常有 boxes、capsules 和 spheres 的 primitives，因此性能更好。然而，当仅基于体积合并 primitives 时，prisms 往往比 OBBs 体积更小；OBBs 是满足 $h_{zt} = h_{zb}$ 的 trapezoidal prisms 子集，这可能导致较低的仿真性能。为了纳入对形状变体的偏好，我们将代价函数与用户提供的权重结合：$V'(p) = k(p) V(p)$。$k(p)$ 取决于 primitive 类型，并可针对目标应用设置。我们对 cylinders 使用 1.05 的权重，对 trapezoidal prisms 使用 1.4，对 capsules、spheres 和 bounding boxes 使用 1.0，对 frustums 使用 2.1。由于 bounding boxes、capsules 和 spheres 在物理引擎中受到支持，我们的权重强烈偏好它们。我们惩罚 cylinders，因为当它们半径小且高度大时，cylinders 与 capsules 的视觉差异很小，但 capsules 性能更高。根据用例，该权重可以调整；但这些数值在性能与几何精度之间取得了良好平衡。我们在 Sec. ablate-primitive-costs, Fig. ablate-primitive-cost 中将所选权重与 uniform 和 alternative weighting 进行了消融比较。"
+  original="Handling Different Primitive Costs.: In downstream applications, geometric fit is not the only consideration, as primitive variants incur different costs. For example, physics engines have primitives for boxes, capsules, and spheres giving them better performance. When merging primitives based only on volume though, prisms often have lower volume than OBBs, a subset of trapezoidal prisms with $h_{zt} = h_{zb}$, which may lead to lower simulation performance. To incorporate preferences over shape variants, we combine our cost function with a user-provided weighting: $V'(p) = k(p) V(p)$. $k(p)$ depends on the type of primitive, and can be set per target application. We use a weight of 1.05 for cylinders, 1.4 for trapezoidal prisms, 1.0 for capsules, spheres and bounding boxes, and 2.1 for frustums. Our weighting heavily prefers bounding boxes, capsules and spheres due to their support in physics engines. We penalize cylinders, as when they have small radius and large height there is little visible difference between cylinders and capsules, but capsules are more performant. Depending on use case, this weighting can be tuned, but these values strike a good balance between performance and geometric accuracy. We ablate our choice of weights as compared to a uniform and alternative weighting in Sec. 5, Fig. 16."
+  translation="处理不同 Primitive Costs：在下游应用中，几何拟合并不是唯一考虑因素，因为不同 primitive 变体会产生不同代价。例如，物理引擎通常有 boxes、capsules 和 spheres 的 primitives，因此性能更好。然而，当仅基于体积合并 primitives 时，prisms 往往比 OBBs 体积更小；OBBs 是满足 $h_{zt} = h_{zb}$ 的 trapezoidal prisms 子集，这可能导致较低的仿真性能。为了纳入对形状变体的偏好，我们将代价函数与用户提供的权重结合：$V'(p) = k(p) V(p)$。$k(p)$ 取决于 primitive 类型，并可针对目标应用设置。我们对 cylinders 使用 1.05 的权重，对 trapezoidal prisms 使用 1.4，对 capsules、spheres 和 bounding boxes 使用 1.0，对 frustums 使用 2.1。由于 bounding boxes、capsules 和 spheres 在物理引擎中受到支持，我们的权重强烈偏好它们。我们惩罚 cylinders，因为当它们半径小且高度大时，cylinders 与 capsules 的视觉差异很小，但 capsules 性能更高。根据用例，该权重可以调整；但这些数值在性能与几何精度之间取得了良好平衡。我们在 Sec. 5, Fig. 16 中将所选权重与 uniform 和 alternative weighting 进行了消融比较。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -512,8 +512,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p038"
   section="Method"
-  original="We add the weighted outer product of $\vect{t}$ to $Q$, to help improve stability: $Q' = Q + \epsilon \vect{t}\vect{t}^\top$. This reduces error in ambiguous cases, but may reduce adherence to the input in other cases. We show an ablation of one example where it improves the output quality in Sec. ablate-tangent-quadric, Fig. ablate-tangent-quadric. We decide per mesh whether to include this factor."
-  translation="我们将 $t$ 的加权外积加入 $Q$，以帮助提升稳定性：$Q' = Q + \epsilon tt^\top$。这会减少歧义情形中的误差，但在其他情形中可能降低对输入的贴合度。我们在 Sec. ablate-tangent-quadric, Fig. ablate-tangent-quadric 中展示了一个该项改善输出质量的示例消融。我们按 mesh 决定是否包含该因子。"
+  original="We add the weighted outer product of $\vect{t}$ to $Q$, to help improve stability: $Q' = Q + \epsilon \vect{t}\vect{t}^\top$. This reduces error in ambiguous cases, but may reduce adherence to the input in other cases. We show an ablation of one example where it improves the output quality in Sec. 5, Fig. 12. We decide per mesh whether to include this factor."
+  translation="我们将 $t$ 的加权外积加入 $Q$，以帮助提升稳定性：$Q' = Q + \epsilon tt^\top$。这会减少歧义情形中的误差，但在其他情形中可能降低对输入的贴合度。我们在 Sec. 5, Fig. 12 中展示了一个该项改善输出质量的示例消融。我们按 mesh 决定是否包含该因子。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -524,8 +524,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p039"
   section="Method"
-  original="Vertex Deduplication: A common pitfall we find when running our approach on uncleaned meshes is that vertices may be overlapped. This can happen due to kitbashing or modeling of parts which are later combined. We show deduplicating such vertices can change the output result in Sec. merge-vertices, Fig. ablate-vertex-merging. Merging these duplicate vertices by distance is similar to non-edge contractions in [qem] (also known as virtual edge collapses). A recent preprint [simplifying_wild_tris] explored virtual edge collapses between distinct components, and we leave exploration of alternative virtual edge collapses to future work."
-  translation="Vertex Deduplication：我们在未清理网格上运行该方法时发现，一个常见陷阱是顶点可能重叠。这可能由 kitbashing 或后续组合的部件建模导致。我们在 Sec. merge-vertices, Fig. ablate-vertex-merging 中展示了对此类顶点进行 deduplicate 会改变输出结果。按距离合并这些重复顶点类似于 [qem] 中的 non-edge contractions（也称为 virtual edge collapses）。近期预印本 [simplifying_wild_tris] 探索了不同组件之间的 virtual edge collapses，我们将替代 virtual edge collapses 的探索留给未来工作。"
+  original="Vertex Deduplication: A common pitfall we find when running our approach on uncleaned meshes is that vertices may be overlapped. This can happen due to kitbashing or modeling of parts which are later combined. We show deduplicating such vertices can change the output result in Sec. 5, Fig. 13. Merging these duplicate vertices by distance is similar to non-edge contractions in [qem] (also known as virtual edge collapses). A recent preprint [simplifying_wild_tris] explored virtual edge collapses between distinct components, and we leave exploration of alternative virtual edge collapses to future work."
+  translation="Vertex Deduplication：我们在未清理网格上运行该方法时发现，一个常见陷阱是顶点可能重叠。这可能由 kitbashing 或后续组合的部件建模导致。我们在 Sec. 5, Fig. 13 中展示了对此类顶点进行 deduplicate 会改变输出结果。按距离合并这些重复顶点类似于 [qem] 中的 non-edge contractions（也称为 virtual edge collapses）。近期预印本 [simplifying_wild_tris] 探索了不同组件之间的 virtual edge collapses，我们将替代 virtual edge collapses 的探索留给未来工作。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -536,8 +536,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="method-p040"
   section="Method"
-  original="Pairwise Component Merging: After performing reduction based on the connectivity of primitives, there may be no remaining edges even if the target number of primitives is not met due to disconnected components. To meet the target number of primitives, edges are added to create a fully-connected graph and decimation is continued. Theoretically, this is costly since the number of edges is $\frac{1}{2} |C|(|C| - 1) \approx O(C^2)$, where $|C|$ is the number of components in the input. In practice, we observe the number of components for many meshes is small, and all pairs can be computed quickly. In cases where it is intractable, edges can be culled based on excess volume thresholding from Sec. excess-volume-thresh."
-  translation="Pairwise Component Merging：在基于 primitives 连通性执行 reduction 后，如果由于 disconnected components 而没有剩余边，即使尚未达到目标 primitives 数量也会停止。为了达到目标 primitives 数量，会添加边以创建 fully-connected graph，并继续 decimation。理论上，这一过程代价较高，因为边数为 $\frac{1}{2} |C|(|C| - 1) \approx O(C^2)$，其中 $|C|$ 是输入中 components 的数量。实践中，我们观察到许多网格的 components 数量较少，所有 pair 都能快速计算。在不可处理的情形中，可以基于 Sec. excess_volume_thresh 中的 excess volume thresholding 来剔除边。"
+  original="Pairwise Component Merging: After performing reduction based on the connectivity of primitives, there may be no remaining edges even if the target number of primitives is not met due to disconnected components. To meet the target number of primitives, edges are added to create a fully-connected graph and decimation is continued. Theoretically, this is costly since the number of edges is $\frac{1}{2} |C|(|C| - 1) \approx O(C^2)$, where $|C|$ is the number of components in the input. In practice, we observe the number of components for many meshes is small, and all pairs can be computed quickly. In cases where it is intractable, edges can be culled based on excess volume thresholding from Sec. 3.3."
+  translation="Pairwise Component Merging：在基于 primitives 连通性执行 reduction 后，如果由于 disconnected components 而没有剩余边，即使尚未达到目标 primitives 数量也会停止。为了达到目标 primitives 数量，会添加边以创建 fully-connected graph，并继续 decimation。理论上，这一过程代价较高，因为边数为 $\frac{1}{2} |C|(|C| - 1) \approx O(C^2)$，其中 $|C|$ 是输入中 components 的数量。实践中，我们观察到许多网格的 components 数量较少，所有 pair 都能快速计算。在不可处理的情形中，可以基于 Sec. 3.3 中的 excess volume thresholding 来剔除边。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"

@@ -31,11 +31,11 @@ lookahead-changed package pair are now complete under recorded settings. The fir
 fixture-scoped `cpd_paper_offline_report` slice is now implemented as a command-only partial
 offline paper-lane audit over `paper_single_box`, `paper_two_face_merge`, `paper_frustum_like`, and
 `paper_trapezoid_prism_like`. It records paper operator, primitive-fit subset,
-left/right/merged merge-cost inputs, offline-only frustum/trapezoidal-prism candidate rows, and
-base-collapse-cost versus weighted-priority-cost fields while keeping Newton, bed/Franka, and
-benchmark work out of scope. The audited primitive rows are explicitly current surrogate/proxy or
-offline-only audit rows, not paper-faithful fitting. The next paper-lane gate is paper-flat
-capped-cylinder fitting, not a capped bed/Franka rerun unless a separate real package change is
+left/right/merged merge-cost inputs, offline-only flat capped-cylinder/frustum/trapezoidal-prism
+candidate rows, and base-collapse-cost versus weighted-priority-cost fields while keeping Newton,
+bed/Franka, and benchmark work out of scope. The audited primitive rows are explicitly current
+surrogate or offline-only audit rows, not paper-faithful fitting. The next paper-lane gate is paper
+capsule axis-policy audit, not a capped bed/Franka rerun unless a separate real package change is
 introduced and passes full mapping, contact-canary, task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
 collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
@@ -58,6 +58,9 @@ records exist.
   fixtures, with no Newton, real-USD, benchmark, or collision-quality claim.
 - [CPD paper frustum/trapezoid audit record](records/2026-05-16-cpd-paper-frustum-trapezoid-audit.md):
   dated implementation record for offline-only frustum and trapezoidal-prism fit-audit rows in the
+  partial `cpd_paper_offline_report`.
+- [CPD paper flat capped-cylinder audit record](records/2026-05-16-cpd-paper-flat-capped-cylinder-audit.md):
+  dated implementation record for the offline-only flat capped-cylinder fit-audit row in the
   partial `cpd_paper_offline_report`.
 
 ## DeepDive Package
@@ -279,6 +282,12 @@ records exist.
 - [CPD paper frustum/trapezoid audit record](records/2026-05-16-cpd-paper-frustum-trapezoid-audit.md):
   partial command-only offline fit-audit row expansion for `frustum` and `trapezoidal_prism`,
   without Newton, real-USD, package, benchmark, or collision-quality claims.
+- [CPD paper flat capped-cylinder audit record](records/2026-05-16-cpd-paper-flat-capped-cylinder-audit.md):
+  partial command-only offline fit-audit row expansion for paper flat capped cylinders, without
+  Newton, real-USD, package, benchmark, or collision-quality claims.
+- [Paper reference numbering fix record](records/2026-05-16-paper-reference-numbering-fix.md):
+  reader-facing CPD paper companion import fix that resolves internal source references into paper
+  numbers and does not change reproduction or benchmark evidence.
 - [CPD latest diagnostic loop explainer docs record](records/2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

@@ -211,6 +211,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Frustum Trapezoid Audit](2026-05-16-cpd-paper-frustum-trapezoid-audit.md):
   partial command-only offline primitive-fit audit row expansion for frustum and trapezoidal-prism
   candidates on deterministic toy fixtures.
+- [2026-05-16 CPD Paper Flat Capped-Cylinder Audit](2026-05-16-cpd-paper-flat-capped-cylinder-audit.md):
+  partial command-only offline primitive-fit audit row expansion for paper flat capped-cylinder
+  candidates on deterministic toy fixtures.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
@@ -226,6 +229,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 Paper Equation Rendering Fix](2026-05-16-paper-equation-rendering-fix.md):
   reader-facing display-equation rendering fix for source-paper `equation` and `align`
   environments on the paper companion pages.
+- [2026-05-16 Paper Reference Numbering Fix](2026-05-16-paper-reference-numbering-fix.md):
+  reader-facing paper companion reference-numbering fix that hides internal source labels and
+  resolves figure, table, algorithm, equation, and section references to paper numbers.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

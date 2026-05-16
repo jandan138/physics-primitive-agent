@@ -21,9 +21,16 @@ WEB_IMAGE_QUALITY = 78
 PDF_RASTER_DPI = 240
 P_SEQUENCE_TYPES = {"paragraph", "caption"}
 GRAPHICS_RE = re.compile(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}")
+LABEL_RE = re.compile(r"\\label\{([^}]+)\}")
 DISPLAY_MATH_ENVIRONMENTS = {"equation", "equation*", "align", "align*"}
 ALGORITHM_ENVIRONMENTS = {"algorithm", "algorithm*"}
 TABLE_ENVIRONMENTS = {"table", "table*"}
+FIGURE_ENVIRONMENTS = {"figure", "figure*", "wrapfigure", "SCfigure"}
+REFERENCE_CANDIDATE_RE = re.compile(
+    r"(?<![A-Za-z])(?:Fig|Figure|Tab|Table|Alg|Algorithm|Eq|Equation|Sec|Section)\.?\s+[A-Za-z]"
+    r"|(?:图|表|算法|式)\s*[A-Za-z]"
+    r"|第\s*[A-Za-z][A-Za-z0-9_-]*\s*节"
+)
 
 SECTION_TITLES = {
     "abstract": "Abstract",
@@ -46,10 +53,15 @@ def parse_latex_blocks(text: str) -> list[dict[str, str]]:
     def flush_paragraph() -> None:
         if not paragraph_lines:
             return
-        paragraph = clean_inline_latex(" ".join(paragraph_lines).strip())
+        raw_paragraph = " ".join(paragraph_lines).strip()
+        labels = extract_latex_labels(raw_paragraph)
+        paragraph = clean_inline_latex(raw_paragraph)
         paragraph_lines.clear()
         if paragraph:
-            blocks.append({"type": "paragraph", "text": paragraph})
+            block = {"type": "paragraph", "text": paragraph}
+            if labels:
+                block["labels"] = labels
+            blocks.append(block)
 
     def flush_environment() -> None:
         nonlocal root_environment
@@ -62,6 +74,9 @@ def parse_latex_blocks(text: str) -> list[dict[str, str]]:
             "environment": root_environment,
             "text": environment_text,
         }
+        labels = extract_latex_labels(environment_text)
+        if labels:
+            latex_block["labels"] = labels
         if captions:
             latex_block["caption"] = " ".join(captions)
         blocks.append(latex_block)
@@ -103,13 +118,19 @@ def parse_latex_blocks(text: str) -> list[dict[str, str]]:
         if section_match:
             flush_paragraph()
             title = section_match.group(1) or section_match.group(2) or ""
-            blocks.append({"type": "section", "title": clean_inline_latex(title)})
+            block = {"type": "section", "title": clean_inline_latex(title)}
+            labels = extract_latex_labels(line)
+            if labels:
+                block["labels"] = labels
+            blocks.append(block)
             continue
         if subsection_match:
             flush_paragraph()
-            blocks.append(
-                {"type": "subsection", "title": clean_inline_latex(subsection_match.group(1))}
-            )
+            block = {"type": "subsection", "title": clean_inline_latex(subsection_match.group(1))}
+            labels = extract_latex_labels(line)
+            if labels:
+                block["labels"] = labels
+            blocks.append(block)
             continue
         begin_match = None
         if not _has_open_inline_math(" ".join(paragraph_lines)):
@@ -386,6 +407,16 @@ def strip_latex_comment(value: str) -> str:
             return value[:index]
         escaped = False
     return value
+
+
+def extract_latex_labels(value: str) -> list[str]:
+    uncommented = "\n".join(strip_latex_comment(line) for line in value.splitlines())
+    labels: list[str] = []
+    for match in LABEL_RE.finditer(uncommented):
+        label = match.group(1).strip()
+        if label and label not in labels:
+            labels.append(label)
+    return labels
 
 
 def extract_captions(environment_text: str) -> list[str]:
@@ -679,7 +710,318 @@ def is_p_sequence_block(block: object) -> bool:
     return isinstance(block, dict) and block.get("type") in P_SEQUENCE_TYPES
 
 
-def render_section_mdx(section: dict[str, object], translations: dict[str, str]) -> str:
+def annotate_references(sections: list[dict[str, object]]) -> dict[str, dict[str, str]]:
+    references: dict[str, dict[str, str]] = {}
+    counters = {"fig": 0, "tab": 0, "alg": 0, "eq": 0}
+    section_number = 0
+    subsection_number = 0
+    for section in sections:
+        for block in section["blocks"]:  # type: ignore[index]
+            if not isinstance(block, dict):
+                continue
+            if block.get("type") == "section":
+                section_number += 1
+                subsection_number = 0
+                _register_reference_labels(
+                    references,
+                    block.get("labels", []),
+                    "sec",
+                    str(section_number),
+                )
+            elif block.get("type") == "subsection":
+                subsection_number += 1
+                _register_reference_labels(
+                    references,
+                    block.get("labels", []),
+                    "sec",
+                    f"{section_number}.{subsection_number}",
+                )
+            elif block.get("type") in {"paragraph", "caption"}:
+                if section_number <= 0:
+                    continue
+                reference_number = (
+                    f"{section_number}.{subsection_number}"
+                    if subsection_number > 0
+                    else str(section_number)
+                )
+                _register_reference_labels(
+                    references,
+                    block.get("labels", []),
+                    "sec",
+                    reference_number,
+                )
+            elif block.get("type") == "latex_block":
+                kind = _reference_kind_for_environment(str(block.get("environment", "")))
+                if kind is None:
+                    continue
+                number_count = _latex_reference_number_count(block, kind)
+                if number_count <= 0:
+                    continue
+                counters[kind] += 1
+                number = str(counters[kind])
+                if number_count > 1:
+                    counters[kind] += number_count - 1
+                    label_number = f"{number}-{counters[kind]}"
+                else:
+                    label_number = number
+                block["referenceLabel"] = _reference_caption_label(kind, label_number)
+                block["referenceShort"] = _reference_short_label(kind, number)
+                matching_labels = [
+                    label
+                    for label in block.get("labels", [])
+                    if _reference_kind_for_label(str(label)) == kind
+                ]
+                _register_reference_labels(references, matching_labels, kind, number)
+    return references
+
+
+def _latex_reference_number_count(block: dict[str, object], kind: str) -> int:
+    environment = str(block.get("environment", ""))
+    if kind in {"fig", "tab", "alg"}:
+        return 1 if str(block.get("caption", "")).strip() or block.get("labels") else 0
+    if kind != "eq" or environment.endswith("*"):
+        return 0
+    if environment == "equation":
+        return 1
+    if environment == "align":
+        return _numbered_align_row_count(str(block.get("text", "")))
+    return 0
+
+
+def _numbered_align_row_count(environment_text: str) -> int:
+    body = _extract_environment_body(environment_text, "align") or environment_text
+    count = 0
+    for raw_line in body.splitlines():
+        line = strip_latex_comment(raw_line).strip()
+        if not line or line.startswith("\\begin") or line.startswith("\\end"):
+            continue
+        if "&" not in line:
+            continue
+        if "\\nonumber" in line or "\\notag" in line:
+            continue
+        count += 1
+    return count
+
+
+def _reference_kind_for_environment(environment: str) -> str | None:
+    if environment in FIGURE_ENVIRONMENTS:
+        return "fig"
+    if environment in TABLE_ENVIRONMENTS:
+        return "tab"
+    if environment in ALGORITHM_ENVIRONMENTS:
+        return "alg"
+    if environment in DISPLAY_MATH_ENVIRONMENTS:
+        return "eq"
+    return None
+
+
+def _reference_kind_for_label(label: str) -> str | None:
+    prefix = label.split(":", 1)[0]
+    if prefix in {"fig", "tab", "alg", "eq"}:
+        return prefix
+    if prefix in {"sec", "subsec"}:
+        return "sec"
+    return None
+
+
+def _register_reference_labels(
+    references: dict[str, dict[str, str]],
+    labels: object,
+    kind: str,
+    number: str,
+) -> None:
+    if not isinstance(labels, list):
+        return
+    for label in labels:
+        label_text = str(label)
+        if _reference_kind_for_label(label_text) != kind:
+            continue
+        references[label_text] = {
+            "kind": kind,
+            "number": number,
+            "short": _reference_short_label(kind, number),
+            "caption": _reference_caption_label(kind, number),
+        }
+
+
+def _reference_short_label(kind: str, number: str) -> str:
+    if kind == "fig":
+        return f"Fig. {number}"
+    if kind == "tab":
+        return f"Tab. {number}"
+    if kind == "alg":
+        return f"Alg. {number}"
+    if kind == "eq":
+        return f"Eq. ({number})"
+    if kind == "sec":
+        return f"Sec. {number}"
+    return number
+
+
+def _reference_caption_label(kind: str, number: str) -> str:
+    if kind == "fig":
+        return f"Figure {number}"
+    if kind == "tab":
+        return f"Table {number}"
+    if kind == "alg":
+        return f"Algorithm {number}"
+    if kind == "eq":
+        if "-" in number:
+            start, end = number.split("-", 1)
+            return f"Equations ({start})-({end})"
+        return f"Equation ({number})"
+    if kind == "sec":
+        return f"Section {number}"
+    return number
+
+
+def _reference_number_for_text(kind: str, number: str) -> str:
+    return f"({number})" if kind == "eq" else number
+
+
+def resolve_reference_text(value: str, references: dict[str, dict[str, str]] | None) -> str:
+    if not references or not REFERENCE_CANDIDATE_RE.search(value):
+        return value
+    resolved = value
+    for label, entry in sorted(references.items(), key=lambda item: len(item[0]), reverse=True):
+        kind = entry["kind"]
+        number = entry["number"]
+        for variant in _reference_token_variants(label):
+            resolved = _replace_prefixed_reference_token(resolved, kind, variant, number)
+    return resolved
+
+
+def _reference_token_variants(label: str) -> list[str]:
+    suffix = label.split(":", 1)[-1]
+    variants = [
+        suffix,
+        suffix.replace("_", "-"),
+        suffix.replace("-", "_"),
+        label,
+        label.replace("_", "-"),
+        label.replace("-", "_"),
+    ]
+    unique: list[str] = []
+    for variant in variants:
+        if variant and variant not in unique:
+            unique.append(variant)
+    return unique
+
+
+def _replace_prefixed_reference_token(
+    value: str,
+    kind: str,
+    token: str,
+    number: str,
+) -> str:
+    token_pattern = rf"(?<![A-Za-z0-9_-]){re.escape(token)}(?![A-Za-z0-9_-])"
+    replacements = {
+        "fig": [(r"Fig\.?", f"Fig. {number}"), (r"Figure", f"Figure {number}")],
+        "tab": [(r"Tab\.?", f"Tab. {number}"), (r"Table", f"Table {number}")],
+        "alg": [(r"Alg\.?", f"Alg. {number}"), (r"Algorithm", f"Algorithm {number}")],
+        "eq": [(r"Eq\.?", f"Eq. ({number})"), (r"Equation", f"Equation ({number})")],
+        "sec": [(r"Sec\.?", f"Sec. {number}"), (r"Section", f"Section {number}")],
+    }
+    for prefix_pattern, replacement in replacements.get(kind, []):
+        value = re.sub(
+            rf"(?<![A-Za-z]){prefix_pattern}\s*{token_pattern}",
+            replacement,
+            value,
+        )
+    chinese_replacements = {
+        "fig": [(r"图", f"图 {number}")],
+        "tab": [(r"表", f"表 {number}")],
+        "alg": [(r"算法", f"算法 {number}")],
+        "eq": [(r"式", f"式 ({number})")],
+        "sec": [(r"第", f"第 {number} 节")],
+    }
+    for prefix_pattern, replacement in chinese_replacements.get(kind, []):
+        if kind == "sec":
+            value = re.sub(
+                rf"{prefix_pattern}\s*{token_pattern}\s*节",
+                replacement,
+                value,
+            )
+        else:
+            value = re.sub(
+                rf"{prefix_pattern}\s*{token_pattern}",
+                replacement,
+                value,
+            )
+    return value
+
+
+def format_reader_text(value: str, references: dict[str, dict[str, str]] | None = None) -> str:
+    return resolve_reference_text(clean_inline_latex(value), references)
+
+
+def format_algorithm_for_mdx(
+    environment_text: str,
+    references: dict[str, dict[str, str]] | None = None,
+) -> dict[str, object]:
+    algorithm = parse_algorithm_block(environment_text)
+    algorithm["title"] = resolve_reference_text(str(algorithm.get("title", "Algorithm")), references)
+    resolved_steps: list[dict[str, object]] = []
+    for step in algorithm.get("steps", []):
+        if not isinstance(step, dict):
+            continue
+        resolved_step = dict(step)
+        resolved_step["text"] = resolve_reference_text(str(resolved_step.get("text", "")), references)
+        resolved_steps.append(resolved_step)
+    algorithm["steps"] = resolved_steps
+    return algorithm
+
+
+def format_table_for_mdx(
+    environment_text: str,
+    references: dict[str, dict[str, str]] | None = None,
+) -> dict[str, object]:
+    table = parse_table_block(environment_text)
+    table["caption"] = resolve_reference_text(str(table.get("caption", "")), references)
+    resolved_rows: list[list[dict[str, object]]] = []
+    for row in table.get("rows", []):
+        if not isinstance(row, list):
+            continue
+        resolved_row: list[dict[str, object]] = []
+        for cell in row:
+            if not isinstance(cell, dict):
+                continue
+            resolved_cell = dict(cell)
+            resolved_cell["text"] = resolve_reference_text(str(resolved_cell.get("text", "")), references)
+            resolved_row.append(resolved_cell)
+        resolved_rows.append(resolved_row)
+    table["rows"] = resolved_rows
+    return table
+
+
+def _component_label(
+    section: dict[str, object],
+    block: dict[str, object],
+    latex_id: str,
+    references: dict[str, dict[str, str]] | None,
+) -> str:
+    if block.get("referenceLabel"):
+        return str(block["referenceLabel"])
+    if references is not None:
+        kind = _reference_kind_for_environment(str(block.get("environment", "")))
+        if kind == "fig":
+            if not str(block.get("caption", "")).strip():
+                return "Inset"
+            return "Figure"
+        if kind == "tab":
+            return "Table"
+        if kind == "alg":
+            return "Algorithm"
+        if kind == "eq":
+            return ""
+    return f'{section["title"]} / {block.get("environment", "latex")} / {latex_id}'
+
+
+def render_section_mdx(
+    section: dict[str, object],
+    translations: dict[str, str],
+    references: dict[str, dict[str, str]] | None = None,
+) -> str:
     lines = [
         "---",
         f'title: "{escape_frontmatter(str(section["title"]))}"',
@@ -704,8 +1046,8 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
                     "<PaperBlock",
                     f'  id="{paragraph_id}"',
                     f'  section="{escape_attr(str(section["title"]))}"',
-                    f'  original="{escape_attr(clean_inline_latex(str(block["text"])))}"',
-                    f'  translation="{escape_attr(clean_inline_latex(translations.get(paragraph_id, "")))}"',
+                    f'  original="{escape_attr(format_reader_text(str(block["text"]), references))}"',
+                    f'  translation="{escape_attr(format_reader_text(translations.get(paragraph_id, ""), references))}"',
                     '  translationStatus="draft_ai_assisted"',
                     f'  explanationStatus="{block_kind}"',
                     '  reproductionStatus="not_started"',
@@ -720,10 +1062,10 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
             lines.extend([f'{heading} {block["title"]}', ""])
         elif block["type"] == "latex_block":
             latex_id = str(block["id"])
-            label = escape_attr(f'{section["title"]} / {block.get("environment", "latex")} / {latex_id}')
+            label = escape_attr(_component_label(section, block, latex_id, references))
             images = block.get("images", [])
             if isinstance(images, list) and images:
-                caption = clean_inline_latex(str(block.get("caption", "Source-paper figure.")))
+                caption = format_reader_text(str(block.get("caption", "")), references)
                 lines.extend(
                     [
                         f'<FigurePanel id="{latex_id}-figure"',
@@ -745,7 +1087,7 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
                     ]
                 )
             elif block.get("environment") in ALGORITHM_ENVIRONMENTS:
-                algorithm = parse_algorithm_block(str(block["text"]))
+                algorithm = format_algorithm_for_mdx(str(block["text"]), references)
                 lines.extend(
                     [
                         f'<AlgorithmBlock id="{latex_id}"',
@@ -757,7 +1099,7 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
                     ]
                 )
             elif block.get("environment") in TABLE_ENVIRONMENTS:
-                table = parse_table_block(str(block["text"]))
+                table = format_table_for_mdx(str(block["text"]), references)
                 lines.extend(
                     [
                         f'<TableBlock id="{latex_id}"',
@@ -1050,6 +1392,7 @@ def main(argv: list[str] | None = None) -> int:
         shutil.rmtree(args.asset_output, ignore_errors=True)
         args.asset_output.mkdir(parents=True, exist_ok=True)
     sections = import_sections(args.source, args.asset_output)
+    references = annotate_references(sections)
     missing = missing_translation_ids(sections, translations)
     if missing:
         preview = ", ".join(missing[:12])
@@ -1063,7 +1406,7 @@ def main(argv: list[str] | None = None) -> int:
 
     args.output.mkdir(parents=True, exist_ok=True)
     for section in sections:
-        mdx = render_section_mdx(section, translations)
+        mdx = render_section_mdx(section, translations, references)
         (args.output / f"{section['slug']}.mdx").write_text(mdx, encoding="utf-8")
     return 0
 

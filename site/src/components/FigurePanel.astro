@@ -34,7 +34,7 @@ const captionHtml = renderRichText(caption);
 <figure class="figure-panel" id={id}>
   <figcaption class="figure-panel__caption">
     <strong>{title}</strong>
-    <span><Fragment set:html={captionHtml} /></span>
+    {caption ? <span><Fragment set:html={captionHtml} /></span> : null}
   </figcaption>
   {resolvedImages.length > 0 ? (
     <div class="figure-panel__grid">

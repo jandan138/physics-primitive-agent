@@ -54,8 +54,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="conclusion-p004"
   section="Discussion, Limitations, And Conclusion"
-  original="One limitation of our approach is meshes with internal components will have coarser bounding primitives, because normals of enclosed faces affect the eigendecomposition of each primitive. We show an example of this failure case in Fig. cube-failure on a cube with twisted cubes inside of it. It is clear that the tightest bounding box only needs to fit the largest cube, but our approach does not recover that due to the influence of the other cubes."
-  translation="我们方法的一个局限是，对于包含内部组件的网格，包围基元会更粗糙，因为被包围面的法线会影响每个基元的特征分解。我们在 Fig. cube_failure 中展示了这种失败案例：一个内部包含扭转立方体的立方体。显然，最紧的包围盒只需要拟合最大的立方体，但由于其他立方体的影响，我们的方法无法恢复这一结果。"
+  original="One limitation of our approach is meshes with internal components will have coarser bounding primitives, because normals of enclosed faces affect the eigendecomposition of each primitive. We show an example of this failure case in Fig. 19 on a cube with twisted cubes inside of it. It is clear that the tightest bounding box only needs to fit the largest cube, but our approach does not recover that due to the influence of the other cubes."
+  translation="我们方法的一个局限是，对于包含内部组件的网格，包围基元会更粗糙，因为被包围面的法线会影响每个基元的特征分解。我们在 Fig. 19 中展示了这种失败案例：一个内部包含扭转立方体的立方体。显然，最紧的包围盒只需要拟合最大的立方体，但由于其他立方体的影响，我们的方法无法恢复这一结果。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -64,7 +64,7 @@ import TableBlock from "../../components/TableBlock.astro";
 />
 
 <FigurePanel id="conclusion-l001-figure"
-  title="Discussion, Limitations, And Conclusion / figure / conclusion-l001"
+  title="Figure 19"
   caption="While our approach can decompose each component of the input well separately (middle), when combining them it does not recover a tight bounding box (right). This is because internal components unnecessarily affect the orientation of the output primitive. License: deslancer."
   images={["paper-assets/ablations/cube2_input_ablation.webp", "paper-assets/ablations/cube2_ablation.webp", "paper-assets/ablations/cube2_1_prim_ablation.webp"]}
 />
@@ -84,8 +84,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="conclusion-p006"
   section="Discussion, Limitations, And Conclusion"
-  original="Another limitation is that primitives that subsume coplanar faces may be degenerate and depend on the input mesh's orientation. This can be mitigated by adding the tangent direction (Sec. ablate-tangent-quadric), but does not always remove the influence of the input orientation. Furthermore, perfectly coplanar faces may be overeagerly merged together. This is because these faces have no width along their shared plane, introducing near-zero volume when they are merged."
-  translation="另一个局限是，吸收共面面的基元可能退化，并依赖于输入网格的朝向。可以通过加入切向方向（Sec. ablate-tangent-quadric）来缓解这一问题，但并不总能消除输入朝向的影响。此外，完全共面的面可能会被过度积极地合并。这是因为这些面沿其共享平面没有宽度，在合并时会引入接近零的体积。"
+  original="Another limitation is that primitives that subsume coplanar faces may be degenerate and depend on the input mesh's orientation. This can be mitigated by adding the tangent direction (Sec. 5), but does not always remove the influence of the input orientation. Furthermore, perfectly coplanar faces may be overeagerly merged together. This is because these faces have no width along their shared plane, introducing near-zero volume when they are merged."
+  translation="另一个局限是，吸收共面面的基元可能退化，并依赖于输入网格的朝向。可以通过加入切向方向（Sec. 5）来缓解这一问题，但并不总能消除输入朝向的影响。此外，完全共面的面可能会被过度积极地合并。这是因为这些面沿其共享平面没有宽度，在合并时会引入接近零的体积。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -108,8 +108,8 @@ import TableBlock from "../../components/TableBlock.astro";
 <PaperBlock
   id="conclusion-p008"
   section="Discussion, Limitations, And Conclusion"
-  original="Finally, it may be considered a limitation that convex primitive decomposition relies on the topology of the input. Small modifications in the topology of the input mesh can change the output mesh as can be seen by vertex deduplication in Fig. ablate-vertex-merging. We do not find this to be a problem, and perform vertex deduplication and pairwise collapse to mitigate the effects of topology. Often, topology also serves as a good indicator as to where to split the mesh into different components, so it can be considered a way for artists to indicate where to separate colliders."
-  translation="最后，凸基元分解依赖输入拓扑这一点也可能被视为局限。输入网格拓扑上的小修改会改变输出网格，这一点可以从 Fig. ablate-vertex-merging 中的顶点去重看出。我们并不认为这是问题，并且会执行顶点去重和成对折叠来缓解拓扑影响。通常，拓扑也能很好地指示应在何处将网格拆分为不同组件，因此也可以被视为美术人员指示碰撞体分离位置的一种方式。"
+  original="Finally, it may be considered a limitation that convex primitive decomposition relies on the topology of the input. Small modifications in the topology of the input mesh can change the output mesh as can be seen by vertex deduplication in Fig. 13. We do not find this to be a problem, and perform vertex deduplication and pairwise collapse to mitigate the effects of topology. Often, topology also serves as a good indicator as to where to split the mesh into different components, so it can be considered a way for artists to indicate where to separate colliders."
+  translation="最后，凸基元分解依赖输入拓扑这一点也可能被视为局限。输入网格拓扑上的小修改会改变输出网格，这一点可以从 Fig. 13 中的顶点去重看出。我们并不认为这是问题，并且会执行顶点去重和成对折叠来缓解拓扑影响。通常，拓扑也能很好地指示应在何处将网格拆分为不同组件，因此也可以被视为美术人员指示碰撞体分离位置的一种方式。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"

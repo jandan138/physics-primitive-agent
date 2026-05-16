@@ -106,6 +106,51 @@ def test_site_validator_rejects_reader_visible_latex_blocks():
     assert any("reader-visible LaTeX source block" in issue for issue in issues)
 
 
+def test_site_validator_rejects_reader_visible_internal_paper_labels():
+    issues = validate_site_text(
+        "site/src/content/paper/method.mdx",
+        '<FigurePanel id="method-l002-figure" title="Method / figure / method-l002" />',
+    )
+
+    assert any("reader-visible internal paper block label" in issue for issue in issues)
+
+
+def test_site_validator_rejects_reader_visible_generic_equation_labels():
+    issues = validate_site_text(
+        "site/src/content/paper/method.mdx",
+        '<EquationBlock id="method-l005" label="Display equation" />',
+    )
+
+    assert any("reader-visible generic equation label" in issue for issue in issues)
+
+
+def test_site_validator_rejects_reader_visible_generic_figure_labels():
+    issues = validate_site_text(
+        "site/src/content/paper/experiments.mdx",
+        '<FigurePanel id="experiments-l006-figure" title="Figure" />',
+    )
+
+    assert any("reader-visible generic figure label" in issue for issue in issues)
+
+
+def test_site_validator_rejects_reader_visible_placeholder_figure_captions():
+    issues = validate_site_text(
+        "site/src/content/paper/experiments.mdx",
+        '<FigurePanel id="experiments-l006-figure" caption="Source-paper figure." />',
+    )
+
+    assert any("reader-visible placeholder figure caption" in issue for issue in issues)
+
+
+def test_site_validator_rejects_unresolved_paper_reference_tokens():
+    issues = validate_site_text(
+        "site/src/content/paper/method.mdx",
+        '<PaperBlock original="We ablate Eq. exact-cost in Fig. ablate-isect." />',
+    )
+
+    assert any("unresolved paper reference token" in issue for issue in issues)
+
+
 def test_generated_paper_blocks_do_not_expose_raw_ref_tokens():
     content_root = Path(__file__).resolve().parents[1] / "site/src/content/paper"
     leaked = [

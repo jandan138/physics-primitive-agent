@@ -28,7 +28,7 @@ PAPER_PRIMITIVE_WEIGHTS = {
     "frustum": 2.1,
     "trapezoidal_prism": 1.4,
 }
-_CURRENT_PRIMITIVE_SUBSET = ("box", "sphere", "capsule", "capped_cylinder")
+_CURRENT_PRIMITIVE_SUBSET = ("box", "sphere", "capsule")
 _AUDITED_PAPER_PRIMITIVES = (
     "oriented_bounding_box",
     "sphere",
@@ -41,13 +41,11 @@ _PAPER_PRIMITIVE_NAMES = {
     "box": "oriented_bounding_box",
     "sphere": "sphere",
     "capsule": "capsule",
-    "capped_cylinder": "capped_cylinder",
 }
 _NEWTON_RUNTIME_KIND = {
     "box": "box",
     "sphere": "sphere",
     "capsule": "capsule",
-    "capped_cylinder": "unmapped_current_proxy",
 }
 
 
@@ -66,7 +64,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
         "polygon_and_quad_face_policy",
-        "paper_flat_capped_cylinder_fit",
+        "paper_capsule_axis_policy",
         "full_priority_queue_trace",
         "component_pair_edge_insertion",
         "postprocess_enclosed_primitive_culling",
@@ -87,7 +85,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_flat_capped_cylinder_fit_audit",
+        "next_required_gate": "paper_capsule_axis_policy_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -190,6 +188,7 @@ def _primitive_fit_audit_payload(
 ) -> dict[str, object]:
     candidates = fit_primitive_candidates(mesh, face_group, _CURRENT_PRIMITIVE_SUBSET)
     rows = [_candidate_payload(candidate) for candidate in candidates]
+    rows.append(_flat_capped_cylinder_candidate_payload(mesh, face_group))
     rows.append(_frustum_candidate_payload(mesh, face_group))
     rows.append(_trapezoidal_prism_candidate_payload(mesh, face_group))
     selected = min(rows, key=lambda row: (float(row["weighted_volume"]), row["candidate_order"]))
@@ -268,32 +267,7 @@ def _frustum_candidate_payload(
     axes = _candidate_axes(mesh, face_group)
     center, local = _obb_center_and_local(points, axes)
     relative = local - ((local.min(axis=0) + local.max(axis=0)) * 0.5)
-    axis_candidates: list[dict[str, object]] = []
-    for axis_index in range(3):
-        projection = relative[:, axis_index]
-        height = max(float(projection.max() - projection.min()), MIN_DIMENSION * 2.0)
-        half_height = height * 0.5
-        axis_center = center + axes[:, axis_index] * (
-            (float(projection.min()) + float(projection.max())) * 0.5
-        )
-        radial_axes = [index for index in range(3) if index != axis_index]
-        radial_distances = np.linalg.norm(relative[:, radial_axes], axis=1)
-        radius = max(float(radial_distances.max(initial=0.0)), MIN_DIMENSION)
-        axis_candidates.append(
-            {
-                "axis_index": axis_index,
-                "radius": radius,
-                "height": height,
-                "flat_cylinder_volume": float(pi * radius**2 * height),
-                "contains_assigned_points": _flat_cylinder_contains(
-                    points,
-                    axis_center,
-                    axes[:, axis_index],
-                    half_height,
-                    radius,
-                ),
-            }
-        )
+    axis_candidates = _flat_cylinder_axis_candidates(points, center, axes, relative)
     selected_axis = min(
         axis_candidates,
         key=lambda row: (float(row["flat_cylinder_volume"]), int(row["axis_index"])),
@@ -302,8 +276,7 @@ def _frustum_candidate_payload(
     projection = relative[:, axis_index]
     raw_projection_min = float(projection.min())
     raw_projection_max = float(projection.max())
-    raw_height = raw_projection_max - raw_projection_min
-    height = max(raw_height, MIN_DIMENSION * 2.0)
+    height = max(raw_projection_max - raw_projection_min, MIN_DIMENSION * 2.0)
     half_height = height * 0.5
     center_projection = (raw_projection_min + raw_projection_max) * 0.5
     center = center + axes[:, axis_index] * center_projection
@@ -345,6 +318,52 @@ def _frustum_candidate_payload(
     )
 
 
+def _flat_capped_cylinder_candidate_payload(
+    mesh: TriangleMesh,
+    face_group: frozenset[int],
+) -> dict[str, object]:
+    points = _assigned_points(mesh, face_group)
+    axes = _candidate_axes(mesh, face_group)
+    center, local = _obb_center_and_local(points, axes)
+    relative = local - ((local.min(axis=0) + local.max(axis=0)) * 0.5)
+    axis_candidates = _flat_cylinder_axis_candidates(points, center, axes, relative)
+    selected = min(
+        axis_candidates,
+        key=lambda row: (float(row["flat_cylinder_volume"]), int(row["axis_index"])),
+    )
+    axis_index = int(selected["axis_index"])
+    axis = axes[:, axis_index]
+    half_height = float(selected["half_height"])
+    radius = float(selected["radius"])
+    cylinder_center = np.asarray(selected["center"], dtype=np.float64)
+    height = float(selected["height"])
+    bottom_center = cylinder_center - axis * half_height
+    top_center = cylinder_center + axis * half_height
+    volume = float(selected["flat_cylinder_volume"])
+    contains = _flat_cylinder_contains(points, cylinder_center, axis, half_height, radius)
+    return _offline_paper_candidate_payload(
+        paper_primitive="capped_cylinder",
+        current_implementation_kind="offline_flat_capped_cylinder_fit_audit",
+        fit_model="paper_flat_capped_cylinder_min_volume_over_axes",
+        axis_selection_policy="min_volume_flat_cylinder_axis",
+        center=cylinder_center,
+        axes=axes,
+        dimensions={
+            "axis_index": axis_index,
+            "selected_axis_index": axis_index,
+            "axis_selection_policy": "min_volume_flat_cylinder_axis",
+            "cap_model": "flat_caps",
+            "radius": radius,
+            "height": height,
+            "half_height": half_height,
+            "top_center": _vector(top_center),
+            "bottom_center": _vector(bottom_center),
+            "volume_formula": "pi*r^2*h",
+            "flat_cylinder_axis_candidates": axis_candidates,
+        },
+        volume=volume,
+        contains_assigned_points=contains,
+    )
 def _trapezoidal_prism_candidate_payload(
     mesh: TriangleMesh,
     face_group: frozenset[int],
@@ -529,6 +548,45 @@ def _flat_cylinder_contains(
         np.all(np.abs(projected) <= half_height + 1e-8)
         and np.all(radial_distances <= radius + 1e-8)
     )
+
+
+def _flat_cylinder_axis_candidates(
+    points: NDArray[np.float64],
+    center: NDArray[np.float64],
+    axes: NDArray[np.float64],
+    relative: NDArray[np.float64],
+) -> list[dict[str, object]]:
+    candidates: list[dict[str, object]] = []
+    for axis_index in range(3):
+        projection = relative[:, axis_index]
+        projection_min = float(projection.min())
+        projection_max = float(projection.max())
+        height = max(projection_max - projection_min, MIN_DIMENSION * 2.0)
+        half_height = height * 0.5
+        axis = axes[:, axis_index]
+        axis_center = center + axis * ((projection_min + projection_max) * 0.5)
+        radial_axes = [index for index in range(3) if index != axis_index]
+        radial_distances = np.linalg.norm(relative[:, radial_axes], axis=1)
+        radius = max(float(radial_distances.max(initial=0.0)), MIN_DIMENSION)
+        volume = float(pi * radius**2 * height)
+        candidates.append(
+            {
+                "axis_index": axis_index,
+                "center": _vector(axis_center),
+                "radius": radius,
+                "height": height,
+                "half_height": half_height,
+                "flat_cylinder_volume": volume,
+                "contains_assigned_points": _flat_cylinder_contains(
+                    points,
+                    axis_center,
+                    axis,
+                    half_height,
+                    radius,
+                ),
+            }
+        )
+    return candidates
 
 
 def _frustum_contains(

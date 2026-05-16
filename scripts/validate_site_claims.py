@@ -21,6 +21,16 @@ STALE_PUBLICATION_GATING_COPY = (
     "Public full-text expansion should wait for the private permission record"
 )
 PERMISSION_RECORD_GLOB = "docs/records/*cpd-paper-permission*.md"
+READER_VISIBLE_INTERNAL_PAPER_LABEL_RE = re.compile(
+    r'\b(?:label|title)="[^"]+ / '
+    r'(?:figure\*?|wrapfigure|SCfigure|table\*?|algorithm\*?|align|equation) / '
+    r'[^"]+"'
+)
+UNRESOLVED_PAPER_REFERENCE_RE = re.compile(
+    r"\b(?:Fig|Tab|Alg|Eq|Sec)\.\s+[a-z][A-Za-z0-9_-]*\b"
+    r"|(?:图|表|算法|式)\s+[a-z][A-Za-z0-9_-]*\b"
+    r"|第\s+[a-z][A-Za-z0-9_-]*\s+节"
+)
 
 
 def validate_site_text(path: str, text: str, has_permission_record: bool = False) -> list[str]:
@@ -50,6 +60,19 @@ def validate_site_text(path: str, text: str, has_permission_record: bool = False
         issues.append(f"{path}: reader-visible LaTeX control should be omitted from generated content")
     if path.startswith("site/src/content/paper/") and "<LatexBlock" in text:
         issues.append(f"{path}: reader-visible LaTeX source block should be rendered or omitted")
+    if (
+        path.startswith("site/src/content/paper/")
+        and READER_VISIBLE_INTERNAL_PAPER_LABEL_RE.search(text)
+    ):
+        issues.append(f"{path}: reader-visible internal paper block label should use paper numbering")
+    if path.startswith("site/src/content/paper/") and 'label="Display equation"' in text:
+        issues.append(f"{path}: reader-visible generic equation label should be omitted or numbered")
+    if path.startswith("site/src/content/paper/") and 'title="Figure"' in text:
+        issues.append(f"{path}: reader-visible generic figure label should be omitted or named")
+    if path.startswith("site/src/content/paper/") and 'caption="Source-paper figure."' in text:
+        issues.append(f"{path}: reader-visible placeholder figure caption should be omitted")
+    if path.startswith("site/src/content/paper/") and UNRESOLVED_PAPER_REFERENCE_RE.search(text):
+        issues.append(f"{path}: unresolved paper reference token should be numbered")
     if "site/src/pages/paper" in path and REQUIRED_BANNER not in text and "PaperLayout" not in text:
         issues.append(f"{path}: missing source namespace banner")
     if "PaperBlock" in text and 'sourceNamespace="cpd_paper_source_text"' not in text:

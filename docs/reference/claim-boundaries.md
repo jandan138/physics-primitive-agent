@@ -46,9 +46,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The current code can run a command-only partial `cpd_paper_offline_report` over
   `paper_single_box`, `paper_two_face_merge`, `paper_frustum_like`, and
   `paper_trapezoid_prism_like` synthetic fixtures. It reports triangle-only mesh intake,
-  paper-side operator audit fields, current surrogate/proxy fit rows, offline-only frustum and
-  trapezoidal-prism fit-audit candidate rows, and separate paper base collapse-cost versus
-  weighted-priority-cost fields. The report remains `status: partial` with
+  paper-side operator audit fields, current surrogate rows, offline-only flat-capped-cylinder,
+  frustum, and trapezoidal-prism fit-audit candidate rows, and separate paper base collapse-cost
+  versus weighted-priority-cost fields. The report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data, not
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
   package generation, not real-USD evidence, not benchmark evidence, and not collision-quality

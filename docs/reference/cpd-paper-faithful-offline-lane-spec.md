@@ -334,7 +334,41 @@ paper_frustum_like + paper_trapezoid_prism_like
 -> no package generation, Newton, real USD, or benchmarks
 ```
 
-This slice removes the "missing paper primitive row" gap for `frustum` and `trapezoidal_prism`
-inside the fixture-scoped audit report only. It does not close the remaining paper-faithful gaps:
-paper-flat capped-cylinder fitting, full paper capsule/cylinder axis policy, polygon/quad intake,
+At that point, this slice removed the "missing paper primitive row" gap for `frustum` and
+`trapezoidal_prism` inside the fixture-scoped audit report only. After the third slice, the
+remaining paper-faithful gaps are full paper capsule axis policy, polygon/quad intake,
 priority-queue trace, component-pair insertion, and enclosed-primitive postprocessing.
+
+## Third Implementation Slice
+
+The third implementation slice is now:
+
+```text
+paper_single_box + paper_two_face_merge + paper_frustum_like + paper_trapezoid_prism_like
+-> offline flat-capped-cylinder candidate fit audit row
+-> three flat-cylinder axis candidates
+-> radius, height, formula, paper weight, and containment sanity checks
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice replaces the paper-lane `capped_cylinder` row with a flat-cap audit row. The older
+CPD-like `capped_cylinder` package proxy remains a separate hemisphere-cap diagnostic outside this
+paper lane. The report is still not `paper_faithful_offline` because the capsule row still uses the
+current surrogate axis policy, and the full priority-queue, component-pair, polygon/quad, and
+postprocess mechanics are not implemented.
+
+## Next Implementation Slice
+
+The next paper-lane gate is:
+
+```text
+paper capsule axis-policy audit
+-> candidate axes and selected axis for the capsule row
+-> containment, paper weight, and volume inputs
+-> comparison against the current surrogate capsule row
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This is the narrowest remaining primitive-fit gate after the flat capped-cylinder, frustum, and
+trapezoidal-prism audit rows. It should not be broadened into the priority-queue search or a
+bed/Franka rerun until the offline report records a changed paper-lane package boundary.

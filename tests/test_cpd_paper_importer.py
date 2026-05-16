@@ -221,6 +221,256 @@ def test_generate_mdx_renders_display_math_blocks_as_equations():
     assert "```latex" not in mdx
 
 
+def test_generate_mdx_uses_paper_numbers_for_labelled_blocks():
+    importer = _load_importer()
+    section = {
+        "slug": "method",
+        "title": "Method",
+        "blocks": [
+            {
+                "type": "latex_block",
+                "id": "method-l001",
+                "environment": "algorithm",
+                "labels": ["alg:prim_mesh_reduction"],
+                "text": "\\begin{algorithm}\\caption{Convex Primitive Decomposition\\label{alg:prim_mesh_reduction}}\\end{algorithm}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l002",
+                "environment": "figure",
+                "labels": ["fig:primitives"],
+                "text": "\\begin{figure}\\caption{Primitives.}\\label{fig:primitives}\\end{figure}",
+                "images": ["paper-assets/plots/primitives.webp"],
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l003",
+                "environment": "equation",
+                "labels": ["eq:exact_cost"],
+                "text": "\\begin{equation}\\label{eq:exact_cost}C = V\\end{equation}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l004",
+                "environment": "table",
+                "labels": ["tab:memory-costs"],
+                "text": (
+                    "\\begin{table}\\begin{tabular}{c}Primitive Kind\\\\\\end{tabular}"
+                    "\\caption{Memory costs.}\\label{tab:memory-costs}\\end{table}"
+                ),
+            },
+        ],
+    }
+    references = importer.annotate_references([section])
+
+    mdx = importer.render_section_mdx(section, {}, references)
+
+    assert 'label="Algorithm 1"' in mdx
+    assert 'title="Convex Primitive Decomposition"' in mdx
+    assert 'title="Figure 1"' in mdx
+    assert 'label="Equation (1)"' in mdx
+    assert 'label="Table 1"' in mdx
+    assert references["fig:primitives"]["short"] == "Fig. 1"
+    assert references["eq:exact_cost"]["short"] == "Eq. (1)"
+
+
+def test_generate_mdx_counts_unlabelled_numbered_equations_and_captioned_floats():
+    importer = _load_importer()
+    section = {
+        "slug": "method",
+        "title": "Method",
+        "blocks": [
+            {
+                "type": "latex_block",
+                "id": "method-l001",
+                "environment": "figure",
+                "caption": "Unlabelled captioned figure.",
+                "text": "\\begin{figure}\\caption{Unlabelled captioned figure.}\\end{figure}",
+                "images": ["paper-assets/plots/unlabelled.webp"],
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l002",
+                "environment": "equation",
+                "text": "\\begin{equation}Qx = b\\end{equation}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l003",
+                "environment": "align",
+                "text": "\\begin{align}\na &= b \\nonumber\\\\\nc &= d\n\\end{align}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l004",
+                "environment": "equation",
+                "labels": ["eq:cost"],
+                "text": "\\begin{equation}\\label{eq:cost}C = V\\end{equation}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l005",
+                "environment": "align",
+                "text": "\\begin{align}\na &= b \\nonumber\\\\\nc &= d \\notag\n\\end{align}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l006",
+                "environment": "wrapfigure",
+                "text": "\\begin{wrapfigure}{r}{0.2\\textwidth}\\includegraphics{plots/inset}\\end{wrapfigure}",
+                "images": ["paper-assets/plots/inset.webp"],
+            },
+        ],
+    }
+    references = importer.annotate_references([section])
+
+    mdx = importer.render_section_mdx(section, {}, references)
+
+    assert 'title="Figure 1"' in mdx
+    assert '<EquationBlock id="method-l002"\n  label="Equation (1)"' in mdx
+    assert '<EquationBlock id="method-l003"\n  label="Equation (2)"' in mdx
+    assert '<EquationBlock id="method-l004"\n  label="Equation (3)"' in mdx
+    assert '<EquationBlock id="method-l005"\n  label=""' in mdx
+    assert '<FigurePanel id="method-l006-figure"\n  title="Inset"\n  caption=""' in mdx
+    assert references["eq:cost"]["short"] == "Eq. (3)"
+
+
+def test_generate_mdx_resolves_paper_reference_tokens_in_original_and_translation():
+    importer = _load_importer()
+    section = {
+        "slug": "method",
+        "title": "Method",
+        "blocks": [
+            {
+                "type": "paragraph",
+                "id": "method-p001",
+                "text": "See Fig.~\\ref{fig:primitives}, Tab.~\\ref{tab:memory-costs}, Alg.~\\ref{alg:prim_mesh_reduction}, and Eq.~\\ref{eq:exact_cost}.",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l001",
+                "environment": "algorithm",
+                "labels": ["alg:prim_mesh_reduction"],
+                "text": "\\begin{algorithm}\\caption{Convex Primitive Decomposition\\label{alg:prim_mesh_reduction}}\\end{algorithm}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l002",
+                "environment": "figure",
+                "labels": ["fig:primitives"],
+                "text": "\\begin{figure}\\caption{Primitives.}\\label{fig:primitives}\\end{figure}",
+                "images": ["paper-assets/plots/primitives.webp"],
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l003",
+                "environment": "equation",
+                "labels": ["eq:exact_cost"],
+                "text": "\\begin{equation}\\label{eq:exact_cost}C = V\\end{equation}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l004",
+                "environment": "table",
+                "labels": ["tab:memory-costs"],
+                "text": (
+                    "\\begin{table}\\begin{tabular}{c}Primitive Kind\\\\\\end{tabular}"
+                    "\\caption{Memory costs.}\\label{tab:memory-costs}\\end{table}"
+                ),
+            },
+        ],
+    }
+    translations = {
+        "method-p001": "见图 primitives、表 memory-costs、算法 prim_mesh_reduction 和式 exact_cost。"
+    }
+    references = importer.annotate_references([section])
+
+    mdx = importer.render_section_mdx(section, translations, references)
+
+    assert 'original="See Fig. 1, Tab. 1, Alg. 1, and Eq. (1)."' in mdx
+    assert 'translation="见图 1、表 1、算法 1 和式 (1)。"' in mdx
+    assert "exact-cost" not in mdx
+    assert "prim_mesh_reduction" not in mdx
+
+
+def test_generate_mdx_resolves_paper_reference_tokens_inside_structured_blocks():
+    importer = _load_importer()
+    section = {
+        "slug": "additional-results",
+        "title": "Additional Results",
+        "blocks": [
+            {
+                "type": "latex_block",
+                "id": "additional-results-l001",
+                "environment": "algorithm",
+                "labels": ["alg:isotrap"],
+                "text": (
+                    "\\begin{algorithm}\\caption{Isosceles Trapezoid\\label{alg:isotrap}}"
+                    "\\begin{algorithmic}\\State Return trap\\end{algorithmic}\\end{algorithm}"
+                ),
+            },
+            {
+                "type": "latex_block",
+                "id": "additional-results-l002",
+                "environment": "algorithm",
+                "labels": ["alg:frustum"],
+                "text": (
+                    "\\begin{algorithm}\\caption{Frustum\\label{alg:frustum}}"
+                    "\\begin{algorithmic}"
+                    "\\State Similar FixSide(...) Procedure as Alg.~\\ref{alg:isotrap}"
+                    "\\end{algorithmic}\\end{algorithm}"
+                ),
+            },
+            {
+                "type": "latex_block",
+                "id": "additional-results-l003",
+                "environment": "table",
+                "labels": ["tab:ablation"],
+                "text": (
+                    "\\begin{table}\\begin{tabular}{c}See Alg.~\\ref{alg:isotrap}\\\\\\end{tabular}"
+                    "\\caption{Ablation.}\\label{tab:ablation}\\end{table}"
+                ),
+            },
+        ],
+    }
+    references = importer.annotate_references([section])
+
+    mdx = importer.render_section_mdx(section, {}, references)
+
+    assert '"text": "Similar FixSide(...) Procedure as Alg. 1"' in mdx
+    assert '"text": "See Alg. 1"' in mdx
+    assert "Alg. isotrap" not in mdx
+
+
+def test_generate_mdx_resolves_section_labels_from_nearby_paragraph_labels():
+    importer = _load_importer()
+    section = {
+        "slug": "method",
+        "title": "Method",
+        "blocks": [
+            {"type": "section", "title": "Method"},
+            {"type": "subsection", "title": "Optimal Primitive Selection"},
+            {
+                "type": "paragraph",
+                "id": "method-p001",
+                "labels": ["subsec:merge"],
+                "text": "Given possible primitives.",
+            },
+            {
+                "type": "paragraph",
+                "id": "method-p002",
+                "text": "See Sec.~\\ref{subsec:merge}.",
+            },
+        ],
+    }
+    references = importer.annotate_references([section])
+
+    mdx = importer.render_section_mdx(section, {"method-p001": "可行基元。", "method-p002": "见第 merge 节。"}, references)
+
+    assert 'original="See Sec. 1.1."' in mdx
+    assert 'translation="见第 1.1 节。"' in mdx
+
+
 def test_generate_mdx_renders_figure_panel_for_graphic_blocks():
     importer = _load_importer()
     section = {
