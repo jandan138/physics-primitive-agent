@@ -87,7 +87,11 @@ The repository has not reached that full result. It has reached the workbench st
     matrix for deterministic synthetic meshes. It closes only that source-policy gate, keeps the
     report partial, and points next to
     `paper_generalization_batch_b_primitive_fit_engine`.
-33. Records and configs can preserve exactly what was run.
+33. `paper_generalization_batch_b_primitive_fit_engine` is now implemented as an offline
+    primitive-fit engine matrix over deterministic in-memory probes for all six paper primitive
+    names. It closes only that primitive-fit engine gate, keeps the report partial, and points next
+    to `paper_generalization_batch_c_search_engine`.
+34. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -406,8 +410,9 @@ fixture-scoped and why the lane is still not `paper_faithful_offline`. The fixtu
 has now completed Batch A, Batch B, Batch C, Batch D, Batch E, and the command-only synthetic
 fixture-breadth completion review. The planning-only `paper_faithful_offline_generalization_plan`
 is now also recorded as a command-only table. The source-policy generalization gate is now
-implemented as an offline report-only matrix, and the next code slice is
-`paper_generalization_batch_b_primitive_fit_engine`.
+implemented as an offline report-only matrix. The primitive-fit engine generalization gate is now
+implemented as an offline report-only matrix over deterministic in-memory probes, and the next
+code slice is `paper_generalization_batch_c_search_engine`.
 
 ## What The Newton-Native Policy Changes
 
@@ -611,7 +616,8 @@ local USD mirrors or synthetic fixtures
 -> fixture-breadth completion review, still partial and still without package/Newton/real-USD
 -> generalization planning table, still partial and still without package/Newton/real-USD
 -> source-policy generalization matrix, still partial and still without package/Newton/real-USD
--> next: paper_generalization_batch_b_primitive_fit_engine
+-> primitive-fit engine generalization matrix, still partial and still without package/Newton/real-USD
+-> next: paper_generalization_batch_c_search_engine
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -667,6 +673,7 @@ Use:
 - "fixture-breadth Batch D component-pair audit";
 - "fixture-breadth Batch E postprocess audit";
 - "offline source-policy generalization matrix";
+- "offline primitive-fit engine generalization matrix";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -693,12 +700,13 @@ Avoid:
 
 Fixture-breadth Batch A, Batch B, Batch C, Batch D, Batch E, the command-only synthetic
 fixture-breadth completion review, the command-only generalization planning table, and the
-source-policy generalization matrix now exist. The immediate next code slice should stay offline
-and implement primitive-fit engine generalization without adding stronger evaluation claims:
+source-policy and primitive-fit engine generalization matrices now exist. The immediate next code
+slice should stay offline and implement search-engine generalization without adding stronger
+evaluation claims:
 
-1. Implement `paper_generalization_batch_b_primitive_fit_engine` beyond named toy fixtures.
-2. Generalize primitive-fit engine accounting for the paper primitive set in the offline report
-   only.
+1. Implement `paper_generalization_batch_c_search_engine` beyond named toy fixtures.
+2. Generalize search-engine accounting for cost ordering, queue behavior, thresholds, and
+   component-pair policy in the offline report only.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime

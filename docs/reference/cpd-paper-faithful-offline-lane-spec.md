@@ -298,8 +298,7 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure labels after the source-policy generalization matrix:
-  `paper_generalization_batch_b_primitive_fit_engine_missing`,
+- the current top-level failure labels after the primitive-fit engine generalization matrix:
   `paper_generalization_batch_c_search_engine_missing`,
   `paper_generalization_batch_d_postprocess_policy_missing`, and
   `paper_generalization_batch_e_package_boundary_readiness_missing`.
@@ -594,7 +593,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> next after the source-policy matrix: paper_generalization_batch_b_primitive_fit_engine
+-> next after the primitive-fit engine matrix: paper_generalization_batch_c_search_engine
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -614,5 +613,14 @@ bounded source mesh, exact-coordinate preprocessing, source-face intake/remap, c
 and source-face `Q` aggregation accounting for deterministic synthetic meshes. It is not robust
 mesh cleanup, general polygon intake, package generation, Newton runtime execution, real-USD
 evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
-collision-quality evidence, deployment readiness, or safety certification. The next current gate
-is `paper_generalization_batch_b_primitive_fit_engine`.
+collision-quality evidence, deployment readiness, or safety certification. This gate led to the
+now-implemented primitive-fit engine generalization matrix.
+
+`paper_generalization_batch_b_primitive_fit_engine` closes only the primitive-fit engine
+generalization gate. It records an offline matrix over deterministic in-memory probes for all six
+paper primitive names, including candidate generation, selected-candidate accounting, containment
+checks, finite numeric fields, and offline-only boundaries for paper-only primitives. It is not
+robust primitive fitting, package generation, Newton runtime execution, real-USD evidence,
+benchmark evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality
+evidence, deployment readiness, or safety certification. The next current gate is
+`paper_generalization_batch_c_search_engine`.

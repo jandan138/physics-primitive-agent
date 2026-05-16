@@ -8,12 +8,16 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
 )
 
 EXPECTED_GENERALIZATION_NEXT_ACTION = (
-    "Proceed to paper_generalization_batch_b_primitive_fit_engine after the "
-    "source-policy generalization matrix; keep stronger wording blocked."
+    "Proceed to paper_generalization_batch_c_search_engine after the "
+    "primitive-fit engine generalization matrix; keep stronger wording blocked."
 )
-EXPECTED_CLOSED_GENERALIZATION_GATE = "paper_generalization_batch_a_source_policy"
+EXPECTED_CLOSED_SOURCE_POLICY_GATE = "paper_generalization_batch_a_source_policy"
+EXPECTED_CLOSED_PRIMITIVE_FIT_GATE = "paper_generalization_batch_b_primitive_fit_engine"
+EXPECTED_CLOSED_GENERALIZATION_GATES = [
+    EXPECTED_CLOSED_SOURCE_POLICY_GATE,
+    EXPECTED_CLOSED_PRIMITIVE_FIT_GATE,
+]
 EXPECTED_GENERALIZATION_GATES = [
-    "paper_generalization_batch_b_primitive_fit_engine",
     "paper_generalization_batch_c_search_engine",
     "paper_generalization_batch_d_postprocess_policy",
     "paper_generalization_batch_e_package_boundary_readiness",
@@ -271,16 +275,16 @@ EXPECTED_SCOPE_AUDIT_BLOCKERS = [
 ]
 
 
-def test_cpd_paper_offline_report_failure_labels_point_to_primitive_fit_gap():
+def test_cpd_paper_offline_report_failure_labels_point_to_search_gap():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_primitive_fit_generalization():
+def test_cpd_paper_offline_report_next_gate_is_search_generalization():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_generalization_batch_b_primitive_fit_engine"
+    assert report["next_required_gate"] == "paper_generalization_batch_c_search_engine"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1092,7 +1096,7 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == "paper_generalization_batch_b_primitive_fit_engine"
+    assert report["next_required_gate"] == "paper_generalization_batch_c_search_engine"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
         *EXPECTED_GENERALIZATION_GATES,
     ]
@@ -1208,7 +1212,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == "paper_generalization_batch_b_primitive_fit_engine"
+    assert report["next_required_gate"] == "paper_generalization_batch_c_search_engine"
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_GENERALIZATION_GATES
@@ -1229,11 +1233,11 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     assert plan["decision"] == "remain_partial"
     assert (
         plan["decision_reason"]
-        == "source_policy_generalization_complete_primitive_fit_engine_missing"
+        == "primitive_fit_engine_generalization_complete_search_engine_missing"
     )
     assert plan["generalization_plan_complete"] is True
     assert plan["paper_faithful_offline_allowed"] is False
-    assert plan["next_required_gate"] == "paper_generalization_batch_b_primitive_fit_engine"
+    assert plan["next_required_gate"] == "paper_generalization_batch_c_search_engine"
     assert plan["package_generation_triggered"] is False
     assert plan["newton_runtime_triggered"] is False
     assert plan["real_usd_triggered"] is False
@@ -1295,7 +1299,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
         },
     ]
     assert plan["planned_batches"] == expected_batches
-    assert plan["first_unresolved_gate"] == "paper_generalization_batch_b_primitive_fit_engine"
+    assert plan["first_unresolved_gate"] == "paper_generalization_batch_c_search_engine"
     assert plan["remaining_generalization_gates"] == EXPECTED_GENERALIZATION_GATES
     assert plan["blocked_runtime_gates"] == [
         "package_generation_boundary",
@@ -1309,12 +1313,15 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == "paper_generalization_batch_b_primitive_fit_engine"
+    assert report["next_required_gate"] == "paper_generalization_batch_c_search_engine"
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_GENERALIZATION_GATES
     )
-    assert EXPECTED_CLOSED_GENERALIZATION_GATE in report["paper_faithfulness"][
+    assert EXPECTED_CLOSED_SOURCE_POLICY_GATE in report["paper_faithfulness"][
+        "implemented_generalization_scope"
+    ]
+    assert EXPECTED_CLOSED_PRIMITIVE_FIT_GATE in report["paper_faithfulness"][
         "implemented_generalization_scope"
     ]
     assert report["paper_faithful_offline_supported"] is False
@@ -1371,11 +1378,125 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
         "closed_gate_count": 1,
         "remaining_generalization_gate_count": 4,
     }
+    assert payload["remaining_gaps"] == [
+        EXPECTED_CLOSED_PRIMITIVE_FIT_GATE,
+        *EXPECTED_GENERALIZATION_GATES,
+    ]
+    assert payload["package_generation_triggered"] is False
+    assert payload["newton_runtime_triggered"] is False
+    assert payload["real_usd_triggered"] is False
+    assert payload["benchmark_triggered"] is False
+
+
+def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_gate():
+    report = build_cpd_paper_offline_report()
+
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert report["next_required_gate"] == "paper_generalization_batch_c_search_engine"
+    assert (
+        report["paper_faithfulness"]["implemented_generalization_scope"]
+        == EXPECTED_CLOSED_GENERALIZATION_GATES
+    )
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_GENERALIZATION_GATES
+    )
+    assert report["paper_faithful_offline_supported"] is False
+    assert report["status"] == "partial"
+
+    payload = report["paper_generalization_batch_b_primitive_fit_engine"]
+    assert payload["gate_id"] == EXPECTED_CLOSED_PRIMITIVE_FIT_GATE
+    assert payload["gate_status"] == "implemented_offline_report_only_partial"
+    assert payload["closed_gate"] == EXPECTED_CLOSED_PRIMITIVE_FIT_GATE
+    assert payload["next_required_gate"] == "paper_generalization_batch_c_search_engine"
+    assert payload["decision"] == "remain_partial"
+    assert (
+        payload["decision_reason"]
+        == "primitive_fit_engine_generalization_complete_search_engine_missing"
+    )
+    assert payload["paper_faithful_offline_allowed"] is False
+    assert payload["source_scope"] == "deterministic_in_memory_parametric_primitive_fit_probes"
+    assert payload["implementation_boundary"] == "offline_report_only_no_package_or_newton"
+    assert payload["engine_contract"] == {
+        "input_contract": "TriangleMesh_plus_face_group",
+        "candidate_set": [
+            "oriented_bounding_box",
+            "sphere",
+            "capsule",
+            "capped_cylinder",
+            "frustum",
+            "trapezoidal_prism",
+        ],
+        "candidate_evaluation_policy": "evaluate_all_candidates_no_runtime_mapping",
+        "selection_rule": "min_paper_weighted_volume_then_candidate_order",
+        "containment_scope": "assigned_vertices_only_not_surface_or_collision_quality",
+        "axis_policy": "paper_q_eigenbasis_with_candidate_axis_enumeration",
+        "offline_only_unmapped_primitives": [
+            "capped_cylinder",
+            "frustum",
+            "trapezoidal_prism",
+        ],
+    }
+    assert payload["coverage_summary"] == {
+        "primitive_count": 6,
+        "probe_family_count": 6,
+        "generated_probe_count": 6,
+        "candidate_row_count": 36,
+        "closed_gate_count": 2,
+        "remaining_generalization_gate_count": 3,
+    }
     assert payload["remaining_gaps"] == EXPECTED_GENERALIZATION_GATES
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
     assert payload["benchmark_triggered"] is False
+    assert "timing" not in payload
+    assert "surface_distance" not in payload
+    assert "collision_quality" not in payload
+    assert "benchmark" not in payload
+
+    expected_target_primitives = [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    rows = payload["primitive_family_matrix"]
+    assert [row["target_paper_primitive"] for row in rows] == expected_target_primitives
+    assert {row["probe_id"] for row in rows} == {
+        "paper_fit_engine_rotated_obb_probe",
+        "paper_fit_engine_offset_sphere_probe",
+        "paper_fit_engine_off_axis_capsule_probe",
+        "paper_fit_engine_flat_capped_cylinder_probe",
+        "paper_fit_engine_tapered_frustum_probe",
+        "paper_fit_engine_asymmetric_trapezoid_probe",
+    }
+    for row in rows:
+        assert row["candidate_row_count"] == 6
+        assert row["candidate_order"] == expected_target_primitives
+        assert row["missing_paper_primitives"] == []
+        assert row["target_candidate"]["paper_primitive"] == row["target_paper_primitive"]
+        assert row["selected_candidate"]["paper_primitive"] in expected_target_primitives
+        assert "target_candidate_selected" in row
+        assert row["contains_assigned_points"] is True
+        assert row["finite_numeric_fields"] is True
+        assert row["package_generation_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+        assert _axes_are_orthonormal(row["target_candidate"]["axes"])
+
+    runtime_by_primitive = {
+        row["target_paper_primitive"]: row["newton_runtime_kind"] for row in rows
+    }
+    assert runtime_by_primitive["oriented_bounding_box"] == "box"
+    assert runtime_by_primitive["sphere"] == "sphere"
+    assert runtime_by_primitive["capsule"] == "capsule"
+    assert runtime_by_primitive["capped_cylinder"] == "offline_only_unmapped"
+    assert runtime_by_primitive["frustum"] == "offline_only_unmapped"
+    assert runtime_by_primitive["trapezoidal_prism"] == "offline_only_unmapped"
 
 
 def test_cpd_paper_source_policy_generalization_rows_match_case_payloads():
@@ -1480,7 +1601,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == "paper_generalization_batch_b_primitive_fit_engine"
+    assert report["next_required_gate"] == "paper_generalization_batch_c_search_engine"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
         *EXPECTED_GENERALIZATION_GATES,
     ]

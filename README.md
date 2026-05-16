@@ -44,11 +44,16 @@ planning table for offline generalization beyond named toy fixtures. The report 
 `paper_generalization_batch_a_source_policy`, a command-only offline source-policy matrix for
 deterministic synthetic meshes. That matrix records exact-coordinate dedup policy, source-face
 intake/remap policy, concave-polygon rejection, and source-face `Q` aggregation accounting without
-claiming robust mesh cleanup or general polygon intake. The next paper-lane gate is now
-`paper_generalization_batch_b_primitive_fit_engine`, not `paper_faithful_offline` support. This
-source-policy slice does not support full CPD reproduction, package generation, Newton runtime
-execution, real-USD evidence, collision-quality evidence, benchmark evidence, deployment
-readiness, or safety certification. See
+claiming robust mesh cleanup or general polygon intake. It now also includes
+`paper_generalization_batch_b_primitive_fit_engine`, a command-only offline primitive-fit engine
+matrix over deterministic in-memory probes for all six paper primitive names. That matrix records
+candidate generation, selected-candidate accounting, containment checks, finite numeric fields,
+and the offline-only boundary for paper-only primitives without adding package generation or
+Newton runtime execution. The next paper-lane gate is now
+`paper_generalization_batch_c_search_engine`, not `paper_faithful_offline` support. These
+source-policy and primitive-fit-engine slices do not support full CPD reproduction, package
+generation, Newton runtime execution, real-USD evidence, collision-quality evidence, benchmark
+evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

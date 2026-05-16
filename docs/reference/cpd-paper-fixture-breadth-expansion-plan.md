@@ -173,8 +173,9 @@ paper_generalization_batch_a_source_policy
 Batch A stays important because it broadens source mesh, source-face intake, and operator audit
 coverage that every later primitive-fit and search fixture depends on. Batch B stays important
 because it broadens primitive-fit evidence before cost/search fixtures start comparing
-candidate-engine behavior. The current next gate is
-`paper_generalization_batch_b_primitive_fit_engine`. Batch C stays important because it checks
+candidate-engine behavior. The primitive-fit engine generalization gate is now implemented as an
+offline report-only matrix over deterministic in-memory probes. The current next gate is
+`paper_generalization_batch_c_search_engine`. Batch C stays important because it checks
 weighted-priority ordering, deterministic queue
 ties/eager-stale-prune events, and one positive finite threshold block before broader component-pair
 cases. Batch D stays important because it checks multiple component-pair candidates and capped
@@ -190,8 +191,9 @@ This plan supports only this statement:
 The repository has an offline-only fixture-breadth expansion plan and a Batch A synthetic
 source/preprocess/intake/operator implementation plus a Batch B primitive-fit implementation
 plus a Batch C cost/search/stop implementation plus a Batch D component-pair implementation plus a
-Batch E postprocess implementation plus a command-only synthetic fixture-breadth completion review
-inside the partial paper report.
+Batch E postprocess implementation plus a command-only synthetic fixture-breadth completion review,
+a source-policy generalization matrix, and a primitive-fit engine generalization matrix inside the
+partial paper report.
 ```
 
 It does not support:

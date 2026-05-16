@@ -63,8 +63,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   prior scope-audit gate `paper_fixture_breadth_expansion_plan`; later fixture-breadth slices below
   close only the planned Batch A-E breadth gate, and the command-only generalization planning table
   advances the current report gate to `paper_generalization_batch_a_source_policy`. The report now
-  also closes only that source-policy gate with an offline source-policy matrix and advances the
-  current next gate to `paper_generalization_batch_b_primitive_fit_engine`. The report
+  also closes only that source-policy gate with an offline source-policy matrix. At that
+  source-policy stage the follow-up gate was
+  `paper_generalization_batch_b_primitive_fit_engine`. The report now also closes only that
+  primitive-fit engine gate with an offline matrix over deterministic in-memory
+  probes for all six paper primitive names and advances the current next gate to
+  `paper_generalization_batch_c_search_engine`. The report
   remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
@@ -122,15 +126,26 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_generalization_batch_b_primitive_fit_engine` after the source-policy matrix.
+  `paper_generalization_batch_c_search_engine` after the source-policy and primitive-fit engine
+  matrices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
-  intake/remap policy, concave-polygon rejection, and source-face `Q` aggregation accounting, then
-  advances the next gate to `paper_generalization_batch_b_primitive_fit_engine`. It is not robust
+  intake/remap policy, concave-polygon rejection, and source-face `Q` aggregation accounting. At
+  that source-policy stage the follow-up gate was
+  `paper_generalization_batch_b_primitive_fit_engine`. It is not robust
   mesh cleanup, general polygon intake, package generation, Newton runtime execution, real-USD
   asset evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
   collision-quality evidence, deployment readiness, or safety certification.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_generalization_batch_b_primitive_fit_engine`, an offline report-only primitive-fit engine
+  matrix over deterministic in-memory probes for all six paper primitive names. It records
+  candidate generation, selected-candidate accounting, containment checks, finite numeric fields,
+  and the offline-only boundary for paper-only primitives, then advances the next gate to
+  `paper_generalization_batch_c_search_engine`. It is not robust primitive fitting, package
+  generation, Newton runtime execution, real-USD asset evidence, benchmark evidence,
+  `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
+  readiness, or safety certification.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper

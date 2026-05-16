@@ -60,9 +60,10 @@ _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY = "paper_generalization_batch_a_sour
 _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT = (
     "paper_generalization_batch_b_primitive_fit_engine"
 )
+_PAPER_GENERALIZATION_BATCH_C_SEARCH = "paper_generalization_batch_c_search_engine"
 _PAPER_GENERALIZATION_NEXT_ACTION = (
-    "Proceed to paper_generalization_batch_b_primitive_fit_engine after the "
-    "source-policy generalization matrix; keep stronger wording blocked."
+    "Proceed to paper_generalization_batch_c_search_engine after the "
+    "primitive-fit engine generalization matrix; keep stronger wording blocked."
 )
 
 
@@ -122,6 +123,14 @@ class _PaperToyCase:
     unsupported_source_face_intake_audit: _UnsupportedSourceFaceIntakeAudit | None = None
     fixture_breadth_batch: str | None = None
     executable_source_face_ids: tuple[int, ...] | None = None
+
+
+@dataclass(frozen=True)
+class _PaperPrimitiveFitProbe:
+    probe_id: str
+    target_paper_primitive: str
+    mesh: TriangleMesh
+    variant_parameters: dict[str, object]
 
 
 def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
@@ -563,28 +572,45 @@ def _paper_faithful_offline_generalization_batches() -> list[dict[str, object]]:
     ]
 
 
-def _paper_remaining_generalization_gates_after_source_policy() -> list[str]:
+def _paper_remaining_generalization_gates_after(closed_gates: set[str]) -> list[str]:
     return [
         str(batch["batch_id"])
         for batch in _paper_faithful_offline_generalization_batches()
-        if batch["batch_id"] != _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY
+        if str(batch["batch_id"]) not in closed_gates
     ]
+
+
+def _paper_remaining_generalization_gates_after_source_policy() -> list[str]:
+    return _paper_remaining_generalization_gates_after(
+        {_PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY}
+    )
+
+
+def _paper_remaining_generalization_gates_after_primitive_fit() -> list[str]:
+    return _paper_remaining_generalization_gates_after(
+        {
+            _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+            _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+        }
+    )
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
     planned_batches = _paper_faithful_offline_generalization_batches()
-    remaining_generalization_gates = _paper_remaining_generalization_gates_after_source_policy()
+    remaining_generalization_gates = (
+        _paper_remaining_generalization_gates_after_primitive_fit()
+    )
     return {
         "plan_scope": "offline_algorithm_generalization_beyond_named_toy_fixtures",
         "closed_gate": "paper_faithful_offline_generalization_plan",
         "decision": "remain_partial",
         "decision_reason": (
-            "source_policy_generalization_complete_primitive_fit_engine_missing"
+            "primitive_fit_engine_generalization_complete_search_engine_missing"
         ),
         "generalization_plan_complete": True,
         "paper_faithful_offline_allowed": False,
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
-        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
         "planned_batches": planned_batches,
         "remaining_generalization_gates": remaining_generalization_gates,
         "blocked_runtime_gates": [
@@ -593,6 +619,166 @@ def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
             "real_usd_boundary",
             "benchmark_evaluation_boundary",
         ],
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _paper_primitive_fit_engine_probe_specs() -> list[_PaperPrimitiveFitProbe]:
+    return [
+        _PaperPrimitiveFitProbe(
+            probe_id="paper_fit_engine_rotated_obb_probe",
+            target_paper_primitive="oriented_bounding_box",
+            mesh=_paper_rotated_box_fit_mesh(),
+            variant_parameters={"shape_family": "rotated_nonuniform_cuboid"},
+        ),
+        _PaperPrimitiveFitProbe(
+            probe_id="paper_fit_engine_offset_sphere_probe",
+            target_paper_primitive="sphere",
+            mesh=_paper_offset_sphere_fit_mesh(),
+            variant_parameters={"shape_family": "offset_cuboid_with_asymmetric_point"},
+        ),
+        _PaperPrimitiveFitProbe(
+            probe_id="paper_fit_engine_off_axis_capsule_probe",
+            target_paper_primitive="capsule",
+            mesh=_paper_off_axis_capsule_fit_mesh(),
+            variant_parameters={"shape_family": "elongated_off_axis_cuboid"},
+        ),
+        _PaperPrimitiveFitProbe(
+            probe_id="paper_fit_engine_flat_capped_cylinder_probe",
+            target_paper_primitive="capped_cylinder",
+            mesh=_paper_flat_capped_cylinder_axis_fit_mesh(),
+            variant_parameters={
+                "shape_family": "off_axis_flat_capped_cylinder_like_cuboid"
+            },
+        ),
+        _PaperPrimitiveFitProbe(
+            probe_id="paper_fit_engine_tapered_frustum_probe",
+            target_paper_primitive="frustum",
+            mesh=_paper_tapered_frustum_fit_mesh(),
+            variant_parameters={
+                "shape_family": "tapered_unequal_radius_frustum_like_mesh"
+            },
+        ),
+        _PaperPrimitiveFitProbe(
+            probe_id="paper_fit_engine_asymmetric_trapezoid_probe",
+            target_paper_primitive="trapezoidal_prism",
+            mesh=_paper_asymmetric_trapezoid_fit_mesh(),
+            variant_parameters={
+                "shape_family": "asymmetric_trapezoidal_prism_like_wedge"
+            },
+        ),
+    ]
+
+
+def _numeric_values(value: object) -> list[float]:
+    if isinstance(value, bool):
+        return []
+    if isinstance(value, int | float):
+        return [float(value)]
+    if isinstance(value, list | tuple):
+        values: list[float] = []
+        for item in value:
+            values.extend(_numeric_values(item))
+        return values
+    if isinstance(value, dict):
+        values = []
+        for item in value.values():
+            values.extend(_numeric_values(item))
+        return values
+    return []
+
+
+def _candidate_numeric_fields_are_finite(candidate: dict[str, object]) -> bool:
+    return all(np.isfinite(value) for value in _numeric_values(candidate))
+
+
+def _paper_primitive_fit_engine_generalization_payload() -> dict[str, object]:
+    remaining_generalization_gates = (
+        _paper_remaining_generalization_gates_after_primitive_fit()
+    )
+    matrix: list[dict[str, object]] = []
+    for probe in _paper_primitive_fit_engine_probe_specs():
+        face_group = frozenset(range(len(probe.mesh.faces)))
+        audit = _primitive_fit_audit_payload(probe.mesh, face_group)
+        candidates = audit["candidates"]
+        target_candidate = next(
+            candidate
+            for candidate in candidates
+            if candidate["paper_primitive"] == probe.target_paper_primitive
+        )
+        selected_candidate = audit["selected"]
+        matrix.append(
+            {
+                "probe_id": probe.probe_id,
+                "target_paper_primitive": probe.target_paper_primitive,
+                "variant_parameters": probe.variant_parameters,
+                "candidate_row_count": len(candidates),
+                "candidate_order": [
+                    str(candidate["paper_primitive"]) for candidate in candidates
+                ],
+                "missing_paper_primitives": audit["missing_paper_primitives"],
+                "target_candidate": target_candidate,
+                "selected_candidate": selected_candidate,
+                "target_candidate_selected": (
+                    selected_candidate["paper_primitive"]
+                    == probe.target_paper_primitive
+                ),
+                "contains_assigned_points": bool(
+                    target_candidate["contains_assigned_points"]
+                ),
+                "finite_numeric_fields": all(
+                    _candidate_numeric_fields_are_finite(candidate)
+                    for candidate in candidates
+                ),
+                "newton_runtime_kind": target_candidate["newton_runtime_kind"],
+                "package_generation_triggered": False,
+                "newton_runtime_triggered": False,
+                "real_usd_triggered": False,
+                "benchmark_triggered": False,
+            }
+        )
+    return {
+        "gate_id": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+        "gate_status": "implemented_offline_report_only_partial",
+        "closed_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "primitive_fit_engine_generalization_complete_search_engine_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "source_scope": "deterministic_in_memory_parametric_primitive_fit_probes",
+        "implementation_boundary": "offline_report_only_no_package_or_newton",
+        "engine_contract": {
+            "input_contract": "TriangleMesh_plus_face_group",
+            "candidate_set": list(_AUDITED_PAPER_PRIMITIVES),
+            "candidate_evaluation_policy": "evaluate_all_candidates_no_runtime_mapping",
+            "selection_rule": "min_paper_weighted_volume_then_candidate_order",
+            "containment_scope": (
+                "assigned_vertices_only_not_surface_or_collision_quality"
+            ),
+            "axis_policy": "paper_q_eigenbasis_with_candidate_axis_enumeration",
+            "offline_only_unmapped_primitives": [
+                "capped_cylinder",
+                "frustum",
+                "trapezoidal_prism",
+            ],
+        },
+        "primitive_family_matrix": matrix,
+        "coverage_summary": {
+            "primitive_count": len(_AUDITED_PAPER_PRIMITIVES),
+            "probe_family_count": len(matrix),
+            "generated_probe_count": len(matrix),
+            "candidate_row_count": sum(
+                int(row["candidate_row_count"]) for row in matrix
+            ),
+            "closed_gate_count": 2,
+            "remaining_generalization_gate_count": len(remaining_generalization_gates),
+        },
+        "remaining_gaps": remaining_generalization_gates,
         "package_generation_triggered": False,
         "newton_runtime_triggered": False,
         "real_usd_triggered": False,
@@ -745,7 +931,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     """Build the first fixture-scoped offline CPD paper mechanics audit."""
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
-    missing_before_paper_faithful = _paper_remaining_generalization_gates_after_source_policy()
+    missing_before_paper_faithful = (
+        _paper_remaining_generalization_gates_after_primitive_fit()
+    )
     return {
         "stage": "cpd_paper_offline_report",
         "status": "partial",
@@ -763,7 +951,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -791,6 +979,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             ],
             "implemented_generalization_scope": [
                 _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+                _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -805,6 +994,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_generalization_batch_a_source_policy": (
             _paper_source_policy_generalization_payload(cases)
+        ),
+        "paper_generalization_batch_b_primitive_fit_engine": (
+            _paper_primitive_fit_engine_generalization_payload()
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,
@@ -1204,15 +1396,7 @@ def _primitive_fit_audit_payload(
     preprocessing_boundary: str | None = None,
     executable_source_face_ids: tuple[int, ...] | None = None,
 ) -> dict[str, object]:
-    obb_row = _paper_obb_candidate_payload(mesh, face_group)
-    rows = [
-        obb_row,
-        _paper_sphere_candidate_payload(mesh, face_group, obb_row),
-    ]
-    rows.append(_paper_capsule_candidate_payload(mesh, face_group))
-    rows.append(_flat_capped_cylinder_candidate_payload(mesh, face_group))
-    rows.append(_frustum_candidate_payload(mesh, face_group))
-    rows.append(_trapezoidal_prism_candidate_payload(mesh, face_group))
+    rows = _paper_primitive_fit_candidate_rows(mesh, face_group)
     selected = min(rows, key=lambda row: (float(row["weighted_volume"]), row["candidate_order"]))
     generated_triangle_face_ids = sorted(int(face_id) for face_id in face_group)
     source_face_ids = _source_face_ids_for_generated_group(face_group, source_face_intake_audit)
@@ -1240,6 +1424,21 @@ def _primitive_fit_audit_payload(
     if preprocessing_boundary is not None:
         payload["preprocessing_boundary"] = preprocessing_boundary
     return payload
+
+
+def _paper_primitive_fit_candidate_rows(
+    mesh: TriangleMesh,
+    face_group: frozenset[int],
+) -> list[dict[str, object]]:
+    obb_row = _paper_obb_candidate_payload(mesh, face_group)
+    return [
+        obb_row,
+        _paper_sphere_candidate_payload(mesh, face_group, obb_row),
+        _paper_capsule_candidate_payload(mesh, face_group),
+        _flat_capped_cylinder_candidate_payload(mesh, face_group),
+        _frustum_candidate_payload(mesh, face_group),
+        _trapezoidal_prism_candidate_payload(mesh, face_group),
+    ]
 
 
 def _paper_obb_candidate_payload(

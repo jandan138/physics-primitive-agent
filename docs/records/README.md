@@ -265,6 +265,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Generalization Batch A Source Policy](2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   partial command-only source-policy generalization matrix inside
   `cpd_paper_offline_report`.
+- [2026-05-16 CPD Paper Generalization Batch B Primitive Fit Engine](2026-05-16-cpd-paper-generalization-batch-b-primitive-fit-engine.md):
+  partial command-only primitive-fit engine generalization matrix inside
+  `cpd_paper_offline_report`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
