@@ -1536,6 +1536,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_two_face_merge",
         "paper_three_face_chain",
         "paper_disconnected_components",
+        "paper_component_pair_threshold_blocked",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
     ]

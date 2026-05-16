@@ -30,16 +30,17 @@ synthetic Newton task-smoke probe, and command-only four-block slice report for 
 lookahead-changed package pair are now complete under recorded settings. The first
 fixture-scoped `cpd_paper_offline_report` slice is now implemented as a command-only partial
 offline paper-lane audit over `paper_single_box`, `paper_two_face_merge`,
-`paper_three_face_chain`, `paper_disconnected_components`, `paper_frustum_like`, and
-`paper_trapezoid_prism_like`. It records paper operator, primitive-fit subset, left/right/merged
-merge-cost inputs, an offline paper-shaped capsule axis audit row, offline-only flat
-capped-cylinder/frustum/trapezoidal-prism candidate rows, base-collapse-cost versus
-weighted-priority-cost fields, a topology-only priority-queue trace with eager stale pruning, and a
-threshold-disabled component-pair insertion trace while keeping Newton, bed/Franka, package
-generation, and benchmark work out of scope. The audited primitive rows are explicitly current
-surrogate or offline audit rows, not paper-faithful fitting. The next paper-lane gate is
-component-pair threshold blocking, not a capped bed/Franka rerun unless a separate real package
-change is introduced and passes full mapping, contact-canary, task-gate, and dated-record gates. The
+`paper_three_face_chain`, `paper_disconnected_components`, `paper_component_pair_threshold_blocked`,
+`paper_frustum_like`, and `paper_trapezoid_prism_like`. It records paper operator, primitive-fit
+subset, left/right/merged merge-cost inputs, an offline paper-shaped capsule axis audit row,
+offline-only flat capped-cylinder/frustum/trapezoidal-prism candidate rows, base-collapse-cost
+versus weighted-priority-cost fields, a topology-only priority-queue trace with eager stale pruning,
+a threshold-disabled component-pair insertion trace, and a finite-threshold component-pair blocked
+trace while keeping Newton, bed/Franka, package generation, and benchmark work out of scope. The
+audited primitive rows are explicitly current surrogate or offline audit rows, not paper-faithful
+fitting. The next paper-lane gate is `paper_cpd_postprocess_audit`, not a capped bed/Franka rerun
+unless a separate real package change is introduced and passes full mapping, contact-canary,
+task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
 collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
 `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
@@ -74,6 +75,9 @@ records exist.
 - [CPD paper component-pair edge insertion record](records/2026-05-16-cpd-paper-component-pair-edge-insertion.md):
   dated implementation record for the threshold-disabled offline component-pair insertion audit in
   the partial `cpd_paper_offline_report`.
+- [CPD paper component-pair threshold blocking record](records/2026-05-16-cpd-paper-component-pair-threshold-blocking.md):
+  dated implementation record for the finite-threshold offline component-pair block audit in the
+  partial `cpd_paper_offline_report`.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
   asset permission-evidence validation without changing reproduction or benchmark evidence.
@@ -394,11 +398,12 @@ records exist.
   USD loading, real assets, or Newton tasks.
 - `npc-compile --run-cpd-paper-offline-report`: command-only partial offline paper-lane audit over
   `paper_single_box`, `paper_two_face_merge`, `paper_three_face_chain`,
-  `paper_disconnected_components`, `paper_frustum_like`, and `paper_trapezoid_prism_like`; exits
-  successfully when the JSON report is emitted, returns `status: partial`, records current
-  surrogate OBB/sphere rows, an offline paper-shaped capsule axis row, offline-only flat
-  capped-cylinder/frustum/trapezoidal-prism rows, topology-only priority-queue trace fields, and a
-  threshold-disabled component-pair insertion trace, and does not run Newton, real USD, package
+  `paper_disconnected_components`, `paper_component_pair_threshold_blocked`, `paper_frustum_like`,
+  and `paper_trapezoid_prism_like`; exits successfully when the JSON report is emitted, returns
+  `status: partial`, records current surrogate OBB/sphere rows, an offline paper-shaped capsule
+  axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, topology-only
+  priority-queue trace fields, a threshold-disabled component-pair insertion trace, and a
+  finite-threshold component-pair blocked trace, and does not run Newton, real USD, package
   generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config

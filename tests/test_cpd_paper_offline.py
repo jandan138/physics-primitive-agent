@@ -24,16 +24,18 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert set(report["failure_labels"]) == {
         "polygon_and_quad_face_policy_missing",
-        "component_pair_threshold_blocking_missing",
         "postprocess_enclosed_primitive_culling_missing",
     }
-    assert report["next_required_gate"] == "paper_component_pair_threshold_blocking_audit"
+    assert report["next_required_gate"] == "paper_cpd_postprocess_audit"
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]
     assert "component_pair_edge_insertion_audit_threshold_disabled" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
+    assert "component_pair_threshold_blocking_audit" in report["paper_faithfulness"][
+        "implemented_fixture_scope"
+    ]
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
@@ -41,6 +43,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_two_face_merge",
         "paper_three_face_chain",
         "paper_disconnected_components",
+        "paper_component_pair_threshold_blocked",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
     }
@@ -277,6 +280,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert disconnected_trace["component_pair_edge_insertion_triggered"] is True
     assert disconnected_trace["component_pair_candidate_count"] == 1
     assert disconnected_trace["component_pair_candidate_cap"] == "all_pairs_for_fixture"
+    assert disconnected_trace["skipped_component_pair_count"] == 0
+    assert disconnected_trace["component_pair_attempted_pair_count"] == 1
     assert disconnected_trace["accepted_merge_count"] == 1
     assert disconnected_trace["stale_entry_skipped_count"] == 0
     assert disconnected_trace["blocked_merge_count"] == 0
@@ -312,6 +317,56 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert component_event["active_primitive_count_after"] == 1
     assert component_event["updated_neighbor_insertion_count"] == 0
     assert component_event["resulting_source_faces"] == [0, 1]
+
+    threshold_case = cases["paper_component_pair_threshold_blocked"]
+    threshold_trace = threshold_case["collapse_trace"]
+    assert threshold_trace["trace_scope"] == "component_pair_priority_queue_trace_fixture"
+    assert threshold_trace["target_primitive_count"] == 1
+    assert threshold_trace["excess_volume_threshold"] == 0.0
+    assert threshold_trace["threshold_policy"] == "component_pair_paper_base_cost_lte_threshold"
+    assert threshold_trace["initial_active_groups"] == [[0], [1]]
+    assert threshold_trace["initial_edge_count"] == 0
+    assert threshold_trace["component_pair_edge_insertion_triggered"] is True
+    assert threshold_trace["component_pair_candidate_count"] == 1
+    assert threshold_trace["component_pair_candidate_cap"] == "all_pairs_for_fixture"
+    assert threshold_trace["skipped_component_pair_count"] == 0
+    assert threshold_trace["component_pair_attempted_pair_count"] == 1
+    assert threshold_trace["accepted_merge_count"] == 0
+    assert threshold_trace["blocked_merge_count"] == 1
+    assert threshold_trace["stale_entry_skipped_count"] == 0
+    assert threshold_trace["stop_reason"] == "all_remaining_edges_blocked_by_threshold"
+    assert threshold_trace["final_active_groups"] == [[0], [1]]
+    assert threshold_trace["package_generation_triggered"] is False
+    assert threshold_trace["newton_runtime_triggered"] is False
+    assert threshold_trace["real_usd_triggered"] is False
+    assert threshold_trace["benchmark_triggered"] is False
+    assert len(threshold_trace["events"]) == 1
+    blocked_event = threshold_trace["events"][0]
+    assert blocked_event["event_kind"] == "blocked_by_threshold"
+    assert blocked_event["edge_source"] == "component_pair"
+    assert blocked_event["source_faces_left"] == [0]
+    assert blocked_event["source_faces_right"] == [1]
+    assert blocked_event["source_faces_merged"] == [0, 1]
+    assert blocked_event["paper_base_cost"] > 0.0
+    assert isfinite(blocked_event["paper_base_cost"])
+    assert isfinite(blocked_event["weighted_priority_cost"])
+    assert blocked_event["queue_key"] == [
+        blocked_event["weighted_priority_cost"],
+        blocked_event["paper_base_cost"],
+        [0],
+        [1],
+        blocked_event["insertion_order"],
+    ]
+    assert blocked_event["accepted"] is False
+    assert blocked_event["blocked"] is True
+    assert blocked_event["blocked_reason"] == "component_pair_threshold_exceeded"
+    assert blocked_event["threshold_value"] == 0.0
+    assert blocked_event["threshold_metric"] == "paper_base_cost"
+    assert blocked_event["stale_entry"] is False
+    assert blocked_event["active_primitive_count_before"] == 2
+    assert blocked_event["active_primitive_count_after"] == 2
+    assert blocked_event["updated_neighbor_insertion_count"] == 0
+    assert "resulting_source_faces" not in blocked_event
 
 
 def test_cpd_paper_offline_report_is_strict_json_serializable():

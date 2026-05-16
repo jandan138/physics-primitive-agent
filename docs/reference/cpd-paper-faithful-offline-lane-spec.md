@@ -409,18 +409,34 @@ paper_disconnected_components
 This slice adds component-pair insertion only under disabled threshold settings. It does not
 implement enabled threshold blocking or skipped component-pair accounting.
 
+## Seventh Implementation Slice
+
+The seventh implementation slice is now:
+
+```text
+paper_component_pair_threshold_blocked
+-> topology queue exhausts before target count
+-> insert one component-pair candidate
+-> block it with finite paper-base-cost threshold 0.0
+-> record blocked event, attempted count 1, skipped count 0, and threshold stop reason
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice adds a deterministic blocked component-pair event for one all-pairs toy fixture. It does
+not implement capped skipped-pair fixtures; skipped count is recorded as `0`.
+
 ## Next Implementation Slice
 
 The next paper-lane gate is:
 
 ```text
-paper component-pair threshold blocking audit
--> enable a finite threshold for component-pair candidates
--> reuse paper-lane costs, stale pruning, and stop-reason fields
--> record accepted, skipped, and blocked component-pair decisions
+paper_cpd_postprocess_audit
+-> create an enclosed-primitive toy fixture
+-> record before/after primitive counts
+-> record enclosed primitive ids, enclosing primitive ids, containment test type, and cull reasons
 -> no package generation, Newton, real USD, or benchmarks
 ```
 
-This is the narrowest next algorithmic gate after threshold-disabled component-pair insertion. It
-should not be broadened into package generation, Newton diagnostics, benchmark work, or a
-bed/Franka rerun until the offline report records a changed paper-lane package boundary.
+This is the narrowest next algorithmic gate after component-pair threshold blocking. It should not
+be broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun
+until the offline report records a changed paper-lane package boundary.

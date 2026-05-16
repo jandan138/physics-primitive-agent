@@ -45,13 +45,13 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   deployment readiness, or safety certification.
 - The current code can run a command-only partial `cpd_paper_offline_report` over
   `paper_single_box`, `paper_two_face_merge`, `paper_three_face_chain`,
-  `paper_disconnected_components`, `paper_frustum_like`, and `paper_trapezoid_prism_like`
-  synthetic fixtures. It reports triangle-only mesh intake, paper-side operator audit fields,
-  current surrogate OBB/sphere rows, an offline paper-shaped capsule axis fit-audit row,
-  offline-only flat-capped-cylinder, frustum, and trapezoidal-prism fit-audit candidate rows,
-  separate paper base collapse-cost versus weighted-priority-cost fields, a topology-only
-  priority-queue trace with eager stale-pruning records, and a threshold-disabled component-pair
-  insertion trace. The report
+  `paper_disconnected_components`, `paper_component_pair_threshold_blocked`, `paper_frustum_like`,
+  and `paper_trapezoid_prism_like` synthetic fixtures. It reports triangle-only mesh intake,
+  paper-side operator audit fields, current surrogate OBB/sphere rows, an offline paper-shaped
+  capsule axis fit-audit row, offline-only flat-capped-cylinder, frustum, and trapezoidal-prism
+  fit-audit candidate rows, separate paper base collapse-cost versus weighted-priority-cost fields,
+  a topology-only priority-queue trace with eager stale-pruning records, a threshold-disabled
+  component-pair insertion trace, and a finite-threshold component-pair blocked trace. The report
   remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data, not
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not

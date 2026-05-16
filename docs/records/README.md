@@ -223,6 +223,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Component-Pair Edge Insertion](2026-05-16-cpd-paper-component-pair-edge-insertion.md):
   partial command-only threshold-disabled component-pair insertion audit on a deterministic
   disconnected toy fixture.
+- [2026-05-16 CPD Paper Component-Pair Threshold Blocking](2026-05-16-cpd-paper-component-pair-threshold-blocking.md):
+  partial command-only finite-threshold component-pair block audit on a deterministic disconnected
+  toy fixture.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

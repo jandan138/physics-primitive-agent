@@ -22,18 +22,18 @@ fixture and records a blocked event without changing packages or calling Newton.
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `tests/test_cli.py`
 
-- [ ] Add assertions that `component_pair_threshold_blocking_missing` is no longer in
+- [x] Add assertions that `component_pair_threshold_blocking_missing` is no longer in
   `failure_labels`, while `polygon_and_quad_face_policy_missing` and
   `postprocess_enclosed_primitive_culling_missing` remain.
-- [ ] Assert `next_required_gate == "paper_cpd_postprocess_audit"`.
-- [ ] Assert `component_pair_threshold_blocking_audit` is present in
+- [x] Assert `next_required_gate == "paper_cpd_postprocess_audit"`.
+- [x] Assert `component_pair_threshold_blocking_audit` is present in
   `paper_faithfulness.implemented_fixture_scope`.
-- [ ] Assert report cases include `paper_component_pair_threshold_blocked`.
-- [ ] Preserve the existing `paper_disconnected_components` assertions:
+- [x] Assert report cases include `paper_component_pair_threshold_blocked`.
+- [x] Preserve the existing `paper_disconnected_components` assertions:
   - `threshold_policy == "disabled"`;
   - `blocked_merge_count == 0`;
   - one accepted `component_pair` event.
-- [ ] Assert the new `paper_component_pair_threshold_blocked` trace records:
+- [x] Assert the new `paper_component_pair_threshold_blocked` trace records:
   - `trace_scope == "component_pair_priority_queue_trace_fixture"`;
   - `target_primitive_count == 1`;
   - `excess_volume_threshold == 0.0`;
@@ -50,7 +50,7 @@ fixture and records a blocked event without changing packages or calling Newton.
   - `stop_reason == "all_remaining_edges_blocked_by_threshold"`;
   - `final_active_groups == [[0], [1]]`;
   - no package, Newton, real USD, or benchmark trigger.
-- [ ] Assert the blocked component-pair event has:
+- [x] Assert the blocked component-pair event has:
   - `event_kind == "blocked_by_threshold"`;
   - `edge_source == "component_pair"`;
   - `source_faces_left == [0]`;
@@ -70,9 +70,9 @@ fixture and records a blocked event without changing packages or calling Newton.
   - `active_primitive_count_after == 2`;
   - `updated_neighbor_insertion_count == 0`;
   - no `resulting_source_faces`.
-- [ ] Update the CLI JSON test expected case list to include
+- [x] Update the CLI JSON test expected case list to include
   `paper_component_pair_threshold_blocked`.
-- [ ] Run:
+- [x] Run:
   `python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_offline_report_covers_first_toy_slice tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json -q`
   and confirm it fails for the missing threshold-blocking behavior.
 
@@ -82,35 +82,35 @@ fixture and records a blocked event without changing packages or calling Newton.
 
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] Extend `_PaperToyCase` with `component_pair_excess_volume_threshold: float | None`.
-- [ ] Reuse `_disconnected_components_mesh()` for `paper_component_pair_threshold_blocked`.
-- [ ] Add `paper_component_pair_threshold_blocked` with face groups `{0}`, `{1}`, target count `1`,
+- [x] Extend `_PaperToyCase` with `component_pair_excess_volume_threshold: float | None`.
+- [x] Reuse `_disconnected_components_mesh()` for `paper_component_pair_threshold_blocked`.
+- [x] Add `paper_component_pair_threshold_blocked` with face groups `{0}`, `{1}`, target count `1`,
   component-pair insertion enabled, and threshold `0.0`.
-- [ ] Extend `_priority_queue_trace_payload()` with `component_pair_excess_volume_threshold`.
-- [ ] Track attempted component-pair pairs by sorted source-face tuples so blocked pairs are not
+- [x] Extend `_priority_queue_trace_payload()` with `component_pair_excess_volume_threshold`.
+- [x] Track attempted component-pair pairs by sorted source-face tuples so blocked pairs are not
   reinserted.
-- [ ] Insert only unattempted component-pair candidates when the queue is empty.
-- [ ] Emit threshold fields:
+- [x] Insert only unattempted component-pair candidates when the queue is empty.
+- [x] Emit threshold fields:
   - disabled cases keep `excess_volume_threshold: "default_inf"` and `threshold_policy:
     "disabled"`;
   - threshold case records `excess_volume_threshold: 0.0` and `threshold_policy:
     "component_pair_paper_base_cost_lte_threshold"`.
-- [ ] Before accepting a live component-pair candidate, compare `paper_base_cost` against the finite
+- [x] Before accepting a live component-pair candidate, compare `paper_base_cost` against the finite
   threshold.
-- [ ] If `paper_base_cost` exceeds threshold, append a `_queue_event_payload()` event with
+- [x] If `paper_base_cost` exceeds threshold, append a `_queue_event_payload()` event with
   `accepted=False`, `blocked=True`, `event_kind="blocked_by_threshold"`, and threshold metadata.
-- [ ] Do not mutate `active_groups` for the blocked event.
-- [ ] Increment `blocked_merge_count`.
-- [ ] Increment `component_pair_attempted_pair_count` when a live component-pair candidate is
+- [x] Do not mutate `active_groups` for the blocked event.
+- [x] Increment `blocked_merge_count`.
+- [x] Increment `component_pair_attempted_pair_count` when a live component-pair candidate is
   attempted.
-- [ ] Emit `skipped_component_pair_count: 0` for this all-pairs fixture and preserve the field on
+- [x] Emit `skipped_component_pair_count: 0` for this all-pairs fixture and preserve the field on
   disabled/accepted traces.
-- [ ] Stop with `all_remaining_edges_blocked_by_threshold` when the queue is exhausted after one or
+- [x] Stop with `all_remaining_edges_blocked_by_threshold` when the queue is exhausted after one or
   more threshold blocks, no unattempted component-pair pairs remain, and the target is not reached.
-- [ ] Remove `component_pair_threshold_blocking` from `missing_before_paper_faithful`.
-- [ ] Set `next_required_gate` to `paper_cpd_postprocess_audit`.
-- [ ] Add `component_pair_threshold_blocking_audit` to implemented fixture scope.
-- [ ] Run the RED test and confirm it passes.
+- [x] Remove `component_pair_threshold_blocking` from `missing_before_paper_faithful`.
+- [x] Set `next_required_gate` to `paper_cpd_postprocess_audit`.
+- [x] Add `component_pair_threshold_blocking_audit` to implemented fixture scope.
+- [x] Run the RED test and confirm it passes.
 
 ### Task 3: Docs, Registry, And Record
 
@@ -125,25 +125,25 @@ fixture and records a blocked event without changing packages or calling Newton.
 - Modify: `experiments/registry.yaml`
 - Create: `docs/records/2026-05-16-cpd-paper-component-pair-threshold-blocking.md`
 
-- [ ] Update current paper-lane wording to say one toy component-pair threshold block is recorded.
-- [ ] Keep `status: partial` and `paper_faithful_offline_supported: false`.
-- [ ] Make `paper_cpd_postprocess_audit` the next gate.
-- [ ] Keep package generation, Newton, real USD, benchmark, and collision-quality claims out of
+- [x] Update current paper-lane wording to say one toy component-pair threshold block is recorded.
+- [x] Keep `status: partial` and `paper_faithful_offline_supported: false`.
+- [x] Make `paper_cpd_postprocess_audit` the next gate.
+- [x] Keep package generation, Newton, real USD, benchmark, and collision-quality claims out of
   scope.
-- [ ] Add dated verification and multi-agent review notes.
+- [x] Add dated verification and multi-agent review notes.
 
 ### Task 4: Verification And Review
 
-- [ ] Run focused pytest for CPD paper offline and CLI report tests.
-- [ ] Run CLI smoke:
+- [x] Run focused pytest for CPD paper offline and CLI report tests.
+- [x] Run CLI smoke:
   `python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report`.
-- [ ] Run `python -m pytest -q`.
-- [ ] Run `python scripts/validate_docs.py`.
-- [ ] Run `python scripts/validate_site_claims.py`.
-- [ ] Run `git diff --check`.
-- [ ] Request multi-agent review for threshold-blocking algorithm, docs/claim boundaries, and report
+- [x] Run `python -m pytest -q`.
+- [x] Run `python scripts/validate_docs.py`.
+- [x] Run `python scripts/validate_site_claims.py`.
+- [x] Run `git diff --check`.
+- [x] Request multi-agent review for threshold-blocking algorithm, docs/claim boundaries, and report
   schema.
-- [ ] Fix Critical/Important review findings before commit.
+- [x] Fix Critical/Important review findings before commit.
 
 ### Task 5: Commit
 

@@ -56,6 +56,7 @@ class _PaperToyCase:
     collapse_pair: tuple[frozenset[int], frozenset[int]] | None = None
     priority_queue_target_count: int | None = None
     component_pair_edge_insertion: bool = False
+    component_pair_excess_volume_threshold: float | None = None
 
 
 def build_cpd_paper_offline_report() -> dict[str, object]:
@@ -64,7 +65,6 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
         "polygon_and_quad_face_policy",
-        "component_pair_threshold_blocking",
         "postprocess_enclosed_primitive_culling",
     ]
     return {
@@ -84,7 +84,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_component_pair_threshold_blocking_audit",
+        "next_required_gate": "paper_cpd_postprocess_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -94,6 +94,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "single_pop_collapse_cost_audit",
                 "priority_queue_trace_audit_topology_only",
                 "component_pair_edge_insertion_audit_threshold_disabled",
+                "component_pair_threshold_blocking_audit",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -129,6 +130,7 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             case.face_groups,
             case.priority_queue_target_count,
             allow_component_pair_edges=case.component_pair_edge_insertion,
+            component_pair_excess_volume_threshold=case.component_pair_excess_volume_threshold,
         )
     return payload
 
@@ -852,7 +854,12 @@ def _priority_queue_trace_payload(
     target_primitive_count: int,
     *,
     allow_component_pair_edges: bool = False,
+    component_pair_excess_volume_threshold: float | None = None,
 ) -> dict[str, object]:
+    if component_pair_excess_volume_threshold is not None and not np.isfinite(
+        component_pair_excess_volume_threshold
+    ):
+        raise ValueError("component_pair_excess_volume_threshold must be finite")
     active_groups = set(initial_groups)
     insertion_order = 0
     queue: list[dict[str, object]] = []
@@ -868,12 +875,18 @@ def _priority_queue_trace_payload(
     component_pair_edge_insertion_triggered = False
     topology_queue_exhausted_before_component_pair_insertion = False
     component_pair_candidate_count = 0
+    component_pair_attempted_pairs: set[tuple[tuple[int, ...], tuple[int, ...]]] = set()
+    threshold_blocked = False
 
     while len(active_groups) > target_primitive_count:
         if not queue:
             if not allow_component_pair_edges:
                 break
-            component_pairs = _component_pair_group_pairs(active_groups)
+            component_pairs = [
+                (left, right)
+                for left, right in _component_pair_group_pairs(active_groups)
+                if _component_pair_key(left, right) not in component_pair_attempted_pairs
+            ]
             if not component_pairs:
                 break
             topology_queue_exhausted_before_component_pair_insertion = True
@@ -910,6 +923,30 @@ def _priority_queue_trace_payload(
             )
             stale_entry_skipped_count += 1
             continue
+
+        if entry["edge_source"] == "component_pair":
+            component_pair_attempted_pairs.add(_component_pair_key(left_group, right_group))
+            if (
+                component_pair_excess_volume_threshold is not None
+                and float(entry["paper_base_cost"]) > component_pair_excess_volume_threshold
+            ):
+                events.append(
+                    _queue_event_payload(
+                        entry,
+                        stale_entry=False,
+                        accepted=False,
+                        blocked=True,
+                        active_primitive_count_before=active_before,
+                        active_primitive_count_after=active_before,
+                        event_kind="blocked_by_threshold",
+                        blocked_reason="component_pair_threshold_exceeded",
+                        threshold_value=float(component_pair_excess_volume_threshold),
+                        threshold_metric="paper_base_cost",
+                    )
+                )
+                blocked_merge_count += 1
+                threshold_blocked = True
+                continue
 
         active_groups.remove(left_group)
         active_groups.remove(right_group)
@@ -961,11 +998,12 @@ def _priority_queue_trace_payload(
         events.extend(stale_events)
         accepted_merge_count += 1
 
-    stop_reason = (
-        "target_count_reached"
-        if len(active_groups) <= target_primitive_count
-        else "queue_exhausted_before_target_count"
-    )
+    if len(active_groups) <= target_primitive_count:
+        stop_reason = "target_count_reached"
+    elif threshold_blocked:
+        stop_reason = "all_remaining_edges_blocked_by_threshold"
+    else:
+        stop_reason = "queue_exhausted_before_target_count"
     component_pair_edge_policy = (
         "insert_when_topology_queue_exhausted_before_target"
         if allow_component_pair_edges
@@ -974,6 +1012,12 @@ def _priority_queue_trace_payload(
     component_pair_candidate_cap = (
         "all_pairs_for_fixture" if allow_component_pair_edges else "disabled"
     )
+    if component_pair_excess_volume_threshold is None:
+        excess_volume_threshold: float | str = "default_inf"
+        threshold_policy = "disabled"
+    else:
+        excess_volume_threshold = float(component_pair_excess_volume_threshold)
+        threshold_policy = "component_pair_paper_base_cost_lte_threshold"
     return {
         "trace_scope": (
             "component_pair_priority_queue_trace_fixture"
@@ -982,8 +1026,8 @@ def _priority_queue_trace_payload(
         ),
         "priority_queue_policy": "paper_greedy_min_weighted_priority_cost",
         "target_primitive_count": int(target_primitive_count),
-        "excess_volume_threshold": "default_inf",
-        "threshold_policy": "disabled",
+        "excess_volume_threshold": excess_volume_threshold,
+        "threshold_policy": threshold_policy,
         "component_pair_edge_policy": component_pair_edge_policy,
         "component_pair_edge_insertion_triggered": component_pair_edge_insertion_triggered,
         "topology_queue_exhausted_before_component_pair_insertion": (
@@ -991,6 +1035,8 @@ def _priority_queue_trace_payload(
         ),
         "component_pair_candidate_count": component_pair_candidate_count,
         "component_pair_candidate_cap": component_pair_candidate_cap,
+        "component_pair_attempted_pair_count": len(component_pair_attempted_pairs),
+        "skipped_component_pair_count": 0,
         "initial_active_groups": _sorted_group_payload(initial_groups),
         "initial_edge_count": len(initial_candidates),
         "initial_candidates": initial_candidates,
@@ -1072,6 +1118,10 @@ def _queue_event_payload(
     active_primitive_count_before: int,
     active_primitive_count_after: int,
     event_kind: str,
+    blocked: bool = False,
+    blocked_reason: str | None = None,
+    threshold_value: float | None = None,
+    threshold_metric: str | None = None,
     resulting_source_faces: list[int] | None = None,
     updated_neighbor_insertion_count: int = 0,
 ) -> dict[str, object]:
@@ -1081,12 +1131,18 @@ def _queue_event_payload(
             "event_kind": event_kind,
             "stale_entry": bool(stale_entry),
             "accepted": bool(accepted),
-            "blocked": False,
+            "blocked": bool(blocked),
             "active_primitive_count_before": int(active_primitive_count_before),
             "active_primitive_count_after": int(active_primitive_count_after),
             "updated_neighbor_insertion_count": int(updated_neighbor_insertion_count),
         }
     )
+    if blocked_reason is not None:
+        payload["blocked_reason"] = blocked_reason
+    if threshold_value is not None:
+        payload["threshold_value"] = float(threshold_value)
+    if threshold_metric is not None:
+        payload["threshold_metric"] = threshold_metric
     if resulting_source_faces is not None:
         payload["resulting_source_faces"] = resulting_source_faces
     return payload
@@ -1114,6 +1170,14 @@ def _component_pair_group_pairs(
         for right in sorted_groups[left_index + 1 :]:
             pairs.append(_ordered_group_pair(left, right))
     return pairs
+
+
+def _component_pair_key(
+    left: frozenset[int],
+    right: frozenset[int],
+) -> tuple[tuple[int, ...], tuple[int, ...]]:
+    left, right = _ordered_group_pair(left, right)
+    return _group_sort_key(left), _group_sort_key(right)
 
 
 def _groups_share_mesh_edge(
@@ -1185,6 +1249,15 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             face_groups=(frozenset({0}), frozenset({1})),
             priority_queue_target_count=1,
             component_pair_edge_insertion=True,
+        ),
+        _PaperToyCase(
+            case_id="paper_component_pair_threshold_blocked",
+            description="two disconnected triangles for finite-threshold component-pair block audit",
+            mesh=_disconnected_components_mesh(),
+            face_groups=(frozenset({0}), frozenset({1})),
+            priority_queue_target_count=1,
+            component_pair_edge_insertion=True,
+            component_pair_excess_volume_threshold=0.0,
         ),
         _PaperToyCase(
             case_id="paper_frustum_like",

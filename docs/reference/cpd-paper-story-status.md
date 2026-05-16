@@ -333,12 +333,14 @@ That partial report now records:
   target-count stop reason;
 - a threshold-disabled component-pair insertion trace over `paper_disconnected_components`,
   including topology-queue exhaustion, one `component_pair` candidate, accepted merge record, and
-  target-count stop reason.
+  target-count stop reason;
+- a finite-threshold component-pair blocked trace over `paper_component_pair_threshold_blocked`,
+  including attempted count `1`, skipped count `0`, blocked reason, and threshold stop reason.
 
 This closes the narrow capsule axis-policy audit gap and adds the first topology-only
-priority-queue trace plus threshold-disabled component-pair insertion inside the report, but it
-does not make the lane `paper_faithful_offline`. The next paper-lane gate is component-pair
-threshold blocking.
+priority-queue trace plus component-pair accepted/blocked toy events inside the report, but it does
+not make the lane `paper_faithful_offline`. The next paper-lane gate is
+`paper_cpd_postprocess_audit`.
 
 ## What The Newton-Native Policy Changes
 
@@ -497,6 +499,7 @@ USD assets
 -> paper-shaped capsule axis audit row, offline-only paper primitive rows, and collapse-cost fields
 -> topology-only paper priority-queue trace audit
 -> threshold-disabled component-pair edge insertion audit
+-> finite-threshold component-pair blocked audit
 -> dated records
 ```
 
@@ -524,7 +527,8 @@ local USD mirrors or synthetic fixtures
 -> command-only partial paper offline report for toy paper mechanics
 -> topology-only paper priority-queue trace audit, still without package/Newton/real-USD
 -> threshold-disabled component-pair edge insertion audit, still without package/Newton/real-USD
--> next: component-pair threshold blocking audit
+-> finite-threshold component-pair blocked audit, still without package/Newton/real-USD
+-> next: paper_cpd_postprocess_audit
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -569,7 +573,7 @@ Use:
 - "paper-shaped capsule axis audit row";
 - "offline paper priority-queue trace audit";
 - "threshold-disabled component-pair edge insertion audit";
-- "component-pair threshold blocking audit";
+- "finite-threshold component-pair blocked audit";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
