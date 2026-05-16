@@ -58,6 +58,7 @@ implemented, and it is still a `partial` report rather than `paper_faithful_offl
 | `paper_cpd_primitive_fit_audit` | All six paper primitive candidates and containment checks in the future full lane; the first slice may audit a subset only if missing paper primitives are explicitly labeled. |
 | `paper_cpd_collapse_trace` | Priority-queue merge steps, costs, stale entries, and stop reason. |
 | `paper_cpd_postprocess_audit` | Enclosed-primitive culling and before/after primitive counts. |
+| `paper_polygon_quad_intake_policy_audit` | Explicit triangle, quad, and polygon intake policy before stronger paper-lane wording. |
 | `paper_faithful_offline` | Report status allowed only after the required tests and dated records exist. |
 
 ## Canonical Paper Mechanics Checklist
@@ -255,12 +256,32 @@ edges. The report should separate:
 Record:
 
 - primitive count before culling;
+- postprocess input source;
 - enclosed primitive ids;
 - enclosing primitive ids;
 - containment test type;
-- primitive count after culling.
+- cull reasons;
+- primitive count after culling;
+- package, Newton, real-USD, and benchmark trigger boundaries.
 
-This pass should stay offline until package generation is separately requested.
+The current `paper_nested_primitive` slice is an explicit two-OBB fixture with shared identity
+axes. It records one inner primitive enclosed by one larger outer primitive. This is a deterministic
+accounting canary, not a general primitive containment library and not postprocessed package
+generation.
+
+### Polygon And Quad Intake Policy
+
+Before `paper_faithful_offline` wording, record:
+
+- whether triangle, quad, and polygon faces are accepted directly or triangulated;
+- the source-face remap policy after any triangulation;
+- the normal and tangent policy for each accepted face arity;
+- whether the operator audit is per original polygon face or per triangulated face;
+- fixture coverage for triangle-only, quad, and higher-arity polygon cases;
+- failure label `polygon_and_quad_face_policy_missing` until this policy has tests and a dated
+  record.
+
+This gate remains offline. It should not call Newton, generate packages, or load real USD assets.
 
 ## Minimal Synthetic Fixture Set
 
@@ -295,7 +316,9 @@ These fixtures are not benchmark assets. They are unit-test-grade checks for the
 7. Component-pair threshold gate: finite threshold settings record accepted, skipped, and blocked
    component-pair decisions.
 8. Postprocess gate: enclosed primitive culling is tested independently.
-9. Record gate: a dated record states the fixture scope and verification commands.
+9. Polygon/quad intake policy gate: non-triangle face policy, source-face remap, and operator
+   ownership are explicit and tested.
+10. Record gate: a dated record states the fixture scope and verification commands.
 
 Only after these gates should a separate package-adaptation slice be planned.
 
@@ -375,7 +398,7 @@ This slice replaces the paper-lane capsule row with an offline axis-policy audit
 Newton-native primitive, so the row can record `newton_runtime_kind: capsule`, but the command still
 does not generate a package or call Newton. The report is still not `paper_faithful_offline`
 because polygon/quad intake, component-pair threshold blocking/skipped-pair accounting, and
-enclosed-primitive postprocessing are not implemented.
+enclosed-primitive postprocessing are not implemented in that slice.
 
 ## Fifth Implementation Slice
 
@@ -425,18 +448,35 @@ paper_component_pair_threshold_blocked
 This slice adds a deterministic blocked component-pair event for one all-pairs toy fixture. It does
 not implement capped skipped-pair fixtures; skipped count is recorded as `0`.
 
+## Eighth Implementation Slice
+
+The eighth implementation slice is now:
+
+```text
+paper_nested_primitive
+-> explicit two-OBB postprocess input rows
+-> shared identity-axis corner containment check
+-> before/after primitive counts, enclosed/enclosing ids, and cull reason
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice adds one deterministic enclosed-primitive culling audit. The input primitives are
+explicit audit rows rather than output from the full paper search, so the report remains
+`partial`.
+
 ## Next Implementation Slice
 
 The next paper-lane gate is:
 
 ```text
-paper_cpd_postprocess_audit
--> create an enclosed-primitive toy fixture
--> record before/after primitive counts
--> record enclosed primitive ids, enclosing primitive ids, containment test type, and cull reasons
+paper_polygon_quad_intake_policy_audit
+-> define triangle, quad, and polygon intake policy
+-> record source-face remap behavior
+-> record normal/tangent operator ownership for non-triangle input
+-> keep status partial until tests and dated records exist
 -> no package generation, Newton, real USD, or benchmarks
 ```
 
-This is the narrowest next algorithmic gate after component-pair threshold blocking. It should not
+This is the narrowest next algorithmic gate after enclosed-primitive postprocessing. It should not
 be broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun
 until the offline report records a changed paper-lane package boundary.

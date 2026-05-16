@@ -57,6 +57,7 @@ class _PaperToyCase:
     priority_queue_target_count: int | None = None
     component_pair_edge_insertion: bool = False
     component_pair_excess_volume_threshold: float | None = None
+    postprocess_fixture: bool = False
 
 
 def build_cpd_paper_offline_report() -> dict[str, object]:
@@ -65,7 +66,6 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
         "polygon_and_quad_face_policy",
-        "postprocess_enclosed_primitive_culling",
     ]
     return {
         "stage": "cpd_paper_offline_report",
@@ -84,7 +84,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_cpd_postprocess_audit",
+        "next_required_gate": "paper_polygon_quad_intake_policy_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -95,6 +95,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "priority_queue_trace_audit_topology_only",
                 "component_pair_edge_insertion_audit_threshold_disabled",
                 "component_pair_threshold_blocking_audit",
+                "postprocess_enclosed_primitive_culling_audit",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -132,6 +133,8 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             allow_component_pair_edges=case.component_pair_edge_insertion,
             component_pair_excess_volume_threshold=case.component_pair_excess_volume_threshold,
         )
+    if case.postprocess_fixture:
+        payload["postprocess_audit"] = _postprocess_audit_payload()
     return payload
 
 
@@ -747,6 +750,108 @@ def _trapezoidal_prism_contains(
     )
 
 
+def _postprocess_audit_payload() -> dict[str, object]:
+    axes = np.eye(3, dtype=np.float64)
+    outer = _postprocess_obb_row(
+        primitive_id=0,
+        center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+        half_extents=np.array([1.0, 1.0, 1.0], dtype=np.float64),
+        axes=axes,
+    )
+    inner = _postprocess_obb_row(
+        primitive_id=1,
+        center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+        half_extents=np.array([0.25, 0.25, 0.25], dtype=np.float64),
+        axes=axes,
+    )
+    inner_corners = _obb_corners(
+        center=np.asarray(inner["center"], dtype=np.float64),
+        half_extents=np.asarray(inner["half_extents"], dtype=np.float64),
+        axes=np.asarray(inner["axes"], dtype=np.float64),
+    )
+    containment_passed = _obb_contains_points(
+        center=np.asarray(outer["center"], dtype=np.float64),
+        half_extents=np.asarray(outer["half_extents"], dtype=np.float64),
+        axes=np.asarray(outer["axes"], dtype=np.float64),
+        points=inner_corners,
+    )
+    cull_records = [
+        {
+            "culled_primitive_id": 1,
+            "enclosing_primitive_id": 0,
+            "cull_reason": "primitive_enclosed_by_larger_primitive",
+            "containment_passed": containment_passed,
+            "tested_corner_count": int(len(inner_corners)),
+        }
+    ]
+    return {
+        "audit_scope": "enclosed_primitive_culling_fixture",
+        "postprocess_input_source": "explicit_audit_primitives_not_search_trace",
+        "input_primitive_count": 2,
+        "output_primitive_count": 1,
+        "postprocess_policy": "remove_primitives_enclosed_by_another_primitive",
+        "containment_test_type": "obb_corners_inside_obb",
+        "axis_policy": "shared_identity_axes",
+        "input_primitives": [outer, inner],
+        "cull_records": cull_records,
+        "enclosed_primitive_ids": [1],
+        "enclosing_primitive_ids": [0],
+        "kept_primitive_ids": [0],
+        "culled_primitive_ids": [1],
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _postprocess_obb_row(
+    *,
+    primitive_id: int,
+    center: NDArray[np.float64],
+    half_extents: NDArray[np.float64],
+    axes: NDArray[np.float64],
+) -> dict[str, object]:
+    return {
+        "primitive_id": primitive_id,
+        "kind": "oriented_bounding_box",
+        "center": _vector(center),
+        "half_extents": _vector(half_extents),
+        "axes": _matrix(axes),
+    }
+
+
+def _obb_corners(
+    center: NDArray[np.float64],
+    half_extents: NDArray[np.float64],
+    axes: NDArray[np.float64],
+) -> NDArray[np.float64]:
+    signs = np.array(
+        [
+            [-1.0, -1.0, -1.0],
+            [-1.0, -1.0, 1.0],
+            [-1.0, 1.0, -1.0],
+            [-1.0, 1.0, 1.0],
+            [1.0, -1.0, -1.0],
+            [1.0, -1.0, 1.0],
+            [1.0, 1.0, -1.0],
+            [1.0, 1.0, 1.0],
+        ],
+        dtype=np.float64,
+    )
+    return center + (signs * half_extents) @ axes
+
+
+def _obb_contains_points(
+    center: NDArray[np.float64],
+    half_extents: NDArray[np.float64],
+    axes: NDArray[np.float64],
+    points: NDArray[np.float64],
+) -> bool:
+    local = (points - center) @ axes.T
+    return bool(np.all(np.abs(local) <= half_extents + 1e-8))
+
+
 def _assigned_points(mesh: TriangleMesh, face_group: frozenset[int]) -> NDArray[np.float64]:
     point_indices = sorted(
         {
@@ -1271,6 +1376,13 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             mesh=_trapezoid_prism_like_mesh(),
             face_groups=(frozenset(range(12)),),
         ),
+        _PaperToyCase(
+            case_id="paper_nested_primitive",
+            description="explicit nested OBB rows for enclosed-primitive postprocess culling audit",
+            mesh=_nested_primitive_mesh(),
+            face_groups=(frozenset(range(12)),),
+            postprocess_fixture=True,
+        ),
     )
 
 
@@ -1432,6 +1544,10 @@ def _trapezoid_prism_like_mesh() -> TriangleMesh:
         dtype=np.int64,
     )
     return TriangleMesh(points=points, faces=faces)
+
+
+def _nested_primitive_mesh() -> TriangleMesh:
+    return _asymmetric_cuboid_surface_mesh()
 
 
 def _face_operator_terms(

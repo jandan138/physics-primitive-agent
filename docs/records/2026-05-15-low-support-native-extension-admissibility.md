@@ -1,5 +1,13 @@
 # 2026-05-15 Low-Support Native Extension Admissibility
 
+## Date
+
+2026-05-15
+
+## Status
+
+Complete
+
 ## Summary
 
 Added a support-aware primitive-selection guard for Newton-native extension candidates in the

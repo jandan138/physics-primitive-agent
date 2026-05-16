@@ -22,11 +22,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithful_offline_supported"] is False
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
-    assert set(report["failure_labels"]) == {
-        "polygon_and_quad_face_policy_missing",
-        "postprocess_enclosed_primitive_culling_missing",
-    }
-    assert report["next_required_gate"] == "paper_cpd_postprocess_audit"
+    assert report["failure_labels"] == ["polygon_and_quad_face_policy_missing"]
+    assert report["next_required_gate"] == "paper_polygon_quad_intake_policy_audit"
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]
@@ -36,6 +33,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert "component_pair_threshold_blocking_audit" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]
+    assert "postprocess_enclosed_primitive_culling_audit" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
@@ -46,6 +46,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_component_pair_threshold_blocked",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
+        "paper_nested_primitive",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
 
@@ -367,6 +368,74 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert blocked_event["active_primitive_count_after"] == 2
     assert blocked_event["updated_neighbor_insertion_count"] == 0
     assert "resulting_source_faces" not in blocked_event
+
+    nested_case = cases["paper_nested_primitive"]
+    assert nested_case["package_generation_triggered"] is False
+    assert nested_case["newton_runtime_triggered"] is False
+    assert nested_case["real_usd_triggered"] is False
+    assert nested_case["benchmark_triggered"] is False
+    postprocess = nested_case["postprocess_audit"]
+    assert postprocess["audit_scope"] == "enclosed_primitive_culling_fixture"
+    assert (
+        postprocess["postprocess_input_source"]
+        == "explicit_audit_primitives_not_search_trace"
+    )
+    assert (
+        postprocess["postprocess_policy"]
+        == "remove_primitives_enclosed_by_another_primitive"
+    )
+    assert postprocess["containment_test_type"] == "obb_corners_inside_obb"
+    assert postprocess["axis_policy"] == "shared_identity_axes"
+    assert postprocess["input_primitive_count"] == 2
+    assert postprocess["output_primitive_count"] == 1
+    assert postprocess["enclosed_primitive_ids"] == [1]
+    assert postprocess["enclosing_primitive_ids"] == [0]
+    assert postprocess["culled_primitive_ids"] == [1]
+    assert postprocess["kept_primitive_ids"] == [0]
+    assert postprocess["package_generation_triggered"] is False
+    assert postprocess["newton_runtime_triggered"] is False
+    assert postprocess["real_usd_triggered"] is False
+    assert postprocess["benchmark_triggered"] is False
+
+    identity_axes = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+    input_primitives = postprocess["input_primitives"]
+    assert len(input_primitives) == postprocess["input_primitive_count"]
+    assert input_primitives == [
+        {
+            "primitive_id": 0,
+            "kind": "oriented_bounding_box",
+            "center": [0.0, 0.0, 0.0],
+            "half_extents": [1.0, 1.0, 1.0],
+            "axes": identity_axes,
+        },
+        {
+            "primitive_id": 1,
+            "kind": "oriented_bounding_box",
+            "center": [0.0, 0.0, 0.0],
+            "half_extents": [0.25, 0.25, 0.25],
+            "axes": identity_axes,
+        },
+    ]
+    assert len(postprocess["kept_primitive_ids"]) == postprocess["output_primitive_count"]
+    cull_records = postprocess["cull_records"]
+    assert cull_records == [
+        {
+            "culled_primitive_id": 1,
+            "enclosing_primitive_id": 0,
+            "cull_reason": "primitive_enclosed_by_larger_primitive",
+            "containment_passed": True,
+            "tested_corner_count": 8,
+        }
+    ]
+    assert postprocess["culled_primitive_ids"] == [
+        record["culled_primitive_id"] for record in cull_records
+    ]
+    assert postprocess["enclosed_primitive_ids"] == [
+        record["culled_primitive_id"] for record in cull_records
+    ]
+    assert postprocess["enclosing_primitive_ids"] == [
+        record["enclosing_primitive_id"] for record in cull_records
+    ]
 
 
 def test_cpd_paper_offline_report_is_strict_json_serializable():

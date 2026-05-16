@@ -1,8 +1,8 @@
 """Repository documentation validation.
 
-The checks are intentionally small and dependency-free so every reviewer can run them before
-editing DeepDive material. They guard the current proposal against accidental safety or
-deployment claims before the project has produced evidence.
+The checks are intentionally small so every reviewer can run them before editing DeepDive
+material. They guard the current proposal against accidental safety or deployment claims before
+the project has produced evidence.
 """
 
 from dataclasses import dataclass
@@ -10,6 +10,8 @@ from pathlib import Path
 import re
 import sys
 from urllib.parse import unquote, urlparse
+
+import yaml
 
 
 @dataclass(frozen=True)
@@ -183,6 +185,90 @@ def validate_local_markdown_links(root: Path, files: list[Path]) -> list[str]:
     return issues
 
 
+def _record_status(text: str) -> str | None:
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if line.strip().lower() != "## status":
+            continue
+        for candidate in lines[index + 1 :]:
+            stripped = candidate.strip()
+            if not stripped:
+                continue
+            if stripped.startswith("#"):
+                return None
+            return stripped
+    return None
+
+
+def validate_registry_records(root: Path) -> list[str]:
+    """Return registry entries whose record or claim-boundary metadata is stale."""
+
+    registry_path = root / "experiments" / "registry.yaml"
+    if not registry_path.exists():
+        return []
+
+    relative_registry = registry_path.relative_to(root).as_posix()
+    try:
+        registry = yaml.safe_load(registry_path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as exc:
+        return [f"{relative_registry}: invalid YAML: {exc}"]
+
+    experiments = registry.get("experiments")
+    if not isinstance(experiments, list):
+        return [f"{relative_registry}: expected top-level experiments list"]
+
+    issues: list[str] = []
+    for index, entry in enumerate(experiments):
+        if not isinstance(entry, dict):
+            issues.append(f"{relative_registry}: entry {index}: expected mapping")
+            continue
+
+        entry_id = str(entry.get("id", f"entry {index}"))
+        status = entry.get("status")
+        record = entry.get("record")
+        claims_supported = entry.get("claims_supported")
+
+        if not isinstance(record, str) or not record:
+            issues.append(f"{relative_registry}: {entry_id}: missing record path")
+            continue
+
+        record_path = root / record
+        if not record_path.exists():
+            issues.append(
+                f"{relative_registry}: {entry_id}: missing record target: {record}"
+            )
+            continue
+
+        if status != "complete":
+            continue
+
+        record_text = record_path.read_text(encoding="utf-8")
+        record_status = _record_status(record_text)
+        if record_status is None or not record_status.startswith("Complete"):
+            issues.append(
+                f"{relative_registry}: {entry_id}: complete registry entry points to "
+                f"non-complete record: {record}"
+            )
+
+        if not isinstance(claims_supported, list) or not claims_supported:
+            issues.append(
+                f"{relative_registry}: {entry_id}: complete registry entry needs "
+                "claims_supported"
+            )
+            continue
+
+        if not any(
+            any(marker in str(claim).lower() for marker in ("no ", "not ", "without", "only"))
+            for claim in claims_supported
+        ):
+            issues.append(
+                f"{relative_registry}: {entry_id}: claims_supported needs an explicit "
+                "claim boundary"
+            )
+
+    return issues
+
+
 def _iter_scan_files(root: Path) -> list[Path]:
     files: list[Path] = []
     for scan_path in SCAN_PATHS:
@@ -204,6 +290,7 @@ def validate_repository(root: Path) -> list[str]:
         issues.extend(issue.format() for issue in find_claim_boundary_issues(text, relative))
 
     issues.extend(validate_local_markdown_links(root, files))
+    issues.extend(validate_registry_records(root))
 
     return issues
 
