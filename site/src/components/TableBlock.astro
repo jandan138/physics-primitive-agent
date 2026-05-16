@@ -1,0 +1,48 @@
+---
+import { renderRichText } from "../lib/richText";
+
+interface TableCell {
+  text: string;
+  colspan?: number;
+}
+
+interface Props {
+  id: string;
+  label: string;
+  caption?: string;
+  rows?: TableCell[][];
+  headerRows?: number;
+}
+
+const { id, label, caption = "", rows = [], headerRows = 1 } = Astro.props;
+const captionHtml = renderRichText(caption);
+const normalizedColspan = (cell: TableCell) => Math.max(1, Number(cell.colspan ?? 1));
+---
+
+<figure class="table-block" id={id}>
+  <figcaption class="table-block__caption">
+    <a href={`#${id}`}>{label}</a>
+    {caption ? <span><Fragment set:html={captionHtml} /></span> : null}
+  </figcaption>
+  <div class="table-block__scroll">
+    <table>
+      <tbody>
+        {rows.map((row, rowIndex) => (
+          <tr>
+            {row.map((cell) =>
+              rowIndex < headerRows ? (
+                <th colspan={normalizedColspan(cell)}>
+                  <Fragment set:html={renderRichText(cell.text)} />
+                </th>
+              ) : (
+                <td colspan={normalizedColspan(cell)}>
+                  <Fragment set:html={renderRichText(cell.text)} />
+                </td>
+              )
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</figure>

@@ -6,6 +6,8 @@ import PaperBlock from "../../components/PaperBlock.astro";
 import FigurePanel from "../../components/FigurePanel.astro";
 import LatexBlock from "../../components/LatexBlock.astro";
 import EquationBlock from "../../components/EquationBlock.astro";
+import AlgorithmBlock from "../../components/AlgorithmBlock.astro";
+import TableBlock from "../../components/TableBlock.astro";
 
 # Method
 
@@ -35,39 +37,11 @@ import EquationBlock from "../../components/EquationBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l001" label="Method / algorithm / method-l001">
-
-```latex
-\begin{algorithm}
-\caption{Convex Primitive Decomposition\label{alg:prim_mesh_reduction}}
-\begin{algorithmic}[1]
-    \Statex \textbf{Input: } Mesh = $V\in\mathbb{R}^3, F_i\subseteq V$, \# Prims N$\in\mathbb{Z}_+$
-    \Statex Volume Threshold $M\in\mathbb{R}_+ \stackrel{\text{default}}{=}\inf$
-    \Statex \textbf{Output: } Primitives $P \text{ s.t. } |P| \leq $ N
-    \Statex Preprocessing \Comment{Remove overlapped vertices}
-    \State $\vect{n}_i = \text{normal}(F_i)$, $\vect{t}_i = \text{tangent}(F_i)$
-    \State $Q_i$ = \text{area}($F_i$)($\vect{n}_i \vect{n}_i^\top + \epsilon\vect{t}_i \vect{t}_i^\top)$, $P_i$ = \text{Prim}($Q_i$), $\text{Vol}(f_i) = \text{Vol}(P_i)$
-    \State pq : Priority Queue
-    \For{adjacent faces $f_0, f_1$ $\in$ F} \Comment{Initialize Priority Queue}
-        \State $P^* = \text{Prim}(f_0 + f_1)$
-        \If{Vol($P^*$) - (Vol($f_0$) + Vol($f_1$)) > M}
-            \textbf{continue}
-        \EndIf
-        \State pq.push(priority =  Vol($P^*$) - (Vol($f_0$) + Vol($f_1$)), ($P^*$, $f_0$, $f_1$) )
-    \EndFor
-    \While{!pq.empty() \textbf{and} $|P| > \text{N}$} \Comment{Greedily Merge}
-        \State ($P^*$, $f_0$, $f_1$) = pq.pop()
-        \State Vol($f_0$) = Vol($f_1$) = Vol($P^*$)
-        \State $P_{f_0} = P_{f_1} = $ $P^*$ \Comment{Set both faces to new primitive}
-        \State Update Costs of Adjacent Primitives
-    \EndWhile
-    \Statex Postprocessing \Comment{{\small Remove primitives enclosed by other primitives}} \\
-    \Return Unique Primitives $P_i$
-\end{algorithmic}
-\end{algorithm}
-```
-
-</LatexBlock>
+<AlgorithmBlock id="method-l001"
+  label="Method / algorithm / method-l001"
+  title="Convex Primitive Decomposition"
+  steps={[{"kind": "note", "depth": 0, "text": "Input: Mesh = $V\\in\\mathbb{R}^3, F_i\\subseteq V$, # Prims N$\\in\\mathbb{Z}_+$"}, {"kind": "note", "depth": 0, "text": "Volume Threshold $M\\in\\mathbb{R}_+ \\stackrel{\\text{default}}{=}\\inf$"}, {"kind": "note", "depth": 0, "text": "Output: Primitives $P \\text{ s.t. } |P| \\leq$ N"}, {"kind": "note", "depth": 0, "text": "Preprocessing Remove overlapped vertices"}, {"kind": "step", "depth": 0, "text": "$\\vect{n}_i = \\text{normal}(F_i)$, $\\vect{t}_i = \\text{tangent}(F_i)$"}, {"kind": "step", "depth": 0, "text": "$Q_i$ = area($F_i$)($\\vect{n}_i \\vect{n}_i^\\top + \\epsilon\\vect{t}_i \\vect{t}_i^\\top)$, $P_i$ = Prim($Q_i$), $\\text{Vol}(f_i) = \\text{Vol}(P_i)$"}, {"kind": "step", "depth": 0, "text": "pq : Priority Queue"}, {"kind": "for", "depth": 0, "text": "For adjacent faces $f_0, f_1$ $\\in$ F: Initialize Priority Queue"}, {"kind": "step", "depth": 1, "text": "$P^* = \\text{Prim}(f_0 + f_1)$"}, {"kind": "if", "depth": 1, "text": "If Vol($P^*$) - (Vol($f_0$) + Vol($f_1$)) > M"}, {"kind": "step", "depth": 2, "text": "continue"}, {"kind": "step", "depth": 1, "text": "pq.push(priority = Vol($P^*$) - (Vol($f_0$) + Vol($f_1$)), ($P^*$, $f_0$, $f_1$) )"}, {"kind": "while", "depth": 0, "text": "While !pq.empty() and $|P| > \\text{N}$: Greedily Merge"}, {"kind": "step", "depth": 1, "text": "($P^*$, $f_0$, $f_1$) = pq.pop()"}, {"kind": "step", "depth": 1, "text": "Vol($f_0$) = Vol($f_1$) = Vol($P^*$)"}, {"kind": "step", "depth": 1, "text": "$P_{f_0} = P_{f_1} =$ $P^*$ Set both faces to new primitive"}, {"kind": "step", "depth": 1, "text": "Update Costs of Adjacent Primitives"}, {"kind": "note", "depth": 0, "text": "Postprocessing { Remove primitives enclosed by other primitives}"}, {"kind": "return", "depth": 0, "text": "Return Unique Primitives $P_i$"}]}
+/>
 
 <PaperBlock
   id="method-p003"

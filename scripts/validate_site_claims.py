@@ -48,6 +48,8 @@ def validate_site_text(path: str, text: str, has_permission_record: bool = False
         issues.append(f"{path}: paper asset publication requires attached permission evidence")
     if "<LatexBlock" in text and "/ control /" in text:
         issues.append(f"{path}: reader-visible LaTeX control should be omitted from generated content")
+    if path.startswith("site/src/content/paper/") and "<LatexBlock" in text:
+        issues.append(f"{path}: reader-visible LaTeX source block should be rendered or omitted")
     if "site/src/pages/paper" in path and REQUIRED_BANNER not in text and "PaperLayout" not in text:
         issues.append(f"{path}: missing source namespace banner")
     if "PaperBlock" in text and 'sourceNamespace="cpd_paper_source_text"' not in text:

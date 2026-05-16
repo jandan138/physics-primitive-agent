@@ -1,0 +1,48 @@
+---
+import { renderRichText } from "../lib/richText";
+
+interface AlgorithmStep {
+  kind?: string;
+  depth?: number;
+  text: string;
+}
+
+interface Props {
+  id: string;
+  label: string;
+  title: string;
+  steps?: AlgorithmStep[];
+}
+
+const { id, label, title, steps = [] } = Astro.props;
+const titleHtml = renderRichText(title);
+const kindLabels: Record<string, string> = {
+  note: "Note",
+  for: "For",
+  while: "While",
+  if: "If",
+  procedure: "Proc",
+  return: "Return",
+  step: "Step",
+};
+const depthStyle = (depth: number | undefined) =>
+  `--algorithm-depth: ${Math.min(Math.max(Number(depth ?? 0), 0), 5)}`;
+---
+
+<figure class="algorithm-block" id={id}>
+  <figcaption class="algorithm-block__header">
+    <a href={`#${id}`}>{label}</a>
+    <strong><Fragment set:html={titleHtml} /></strong>
+  </figcaption>
+  <ol class="algorithm-block__steps">
+    {steps.map((step) => (
+      <li
+        class={`algorithm-block__step algorithm-block__step--${step.kind ?? "step"}`}
+        style={depthStyle(step.depth)}
+      >
+        <span class="algorithm-block__kind">{kindLabels[step.kind ?? "step"] ?? "Step"}</span>
+        <span class="algorithm-block__text"><Fragment set:html={renderRichText(step.text)} /></span>
+      </li>
+    ))}
+  </ol>
+</figure>

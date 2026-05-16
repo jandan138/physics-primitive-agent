@@ -97,6 +97,15 @@ def test_site_validator_rejects_reader_visible_latex_controls():
     assert any("reader-visible LaTeX control" in issue for issue in issues)
 
 
+def test_site_validator_rejects_reader_visible_latex_blocks():
+    issues = validate_site_text(
+        "site/src/content/paper/method.mdx",
+        '<LatexBlock id="method-l001" label="Method / algorithm / method-l001">',
+    )
+
+    assert any("reader-visible LaTeX source block" in issue for issue in issues)
+
+
 def test_generated_paper_blocks_do_not_expose_raw_ref_tokens():
     content_root = Path(__file__).resolve().parents[1] / "site/src/content/paper"
     leaked = [

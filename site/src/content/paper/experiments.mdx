@@ -6,6 +6,8 @@ import PaperBlock from "../../components/PaperBlock.astro";
 import FigurePanel from "../../components/FigurePanel.astro";
 import LatexBlock from "../../components/LatexBlock.astro";
 import EquationBlock from "../../components/EquationBlock.astro";
+import AlgorithmBlock from "../../components/AlgorithmBlock.astro";
+import TableBlock from "../../components/TableBlock.astro";
 
 # Results And Ablations
 
@@ -105,31 +107,12 @@ import EquationBlock from "../../components/EquationBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l002" label="Results And Ablations / table / experiments-l002">
-
-```latex
-\begin{table}[!hb]
-    \setlength{\tabcolsep}{1pt}
-    \centering
-    \begin{tabular}{|c|c|c|c|}
-        \hline
-        Primitive Kind & Minimum Floats Required & Total & \small Engine \\\hline
-        Oriented Box & 3 position, 3 length, 4 orientation & 10 & \textbf{\textcolor{PineGreen}{Yes}} \\\hline
-        Capsule & 3 start-point, 3 end-point, 1 radius & 7 & \textbf{\textcolor{PineGreen}{Yes}} \\\hline
-        Sphere & 3 center, 1 radius & 4 & \textbf{\textcolor{PineGreen}{Yes}} \\\hline
-        Cylinder & 3 start-point, 3 end-point, 1 radius & 7 & \textbf{\textcolor{Goldenrod}{Some}} \\\hline
-        Frustum & 3 start-point 3 end-point, 2 radii & 8 & \textbf{\textcolor{BurntOrange}{Quantized}} \\\hline
-        Prism & 3 position, 4 length, 4 orientation & 11 &\textbf{\textcolor{Goldenrod}{As Hull}} \\\hline\hline
-        Convex Hull & 3 floats per vertex, 3 ints per tri & - & \textbf{\textcolor{PineGreen}{Yes}} \\\hline
-    \end{tabular}
-    \caption{Memory costs required for each primitive and for convex hulls. Orientations are stored as quaternions. For cylinders, some physics engines have direct support. Frustums are not supported, but can be quantized for usage, and prisms can be represented as convex hulls.}
-    \label{tab:memory-costs}
-    %\Description{See caption.}
-    \vspace{0em}
-\end{table}
-```
-
-</LatexBlock>
+<TableBlock id="experiments-l002"
+  label="Results And Ablations / table / experiments-l002"
+  caption="Memory costs required for each primitive and for convex hulls. Orientations are stored as quaternions. For cylinders, some physics engines have direct support. Frustums are not supported, but can be quantized for usage, and prisms can be represented as convex hulls."
+  headerRows={1}
+  rows={[[{"text": "Primitive Kind", "colspan": 1}, {"text": "Minimum Floats Required", "colspan": 1}, {"text": "Total", "colspan": 1}, {"text": "Engine", "colspan": 1}], [{"text": "Oriented Box", "colspan": 1}, {"text": "3 position, 3 length, 4 orientation", "colspan": 1}, {"text": "10", "colspan": 1}, {"text": "Yes", "colspan": 1}], [{"text": "Capsule", "colspan": 1}, {"text": "3 start-point, 3 end-point, 1 radius", "colspan": 1}, {"text": "7", "colspan": 1}, {"text": "Yes", "colspan": 1}], [{"text": "Sphere", "colspan": 1}, {"text": "3 center, 1 radius", "colspan": 1}, {"text": "4", "colspan": 1}, {"text": "Yes", "colspan": 1}], [{"text": "Cylinder", "colspan": 1}, {"text": "3 start-point, 3 end-point, 1 radius", "colspan": 1}, {"text": "7", "colspan": 1}, {"text": "Some", "colspan": 1}], [{"text": "Frustum", "colspan": 1}, {"text": "3 start-point 3 end-point, 2 radii", "colspan": 1}, {"text": "8", "colspan": 1}, {"text": "Quantized", "colspan": 1}], [{"text": "Prism", "colspan": 1}, {"text": "3 position, 4 length, 4 orientation", "colspan": 1}, {"text": "11", "colspan": 1}, {"text": "As Hull", "colspan": 1}], [{"text": "Convex Hull", "colspan": 1}, {"text": "3 floats per vertex, 3 ints per tri", "colspan": 1}, {"text": "-", "colspan": 1}, {"text": "Yes", "colspan": 1}]]}
+/>
 
 <PaperBlock
   id="experiments-p008"
@@ -291,31 +274,12 @@ import EquationBlock from "../../components/EquationBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="experiments-l007" label="Results And Ablations / table / experiments-l007">
-
-```latex
-\begin{table}
-\centering
-\small
-\setlength{\tabcolsep}{0.3pt}
-\begin{tabular}{|c|c|c|c|}
-    \hline
-    Summary Statistics & Ours & CoACD & V-HACD \\\hline
-    \scriptsize \#Models w/ Lowest 1-way Hausdorff$^\uparrow$ & \cellcolor{orange!5} 44 & 20 & 4 \\\hline
-    \scriptsize \#Models w/ Lowest 1-way Chamfer$^\uparrow$ & \cellcolor{orange!5} 43 & 3 & 22 \\\hline
-    Mean 1-way Chamfer$^\downarrow$ & \cellcolor{orange!5} $\num{6.95e-3}$ & $\num{9.91e-3}$ & $\num{8.82e-3}$ \\\hline
-    Median 1-way Chamfer$^\downarrow$ & \cellcolor{orange!5} $\num{5.40e-3}$ & $\num{9.41e-3}$ & $\num{7.60e-3}$ \\\hline
-    Mean 1-way Hausdorff$^\downarrow$ & \cellcolor{orange!5} 0.0445 & 0.0514 & 0.0710 \\\hline
-    Median 1-way Hausdorff$^\downarrow$ & \cellcolor{orange!5} 0.0346 & 0.0383 & 0.0593 \\\hline
-\end{tabular}
-\caption{
-    \label{tab:count1way}Our approach has more lower 1-way distances on our dataset from the generated mesh to the input mesh as compared to CoACD~\cite{coacd} and V-HACD~\cite{vhacd}.
-}
-\vspace{-1em}
-\end{table}
-```
-
-</LatexBlock>
+<TableBlock id="experiments-l007"
+  label="Results And Ablations / table / experiments-l007"
+  caption="Our approach has more lower 1-way distances on our dataset from the generated mesh to the input mesh as compared to CoACD [coacd] and V-HACD [vhacd]."
+  headerRows={1}
+  rows={[[{"text": "Summary Statistics", "colspan": 1}, {"text": "Ours", "colspan": 1}, {"text": "CoACD", "colspan": 1}, {"text": "V-HACD", "colspan": 1}], [{"text": "#Models w/ Lowest 1-way Hausdorff ↑", "colspan": 1}, {"text": "44", "colspan": 1}, {"text": "20", "colspan": 1}, {"text": "4", "colspan": 1}], [{"text": "#Models w/ Lowest 1-way Chamfer ↑", "colspan": 1}, {"text": "43", "colspan": 1}, {"text": "3", "colspan": 1}, {"text": "22", "colspan": 1}], [{"text": "Mean 1-way Chamfer ↓", "colspan": 1}, {"text": "$\\text{6.95e-3}$", "colspan": 1}, {"text": "$\\text{9.91e-3}$", "colspan": 1}, {"text": "$\\text{8.82e-3}$", "colspan": 1}], [{"text": "Median 1-way Chamfer ↓", "colspan": 1}, {"text": "$\\text{5.40e-3}$", "colspan": 1}, {"text": "$\\text{9.41e-3}$", "colspan": 1}, {"text": "$\\text{7.60e-3}$", "colspan": 1}], [{"text": "Mean 1-way Hausdorff ↓", "colspan": 1}, {"text": "0.0445", "colspan": 1}, {"text": "0.0514", "colspan": 1}, {"text": "0.0710", "colspan": 1}], [{"text": "Median 1-way Hausdorff ↓", "colspan": 1}, {"text": "0.0346", "colspan": 1}, {"text": "0.0383", "colspan": 1}, {"text": "0.0593", "colspan": 1}]]}
+/>
 
 <PaperBlock
   id="experiments-p019"

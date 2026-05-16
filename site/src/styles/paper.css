@@ -44,6 +44,10 @@ body {
 .paper-nav a:hover,
 .paper-block__anchor:focus-visible,
 .paper-block__anchor:hover,
+.algorithm-block__header a:focus-visible,
+.algorithm-block__header a:hover,
+.table-block__caption a:focus-visible,
+.table-block__caption a:hover,
 .figure-panel__source:focus-visible,
 .figure-panel__source:hover {
   color: var(--paper-accent);
@@ -236,13 +240,17 @@ body {
 
 .paper-block .katex,
 .figure-panel .katex,
-.equation-block .katex {
+.equation-block .katex,
+.algorithm-block .katex,
+.table-block .katex {
   font-size: 1em;
 }
 
 .paper-block math,
 .figure-panel math,
-.equation-block math {
+.equation-block math,
+.algorithm-block math,
+.table-block math {
   font-family: math, "STIX Two Math", "Cambria Math", "Latin Modern Math", "Noto Sans Math", "DejaVu Serif", serif;
   font-size: 1em;
   line-height: 1;
@@ -251,14 +259,18 @@ body {
 
 .paper-block math.math-fraction,
 .figure-panel math.math-fraction,
-.equation-block math.math-fraction {
+.equation-block math.math-fraction,
+.algorithm-block math.math-fraction,
+.table-block math.math-fraction {
   font-size: 1.08em;
   vertical-align: -0.25em;
 }
 
 .paper-block math.math-scroll,
 .figure-panel math.math-scroll,
-.equation-block math.math-scroll {
+.equation-block math.math-scroll,
+.algorithm-block math.math-scroll,
+.table-block math.math-scroll {
   background: #fbfbf8;
   border: 1px solid var(--paper-border);
   border-radius: 6px;
@@ -392,6 +404,113 @@ body {
   margin: 0 auto;
 }
 
+.algorithm-block {
+  background: #ffffff;
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.algorithm-block__header {
+  border-bottom: 1px solid var(--paper-border);
+  display: grid;
+  gap: 4px;
+  padding: 10px 14px;
+}
+
+.algorithm-block__header a,
+.table-block__caption a {
+  color: var(--paper-accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.algorithm-block__header strong {
+  font-family: "DejaVu Serif", "Noto Serif CJK SC", Georgia, "Times New Roman", serif;
+  font-size: 17px;
+}
+
+.algorithm-block__steps {
+  counter-reset: algorithm-step;
+  list-style: none;
+  margin: 0;
+  padding: 10px 14px 14px;
+}
+
+.algorithm-block__step {
+  align-items: start;
+  counter-increment: algorithm-step;
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 10px;
+  line-height: 1.55;
+  margin: 0;
+  padding: 6px 0 6px calc(var(--algorithm-depth, 0) * 18px);
+}
+
+.algorithm-block__kind {
+  color: var(--paper-muted);
+  font-family: "DejaVu Sans Mono", "Noto Sans Mono", Consolas, monospace;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.algorithm-block__kind::before {
+  content: counter(algorithm-step) ". ";
+}
+
+.algorithm-block__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.table-block {
+  background: #ffffff;
+  border: 1px solid var(--paper-border);
+  border-radius: 8px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.table-block__caption {
+  border-bottom: 1px solid var(--paper-border);
+  display: grid;
+  gap: 6px;
+  line-height: 1.5;
+  padding: 10px 14px;
+}
+
+.table-block__caption span {
+  color: #263744;
+}
+
+.table-block__scroll {
+  overflow-x: auto;
+}
+
+.table-block table {
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 100%;
+}
+
+.table-block th,
+.table-block td {
+  border: 1px solid var(--paper-border);
+  line-height: 1.45;
+  padding: 7px 9px;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.table-block th {
+  background: #eef1ed;
+  color: #1f2933;
+  font-weight: 700;
+}
+
 @media (max-width: 860px) {
   .paper-shell {
     display: block;
@@ -409,8 +528,15 @@ body {
   }
 
   .paper-block,
-  .figure-panel {
+  .figure-panel,
+  .algorithm-block,
+  .table-block {
     padding: 16px;
+  }
+
+  .algorithm-block,
+  .table-block {
+    padding: 0;
   }
 
   .paper-block__meta {

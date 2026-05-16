@@ -22,6 +22,8 @@ PDF_RASTER_DPI = 240
 P_SEQUENCE_TYPES = {"paragraph", "caption"}
 GRAPHICS_RE = re.compile(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}")
 DISPLAY_MATH_ENVIRONMENTS = {"equation", "equation*", "align", "align*"}
+ALGORITHM_ENVIRONMENTS = {"algorithm", "algorithm*"}
+TABLE_ENVIRONMENTS = {"table", "table*"}
 
 SECTION_TITLES = {
     "abstract": "Abstract",
@@ -185,6 +187,9 @@ def _clean_plain_latex(value: str) -> str:
     value = value.replace("\\&", "&")
     value = value.replace("\\_", "_")
     value = value.replace("\\%", "%")
+    value = value.replace("\\#", "#")
+    value = value.replace("\\{", "{")
+    value = value.replace("\\}", "}")
     value = value.replace("``", '"').replace("''", '"')
     replacements = {
         "\\leq": "<=",
@@ -425,6 +430,211 @@ def _read_balanced_braces(text: str, open_brace_index: int) -> tuple[str, int]:
     return "".join(content).strip(), index
 
 
+def _read_command_arguments(text: str, command: str, arity: int) -> tuple[list[str], int] | None:
+    prefix = f"\\{command}"
+    if not text.startswith(prefix):
+        return None
+    args: list[str] = []
+    index = len(prefix)
+    for _ in range(arity):
+        while index < len(text) and text[index].isspace():
+            index += 1
+        if index >= len(text) or text[index] != "{":
+            return None
+        arg, index = _read_balanced_braces(text, index)
+        args.append(arg)
+    return args, index
+
+
+def _replace_command_with_arguments(
+    value: str,
+    command: str,
+    arity: int,
+    formatter,
+) -> str:
+    prefix = f"\\{command}"
+    output: list[str] = []
+    index = 0
+    while True:
+        start = value.find(prefix, index)
+        if start == -1:
+            output.append(value[index:])
+            return "".join(output)
+        output.append(value[index:start])
+        parsed = _read_command_arguments(value[start:], command, arity)
+        if parsed is None:
+            output.append(prefix)
+            index = start + len(prefix)
+            continue
+        args, end = parsed
+        output.append(formatter(args))
+        index = start + end
+
+
+def clean_reader_latex(value: str) -> str:
+    value = _replace_command_with_arguments(value, "textcolor", 2, lambda args: args[1])
+    value = _replace_command_with_arguments(value, "Call", 2, lambda args: f"{args[0]}({args[1]})")
+    value = _replace_command_with_arguments(value, "Comment", 1, lambda args: args[0])
+    value = re.sub(r"\\(?:cellcolor|rowcolor)\{[^}]+\}", "", value)
+    value = re.sub(r"\\(?:small|scriptsize|footnotesize|normalsize)\b", "", value)
+    value = value.replace("\\greencheck", "Yes").replace("\\redX", "No")
+    value = value.replace("\\\\", " ")
+    return clean_inline_latex(value)
+
+
+def parse_algorithm_block(environment_text: str) -> dict[str, object]:
+    captions = extract_captions(environment_text)
+    title = captions[0] if captions else "Algorithm"
+    body = _extract_environment_body(environment_text, "algorithmic") or environment_text
+    steps: list[dict[str, object]] = []
+    depth = 0
+    for raw_line in body.splitlines():
+        line = strip_latex_comment(raw_line).strip()
+        if not line or line.startswith("\\begin") or line.startswith("\\end"):
+            continue
+        normalized = _parse_algorithm_line(line, depth)
+        if normalized["kind"] == "end":
+            depth = max(0, depth - 1)
+            continue
+        if normalized["kind"] in {"for", "while", "if", "procedure"}:
+            steps.append({"kind": normalized["kind"], "depth": depth, "text": normalized["text"]})
+            depth += 1
+            continue
+        steps.append({"kind": normalized["kind"], "depth": depth, "text": normalized["text"]})
+    return {"title": title, "steps": steps}
+
+
+def _parse_algorithm_line(line: str, depth: int) -> dict[str, str | int]:
+    for command, label in (
+        ("EndFor", "end"),
+        ("EndWhile", "end"),
+        ("EndIf", "end"),
+        ("EndProcedure", "end"),
+    ):
+        if line.startswith(f"\\{command}"):
+            return {"kind": label, "text": "", "depth": depth}
+    for command, kind, label in (
+        ("For", "for", "For"),
+        ("While", "while", "While"),
+        ("If", "if", "If"),
+    ):
+        parsed = _read_command_arguments(line, command, 1)
+        if parsed:
+            args, end = parsed
+            condition = clean_reader_latex(args[0])
+            remainder = clean_reader_latex(line[end:].strip())
+            text = f"{label} {condition}"
+            if remainder:
+                text = f"{text}: {remainder}"
+            return {"kind": kind, "text": text, "depth": depth}
+    parsed_procedure = _read_command_arguments(line, "Procedure", 2)
+    if parsed_procedure:
+        args, end = parsed_procedure
+        name = clean_reader_latex(args[0])
+        params = clean_reader_latex(args[1])
+        suffix = clean_reader_latex(line[end:].strip(" :"))
+        text = f"Procedure {name}({params})"
+        if suffix:
+            text = f"{text}: {suffix}"
+        return {"kind": "procedure", "text": text, "depth": depth}
+    for command, kind, label in (
+        ("Statex", "note", ""),
+        ("State", "step", ""),
+        ("Return", "return", "Return "),
+    ):
+        prefix = f"\\{command}"
+        if line.startswith(prefix):
+            text = clean_reader_latex(line[len(prefix) :].strip())
+            return {"kind": kind, "text": f"{label}{text}".strip(), "depth": depth}
+    return {"kind": "step", "text": clean_reader_latex(line), "depth": depth}
+
+
+def parse_table_block(environment_text: str) -> dict[str, object]:
+    captions = extract_captions(environment_text)
+    body = _extract_environment_body(environment_text, "tabular") or ""
+    body = re.sub(r"^\{[^{}]*\}", "", body, count=1).strip()
+    rows: list[list[dict[str, object]]] = []
+    for raw_row in _split_table_rows(body):
+        row_text = re.sub(r"\\(?:hline|cline\{[^}]+\})", "", raw_row).strip()
+        if not row_text:
+            continue
+        cells = [_parse_table_cell(cell) for cell in _split_latex_cells(row_text)]
+        if any(str(cell.get("text", "")).strip() or cell.get("colspan", 1) != 1 for cell in cells):
+            rows.append(cells)
+    return {
+        "caption": captions[0] if captions else "",
+        "headerRows": _infer_table_header_rows(rows),
+        "rows": rows,
+    }
+
+
+def _extract_environment_body(environment_text: str, environment: str) -> str | None:
+    match = re.search(
+        rf"\\begin\{{{re.escape(environment)}\}}(?:\[[^\]]*\])?(.*?)\\end\{{{re.escape(environment)}\}}",
+        environment_text,
+        re.DOTALL,
+    )
+    if not match:
+        return None
+    return match.group(1).strip()
+
+
+def _split_table_rows(body: str) -> list[str]:
+    uncommented = "\n".join(strip_latex_comment(line) for line in body.splitlines())
+    return [
+        row.strip()
+        for row in re.split(r"\\\\(?:\s*(?:\\hline|\\cline\{[^}]+\}))*", uncommented)
+    ]
+
+
+def _split_latex_cells(row: str) -> list[str]:
+    cells: list[str] = []
+    start = 0
+    depth = 0
+    math = False
+    escaped = False
+    for index, char in enumerate(row):
+        if char == "\\" and not escaped:
+            escaped = True
+            continue
+        if char == "$" and not escaped:
+            math = not math
+        elif not math and not escaped:
+            if char == "{":
+                depth += 1
+            elif char == "}" and depth > 0:
+                depth -= 1
+            elif char == "&" and depth == 0:
+                cells.append(row[start:index].strip())
+                start = index + 1
+        escaped = False
+    cells.append(row[start:].strip())
+    return cells
+
+
+def _parse_table_cell(value: str) -> dict[str, object]:
+    parsed = _read_command_arguments(value.strip(), "multicolumn", 3)
+    colspan = 1
+    if parsed:
+        args, end = parsed
+        colspan = int(args[0]) if args[0].isdigit() else 1
+        value = f"{args[2]} {value[end:]}".strip()
+    return {"text": clean_reader_latex(value), "colspan": colspan}
+
+
+def _infer_table_header_rows(rows: list[list[dict[str, object]]]) -> int:
+    if not rows:
+        return 0
+    first = str(rows[0][0].get("text", "")).strip() if rows[0] else ""
+    if first == "" and any(int(cell.get("colspan", 1)) > 1 for cell in rows[0]):
+        return min(2, len(rows))
+    if first.startswith("1-way"):
+        return min(2, len(rows))
+    if first == "Model Name":
+        return min(3, len(rows))
+    return 1
+
+
 def _update_environment_stack(environment_stack: list[str], line: str) -> str | None:
     first_environment = None
     matches: list[tuple[int, str, str]] = []
@@ -479,6 +689,8 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
         'import FigurePanel from "../../components/FigurePanel.astro";',
         'import LatexBlock from "../../components/LatexBlock.astro";',
         'import EquationBlock from "../../components/EquationBlock.astro";',
+        'import AlgorithmBlock from "../../components/AlgorithmBlock.astro";',
+        'import TableBlock from "../../components/TableBlock.astro";',
         "",
         f"# {section['title']}",
         "",
@@ -528,6 +740,31 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
                         f'<EquationBlock id="{latex_id}"',
                         f'  label="{label}"',
                         f"  latex={{{json.dumps(str(block['text']), ensure_ascii=False)}}}",
+                        "/>",
+                        "",
+                    ]
+                )
+            elif block.get("environment") in ALGORITHM_ENVIRONMENTS:
+                algorithm = parse_algorithm_block(str(block["text"]))
+                lines.extend(
+                    [
+                        f'<AlgorithmBlock id="{latex_id}"',
+                        f'  label="{label}"',
+                        f'  title="{escape_attr(str(algorithm["title"]))}"',
+                        f"  steps={{{json.dumps(algorithm['steps'], ensure_ascii=False)}}}",
+                        "/>",
+                        "",
+                    ]
+                )
+            elif block.get("environment") in TABLE_ENVIRONMENTS:
+                table = parse_table_block(str(block["text"]))
+                lines.extend(
+                    [
+                        f'<TableBlock id="{latex_id}"',
+                        f'  label="{label}"',
+                        f'  caption="{escape_attr(str(table["caption"]))}"',
+                        f'  headerRows={{{int(table["headerRows"])}}}',
+                        f"  rows={{{json.dumps(table['rows'], ensure_ascii=False)}}}",
                         "/>",
                         "",
                     ]

@@ -112,7 +112,7 @@ def test_generate_mdx_uses_draft_translation_status():
     assert 'translation="拟合一个基本体。"' in mdx
 
 
-def test_generate_mdx_renders_latex_blocks_with_gate_copy():
+def test_generate_mdx_renders_algorithm_blocks_as_reader_steps():
     importer = _load_importer()
     section = {
         "slug": "method",
@@ -122,16 +122,71 @@ def test_generate_mdx_renders_latex_blocks_with_gate_copy():
                 "type": "latex_block",
                 "id": "method-l001",
                 "environment": "algorithm",
-                "text": "\\begin{algorithm}\n\\end{algorithm}",
+                "text": (
+                    "\\begin{algorithm}\n"
+                    "\\caption{Convex Primitive Decomposition\\label{alg:prim}}\n"
+                    "\\begin{algorithmic}[1]\n"
+                    "\\Statex \\textbf{Input: } Mesh $M$\n"
+                    "\\For{face $f_i$ $\\in$ F} \\Comment{Initialize}\n"
+                    "\\State $P_i = \\text{Prim}(f_i)$\n"
+                    "\\EndFor\n"
+                    "\\Return Unique Primitives $P_i$\n"
+                    "\\end{algorithmic}\n"
+                    "\\end{algorithm}"
+                ),
             }
         ],
     }
 
     mdx = importer.render_section_mdx(section, {})
 
-    assert 'import LatexBlock from "../../components/LatexBlock.astro";' in mdx
-    assert '<LatexBlock id="method-l001"' in mdx
-    assert "```latex" in mdx
+    assert 'import AlgorithmBlock from "../../components/AlgorithmBlock.astro";' in mdx
+    assert '<AlgorithmBlock id="method-l001"' in mdx
+    assert 'title="Convex Primitive Decomposition"' in mdx
+    assert '"text": "Input: Mesh $M$"' in mdx
+    assert '"text": "For face $f_i$ $\\\\in$ F: Initialize"' in mdx
+    assert '"text": "$P_i = \\\\text{Prim}(f_i)$"' in mdx
+    assert '<LatexBlock id="method-l001"' not in mdx
+    assert "```latex" not in mdx
+    assert "\\begin{algorithm}" not in mdx
+
+
+def test_generate_mdx_renders_table_blocks_as_reader_tables():
+    importer = _load_importer()
+    section = {
+        "slug": "experiments",
+        "title": "Results And Ablations",
+        "blocks": [
+            {
+                "type": "latex_block",
+                "id": "experiments-l002",
+                "environment": "table",
+                "text": (
+                    "\\begin{table}\n"
+                    "\\begin{tabular}{|c|c|c|}\n"
+                    "\\hline\n"
+                    "Primitive Kind & Total & \\small Engine \\\\\\hline\n"
+                    "Sphere & 4 & \\textbf{\\textcolor{PineGreen}{Yes}} \\\\\\hline\n"
+                    "Frustum & 8 & \\textbf{\\textcolor{BurntOrange}{Quantized}} \\\\\\hline\n"
+                    "\\end{tabular}\n"
+                    "\\caption{Memory costs for primitives.}\n"
+                    "\\end{table}"
+                ),
+            }
+        ],
+    }
+
+    mdx = importer.render_section_mdx(section, {})
+
+    assert 'import TableBlock from "../../components/TableBlock.astro";' in mdx
+    assert '<TableBlock id="experiments-l002"' in mdx
+    assert 'caption="Memory costs for primitives."' in mdx
+    assert '"text": "Primitive Kind"' in mdx
+    assert '"text": "Yes"' in mdx
+    assert '"text": "Quantized"' in mdx
+    assert '<LatexBlock id="experiments-l002"' not in mdx
+    assert "```latex" not in mdx
+    assert "\\begin{table}" not in mdx
 
 
 def test_generate_mdx_renders_display_math_blocks_as_equations():
