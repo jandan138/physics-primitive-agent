@@ -57,8 +57,8 @@ The repository has not reached that full result. It has reached the workbench st
     status without rerunning source reports, USD loading, real assets, or Newton tasks.
 22. A command-only partial `cpd_paper_offline_report` can audit the first paper-lane toy fixtures
     with paper-side operator fields, current surrogate OBB/sphere rows, a paper-shaped capsule
-    axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, and collapse-cost
-    fields.
+    axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, collapse-cost
+    fields, and a topology-only priority-queue trace.
 23. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
@@ -326,12 +326,14 @@ That partial report now records:
 - a paper-shaped capsule row with one candidate per operator axis;
 - offline-only flat capped-cylinder, frustum, and trapezoidal-prism rows;
 - paper base collapse cost and separate weighted-priority cost fields for the first merge-cost
-  fixture.
+  fixture;
+- a topology-only priority-queue trace over `paper_three_face_chain`, including deterministic
+  queue keys, accepted merges, eager stale-prune events, updated neighbor insertion counts, and
+  target-count stop reason.
 
-This closes the narrow capsule axis-policy audit gap inside the report, but it does not make the
-lane `paper_faithful_offline`. The next paper-lane gate is the deterministic priority-queue trace:
-initial adjacency candidates, minimum-cost pops, stale-entry pruning, accepted/blocked merge
-records, and stop reason.
+This closes the narrow capsule axis-policy audit gap and adds the first topology-only
+priority-queue trace inside the report, but it does not make the lane `paper_faithful_offline`.
+The next paper-lane gate is component-pair edge insertion for disconnected components.
 
 ## What The Newton-Native Policy Changes
 
@@ -488,6 +490,7 @@ USD assets
 -> command-only four-block slice report linking the recorded lookahead evidence
 -> partial cpd_paper_offline_report over toy fixtures
 -> paper-shaped capsule axis audit row, offline-only paper primitive rows, and collapse-cost fields
+-> topology-only paper priority-queue trace audit
 -> dated records
 ```
 
@@ -513,7 +516,8 @@ local USD mirrors or synthetic fixtures
 -> four-block status audit that identifies the missing workbench integration/report slice
 -> command-only four-block slice report for the recorded cost-guided lookahead synthetic slice
 -> command-only partial paper offline report for toy paper mechanics
--> next: deterministic paper priority-queue trace audit, still without package/Newton/real-USD
+-> topology-only paper priority-queue trace audit, still without package/Newton/real-USD
+-> next: component-pair edge insertion audit for disconnected components
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -557,6 +561,7 @@ Use:
 - "partial `cpd_paper_offline_report`";
 - "paper-shaped capsule axis audit row";
 - "offline paper priority-queue trace audit";
+- "component-pair edge insertion audit";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 

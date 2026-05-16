@@ -15,6 +15,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["status"] == "partial"
     assert report["report_generation_status"] == "smoke_passed"
     assert report["claim_boundary"] == CPD_PAPER_OFFLINE_CLAIM_BOUNDARY
+    assert report["package_generation_triggered"] is False
     assert report["newton_runtime_triggered"] is False
     assert report["real_usd_triggered"] is False
     assert report["benchmark_triggered"] is False
@@ -23,19 +24,23 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert set(report["failure_labels"]) == {
         "polygon_and_quad_face_policy_missing",
-        "full_priority_queue_trace_missing",
         "component_pair_edge_insertion_missing",
         "postprocess_enclosed_primitive_culling_missing",
     }
-    assert report["next_required_gate"] == "paper_priority_queue_trace_audit"
+    assert report["next_required_gate"] == "paper_component_pair_edge_insertion_audit"
+    assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
+        "implemented_fixture_scope"
+    ]
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
         "paper_single_box",
         "paper_two_face_merge",
+        "paper_three_face_chain",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
     }
+    assert all(case["package_generation_triggered"] is False for case in cases.values())
 
     single_box = cases["paper_single_box"]
     assert single_box["source_mesh"]["face_arity_policy"] == "triangle_only_fixture"
@@ -188,6 +193,62 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     ][0]
     assert merge_frustum["contains_assigned_points"] is True
     assert merge_frustum["fit_failure_reason"] is None
+
+    queue_case = cases["paper_three_face_chain"]
+    trace = queue_case["collapse_trace"]
+    assert trace["trace_scope"] == "topology_priority_queue_trace_fixture"
+    assert trace["priority_queue_policy"] == "paper_greedy_min_weighted_priority_cost"
+    assert trace["target_primitive_count"] == 1
+    assert trace["excess_volume_threshold"] == "default_inf"
+    assert trace["threshold_policy"] == "disabled"
+    assert trace["initial_active_groups"] == [[0], [1], [2]]
+    assert trace["initial_edge_count"] == 2
+    assert trace["accepted_merge_count"] == 2
+    assert trace["stale_entry_skipped_count"] >= 1
+    assert trace["blocked_merge_count"] == 0
+    assert trace["stop_reason"] == "target_count_reached"
+    assert trace["final_active_groups"] == [[0, 1, 2]]
+    assert trace["package_generation_triggered"] is False
+    assert trace["newton_runtime_triggered"] is False
+    assert trace["real_usd_triggered"] is False
+    assert trace["benchmark_triggered"] is False
+    events = trace["events"]
+    accepted_events = [event for event in events if event["accepted"] is True]
+    stale_events = [event for event in events if event["stale_entry"] is True]
+    assert len(accepted_events) == 2
+    assert stale_events
+    assert [
+        (
+            event["event_kind"],
+            event["source_faces_left"],
+            event["source_faces_right"],
+            event["accepted"],
+            event["stale_entry"],
+            event.get("resulting_source_faces"),
+        )
+        for event in events
+    ] == [
+        ("accepted_merge", [0], [1], True, False, [0, 1]),
+        ("eager_stale_prune", [1], [2], False, True, None),
+        ("accepted_merge", [0, 1], [2], True, False, [0, 1, 2]),
+    ]
+    for event in events:
+        assert "event_kind" in event
+        assert "paper_base_cost" in event
+        assert "weighted_priority_cost" in event
+        assert "queue_key" in event
+        assert "source_faces_left" in event
+        assert "source_faces_right" in event
+        assert event["edge_source"] == "topology"
+        assert "stale_entry" in event
+        assert "accepted" in event
+        assert event["blocked"] is False
+        assert "active_primitive_count_before" in event
+        assert "active_primitive_count_after" in event
+        assert "updated_neighbor_insertion_count" in event
+        if event["accepted"]:
+            assert "resulting_source_faces" in event
+    assert accepted_events[-1]["resulting_source_faces"] == [0, 1, 2]
 
 
 def test_cpd_paper_offline_report_is_strict_json_serializable():

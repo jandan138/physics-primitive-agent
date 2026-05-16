@@ -29,15 +29,16 @@ bounded synthetic `two_step_lookahead` diagnostic, follow-on package/mapping pro
 synthetic Newton task-smoke probe, and command-only four-block slice report for the
 lookahead-changed package pair are now complete under recorded settings. The first
 fixture-scoped `cpd_paper_offline_report` slice is now implemented as a command-only partial
-offline paper-lane audit over `paper_single_box`, `paper_two_face_merge`, `paper_frustum_like`, and
-`paper_trapezoid_prism_like`. It records paper operator, primitive-fit subset,
-left/right/merged merge-cost inputs, an offline paper-shaped capsule axis audit row, offline-only
-flat capped-cylinder/frustum/trapezoidal-prism candidate rows, and base-collapse-cost versus
-weighted-priority-cost fields while keeping Newton, bed/Franka, package generation, and benchmark
-work out of scope. The audited primitive rows are explicitly current surrogate or offline audit
-rows, not paper-faithful fitting. The next paper-lane gate is a deterministic offline
-priority-queue trace audit, not a capped bed/Franka rerun unless a separate real package change is
-introduced and passes full mapping, contact-canary, task-gate, and dated-record gates. The
+offline paper-lane audit over `paper_single_box`, `paper_two_face_merge`,
+`paper_three_face_chain`, `paper_frustum_like`, and `paper_trapezoid_prism_like`. It records paper
+operator, primitive-fit subset, left/right/merged merge-cost inputs, an offline paper-shaped
+capsule axis audit row, offline-only flat capped-cylinder/frustum/trapezoidal-prism candidate rows,
+base-collapse-cost versus weighted-priority-cost fields, and a topology-only priority-queue trace
+with eager stale pruning while keeping Newton, bed/Franka, package generation, and benchmark work
+out of scope. The audited primitive rows are explicitly current surrogate or offline audit rows,
+not paper-faithful fitting. The next paper-lane gate is component-pair edge insertion, not a capped
+bed/Franka rerun unless a separate real package change is introduced and passes full mapping,
+contact-canary, task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
 collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
 `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
@@ -65,6 +66,9 @@ records exist.
   partial `cpd_paper_offline_report`.
 - [CPD paper capsule axis audit record](records/2026-05-16-cpd-paper-capsule-axis-audit.md):
   dated implementation record for the offline paper-shaped capsule axis fit-audit row in the
+  partial `cpd_paper_offline_report`.
+- [CPD paper priority-queue trace audit record](records/2026-05-16-cpd-paper-priority-queue-trace-audit.md):
+  dated implementation record for the topology-only offline priority-queue trace audit in the
   partial `cpd_paper_offline_report`.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
@@ -295,6 +299,9 @@ records exist.
 - [CPD paper capsule axis audit record](records/2026-05-16-cpd-paper-capsule-axis-audit.md):
   partial command-only offline fit-audit row expansion for paper-shaped capsule axis candidates,
   without Newton, real-USD, package, benchmark, or collision-quality claims.
+- [CPD paper priority-queue trace audit record](records/2026-05-16-cpd-paper-priority-queue-trace-audit.md):
+  partial command-only offline topology priority-queue trace audit with stale-pruning records,
+  without Newton, real-USD, package, benchmark, or collision-quality claims.
 - [Paper reference numbering fix record](records/2026-05-16-paper-reference-numbering-fix.md):
   reader-facing CPD paper companion import fix that resolves internal source references into paper
   numbers and does not change reproduction or benchmark evidence.
@@ -382,11 +389,12 @@ records exist.
   recorded lookahead slice. It links existing dated records and does not rerun source reports,
   USD loading, real assets, or Newton tasks.
 - `npc-compile --run-cpd-paper-offline-report`: command-only partial offline paper-lane audit over
-  `paper_single_box`, `paper_two_face_merge`, `paper_frustum_like`, and
+  `paper_single_box`, `paper_two_face_merge`, `paper_three_face_chain`, `paper_frustum_like`, and
   `paper_trapezoid_prism_like`; exits successfully when the JSON report is emitted, returns
   `status: partial`, records current surrogate OBB/sphere rows, an offline paper-shaped capsule
-  axis row, and offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, and does not run
-  Newton, real USD, package generation, or benchmarks.
+  axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, and topology-only
+  priority-queue trace fields, and does not run Newton, real USD, package generation, or
+  benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.

@@ -54,6 +54,7 @@ class _PaperToyCase:
     mesh: TriangleMesh
     face_groups: tuple[frozenset[int], ...]
     collapse_pair: tuple[frozenset[int], frozenset[int]] | None = None
+    priority_queue_target_count: int | None = None
 
 
 def build_cpd_paper_offline_report() -> dict[str, object]:
@@ -62,7 +63,6 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
         "polygon_and_quad_face_policy",
-        "full_priority_queue_trace",
         "component_pair_edge_insertion",
         "postprocess_enclosed_primitive_culling",
     ]
@@ -75,6 +75,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         "status_semantics": CPD_PAPER_OFFLINE_STATUS_SEMANTICS,
         "source_scope": "synthetic_toy_fixtures_only",
         "paper_faithful_offline_supported": False,
+        "package_generation_triggered": False,
         "newton_runtime_triggered": False,
         "real_usd_triggered": False,
         "benchmark_triggered": False,
@@ -82,7 +83,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_priority_queue_trace_audit",
+        "next_required_gate": "paper_component_pair_edge_insertion_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -90,6 +91,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "operator_audit",
                 "primitive_fit_audit_all_paper_names_with_surrogate_rows",
                 "single_pop_collapse_cost_audit",
+                "priority_queue_trace_audit_topology_only",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -110,6 +112,7 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
         "operator_audit": _operator_audit_payload(case.mesh, case.face_groups),
         "primitive_fit_audit": primitive_fit_audits[-1],
         "primitive_fit_audits": primitive_fit_audits,
+        "package_generation_triggered": False,
         "newton_runtime_triggered": False,
         "real_usd_triggered": False,
         "benchmark_triggered": False,
@@ -118,6 +121,12 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
         left, right = case.collapse_pair
         payload["collapse_cost_audit"] = _collapse_cost_payload(case.mesh, left, right)
         payload["collapse_trace"] = _collapse_trace_payload(left, right)
+    if case.priority_queue_target_count is not None:
+        payload["collapse_trace"] = _priority_queue_trace_payload(
+            case.mesh,
+            case.face_groups,
+            case.priority_queue_target_count,
+        )
     return payload
 
 
@@ -769,6 +778,16 @@ def _collapse_cost_payload(
     left: frozenset[int],
     right: frozenset[int],
 ) -> dict[str, object]:
+    payload = _paper_merge_cost_payload(mesh, left, right)
+    payload["priority_queue_policy"] = "greedy_single_pop_fixture"
+    return payload
+
+
+def _paper_merge_cost_payload(
+    mesh: TriangleMesh,
+    left: frozenset[int],
+    right: frozenset[int],
+) -> dict[str, object]:
     left_audit = _primitive_fit_audit_payload(mesh, left)
     right_audit = _primitive_fit_audit_payload(mesh, right)
     merged_audit = _primitive_fit_audit_payload(mesh, frozenset(left | right))
@@ -784,7 +803,6 @@ def _collapse_cost_payload(
         "source_faces_left": sorted(int(face_id) for face_id in left),
         "source_faces_right": sorted(int(face_id) for face_id in right),
         "source_faces_merged": sorted(int(face_id) for face_id in left | right),
-        "priority_queue_policy": "greedy_single_pop_fixture",
         "paper_base_cost": paper_base_cost,
         "weighted_priority_cost": weighted_priority_cost,
         "left_primitive": left_fit["paper_primitive"],
@@ -821,7 +839,259 @@ def _collapse_trace_payload(
         "lookahead_used": False,
         "current_primitive_count_after_pop": 1,
         "stop_reason": "target_count_reached",
+        "package_generation_triggered": False,
     }
+
+
+def _priority_queue_trace_payload(
+    mesh: TriangleMesh,
+    initial_groups: tuple[frozenset[int], ...],
+    target_primitive_count: int,
+) -> dict[str, object]:
+    active_groups = set(initial_groups)
+    insertion_order = 0
+    queue: list[dict[str, object]] = []
+    for left, right in _topology_adjacent_group_pairs(mesh, active_groups):
+        queue.append(_queue_candidate_payload(mesh, left, right, insertion_order))
+        insertion_order += 1
+
+    initial_candidates = [_queue_candidate_summary(entry) for entry in queue]
+    events: list[dict[str, object]] = []
+    accepted_merge_count = 0
+    stale_entry_skipped_count = 0
+    blocked_merge_count = 0
+
+    while len(active_groups) > target_primitive_count and queue:
+        queue.sort(key=lambda entry: entry["_sort_key"])
+        entry = queue.pop(0)
+        active_before = len(active_groups)
+        left_group = entry["_left_group"]
+        right_group = entry["_right_group"]
+        if left_group not in active_groups or right_group not in active_groups:
+            events.append(
+                _queue_event_payload(
+                    entry,
+                    stale_entry=True,
+                    accepted=False,
+                    active_primitive_count_before=active_before,
+                    active_primitive_count_after=len(active_groups),
+                    event_kind="stale_pop",
+                )
+            )
+            stale_entry_skipped_count += 1
+            continue
+
+        active_groups.remove(left_group)
+        active_groups.remove(right_group)
+        merged_group = frozenset(left_group | right_group)
+        active_groups.add(merged_group)
+        active_after = len(active_groups)
+
+        retained_queue: list[dict[str, object]] = []
+        stale_events: list[dict[str, object]] = []
+        for queued_entry in queue:
+            queued_left = queued_entry["_left_group"]
+            queued_right = queued_entry["_right_group"]
+            if queued_left in active_groups and queued_right in active_groups:
+                retained_queue.append(queued_entry)
+                continue
+            stale_events.append(
+                _queue_event_payload(
+                    queued_entry,
+                    stale_entry=True,
+                    accepted=False,
+                    active_primitive_count_before=active_after,
+                    active_primitive_count_after=active_after,
+                    event_kind="eager_stale_prune",
+                )
+            )
+        queue = retained_queue
+        stale_entry_skipped_count += len(stale_events)
+
+        updated_insertions = 0
+        for other_group in sorted(active_groups - {merged_group}, key=_group_sort_key):
+            if not _groups_share_mesh_edge(mesh, merged_group, other_group):
+                continue
+            queue.append(_queue_candidate_payload(mesh, merged_group, other_group, insertion_order))
+            insertion_order += 1
+            updated_insertions += 1
+
+        events.append(
+            _queue_event_payload(
+                entry,
+                stale_entry=False,
+                accepted=True,
+                active_primitive_count_before=active_before,
+                active_primitive_count_after=active_after,
+                resulting_source_faces=sorted(int(face_id) for face_id in merged_group),
+                updated_neighbor_insertion_count=updated_insertions,
+                event_kind="accepted_merge",
+            )
+        )
+        events.extend(stale_events)
+        accepted_merge_count += 1
+
+    stop_reason = (
+        "target_count_reached"
+        if len(active_groups) <= target_primitive_count
+        else "queue_exhausted_before_target_count"
+    )
+    return {
+        "trace_scope": "topology_priority_queue_trace_fixture",
+        "priority_queue_policy": "paper_greedy_min_weighted_priority_cost",
+        "target_primitive_count": int(target_primitive_count),
+        "excess_volume_threshold": "default_inf",
+        "threshold_policy": "disabled",
+        "initial_active_groups": _sorted_group_payload(initial_groups),
+        "initial_edge_count": len(initial_candidates),
+        "initial_candidates": initial_candidates,
+        "events": events,
+        "accepted_merge_count": accepted_merge_count,
+        "stale_entry_skipped_count": stale_entry_skipped_count,
+        "blocked_merge_count": blocked_merge_count,
+        "final_active_groups": _sorted_group_payload(active_groups),
+        "stop_reason": stop_reason,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _queue_candidate_payload(
+    mesh: TriangleMesh,
+    left: frozenset[int],
+    right: frozenset[int],
+    insertion_order: int,
+) -> dict[str, object]:
+    left, right = _ordered_group_pair(left, right)
+    cost = _paper_merge_cost_payload(mesh, left, right)
+    queue_key = [
+        float(cost["weighted_priority_cost"]),
+        float(cost["paper_base_cost"]),
+        cost["source_faces_left"],
+        cost["source_faces_right"],
+        int(insertion_order),
+    ]
+    return {
+        "_left_group": left,
+        "_right_group": right,
+        "_sort_key": (
+            float(cost["weighted_priority_cost"]),
+            float(cost["paper_base_cost"]),
+            tuple(cost["source_faces_left"]),
+            tuple(cost["source_faces_right"]),
+            int(insertion_order),
+        ),
+        "source_faces_left": cost["source_faces_left"],
+        "source_faces_right": cost["source_faces_right"],
+        "source_faces_merged": cost["source_faces_merged"],
+        "left_primitive": cost["left_primitive"],
+        "right_primitive": cost["right_primitive"],
+        "merged_primitive": cost["merged_primitive"],
+        "paper_base_cost": cost["paper_base_cost"],
+        "weighted_priority_cost": cost["weighted_priority_cost"],
+        "queue_key": queue_key,
+        "edge_source": "topology",
+        "insertion_order": int(insertion_order),
+    }
+
+
+def _queue_candidate_summary(entry: dict[str, object]) -> dict[str, object]:
+    return {
+        "source_faces_left": entry["source_faces_left"],
+        "source_faces_right": entry["source_faces_right"],
+        "source_faces_merged": entry["source_faces_merged"],
+        "paper_base_cost": entry["paper_base_cost"],
+        "weighted_priority_cost": entry["weighted_priority_cost"],
+        "queue_key": entry["queue_key"],
+        "edge_source": entry["edge_source"],
+        "insertion_order": entry["insertion_order"],
+        "left_primitive": entry["left_primitive"],
+        "right_primitive": entry["right_primitive"],
+        "merged_primitive": entry["merged_primitive"],
+    }
+
+
+def _queue_event_payload(
+    entry: dict[str, object],
+    *,
+    stale_entry: bool,
+    accepted: bool,
+    active_primitive_count_before: int,
+    active_primitive_count_after: int,
+    event_kind: str,
+    resulting_source_faces: list[int] | None = None,
+    updated_neighbor_insertion_count: int = 0,
+) -> dict[str, object]:
+    payload = _queue_candidate_summary(entry)
+    payload.update(
+        {
+            "event_kind": event_kind,
+            "stale_entry": bool(stale_entry),
+            "accepted": bool(accepted),
+            "blocked": False,
+            "active_primitive_count_before": int(active_primitive_count_before),
+            "active_primitive_count_after": int(active_primitive_count_after),
+            "updated_neighbor_insertion_count": int(updated_neighbor_insertion_count),
+        }
+    )
+    if resulting_source_faces is not None:
+        payload["resulting_source_faces"] = resulting_source_faces
+    return payload
+
+
+def _topology_adjacent_group_pairs(
+    mesh: TriangleMesh,
+    groups: set[frozenset[int]],
+) -> list[tuple[frozenset[int], frozenset[int]]]:
+    pairs: list[tuple[frozenset[int], frozenset[int]]] = []
+    sorted_groups = sorted(groups, key=_group_sort_key)
+    for left_index, left in enumerate(sorted_groups):
+        for right in sorted_groups[left_index + 1 :]:
+            if _groups_share_mesh_edge(mesh, left, right):
+                pairs.append(_ordered_group_pair(left, right))
+    return pairs
+
+
+def _groups_share_mesh_edge(
+    mesh: TriangleMesh,
+    left: frozenset[int],
+    right: frozenset[int],
+) -> bool:
+    left_edges = _group_edges(mesh, left)
+    right_edges = _group_edges(mesh, right)
+    return bool(left_edges & right_edges)
+
+
+def _group_edges(mesh: TriangleMesh, group: frozenset[int]) -> set[tuple[int, int]]:
+    edges: set[tuple[int, int]] = set()
+    for face_id in group:
+        face = [int(index) for index in mesh.faces[int(face_id)]]
+        for index, start in enumerate(face):
+            end = face[(index + 1) % len(face)]
+            edges.add(tuple(sorted((start, end))))
+    return edges
+
+
+def _ordered_group_pair(
+    left: frozenset[int],
+    right: frozenset[int],
+) -> tuple[frozenset[int], frozenset[int]]:
+    if _group_sort_key(left) <= _group_sort_key(right):
+        return left, right
+    return right, left
+
+
+def _group_sort_key(group: frozenset[int]) -> tuple[int, ...]:
+    return tuple(sorted(int(face_id) for face_id in group))
+
+
+def _sorted_group_payload(groups) -> list[list[int]]:
+    return [
+        sorted(int(face_id) for face_id in group)
+        for group in sorted(groups, key=_group_sort_key)
+    ]
 
 
 def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
@@ -838,6 +1108,13 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             mesh=_two_face_square_mesh(),
             face_groups=(frozenset({0}), frozenset({1}), frozenset({0, 1})),
             collapse_pair=(frozenset({0}), frozenset({1})),
+        ),
+        _PaperToyCase(
+            case_id="paper_three_face_chain",
+            description="three adjacent triangles for topology priority-queue trace audit",
+            mesh=_three_face_chain_mesh(),
+            face_groups=(frozenset({0}), frozenset({1}), frozenset({2})),
+            priority_queue_target_count=1,
         ),
         _PaperToyCase(
             case_id="paper_frustum_like",
@@ -899,6 +1176,28 @@ def _two_face_square_mesh() -> TriangleMesh:
         dtype=np.float64,
     )
     faces = np.array([[0, 1, 2], [1, 3, 2]], dtype=np.int64)
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _three_face_chain_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [1.0, 1.0, 0.0],
+            [2.0, 1.0, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array(
+        [
+            [0, 1, 2],
+            [1, 3, 2],
+            [1, 4, 3],
+        ],
+        dtype=np.int64,
+    )
     return TriangleMesh(points=points, faces=faces)
 
 

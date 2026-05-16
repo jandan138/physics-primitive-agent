@@ -273,6 +273,7 @@ The first paper lane should use small synthetic fixtures before any real USD:
 | `paper_frustum_like` | Tapered point set. | Frustum top/bottom radius accounting. |
 | `paper_trapezoid_prism_like` | Roof-like or wedge-like point set. | Six axis-ordering trapezoidal-prism fit audit. |
 | `paper_two_face_merge` | Two adjacent regions with known merge cost ordering. | Collapse-cost formula and priority-queue first pop. |
+| `paper_three_face_chain` | Three connected face groups with two topology edges. | Deterministic priority-queue pops, eager stale pruning, updated neighbor insertion, and target-count stop reason. |
 | `paper_disconnected_components` | Two disconnected components below target primitive count. | Component-pair edge insertion and threshold behavior. |
 | `paper_nested_primitive` | A smaller primitive fully enclosed by a larger one. | Postprocessing cull audit. |
 
@@ -287,9 +288,12 @@ These fixtures are not benchmark assets. They are unit-test-grade checks for the
    labels.
 4. Cost gate: paper base collapse cost and separate weighted priority cost are recorded and
    tested on a known small fixture.
-5. Search gate: a priority-queue trace reaches a target count or records a valid stop reason.
-6. Postprocess gate: enclosed primitive culling is tested independently.
-7. Record gate: a dated record states the fixture scope and verification commands.
+5. Search gate: a topology priority-queue trace reaches a target count or records a valid stop
+   reason.
+6. Component-pair gate: disconnected component-pair edges use the same cost and trace schema when
+   topology edges cannot reach the target count.
+7. Postprocess gate: enclosed primitive culling is tested independently.
+8. Record gate: a dated record states the fixture scope and verification commands.
 
 Only after these gates should a separate package-adaptation slice be planned.
 
@@ -368,21 +372,37 @@ paper_single_box + paper_two_face_merge + paper_frustum_like + paper_trapezoid_p
 This slice replaces the paper-lane capsule row with an offline axis-policy audit row. Capsule is a
 Newton-native primitive, so the row can record `newton_runtime_kind: capsule`, but the command still
 does not generate a package or call Newton. The report is still not `paper_faithful_offline`
-because polygon/quad intake, full priority-queue search, component-pair insertion, and
-enclosed-primitive postprocessing are not implemented.
+because polygon/quad intake, component-pair insertion, and enclosed-primitive postprocessing are
+not implemented.
+
+## Fifth Implementation Slice
+
+The fifth implementation slice is now:
+
+```text
+paper_three_face_chain
+-> topology-adjacent priority-queue candidate initialization
+-> minimum weighted-priority-cost pops
+-> accepted merge records, eager stale-prune records, updated neighbor insertion counts
+-> target-count stop reason
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice adds a topology-only priority-queue trace audit. It does not implement disconnected
+component-pair edge insertion; that remains the next gate.
 
 ## Next Implementation Slice
 
 The next paper-lane gate is:
 
 ```text
-paper priority-queue trace audit
--> initialize topology-adjacent merge candidates with paper-lane costs
--> pop the minimum-cost candidate with stale-entry pruning
--> record accepted and blocked merges, updated neighbor candidates, and stop reason
+paper component-pair edge insertion audit
+-> add disconnected component-pair candidates when topology edges cannot reach the target
+-> reuse paper-lane costs, threshold policy, stale pruning, and stop-reason fields
+-> record accepted and blocked component-pair merges
 -> no package generation, Newton, real USD, or benchmarks
 ```
 
-This is the narrowest next algorithmic gate after the primitive-fit audit rows. It should not be
+This is the narrowest next algorithmic gate after the topology-only queue trace. It should not be
 broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun until
 the offline report records a changed paper-lane package boundary.

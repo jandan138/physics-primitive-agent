@@ -217,6 +217,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Capsule Axis Audit](2026-05-16-cpd-paper-capsule-axis-audit.md):
   partial command-only offline primitive-fit audit row expansion for paper-shaped capsule axis
   candidates on deterministic toy fixtures.
+- [2026-05-16 CPD Paper Priority Queue Trace Audit](2026-05-16-cpd-paper-priority-queue-trace-audit.md):
+  partial command-only topology priority-queue trace audit with stale-pruning records on
+  deterministic toy fixtures.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
