@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the package-adapter contract:
-  `paper_package_adapter_unsupported_primitive_policy_missing`.
+- the current top-level failure label after the unsupported-primitive policy:
+  `paper_package_conversion_mapped_subset_plan_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -591,7 +591,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> next after the package-adapter contract: paper_package_adapter_unsupported_primitive_policy
+-> current next gate: paper_package_conversion_mapped_subset_plan
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -628,8 +628,8 @@ records an offline matrix over existing deterministic topology queue, weighted-p
 equal-cost tie, threshold-stop, and component-pair traces. It is not a generalized optimizer,
 package generation, Newton runtime execution, real-USD evidence, benchmark evidence,
 `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
-readiness, or safety certification. The next current gate is
-`paper_generalization_batch_d_postprocess_policy` at the historical Batch C stage.
+readiness, or safety certification. At that historical Batch C stage the follow-up gate was
+`paper_generalization_batch_d_postprocess_policy`.
 
 `paper_generalization_batch_d_postprocess_policy` closes only the postprocess-policy
 generalization gate. It records an offline matrix over existing deterministic postprocess audit
@@ -638,7 +638,7 @@ no-cull accounting, before/after primitive counts, cull or unsupported reasons, 
 Newton, real-USD, and benchmark triggers. It is not a general primitive containment library,
 package generation, Newton runtime execution, real-USD evidence, benchmark evidence,
 `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
-readiness, or safety certification. The next current gate is
+readiness, or safety certification. At that Batch D stage the follow-up gate was
 `paper_generalization_batch_e_package_boundary_readiness`.
 
 `paper_generalization_batch_e_package_boundary_readiness` closes only the package-boundary
@@ -669,5 +669,15 @@ primitive records. The payload carries an input-contract summary, an adapter dec
 Newton mapping, runtime admissibility, real-USD, or benchmark work is unlocked. It is not package
 readiness, Newton readiness, package generation, Newton runtime execution, real-USD evidence,
 benchmark evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality
-evidence, deployment readiness, or safety certification. The next current gate is
+evidence, deployment readiness, or safety certification. At that stage the follow-up gate was
 `paper_package_adapter_unsupported_primitive_policy`.
+
+`paper_package_adapter_unsupported_primitive_policy` closes only the offline unsupported-primitive
+policy gate. It records a command-only policy table, not a `CollisionPackage`, over the adapter
+decision rows. The payload classifies all six paper primitive families, keeps all current
+`trapezoidal_prism` / `offline_only_unmapped` rows offline with
+`block_package_conversion`, and records zero package-candidate rows. It is not package readiness,
+Newton readiness, runtime admissibility, approximation support, package generation, Newton
+runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full
+CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
+next current gate is `paper_package_conversion_mapped_subset_plan`.

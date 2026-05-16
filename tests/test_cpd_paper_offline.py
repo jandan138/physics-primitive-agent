@@ -25,6 +25,9 @@ EXPECTED_PACKAGE_ADAPTER_CONTRACT = "paper_package_adapter_contract"
 EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY = (
     "paper_package_adapter_unsupported_primitive_policy"
 )
+EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN = (
+    "paper_package_conversion_mapped_subset_plan"
+)
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
 )
@@ -40,6 +43,9 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
+    EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+]
+EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
@@ -323,10 +329,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_package_boundary_gap()
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_package_adapter_unsupported_primitive_policy():
+def test_cpd_paper_offline_report_next_gate_is_package_conversion_mapped_subset_plan():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1148,7 +1154,7 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1265,7 +1271,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1366,7 +1372,7 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1445,7 +1451,7 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1556,7 +1562,7 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1791,7 +1797,7 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1965,7 +1971,7 @@ def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -2078,7 +2084,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -2086,6 +2092,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     assert report["paper_faithfulness"]["implemented_output_contract_scope"] == [
         EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT,
         EXPECTED_PACKAGE_ADAPTER_CONTRACT,
+        EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2294,7 +2301,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+        == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2303,6 +2310,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert report["paper_faithfulness"]["implemented_output_contract_scope"] == [
         EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT,
         EXPECTED_PACKAGE_ADAPTER_CONTRACT,
+        EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -2331,7 +2339,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         payload["implementation_boundary"]
         == "offline_adapter_contract_no_collision_package_no_newton"
     )
-    assert payload["remaining_gaps"] == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
+    assert payload["remaining_gaps"] == EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -2448,6 +2456,173 @@ def test_cpd_paper_package_adapter_contract_stays_report_only():
         assert row["newton_runtime_triggered"] is False
         assert row["real_usd_triggered"] is False
         assert row["benchmark_triggered"] is False
+        assert forbidden_keys.isdisjoint(row)
+
+
+def test_cpd_paper_records_unsupported_primitive_policy_gate():
+    report = build_cpd_paper_offline_report()
+
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
+    )
+    assert (
+        EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+
+    payload = report["paper_package_adapter_unsupported_primitive_policy"]
+    assert payload["gate_id"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert (
+        payload["gate_status"]
+        == "implemented_offline_unsupported_primitive_policy_only_partial"
+    )
+    assert payload["closed_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert payload["input_gate_id"] == EXPECTED_PACKAGE_ADAPTER_CONTRACT
+    assert payload["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
+    assert payload["decision"] == "remain_partial"
+    assert (
+        payload["decision_reason"]
+        == "unsupported_primitive_policy_complete_mapped_subset_plan_missing"
+    )
+    assert payload["paper_faithful_offline_allowed"] is False
+    assert payload["package_generation_allowed"] is False
+    assert payload["artifact_kind"] == (
+        "offline_unsupported_primitive_policy_not_collision_package"
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["implementation_boundary"] == (
+        "offline_unsupported_primitive_policy_no_collision_package_no_newton"
+    )
+    assert payload["remaining_gaps"] == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
+    assert payload["package_generation_triggered"] is False
+    assert payload["newton_runtime_triggered"] is False
+    assert payload["real_usd_triggered"] is False
+    assert payload["benchmark_triggered"] is False
+
+
+def test_cpd_paper_unsupported_primitive_policy_classifies_paper_families():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_package_adapter_unsupported_primitive_policy"]
+    rows = {
+        row["paper_primitive"]: row
+        for row in payload["paper_primitive_family_policy_rows"]
+    }
+
+    assert list(rows) == [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    assert rows["oriented_bounding_box"]["newton_runtime_kind"] == "box"
+    assert rows["sphere"]["newton_runtime_kind"] == "sphere"
+    assert rows["capsule"]["newton_runtime_kind"] == "capsule"
+    for primitive_name in ("oriented_bounding_box", "sphere", "capsule"):
+        row = rows[primitive_name]
+        assert row["paper_family_status"] == "direct_newton_native_candidate"
+        assert row["adapter_policy"] == "candidate_for_mapped_subset_plan"
+        assert row["direct_adapter_allowed_after_mapped_subset_plan"] is True
+        assert row["package_conversion_enabled_by_this_gate"] is False
+        assert row["fallback_generation_allowed"] is False
+        assert row["drop_allowed"] is False
+
+    for primitive_name in ("capped_cylinder", "frustum", "trapezoidal_prism"):
+        row = rows[primitive_name]
+        assert row["paper_family_status"] == "offline_only_unmapped"
+        assert row["newton_runtime_kind"] == "offline_only_unmapped"
+        assert (
+            row["adapter_policy"]
+            == "keep_offline_until_explicit_mapping_or_approximation_policy"
+        )
+        assert row["direct_adapter_allowed_after_mapped_subset_plan"] is False
+        assert row["package_conversion_enabled_by_this_gate"] is False
+        assert row["requires_explicit_mapping_or_approximation_policy"] is True
+        assert row["fallback_generation_allowed"] is False
+        assert row["drop_allowed"] is False
+
+    assert rows["trapezoidal_prism"]["current_row_evidence_count"] == 16
+    assert rows["capped_cylinder"]["current_row_evidence_count"] == 0
+    assert rows["frustum"]["current_row_evidence_count"] == 0
+
+
+def test_cpd_paper_unsupported_primitive_policy_blocks_current_unmapped_rows():
+    report = build_cpd_paper_offline_report()
+    adapter = report["paper_package_adapter_contract"]
+    payload = report["paper_package_adapter_unsupported_primitive_policy"]
+    summary = payload["coverage_summary"]
+    rows = payload["current_adapter_decision_policy_rows"]
+
+    assert summary["decomposition_output_row_count"] == 9
+    assert summary["primitive_decision_row_count"] == 16
+    assert summary["paper_primitive_family_policy_row_count"] == 6
+    assert summary["current_adapter_decision_policy_row_count"] == 16
+    assert summary["direct_policy_eligible_record_count"] == 0
+    assert summary["unsupported_policy_blocked_record_count"] == 16
+    assert summary["adapter_contract_blocked_record_count"] == 0
+    assert summary["dropped_record_count"] == 0
+    assert summary["package_candidate_record_count"] == 0
+    assert summary["current_paper_primitive_distribution"] == {
+        "trapezoidal_prism": 16,
+    }
+    assert summary["current_runtime_kind_distribution"] == {
+        "offline_only_unmapped": 16,
+    }
+    assert (
+        summary["direct_policy_eligible_record_count"]
+        + summary["unsupported_policy_blocked_record_count"]
+        + summary["adapter_contract_blocked_record_count"]
+        + summary["dropped_record_count"]
+        == summary["current_adapter_decision_policy_row_count"]
+    )
+
+    assert len(rows) == len(adapter["primitive_adapter_decision_rows"]) == 16
+    for row, adapter_row in zip(rows, adapter["primitive_adapter_decision_rows"]):
+        assert row["policy_decision_id"] == (
+            f"{adapter_row['adapter_decision_id']}:unsupported_policy"
+        )
+        assert row["source_adapter_decision_id"] == adapter_row["adapter_decision_id"]
+        assert row["source_output_id"] == adapter_row["source_output_id"]
+        assert row["evidence_case_id"] == adapter_row["evidence_case_id"]
+        assert row["offline_primitive_id"] == adapter_row["offline_primitive_id"]
+        assert row["paper_primitive"] == "trapezoidal_prism"
+        assert row["offline_runtime_kind_label"] == "offline_only_unmapped"
+        assert row["input_adapter_decision"] == "later_policy_required"
+        assert row["unsupported_policy_decision"] == "block_package_conversion"
+        assert row["adapter_action"] == "keep_offline"
+        assert row["package_candidate_status"] == (
+            "not_package_candidate_unsupported_policy_block"
+        )
+        assert row["required_later_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
+        assert row["package_generation_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+
+
+def test_cpd_paper_unsupported_primitive_policy_stays_report_only():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_package_adapter_unsupported_primitive_policy"]
+
+    forbidden_keys = {
+        "CollisionPackage",
+        "PrimitiveSpec",
+        "runtime_result",
+        "usd_asset_path",
+        "benchmark_metric",
+        "timing",
+        "surface_distance",
+        "collision_quality",
+    }
+    assert forbidden_keys.isdisjoint(payload)
+    for row in payload["paper_primitive_family_policy_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+    for row in payload["current_adapter_decision_policy_rows"]:
         assert forbidden_keys.isdisjoint(row)
 
 
@@ -2632,7 +2807,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY
+    assert report["next_required_gate"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS

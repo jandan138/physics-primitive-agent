@@ -70,12 +70,15 @@ explicit postprocess state rows, and package/Newton/real-USD/benchmark false tri
 the report now also includes `paper_package_adapter_contract`, a command-only offline
 package-adapter contract, not a `CollisionPackage`. The adapter contract consumes those 16 offline
 primitive records as adapter input rows and classifies all current `trapezoidal_prism`
-`offline_only_unmapped` rows as `later_policy_required`, then advances the next paper-lane gate to
-`paper_package_adapter_unsupported_primitive_policy`. These source-policy,
+`offline_only_unmapped` rows as `later_policy_required`. The report now also includes
+`paper_package_adapter_unsupported_primitive_policy`, a command-only offline policy table, not a
+`CollisionPackage`. That policy keeps the current 16 unmapped trapezoidal-prism rows offline,
+records six paper primitive family policy rows, and advances the next paper-lane gate to
+`paper_package_conversion_mapped_subset_plan`. These source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
-changed-decomposition-contract and adapter-contract slices do not support full CPD reproduction,
-package generation, Newton runtime execution, real-USD evidence, collision-quality evidence,
-benchmark evidence, deployment readiness, or safety certification. See
+changed-decomposition-contract, adapter-contract, and unsupported-primitive-policy slices do not
+support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
+collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

@@ -112,9 +112,16 @@ The repository has not reached that full result. It has reached the workbench st
     offline primitive records from the changed-decomposition output contract, classifies all
     current `trapezoidal_prism` / `offline_only_unmapped` records as
     `later_policy_required`, keeps package generation/Newton/real-USD/benchmark triggers false,
-    keeps the report partial, and points next to
+    keeps the report partial, and at that adapter-contract stage pointed to
     `paper_package_adapter_unsupported_primitive_policy`.
-39. Records and configs can preserve exactly what was run.
+39. `paper_package_adapter_unsupported_primitive_policy` is now implemented as a command-only
+    offline unsupported-primitive policy table, not a `CollisionPackage`. It closes only that
+    policy gate, classifies all six paper primitive families, keeps the current 16
+    `trapezoidal_prism` / `offline_only_unmapped` rows offline with
+    `block_package_conversion`, records zero package-candidate rows, keeps
+    package generation/Newton/real-USD/benchmark triggers false, keeps the report partial, and
+    points next to `paper_package_conversion_mapped_subset_plan`.
+40. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -441,8 +448,9 @@ matrix over deterministic postprocess audit fixtures. The package-boundary readi
 implemented as an offline matrix before package conversion. The changed-decomposition output
 contract is now implemented as an offline changed-decomposition output contract, not a
 `CollisionPackage`. The package-adapter contract now also exists as a command-only offline
-adapter decision table, not a `CollisionPackage`; the next code slice is
-`paper_package_adapter_unsupported_primitive_policy`.
+adapter decision table, not a `CollisionPackage`. The unsupported-primitive policy now also exists
+as a command-only offline policy table, not a `CollisionPackage`; the next code slice is
+`paper_package_conversion_mapped_subset_plan`.
 
 ## What The Newton-Native Policy Changes
 
@@ -652,7 +660,8 @@ local USD mirrors or synthetic fixtures
 -> package-boundary readiness matrix, still partial and still without package/Newton/real-USD
 -> changed-decomposition output contract, still partial and still without package/Newton/real-USD
 -> package-adapter contract, still partial and still without package/Newton/real-USD
--> next: paper_package_adapter_unsupported_primitive_policy
+-> unsupported-primitive policy, still partial and still without package/Newton/real-USD
+-> next: paper_package_conversion_mapped_subset_plan
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -709,6 +718,12 @@ Use:
 - "fixture-breadth Batch E postprocess audit";
 - "offline source-policy generalization matrix";
 - "offline primitive-fit engine generalization matrix";
+- "offline search-engine generalization matrix";
+- "offline postprocess-policy generalization matrix";
+- "offline package-boundary readiness matrix";
+- "offline changed-decomposition output contract";
+- "offline package-adapter contract";
+- "offline unsupported-primitive adapter policy";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -736,15 +751,15 @@ Avoid:
 Fixture-breadth Batch A, Batch B, Batch C, Batch D, Batch E, the command-only synthetic
 fixture-breadth completion review, the command-only generalization planning table, and the
 source-policy, primitive-fit engine, search-engine, postprocess-policy, and package-boundary
-readiness generalization matrices now exist. The offline changed-decomposition output contract now
-also exists. The offline package-adapter contract now also exists. The immediate next code slice
-should stay offline and define unsupported-primitive adapter policy without adding stronger
-evaluation claims:
+readiness generalization matrices now exist. The offline changed-decomposition output contract,
+offline package-adapter contract, and offline unsupported-primitive policy now also exist. The
+immediate next code slice should stay offline and define mapped-subset conversion planning without
+adding stronger evaluation claims:
 
-1. Implement `paper_package_adapter_unsupported_primitive_policy` after the package-adapter
-   contract.
-2. Define how paper-only or unmapped primitive records should be classified before any future
-   package-conversion slice, without generating packages or running Newton in this slice.
+1. Implement `paper_package_conversion_mapped_subset_plan` after the unsupported-primitive policy.
+2. Define which explicitly native/mapped paper-lane records may later enter package conversion,
+   while current paper-only or unmapped rows stay offline unless a separate mapping or
+   approximation policy exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime

@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_package_adapter_unsupported_primitive_policy_missing",
+        "paper_package_conversion_mapped_subset_plan_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_package_adapter_unsupported_primitive_policy"
+        == "paper_package_conversion_mapped_subset_plan"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1542,11 +1542,12 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_package_adapter_unsupported_primitive_policy",
+        "paper_package_conversion_mapped_subset_plan",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
         "paper_package_adapter_contract",
+        "paper_package_adapter_unsupported_primitive_policy",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -1741,6 +1742,46 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert adapter_contract["newton_runtime_triggered"] is False
     assert adapter_contract["real_usd_triggered"] is False
     assert adapter_contract["benchmark_triggered"] is False
+    unsupported_policy = payload["paper_package_adapter_unsupported_primitive_policy"]
+    assert (
+        unsupported_policy["gate_id"]
+        == "paper_package_adapter_unsupported_primitive_policy"
+    )
+    assert (
+        unsupported_policy["gate_status"]
+        == "implemented_offline_unsupported_primitive_policy_only_partial"
+    )
+    assert unsupported_policy["input_gate_id"] == "paper_package_adapter_contract"
+    assert (
+        unsupported_policy["next_required_gate"]
+        == "paper_package_conversion_mapped_subset_plan"
+    )
+    assert unsupported_policy["package_generation_allowed"] is False
+    assert (
+        unsupported_policy["coverage_summary"]["paper_primitive_family_policy_row_count"]
+        == 6
+    )
+    assert (
+        unsupported_policy["coverage_summary"][
+            "current_adapter_decision_policy_row_count"
+        ]
+        == 16
+    )
+    assert (
+        unsupported_policy["coverage_summary"]["unsupported_policy_blocked_record_count"]
+        == 16
+    )
+    assert (
+        unsupported_policy["coverage_summary"]["adapter_contract_blocked_record_count"]
+        == 0
+    )
+    assert unsupported_policy["coverage_summary"]["package_candidate_record_count"] == 0
+    assert len(unsupported_policy["paper_primitive_family_policy_rows"]) == 6
+    assert len(unsupported_policy["current_adapter_decision_policy_rows"]) == 16
+    assert unsupported_policy["package_generation_triggered"] is False
+    assert unsupported_policy["newton_runtime_triggered"] is False
+    assert unsupported_policy["real_usd_triggered"] is False
+    assert unsupported_policy["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

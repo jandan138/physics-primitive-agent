@@ -73,6 +73,9 @@ _PAPER_PACKAGE_ADAPTER_CONTRACT = "paper_package_adapter_contract"
 _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY = (
     "paper_package_adapter_unsupported_primitive_policy"
 )
+_PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN = (
+    "paper_package_conversion_mapped_subset_plan"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -653,6 +656,10 @@ def _paper_remaining_gaps_after_changed_decomposition_contract() -> list[str]:
 
 def _paper_remaining_gaps_after_package_adapter_contract() -> list[str]:
     return [_PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY]
+
+
+def _paper_remaining_gaps_after_unsupported_primitive_policy() -> list[str]:
+    return [_PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -1822,6 +1829,234 @@ def _paper_package_adapter_contract_payload(
     }
 
 
+def _paper_policy_distribution(
+    rows: list[dict[str, object]],
+    key: str,
+) -> dict[str, int]:
+    distribution: dict[str, int] = {}
+    for row in rows:
+        value = str(row.get(key))
+        distribution[value] = distribution.get(value, 0) + 1
+    return distribution
+
+
+def _paper_primitive_family_policy_rows(
+    adapter_rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    current_primitive_counts = _paper_policy_distribution(
+        adapter_rows,
+        "paper_primitive",
+    )
+    native_runtime_kinds = {
+        "oriented_bounding_box": "box",
+        "sphere": "sphere",
+        "capsule": "capsule",
+    }
+    rows: list[dict[str, object]] = []
+    for primitive_name in _AUDITED_PAPER_PRIMITIVES:
+        newton_runtime_kind = native_runtime_kinds.get(
+            primitive_name,
+            "offline_only_unmapped",
+        )
+        direct_candidate = primitive_name in native_runtime_kinds
+        rows.append(
+            {
+                "policy_row_id": f"{primitive_name}:unsupported_primitive_policy",
+                "paper_primitive": primitive_name,
+                "paper_family_status": (
+                    "direct_newton_native_candidate"
+                    if direct_candidate
+                    else "offline_only_unmapped"
+                ),
+                "paper_fit_audit_available": True,
+                "adapter_policy": (
+                    "candidate_for_mapped_subset_plan"
+                    if direct_candidate
+                    else (
+                        "keep_offline_until_explicit_mapping_or_"
+                        "approximation_policy"
+                    )
+                ),
+                "newton_runtime_kind": newton_runtime_kind,
+                "direct_adapter_allowed_after_mapped_subset_plan": direct_candidate,
+                "package_conversion_enabled_by_this_gate": False,
+                "requires_explicit_mapping_or_approximation_policy": (
+                    not direct_candidate
+                ),
+                "fallback_generation_allowed": False,
+                "drop_allowed": False,
+                "current_row_evidence_count": current_primitive_counts.get(
+                    primitive_name,
+                    0,
+                ),
+                "claim_boundary": (
+                    "family_policy_only_not_package_conversion_or_newton_runtime"
+                ),
+                "package_generation_triggered": False,
+                "newton_runtime_triggered": False,
+                "real_usd_triggered": False,
+                "benchmark_triggered": False,
+            }
+        )
+    return rows
+
+
+def _paper_current_adapter_policy_row(
+    adapter_row: dict[str, object],
+) -> dict[str, object]:
+    runtime_kind = adapter_row["offline_runtime_kind_label"]
+    adapter_decision = adapter_row["adapter_decision"]
+    if adapter_decision == "adapter_eligible" and runtime_kind != "offline_only_unmapped":
+        policy_decision = "candidate_for_mapped_subset_plan"
+        adapter_action = "defer_to_mapped_subset_plan"
+        reason = "native_runtime_kind_requires_mapped_subset_plan_before_package"
+        package_candidate_status = "not_package_candidate_mapped_subset_plan_missing"
+    elif adapter_decision == "blocked":
+        policy_decision = "preserve_adapter_contract_block"
+        adapter_action = "keep_offline"
+        reason = "adapter_contract_already_blocked_record"
+        package_candidate_status = "not_package_candidate_adapter_contract_block"
+    else:
+        policy_decision = "block_package_conversion"
+        adapter_action = "keep_offline"
+        reason = "offline_only_unmapped_paper_primitive_requires_explicit_policy"
+        package_candidate_status = "not_package_candidate_unsupported_policy_block"
+
+    return {
+        "policy_decision_id": (
+            f"{adapter_row['adapter_decision_id']}:unsupported_policy"
+        ),
+        "source_adapter_decision_id": adapter_row["adapter_decision_id"],
+        "source_output_id": adapter_row["source_output_id"],
+        "evidence_case_id": adapter_row["evidence_case_id"],
+        "offline_primitive_id": adapter_row["offline_primitive_id"],
+        "paper_primitive": adapter_row["paper_primitive"],
+        "offline_runtime_kind_label": runtime_kind,
+        "input_adapter_decision": adapter_decision,
+        "unsupported_policy_decision": policy_decision,
+        "adapter_action": adapter_action,
+        "unsupported_policy_reason": reason,
+        "package_candidate_status": package_candidate_status,
+        "required_later_gate": _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+        "required_future_policy": (
+            "mapped_subset_conversion_plan_before_any_package_generation"
+        ),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _paper_package_adapter_unsupported_primitive_policy_payload(
+    adapter_payload: dict[str, object],
+) -> dict[str, object]:
+    adapter_rows = adapter_payload["primitive_adapter_decision_rows"]
+    family_rows = _paper_primitive_family_policy_rows(adapter_rows)
+    policy_rows = [
+        _paper_current_adapter_policy_row(adapter_row)
+        for adapter_row in adapter_rows
+    ]
+    direct_policy_eligible_count = sum(
+        row["unsupported_policy_decision"] == "candidate_for_mapped_subset_plan"
+        for row in policy_rows
+    )
+    unsupported_policy_blocked_count = sum(
+        row["unsupported_policy_decision"] == "block_package_conversion"
+        for row in policy_rows
+    )
+    adapter_contract_blocked_count = sum(
+        row["unsupported_policy_decision"] == "preserve_adapter_contract_block"
+        for row in policy_rows
+    )
+    dropped_count = sum(row["adapter_action"] == "drop" for row in policy_rows)
+    package_candidate_count = sum(
+        row["package_candidate_status"] == "package_candidate"
+        for row in policy_rows
+    )
+    remaining_gaps = _paper_remaining_gaps_after_unsupported_primitive_policy()
+    return {
+        "gate_id": _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
+        "gate_status": (
+            "implemented_offline_unsupported_primitive_policy_only_partial"
+        ),
+        "closed_gate": _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
+        "input_gate_id": _PAPER_PACKAGE_ADAPTER_CONTRACT,
+        "next_required_gate": _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "unsupported_primitive_policy_complete_mapped_subset_plan_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": "offline_unsupported_primitive_policy_not_collision_package",
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_unsupported_primitive_policy_no_collision_package_no_newton"
+        ),
+        "input_contract_summary": {
+            "input_gate_id": adapter_payload["gate_id"],
+            "input_artifact_kind": adapter_payload["artifact_kind"],
+            "primitive_decision_row_count": adapter_payload["coverage_summary"][
+                "primitive_decision_row_count"
+            ],
+            "later_policy_required_record_count": adapter_payload[
+                "coverage_summary"
+            ]["later_policy_required_record_count"],
+            "offline_only_unmapped_record_count": adapter_payload[
+                "coverage_summary"
+            ]["offline_only_unmapped_record_count"],
+        },
+        "unsupported_policy_contract": {
+            "decision_values": [
+                "candidate_for_mapped_subset_plan",
+                "block_package_conversion",
+                "preserve_adapter_contract_block",
+            ],
+            "current_unmapped_record_policy": "keep_offline",
+            "package_generation_allowed": False,
+            "approximation_policy_enabled": False,
+            "silent_drop_allowed": False,
+            "next_gate_for_native_candidates": (
+                _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
+            ),
+        },
+        "paper_primitive_family_policy_rows": family_rows,
+        "current_adapter_decision_policy_rows": policy_rows,
+        "coverage_summary": {
+            "decomposition_output_row_count": adapter_payload[
+                "coverage_summary"
+            ]["decomposition_output_row_count"],
+            "primitive_decision_row_count": adapter_payload["coverage_summary"][
+                "primitive_decision_row_count"
+            ],
+            "paper_primitive_family_policy_row_count": len(family_rows),
+            "current_adapter_decision_policy_row_count": len(policy_rows),
+            "direct_policy_eligible_record_count": direct_policy_eligible_count,
+            "unsupported_policy_blocked_record_count": (
+                unsupported_policy_blocked_count
+            ),
+            "adapter_contract_blocked_record_count": adapter_contract_blocked_count,
+            "dropped_record_count": dropped_count,
+            "package_candidate_record_count": package_candidate_count,
+            "current_paper_primitive_distribution": _paper_policy_distribution(
+                policy_rows,
+                "paper_primitive",
+            ),
+            "current_runtime_kind_distribution": _paper_policy_distribution(
+                policy_rows,
+                "offline_runtime_kind_label",
+            ),
+        },
+        "remaining_gaps": remaining_gaps,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -1970,8 +2205,16 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     changed_decomposition_output_contract = (
         _paper_changed_decomposition_output_contract_payload(cases)
     )
+    package_adapter_contract = _paper_package_adapter_contract_payload(
+        changed_decomposition_output_contract
+    )
+    package_adapter_unsupported_policy = (
+        _paper_package_adapter_unsupported_primitive_policy_payload(
+            package_adapter_contract
+        )
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_package_adapter_contract()
+        _paper_remaining_gaps_after_unsupported_primitive_policy()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -1990,7 +2233,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
+        "next_required_gate": _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -2026,6 +2269,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             "implemented_output_contract_scope": [
                 _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
                 _PAPER_PACKAGE_ADAPTER_CONTRACT,
+                _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -2056,10 +2300,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         "paper_offline_changed_decomposition_output_contract": (
             changed_decomposition_output_contract
         ),
-        "paper_package_adapter_contract": (
-            _paper_package_adapter_contract_payload(
-                changed_decomposition_output_contract
-            )
+        "paper_package_adapter_contract": package_adapter_contract,
+        "paper_package_adapter_unsupported_primitive_policy": (
+            package_adapter_unsupported_policy
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,
