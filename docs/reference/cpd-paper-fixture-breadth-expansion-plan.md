@@ -176,9 +176,10 @@ because it broadens primitive-fit evidence before cost/search fixtures start com
 candidate-engine behavior. The primitive-fit engine generalization gate is now implemented as an
 offline report-only matrix over deterministic in-memory probes. The search-engine generalization
 gate is now also implemented as an offline report-only matrix over existing deterministic topology,
-threshold, and component-pair traces. The current next gate is
-`paper_generalization_batch_e_package_boundary_readiness` after the postprocess-policy
-generalization matrix. Batch C stays important because it checks
+threshold, and component-pair traces. The postprocess-policy generalization gate is now implemented
+as an offline report-only matrix, and the package-boundary readiness gate is now implemented as an
+offline matrix before package conversion. The current next gate is
+`paper_offline_changed_decomposition_output_contract`. Batch C stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it
 checks multiple component-pair candidates and capped

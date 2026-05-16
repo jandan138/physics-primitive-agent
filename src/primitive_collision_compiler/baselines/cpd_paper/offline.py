@@ -65,9 +65,13 @@ _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS = "paper_generalization_batch_d_postpr
 _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY = (
     "paper_generalization_batch_e_package_boundary_readiness"
 )
+_PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT = (
+    "paper_offline_changed_decomposition_output_contract"
+)
+_PAPER_PACKAGE_GENERATION_CONTRACT = "paper_package_generation_contract"
 _PAPER_GENERALIZATION_NEXT_ACTION = (
-    "Proceed to paper_generalization_batch_e_package_boundary_readiness after the "
-    "postprocess-policy generalization matrix; keep package/Newton wording blocked."
+    "Proceed to paper_offline_changed_decomposition_output_contract after the "
+    "package-boundary readiness review; keep package/Newton wording blocked."
 )
 
 
@@ -620,22 +624,41 @@ def _paper_remaining_generalization_gates_after_postprocess() -> list[str]:
     )
 
 
+def _paper_remaining_generalization_gates_after_package_boundary() -> list[str]:
+    return _paper_remaining_generalization_gates_after(
+        {
+            _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+            _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+            _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+            _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+            _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
+        }
+    )
+
+
+def _paper_remaining_gaps_after_package_boundary() -> list[str]:
+    return [
+        _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        _PAPER_PACKAGE_GENERATION_CONTRACT,
+    ]
+
+
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
     planned_batches = _paper_faithful_offline_generalization_batches()
     remaining_generalization_gates = (
-        _paper_remaining_generalization_gates_after_postprocess()
+        _paper_remaining_generalization_gates_after_package_boundary()
     )
     return {
         "plan_scope": "offline_algorithm_generalization_beyond_named_toy_fixtures",
         "closed_gate": "paper_faithful_offline_generalization_plan",
         "decision": "remain_partial",
         "decision_reason": (
-            "postprocess_policy_generalization_complete_package_boundary_readiness_missing"
+            "generalization_batches_complete_changed_decomposition_output_contract_missing"
         ),
         "generalization_plan_complete": True,
         "paper_faithful_offline_allowed": False,
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
-        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
+        "next_required_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        "first_unresolved_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
         "planned_batches": planned_batches,
         "remaining_generalization_gates": remaining_generalization_gates,
         "blocked_runtime_gates": [
@@ -1085,6 +1108,165 @@ def _paper_postprocess_policy_generalization_payload(
     }
 
 
+def _paper_package_boundary_readiness_rows() -> list[dict[str, object]]:
+    return [
+        {
+            "row_id": "changed_decomposition_output_contract",
+            "row_status": "blocked_until_changed_decomposition_output_contract",
+            "required_before_unlock": (
+                "stable_offline_decomposition_payload_with_primitive_ids_source_faces_"
+                "parameters_and_postprocess_state"
+            ),
+            "current_evidence": (
+                "Batches A-D expose source policy, primitive-fit, search, and postprocess "
+                "audit matrices, but not a package-adapter-ready decomposition artifact."
+            ),
+            "blocked_reason": (
+                "offline audit rows are review evidence, not a durable changed "
+                "decomposition output contract"
+            ),
+            "next_gate_if_blocked": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+            "claim_boundary": (
+                "readiness review only; no package-ready decomposition output exists"
+            ),
+            "package_generation_triggered": False,
+            "newton_runtime_triggered": False,
+            "real_usd_triggered": False,
+            "benchmark_triggered": False,
+        },
+        {
+            "row_id": "package_generation_boundary",
+            "row_status": "blocked_until_package_generation_contract",
+            "required_before_unlock": (
+                "explicit_collision_package_schema_mapping_from_changed_decomposition"
+            ),
+            "current_evidence": (
+                "No CPD paper-lane CollisionPackage conversion is emitted by this report."
+            ),
+            "blocked_reason": (
+                "package generation is a later adapter gate, not part of the offline "
+                "paper-lane readiness review"
+            ),
+            "next_gate_if_blocked": _PAPER_PACKAGE_GENERATION_CONTRACT,
+            "claim_boundary": "boundary matrix, not CollisionPackage generation",
+            "package_generation_triggered": False,
+            "newton_runtime_triggered": False,
+            "real_usd_triggered": False,
+            "benchmark_triggered": False,
+        },
+        {
+            "row_id": "newton_runtime_boundary",
+            "row_status": "blocked_until_newton_runtime_admissibility_gate",
+            "required_before_unlock": (
+                "runtime_admissibility_report_after_package_conversion_and_primitive_mapping"
+            ),
+            "current_evidence": (
+                "Paper-lane primitive rows include offline-only paper primitives and no "
+                "Newton runtime adapter pass."
+            ),
+            "blocked_reason": (
+                "Newton execution must wait for package conversion and runtime "
+                "admissibility checks"
+            ),
+            "next_gate_if_blocked": "paper_newton_runtime_admissibility_gate",
+            "claim_boundary": "no Newton-ready or runtime-ready claim",
+            "package_generation_triggered": False,
+            "newton_runtime_triggered": False,
+            "real_usd_triggered": False,
+            "benchmark_triggered": False,
+        },
+        {
+            "row_id": "real_usd_boundary",
+            "row_status": "blocked_until_real_usd_asset_scope_gate",
+            "required_before_unlock": (
+                "small_real_usd_asset_scope_manifest_after_offline_contracts_exist"
+            ),
+            "current_evidence": (
+                "This report uses deterministic synthetic fixtures and in-memory probes only."
+            ),
+            "blocked_reason": (
+                "bed, Franka, and other real USD assets belong to a later asset-scope gate"
+            ),
+            "next_gate_if_blocked": "paper_real_usd_asset_scope_gate",
+            "claim_boundary": "no real-USD evidence from this report",
+            "package_generation_triggered": False,
+            "newton_runtime_triggered": False,
+            "real_usd_triggered": False,
+            "benchmark_triggered": False,
+        },
+        {
+            "row_id": "benchmark_evaluation_boundary",
+            "row_status": "blocked_until_benchmark_evaluation_design_gate",
+            "required_before_unlock": (
+                "benchmark_design_with_metrics_assets_baselines_and_runtime_records"
+            ),
+            "current_evidence": (
+                "No timing, surface-distance, collision-quality, byte-cost, or baseline "
+                "comparison metrics are emitted."
+            ),
+            "blocked_reason": (
+                "benchmark evaluation must wait for offline output, package, runtime, and "
+                "asset-scope gates"
+            ),
+            "next_gate_if_blocked": "paper_benchmark_evaluation_design_gate",
+            "claim_boundary": "no benchmark or collision-quality evidence",
+            "package_generation_triggered": False,
+            "newton_runtime_triggered": False,
+            "real_usd_triggered": False,
+            "benchmark_triggered": False,
+        },
+    ]
+
+
+def _paper_package_boundary_readiness_payload() -> dict[str, object]:
+    matrix = _paper_package_boundary_readiness_rows()
+    remaining_generalization_gates = (
+        _paper_remaining_generalization_gates_after_package_boundary()
+    )
+    return {
+        "gate_id": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
+        "gate_status": "implemented_planning_only_partial",
+        "closed_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
+        "next_required_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "package_boundary_readiness_review_complete_changed_decomposition_"
+            "output_contract_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "source_scope": "offline_generalization_payloads_after_batches_a_to_d",
+        "implementation_boundary": "planning_only_no_package_or_newton",
+        "boundary_review_contract": {
+            "input_scope": "implemented_offline_generalization_payloads_a_to_d",
+            "review_output": "package_boundary_readiness_matrix_not_package_generation",
+            "changed_decomposition_output_contract_required": True,
+            "package_generation_contract_required": True,
+            "runtime_admissibility_required_after_package_conversion": True,
+            "package_generation_allowed": False,
+            "newton_runtime_allowed": False,
+            "real_usd_allowed": False,
+            "benchmark_allowed": False,
+        },
+        "boundary_review_matrix": matrix,
+        "coverage_summary": {
+            "boundary_review_row_count": len(matrix),
+            "blocked_row_count": len(matrix),
+            "closed_gate_count": 5,
+            "remaining_generalization_gate_count": len(remaining_generalization_gates),
+            "package_generation_allowed_row_count": 0,
+            "newton_runtime_allowed_row_count": 0,
+            "real_usd_allowed_row_count": 0,
+            "benchmark_allowed_row_count": 0,
+        },
+        "remaining_gaps": _paper_remaining_gaps_after_package_boundary(),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -1230,9 +1412,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     """Build the first fixture-scoped offline CPD paper mechanics audit."""
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
-    missing_before_paper_faithful = (
-        _paper_remaining_generalization_gates_after_postprocess()
-    )
+    missing_before_paper_faithful = _paper_remaining_gaps_after_package_boundary()
     return {
         "stage": "cpd_paper_offline_report",
         "status": "partial",
@@ -1250,7 +1430,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
+        "next_required_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -1281,6 +1461,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
                 _PAPER_GENERALIZATION_BATCH_C_SEARCH,
                 _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+                _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -1304,6 +1485,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_generalization_batch_d_postprocess_policy": (
             _paper_postprocess_policy_generalization_payload(cases)
+        ),
+        "paper_generalization_batch_e_package_boundary_readiness": (
+            _paper_package_boundary_readiness_payload()
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

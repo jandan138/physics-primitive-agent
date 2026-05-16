@@ -298,8 +298,9 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the postprocess-policy generalization matrix:
-  `paper_generalization_batch_e_package_boundary_readiness_missing`.
+- the current top-level failure labels after the package-boundary readiness matrix:
+  `paper_offline_changed_decomposition_output_contract_missing` and
+  `paper_package_generation_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -591,7 +592,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> next after the postprocess-policy matrix: paper_generalization_batch_e_package_boundary_readiness
+-> next after the package-boundary readiness matrix: paper_offline_changed_decomposition_output_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -640,3 +641,13 @@ package generation, Newton runtime execution, real-USD evidence, benchmark evide
 `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
 readiness, or safety certification. The next current gate is
 `paper_generalization_batch_e_package_boundary_readiness`.
+
+`paper_generalization_batch_e_package_boundary_readiness` closes only the package-boundary
+readiness gate. It records an offline package-boundary readiness matrix before package conversion:
+the current source-policy, primitive-fit, search-engine, and postprocess-policy outputs are audit
+matrices rather than a durable changed-decomposition output contract; package generation and
+Newton runtime execution remain blocked; real-USD and benchmark gates remain later work. It is not
+package readiness, Newton readiness, package generation, Newton runtime execution, real-USD
+evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
+collision-quality evidence, deployment readiness, or safety certification. The next current gate is
+`paper_offline_changed_decomposition_output_contract`.

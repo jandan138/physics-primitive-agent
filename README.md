@@ -29,10 +29,11 @@ opt-in offline `capped_cylinder` geometry proposal proxy now records a named obj
 smoke where the unsupported paper primitive gap decreases from 3 to 2; this is not Newton support
 or paper-faithful primitive fitting. The native fitting/probe path now has a real-USD diagnostic
 smoke over capped bed and capped Franka first-mesh scope: bed still selects boxes in both lanes,
-while Franka's native lane now selects 29 boxes plus 3 cylinders under the current surrogate. All
-four packages map cleanly, pass contact canaries, and pass gated drop/settle plus sphere-rain under
-recorded settings. This is native selection/accounting evidence, not native primitive improvement
-evidence, whole-robot collider quality, or benchmark evidence. The synthetic native fitting
+while Franka's current support-aware native lane selects boxes and reports three cheaper raw-cost
+cylinder candidates as support-blocked. All four packages map cleanly, pass contact canaries, and
+pass gated drop/settle plus sphere-rain under recorded settings. This is native
+selection/accounting evidence, not native primitive improvement evidence, whole-robot collider
+quality, or benchmark evidence. The synthetic native fitting
 comparison now also emits candidate weighted-volume audit tables that explain why `cylinder`,
 `cone`, and `ellipsoid` win on the named toy fixtures; this is toy diagnostic accounting, not a
 real-USD or collision-quality claim. The partial offline CPD paper report now also includes
@@ -57,10 +58,13 @@ component-pair traces without adding a new optimizer. It now also includes
 matrix over existing deterministic postprocess audit fixtures. That matrix records identity-axis
 OBB culling, rotated OBB culling, conservative unsupported cross-type no-cull accounting,
 before/after primitive counts, cull or unsupported reasons, and false package, Newton, real-USD,
-and benchmark triggers. The next paper-lane gate is now
-`paper_generalization_batch_e_package_boundary_readiness`, not `paper_faithful_offline` support.
-These source-policy, primitive-fit-engine, search-engine, and postprocess-policy slices do not
-support full CPD
+and benchmark triggers. It now also includes
+`paper_generalization_batch_e_package_boundary_readiness`, a command-only offline
+package-boundary readiness matrix before package conversion. That matrix records that Batches A-D
+produce audit matrices rather than a durable changed-decomposition output contract, keeps package
+generation and Newton runtime blocked, and advances the next paper-lane gate to
+`paper_offline_changed_decomposition_output_contract`. These source-policy, primitive-fit-engine,
+search-engine, postprocess-policy, and package-boundary-readiness slices do not support full CPD
 reproduction, package generation, Newton runtime execution, real-USD evidence, collision-quality
 evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

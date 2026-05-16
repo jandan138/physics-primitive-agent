@@ -68,12 +68,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `paper_generalization_batch_b_primitive_fit_engine`. The report now also closes only that
   primitive-fit engine gate with an offline matrix over deterministic in-memory
   probes for all six paper primitive names. The report now also closes only the search-engine gate
-  with an offline search-trace matrix and advances the current next gate to
+  with an offline search-trace matrix and at that stage advanced the next gate to
   `paper_generalization_batch_d_postprocess_policy`. The report now also closes only that
   postprocess-policy gate with an offline matrix over existing deterministic postprocess audit
-  fixtures and advances the current next gate to
-  `paper_generalization_batch_e_package_boundary_readiness`. The report
-  remains `status: partial` with
+  fixtures and at that stage advanced the next gate to
+  `paper_generalization_batch_e_package_boundary_readiness`. The report now also closes only that
+  package-boundary readiness gate with an offline package-boundary readiness matrix before package
+  conversion and advances the current next gate to
+  `paper_offline_changed_decomposition_output_contract`. The report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
@@ -130,8 +132,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_generalization_batch_e_package_boundary_readiness` after the source-policy,
-  primitive-fit engine, search-engine, and postprocess-policy matrices.
+  `paper_offline_changed_decomposition_output_contract` after the source-policy,
+  primitive-fit engine, search-engine, postprocess-policy, and package-boundary readiness matrices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -162,11 +164,21 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   matrix over existing deterministic postprocess audit fixtures. It records identity-axis OBB
   culling, rotated OBB culling, conservative unsupported cross-type no-cull accounting,
   before/after primitive counts, cull or unsupported reasons, and false package, Newton, real-USD,
-  and benchmark triggers. It closes only that postprocess-policy gate and advances the next gate to
-  `paper_generalization_batch_e_package_boundary_readiness`. It is not a general primitive
-  containment library, package generation, Newton runtime execution, real-USD asset evidence,
+  and benchmark triggers. It closes only that postprocess-policy gate and at that stage advanced
+  the next gate to `paper_generalization_batch_e_package_boundary_readiness`. It is not a general
+  primitive containment library, package generation, Newton runtime execution, real-USD asset evidence,
   benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
   collision-quality evidence, deployment readiness, or safety certification.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_generalization_batch_e_package_boundary_readiness`, an offline report-only
+  package-boundary readiness matrix before package conversion. It records that the current
+  source-policy, primitive-fit, search-engine, and postprocess-policy outputs are audit matrices
+  rather than a durable changed-decomposition output contract. It closes only that
+  package-boundary readiness gate and advances the next gate to
+  `paper_offline_changed_decomposition_output_contract`. It is not package readiness, Newton
+  readiness, package generation, Newton runtime execution, real-USD asset evidence, benchmark
+  evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence,
+  deployment readiness, or safety certification.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper

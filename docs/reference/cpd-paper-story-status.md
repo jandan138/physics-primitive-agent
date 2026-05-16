@@ -99,7 +99,11 @@ The repository has not reached that full result. It has reached the workbench st
     postprocess-policy matrix over existing deterministic postprocess audit fixtures. It closes
     only that postprocess-policy gate, keeps the report partial, and points next to
     `paper_generalization_batch_e_package_boundary_readiness`.
-36. Records and configs can preserve exactly what was run.
+36. `paper_generalization_batch_e_package_boundary_readiness` is now implemented as an offline
+    package-boundary readiness matrix before package conversion. It closes only that readiness
+    gate, keeps package generation/Newton/real-USD/benchmark triggers false, keeps the report
+    partial, and points next to `paper_offline_changed_decomposition_output_contract`.
+37. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -422,8 +426,9 @@ implemented as an offline report-only matrix. The primitive-fit engine generaliz
 implemented as an offline report-only matrix over deterministic in-memory probes. The search-engine
 generalization gate is now implemented as an offline report-only matrix over deterministic trace
 summaries. The postprocess-policy generalization gate is now implemented as an offline report-only
-matrix over deterministic postprocess audit fixtures, and the next code slice is
-`paper_generalization_batch_e_package_boundary_readiness`.
+matrix over deterministic postprocess audit fixtures. The package-boundary readiness gate is now
+implemented as an offline matrix before package conversion, and the next code slice is
+`paper_offline_changed_decomposition_output_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -630,7 +635,8 @@ local USD mirrors or synthetic fixtures
 -> primitive-fit engine generalization matrix, still partial and still without package/Newton/real-USD
 -> search-engine generalization matrix, still partial and still without package/Newton/real-USD
 -> postprocess-policy generalization matrix, still partial and still without package/Newton/real-USD
--> next: paper_generalization_batch_e_package_boundary_readiness
+-> package-boundary readiness matrix, still partial and still without package/Newton/real-USD
+-> next: paper_offline_changed_decomposition_output_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -713,14 +719,14 @@ Avoid:
 
 Fixture-breadth Batch A, Batch B, Batch C, Batch D, Batch E, the command-only synthetic
 fixture-breadth completion review, the command-only generalization planning table, and the
-source-policy, primitive-fit engine, search-engine, and postprocess-policy generalization matrices
-now exist. The immediate next code slice should stay offline and implement package-boundary
-readiness review without adding stronger evaluation claims:
+source-policy, primitive-fit engine, search-engine, postprocess-policy, and package-boundary
+readiness generalization matrices now exist. The immediate next code slice should stay offline and
+define the changed-decomposition output contract without adding stronger evaluation claims:
 
-1. Implement `paper_generalization_batch_e_package_boundary_readiness` after the
-   postprocess-policy matrix.
-2. Review package-boundary readiness for the offline lane without generating packages or running
-   Newton in this slice.
+1. Implement `paper_offline_changed_decomposition_output_contract` after the package-boundary
+   readiness matrix.
+2. Define a durable offline decomposition output for later package conversion without generating
+   packages or running Newton in this slice.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime

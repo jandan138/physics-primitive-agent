@@ -411,6 +411,17 @@ experiments:
       - partial offline postprocess-policy generalization matrix for deterministic synthetic fixtures only
       - records a closed paper_generalization_batch_d_postprocess_policy gate while keeping paper_generalization_batch_e_package_boundary_readiness missing
       - no general containment-library claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-generalization-batch-e-package-boundary-readiness
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-generalization-batch-e-package-boundary-readiness.md
+    purpose: >
+      Add an offline report-only package-boundary readiness matrix for the fifth CPD paper
+      generalization implementation gate.
+    claims_supported:
+      - partial offline package-boundary readiness matrix before package conversion only
+      - records a closed paper_generalization_batch_e_package_boundary_readiness gate while keeping paper_offline_changed_decomposition_output_contract and paper_package_generation_contract missing
+      - no package-readiness claim, Newton-readiness claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

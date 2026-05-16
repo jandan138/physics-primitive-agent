@@ -8,36 +8,46 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
 )
 
 EXPECTED_GENERALIZATION_NEXT_ACTION = (
-    "Proceed to paper_generalization_batch_e_package_boundary_readiness after the "
-    "postprocess-policy generalization matrix; keep package/Newton wording blocked."
+    "Proceed to paper_offline_changed_decomposition_output_contract after the "
+    "package-boundary readiness review; keep package/Newton wording blocked."
 )
 EXPECTED_CLOSED_SOURCE_POLICY_GATE = "paper_generalization_batch_a_source_policy"
 EXPECTED_CLOSED_PRIMITIVE_FIT_GATE = "paper_generalization_batch_b_primitive_fit_engine"
 EXPECTED_CLOSED_SEARCH_ENGINE_GATE = "paper_generalization_batch_c_search_engine"
 EXPECTED_CLOSED_POSTPROCESS_POLICY_GATE = "paper_generalization_batch_d_postprocess_policy"
+EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE = (
+    "paper_generalization_batch_e_package_boundary_readiness"
+)
+EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY = "paper_offline_changed_decomposition_output_contract"
+EXPECTED_PACKAGE_GENERATION_CONTRACT = "paper_package_generation_contract"
 EXPECTED_CLOSED_GENERALIZATION_GATES = [
     EXPECTED_CLOSED_SOURCE_POLICY_GATE,
     EXPECTED_CLOSED_PRIMITIVE_FIT_GATE,
     EXPECTED_CLOSED_SEARCH_ENGINE_GATE,
     EXPECTED_CLOSED_POSTPROCESS_POLICY_GATE,
+    EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE,
 ]
 EXPECTED_CURRENT_GENERALIZATION_GATES = [
-    "paper_generalization_batch_e_package_boundary_readiness",
+    EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
+    EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_SOURCE_POLICY_REMAINING_GAPS = [
     EXPECTED_CLOSED_PRIMITIVE_FIT_GATE,
     EXPECTED_CLOSED_SEARCH_ENGINE_GATE,
     EXPECTED_CLOSED_POSTPROCESS_POLICY_GATE,
-    "paper_generalization_batch_e_package_boundary_readiness",
+    EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE,
 ]
 EXPECTED_PRIMITIVE_FIT_REMAINING_GAPS = [
     EXPECTED_CLOSED_SEARCH_ENGINE_GATE,
     EXPECTED_CLOSED_POSTPROCESS_POLICY_GATE,
-    "paper_generalization_batch_e_package_boundary_readiness",
+    EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE,
 ]
 EXPECTED_SEARCH_ENGINE_REMAINING_GAPS = [
     EXPECTED_CLOSED_POSTPROCESS_POLICY_GATE,
-    "paper_generalization_batch_e_package_boundary_readiness",
+    EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE,
+]
+EXPECTED_POSTPROCESS_POLICY_REMAINING_GAPS = [
+    EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE,
 ]
 EXPECTED_GENERALIZATION_FAILURE_LABELS = [
     f"{gate}_missing" for gate in EXPECTED_CURRENT_GENERALIZATION_GATES
@@ -298,13 +308,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_package_boundary_gap()
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_package_boundary_readiness():
+def test_cpd_paper_offline_report_next_gate_is_changed_decomposition_contract():
     report = build_cpd_paper_offline_report()
 
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1126,10 +1133,7 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_GENERALIZATION_GATES
@@ -1246,10 +1250,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_GENERALIZATION_GATES
@@ -1270,14 +1271,11 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     assert plan["decision"] == "remain_partial"
     assert (
         plan["decision_reason"]
-        == "postprocess_policy_generalization_complete_package_boundary_readiness_missing"
+        == "generalization_batches_complete_changed_decomposition_output_contract_missing"
     )
     assert plan["generalization_plan_complete"] is True
     assert plan["paper_faithful_offline_allowed"] is False
-    assert (
-        plan["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert plan["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert plan["package_generation_triggered"] is False
     assert plan["newton_runtime_triggered"] is False
     assert plan["real_usd_triggered"] is False
@@ -1339,11 +1337,8 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
         },
     ]
     assert plan["planned_batches"] == expected_batches
-    assert (
-        plan["first_unresolved_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
-    assert plan["remaining_generalization_gates"] == EXPECTED_CURRENT_GENERALIZATION_GATES
+    assert plan["first_unresolved_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
+    assert plan["remaining_generalization_gates"] == []
     assert plan["blocked_runtime_gates"] == [
         "package_generation_boundary",
         "newton_runtime_boundary",
@@ -1356,10 +1351,7 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_GENERALIZATION_GATES
@@ -1438,10 +1430,7 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1552,10 +1541,7 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1790,10 +1776,7 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1848,7 +1831,7 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
         "closed_gate_count": 4,
         "remaining_generalization_gate_count": 1,
     }
-    assert payload["remaining_gaps"] == EXPECTED_CURRENT_GENERALIZATION_GATES
+    assert payload["remaining_gaps"] == EXPECTED_POSTPROCESS_POLICY_REMAINING_GAPS
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1963,6 +1946,119 @@ def test_cpd_paper_postprocess_policy_generalization_rows_match_case_payloads():
     assert cross_type["kept_primitive_ids"] == [0, 1]
 
 
+def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
+    report = build_cpd_paper_offline_report()
+
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
+    assert (
+        report["paper_faithfulness"]["implemented_generalization_scope"]
+        == EXPECTED_CLOSED_GENERALIZATION_GATES
+    )
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_CURRENT_GENERALIZATION_GATES
+    )
+    assert report["paper_faithful_offline_supported"] is False
+    assert report["status"] == "partial"
+    assert "paper_generalization_batch_e_package_boundary_readiness_missing" not in (
+        report["failure_labels"]
+    )
+
+    payload = report["paper_generalization_batch_e_package_boundary_readiness"]
+    assert payload["gate_id"] == EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE
+    assert payload["gate_status"] == "implemented_planning_only_partial"
+    assert payload["closed_gate"] == EXPECTED_CLOSED_PACKAGE_BOUNDARY_GATE
+    assert payload["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
+    assert payload["decision"] == "remain_partial"
+    assert (
+        payload["decision_reason"]
+        == "package_boundary_readiness_review_complete_changed_decomposition_output_contract_missing"
+    )
+    assert payload["paper_faithful_offline_allowed"] is False
+    assert payload["package_generation_allowed"] is False
+    assert payload["source_scope"] == "offline_generalization_payloads_after_batches_a_to_d"
+    assert payload["implementation_boundary"] == "planning_only_no_package_or_newton"
+    assert payload["boundary_review_contract"] == {
+        "input_scope": "implemented_offline_generalization_payloads_a_to_d",
+        "review_output": "package_boundary_readiness_matrix_not_package_generation",
+        "changed_decomposition_output_contract_required": True,
+        "package_generation_contract_required": True,
+        "runtime_admissibility_required_after_package_conversion": True,
+        "package_generation_allowed": False,
+        "newton_runtime_allowed": False,
+        "real_usd_allowed": False,
+        "benchmark_allowed": False,
+    }
+    assert payload["coverage_summary"] == {
+        "boundary_review_row_count": 5,
+        "blocked_row_count": 5,
+        "closed_gate_count": 5,
+        "remaining_generalization_gate_count": 0,
+        "package_generation_allowed_row_count": 0,
+        "newton_runtime_allowed_row_count": 0,
+        "real_usd_allowed_row_count": 0,
+        "benchmark_allowed_row_count": 0,
+    }
+    assert payload["remaining_gaps"] == EXPECTED_CURRENT_GENERALIZATION_GATES
+    assert payload["package_generation_triggered"] is False
+    assert payload["newton_runtime_triggered"] is False
+    assert payload["real_usd_triggered"] is False
+    assert payload["benchmark_triggered"] is False
+    assert "collision_quality" not in payload
+    assert "surface_distance" not in payload
+    assert "timing" not in payload
+
+    assert [row["row_id"] for row in payload["boundary_review_matrix"]] == [
+        "changed_decomposition_output_contract",
+        "package_generation_boundary",
+        "newton_runtime_boundary",
+        "real_usd_boundary",
+        "benchmark_evaluation_boundary",
+    ]
+
+
+def test_cpd_paper_package_boundary_readiness_keeps_runtime_work_blocked():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_generalization_batch_e_package_boundary_readiness"]
+
+    forbidden_statuses = {
+        "package_ready",
+        "newton_ready",
+        "runtime_ready",
+        "benchmark_ready",
+        "paper_faithful_offline",
+    }
+    for row in payload["boundary_review_matrix"]:
+        assert row["row_status"] not in forbidden_statuses
+        assert row["required_before_unlock"]
+        assert row["current_evidence"]
+        assert row["blocked_reason"]
+        assert row["next_gate_if_blocked"]
+        assert row["claim_boundary"]
+        assert row["package_generation_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+
+    rows = {row["row_id"]: row for row in payload["boundary_review_matrix"]}
+    assert rows["changed_decomposition_output_contract"]["next_gate_if_blocked"] == (
+        EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
+    )
+    assert rows["package_generation_boundary"]["next_gate_if_blocked"] == (
+        EXPECTED_PACKAGE_GENERATION_CONTRACT
+    )
+    assert rows["newton_runtime_boundary"]["next_gate_if_blocked"] == (
+        "paper_newton_runtime_admissibility_gate"
+    )
+    assert rows["real_usd_boundary"]["next_gate_if_blocked"] == (
+        "paper_real_usd_asset_scope_gate"
+    )
+    assert rows["benchmark_evaluation_boundary"]["next_gate_if_blocked"] == (
+        "paper_benchmark_evaluation_design_gate"
+    )
+
+
 def test_cpd_paper_source_policy_generalization_rows_match_case_payloads():
     report = build_cpd_paper_offline_report()
     cases = {case["case_id"]: case for case in report["cases"]}
@@ -2065,10 +2161,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert (
-        report["next_required_gate"]
-        == "paper_generalization_batch_e_package_boundary_readiness"
-    )
+    assert report["next_required_gate"] == EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_GENERALIZATION_GATES
