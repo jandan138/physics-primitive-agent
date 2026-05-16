@@ -59,6 +59,7 @@ implemented, and it is still a `partial` report rather than `paper_faithful_offl
 | `paper_cpd_collapse_trace` | Priority-queue merge steps, costs, stale entries, and stop reason. |
 | `paper_cpd_postprocess_audit` | Enclosed-primitive culling and before/after primitive counts. |
 | `paper_polygon_quad_intake_policy_audit` | Explicit triangle, quad, and polygon intake policy before stronger paper-lane wording. |
+| `paper_obb_sphere_fit_faithfulness_audit` | Audit whether OBB and sphere rows are paper-faithful fits or still surrogate rows. |
 | `paper_faithful_offline` | Report status allowed only after the required tests and dated records exist. |
 
 ## Canonical Paper Mechanics Checklist
@@ -277,11 +278,24 @@ Before `paper_faithful_offline` wording, record:
 - the source-face remap policy after any triangulation;
 - the normal and tangent policy for each accepted face arity;
 - whether the operator audit is per original polygon face or per triangulated face;
-- fixture coverage for triangle-only, quad, and higher-arity polygon cases;
-- failure label `polygon_and_quad_face_policy_missing` until this policy has tests and a dated
-  record.
+- fixture coverage for triangle-only, quad, and higher-arity polygon cases.
 
 This gate remains offline. It should not call Newton, generate packages, or load real USD assets.
+The current lane records one quad and one five-vertex polygon fixture with fan triangulation from
+the first vertex, source-face remap, generated triangle vertex triples, and source-face aggregate
+operator matrices for planar, convex, non-degenerate, consistently wound toy faces.
+
+### OBB And Sphere Fit Faithfulness Audit
+
+Before `paper_faithful_offline` wording, record:
+
+- whether `oriented_bounding_box` uses the paper operator eigenbasis and point containment
+  construction rather than the current CPD-like surrogate row;
+- whether `sphere` uses the paper OBB center and enclosing radius construction rather than the
+  current CPD-like surrogate row;
+- fixture scope for the comparison;
+- failure label `paper_obb_sphere_fit_faithfulness_missing` until this policy has tests and a
+  dated record.
 
 ## Minimal Synthetic Fixture Set
 
@@ -297,6 +311,8 @@ The first paper lane should use small synthetic fixtures before any real USD:
 | `paper_three_face_chain` | Three connected face groups with two topology edges. | Deterministic priority-queue pops, eager stale pruning, updated neighbor insertion, and target-count stop reason. |
 | `paper_disconnected_components` | Two disconnected components above target primitive count, with topology unable to reduce them. | Threshold-disabled component-pair edge insertion first, then threshold behavior in a separate gate. |
 | `paper_nested_primitive` | A smaller primitive fully enclosed by a larger one. | Postprocessing cull audit. |
+| `paper_quad_face_intake` | One quad source face fan-triangulated into two triangles. | Source-face remap and operator ownership policy. |
+| `paper_polygon_face_intake` | One five-vertex source face fan-triangulated into three triangles. | Source-face remap and operator ownership policy. |
 
 These fixtures are not benchmark assets. They are unit-test-grade checks for the paper mechanics.
 
@@ -318,7 +334,9 @@ These fixtures are not benchmark assets. They are unit-test-grade checks for the
 8. Postprocess gate: enclosed primitive culling is tested independently.
 9. Polygon/quad intake policy gate: non-triangle face policy, source-face remap, and operator
    ownership are explicit and tested.
-10. Record gate: a dated record states the fixture scope and verification commands.
+10. OBB/sphere fit faithfulness gate: current OBB and sphere rows are either paper-faithful for the
+    declared fixture scope or explicitly recorded as remaining surrogates.
+11. Record gate: a dated record states the fixture scope and verification commands.
 
 Only after these gates should a separate package-adaptation slice be planned.
 
@@ -397,8 +415,8 @@ paper_single_box + paper_two_face_merge + paper_frustum_like + paper_trapezoid_p
 This slice replaces the paper-lane capsule row with an offline axis-policy audit row. Capsule is a
 Newton-native primitive, so the row can record `newton_runtime_kind: capsule`, but the command still
 does not generate a package or call Newton. The report is still not `paper_faithful_offline`
-because polygon/quad intake, component-pair threshold blocking/skipped-pair accounting, and
-enclosed-primitive postprocessing are not implemented in that slice.
+because later search, postprocess, polygon/quad intake, and OBB/sphere fit-faithfulness gates are
+not implemented in that slice.
 
 ## Fifth Implementation Slice
 
@@ -464,19 +482,34 @@ This slice adds one deterministic enclosed-primitive culling audit. The input pr
 explicit audit rows rather than output from the full paper search, so the report remains
 `partial`.
 
+## Ninth Implementation Slice
+
+The ninth implementation slice is now:
+
+```text
+paper_quad_face_intake + paper_polygon_face_intake
+-> fan triangulation from the first source vertex
+-> source-face remap with original vertex ids and generated triangle vertex triples
+-> source-face aggregate operator matrices as sums of generated triangle q_matrix rows
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice records a conservative source-face intake policy for planar, convex, non-degenerate,
+consistently wound toy faces. It keeps executable geometry as `TriangleMesh` and does not claim a
+general polygon mesh implementation.
+
 ## Next Implementation Slice
 
 The next paper-lane gate is:
 
 ```text
-paper_polygon_quad_intake_policy_audit
--> define triangle, quad, and polygon intake policy
--> record source-face remap behavior
--> record normal/tangent operator ownership for non-triangle input
+paper_obb_sphere_fit_faithfulness_audit
+-> audit current OBB and sphere fit rows against the paper construction requirements
+-> preserve explicit surrogate labels if they are not paper-faithful
 -> keep status partial until tests and dated records exist
 -> no package generation, Newton, real USD, or benchmarks
 ```
 
-This is the narrowest next algorithmic gate after enclosed-primitive postprocessing. It should not
-be broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun
-until the offline report records a changed paper-lane package boundary.
+This is the narrowest next algorithmic gate after polygon/quad intake policy. It should not be
+broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun until
+the offline report records a changed paper-lane package boundary.

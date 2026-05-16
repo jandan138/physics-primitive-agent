@@ -46,14 +46,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The current code can run a command-only partial `cpd_paper_offline_report` over
   `paper_single_box`, `paper_two_face_merge`, `paper_three_face_chain`,
   `paper_disconnected_components`, `paper_component_pair_threshold_blocked`, `paper_frustum_like`,
-  `paper_trapezoid_prism_like`, and `paper_nested_primitive` synthetic fixtures. It reports
-  triangle-only mesh intake, paper-side operator audit fields, current surrogate OBB/sphere rows,
-  an offline paper-shaped capsule axis fit-audit row, offline-only flat-capped-cylinder, frustum,
-  and trapezoidal-prism fit-audit candidate rows, separate paper base collapse-cost versus
-  weighted-priority-cost fields, a topology-only priority-queue trace with eager stale-pruning
-  records, a threshold-disabled component-pair insertion trace, a finite-threshold component-pair
-  blocked trace, and one explicit identity-axis OBB enclosed-primitive postprocess cull audit. The
-  report remains `status: partial` with
+  `paper_trapezoid_prism_like`, `paper_nested_primitive`, `paper_quad_face_intake`, and
+  `paper_polygon_face_intake` synthetic fixtures. It reports triangle-only mesh intake,
+  fan-triangulated quad/polygon source-face intake policy, paper-side operator audit fields,
+  current surrogate OBB/sphere rows, an offline paper-shaped capsule axis fit-audit row,
+  offline-only flat-capped-cylinder, frustum, and trapezoidal-prism fit-audit candidate rows,
+  separate paper base collapse-cost versus weighted-priority-cost fields, a topology-only
+  priority-queue trace with eager stale-pruning records, a threshold-disabled component-pair
+  insertion trace, a finite-threshold component-pair blocked trace, and one explicit identity-axis
+  OBB enclosed-primitive postprocess cull audit. The report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data, not
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
   package generation, not real-USD evidence, not benchmark evidence, and not collision-quality

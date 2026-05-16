@@ -229,6 +229,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Postprocess Audit](2026-05-16-cpd-paper-postprocess-audit.md):
   partial command-only enclosed-primitive postprocess cull audit on a deterministic nested toy
   fixture.
+- [2026-05-16 CPD Paper Polygon Quad Intake Policy](2026-05-16-cpd-paper-polygon-quad-intake-policy.md):
+  partial command-only source-face intake policy audit on deterministic quad and polygon toy
+  fixtures.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

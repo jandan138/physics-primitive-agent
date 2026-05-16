@@ -339,11 +339,15 @@ That partial report now records:
 - an explicit enclosed-primitive postprocess cull audit over `paper_nested_primitive`, including
   two identity-axis OBB audit rows, before/after primitive counts, enclosed/enclosing ids, one cull
   reason, and false package/Newton/real-USD/benchmark triggers.
+- a fan-triangulated quad/polygon source-face intake policy audit over `paper_quad_face_intake` and
+  `paper_polygon_face_intake`, including source vertex ids, generated triangle vertex triples,
+  source-face remap, and source-face aggregate operator matrices.
 
 This closes the narrow capsule axis-policy audit gap and adds the first topology-only
-priority-queue trace plus component-pair accepted/blocked toy events inside the report, but it does
-not make the lane `paper_faithful_offline`. The next paper-lane gate is
-`paper_polygon_quad_intake_policy_audit`.
+priority-queue trace plus component-pair accepted/blocked toy events, postprocess culling, and
+source-face intake policy fixtures inside the report, but it does not make the lane
+`paper_faithful_offline`. The next paper-lane gate is
+`paper_obb_sphere_fit_faithfulness_audit`.
 
 ## What The Newton-Native Policy Changes
 
@@ -504,6 +508,7 @@ USD assets
 -> threshold-disabled component-pair edge insertion audit
 -> finite-threshold component-pair blocked audit
 -> enclosed-primitive postprocess cull audit
+-> polygon/quad source-face intake policy audit
 -> dated records
 ```
 
@@ -533,7 +538,8 @@ local USD mirrors or synthetic fixtures
 -> threshold-disabled component-pair edge insertion audit, still without package/Newton/real-USD
 -> finite-threshold component-pair blocked audit, still without package/Newton/real-USD
 -> enclosed-primitive postprocess cull audit, still without package/Newton/real-USD
--> next: paper_polygon_quad_intake_policy_audit
+-> polygon/quad source-face intake policy audit, still without package/Newton/real-USD
+-> next: paper_obb_sphere_fit_faithfulness_audit
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -580,6 +586,7 @@ Use:
 - "threshold-disabled component-pair edge insertion audit";
 - "finite-threshold component-pair blocked audit";
 - "offline enclosed-primitive postprocess cull audit";
+- "offline polygon/quad source-face intake policy audit";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -607,11 +614,10 @@ Avoid:
 The immediate next slice should now make the algorithm itself more paper-aligned without adding
 stronger evaluation claims:
 
-1. Define `paper_polygon_quad_intake_policy_audit` for triangle, quad, and higher-arity polygon
-   inputs.
-2. Build it first on synthetic toy meshes with explicit source-face remap and operator ownership
-   accounting.
-3. Keep the lane `partial` until the policy has tests and a dated record.
+1. Add `paper_obb_sphere_fit_faithfulness_audit` for the current OBB and sphere rows.
+2. Build it first on synthetic toy meshes with explicit paper-construction versus surrogate
+   labeling.
+3. Keep the lane `partial` until the fit-faithfulness audit has tests and a dated record.
 4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 5. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality
@@ -632,4 +638,4 @@ command-only four-block evidence-map claim for the recorded lookahead slice. It 
 benchmark, collision-quality, native primitive improvement, asset-wide, whole-robot,
 scoring-policy improvement, merge-policy superiority, package-path evidence for the offline
 lookahead report, Newton contact/task evidence for package-probe-only records, general
-postprocess-quality evidence, or paper-scope reproduction claims.
+postprocess-quality evidence, general polygon mesh support, or paper-scope reproduction claims.

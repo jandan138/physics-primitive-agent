@@ -8,6 +8,127 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
 )
 
 
+def test_cpd_paper_offline_report_failure_labels_point_to_obb_sphere_fit_gap():
+    report = build_cpd_paper_offline_report()
+
+    assert report["failure_labels"] == ["paper_obb_sphere_fit_faithfulness_missing"]
+
+
+def test_cpd_paper_offline_report_next_gate_is_obb_sphere_fit_audit():
+    report = build_cpd_paper_offline_report()
+
+    assert report["next_required_gate"] == "paper_obb_sphere_fit_faithfulness_audit"
+
+
+def _assert_intake_case(case, *, arity, generated_triangles):
+    expected_face_ids = list(range(len(generated_triangles)))
+    expected_remap = [
+        {
+            "source_face_id": 0,
+            "source_face_arity": arity,
+            "source_vertex_ids": list(range(arity)),
+            "generated_triangle_face_ids": expected_face_ids,
+            "generated_triangle_vertex_ids": [list(triangle) for triangle in generated_triangles],
+        }
+    ]
+    expected_preconditions = [
+        "planar",
+        "convex",
+        "non_degenerate",
+        "consistently_wound",
+    ]
+
+    source_mesh = case["source_mesh"]
+    assert source_mesh["face_arity_policy"] == (
+        "fan_triangulate_non_triangle_faces_preserve_source_face_remap"
+    )
+    assert source_mesh["source_face_count"] == 1
+    assert source_mesh["source_face_arities"] == [arity]
+    assert source_mesh["triangulated_face_count"] == len(generated_triangles)
+    assert source_mesh["executable_triangle_face_count"] == len(generated_triangles)
+    assert source_mesh["face_count"] == len(generated_triangles)
+    assert source_mesh["executable_triangle_faces"] == [
+        list(triangle) for triangle in generated_triangles
+    ]
+    assert source_mesh["source_face_remap"] == expected_remap
+    for remap in source_mesh["source_face_remap"]:
+        for generated_face_id, generated_triangle in zip(
+            remap["generated_triangle_face_ids"],
+            remap["generated_triangle_vertex_ids"],
+            strict=True,
+        ):
+            assert source_mesh["executable_triangle_faces"][generated_face_id] == generated_triangle
+    assert source_mesh["operator_ownership_policy"] == (
+        "triangulated_subfaces_summed_to_source_face"
+    )
+    assert source_mesh["source_face_preconditions"] == expected_preconditions
+
+    intake_audit = case["mesh_intake_policy_audit"]
+    assert intake_audit["audit_scope"] == "polygon_quad_source_face_intake_policy_fixture"
+    assert intake_audit["source_face_count"] == source_mesh["source_face_count"]
+    assert intake_audit["source_face_arities"] == source_mesh["source_face_arities"]
+    assert intake_audit["triangulated_face_count"] == source_mesh["triangulated_face_count"]
+    assert intake_audit["executable_triangle_face_count"] == source_mesh[
+        "executable_triangle_face_count"
+    ]
+    assert intake_audit["source_face_remap"] == source_mesh["source_face_remap"]
+    assert intake_audit["source_face_preconditions"] == expected_preconditions
+    assert intake_audit["source_face_policy"] == (
+        "preserve_source_face_id_after_fan_triangulation"
+    )
+    assert intake_audit["triangulation_policy"] == "fan_from_first_vertex"
+    assert intake_audit["operator_ownership_policy"] == (
+        "triangulated_subfaces_summed_to_source_face"
+    )
+    assert intake_audit["normal_policy"] == (
+        "triangle_normals_area_weighted_after_fan_triangulation"
+    )
+    assert intake_audit["tangent_policy"] == (
+        "triangle_edge_tangents_area_weighted_after_fan_triangulation"
+    )
+    assert intake_audit["package_generation_triggered"] is False
+    assert intake_audit["newton_runtime_triggered"] is False
+    assert intake_audit["real_usd_triggered"] is False
+    assert intake_audit["benchmark_triggered"] is False
+
+    operator_audit = case["operator_audit"]
+    assert operator_audit["face_scope"] == "triangle_subfaces_from_source_face"
+    assert operator_audit["source_face_operator_aggregates"][0]["source_face_id"] == 0
+    assert operator_audit["source_face_operator_aggregates"][0][
+        "generated_triangle_face_ids"
+    ] == expected_face_ids
+    expected_q = [
+        [
+            sum(face["q_matrix"][row][col] for face in operator_audit["faces"])
+            for col in range(3)
+        ]
+        for row in range(3)
+    ]
+    assert operator_audit["source_face_operator_aggregates"][0]["q_matrix"] == expected_q
+    assert operator_audit["merged_group"]["source_faces"] == [0]
+    assert operator_audit["merged_group"]["generated_triangle_face_ids"] == expected_face_ids
+    assert operator_audit["merged_group"]["source_face_ids"] == [0]
+    assert case["primitive_fit_audit"]["source_faces"] == [0]
+    assert case["primitive_fit_audit"]["generated_triangle_face_ids"] == expected_face_ids
+    assert case["primitive_fit_audit"]["source_face_ids"] == [0]
+
+
+def test_cpd_paper_offline_report_records_polygon_quad_intake_policy():
+    report = build_cpd_paper_offline_report()
+    cases = {case["case_id"]: case for case in report["cases"]}
+
+    _assert_intake_case(
+        cases["paper_quad_face_intake"],
+        arity=4,
+        generated_triangles=[(0, 1, 2), (0, 2, 3)],
+    )
+    _assert_intake_case(
+        cases["paper_polygon_face_intake"],
+        arity=5,
+        generated_triangles=[(0, 1, 2), (0, 2, 3), (0, 3, 4)],
+    )
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -22,8 +143,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithful_offline_supported"] is False
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
-    assert report["failure_labels"] == ["polygon_and_quad_face_policy_missing"]
-    assert report["next_required_gate"] == "paper_polygon_quad_intake_policy_audit"
+    assert report["failure_labels"] == ["paper_obb_sphere_fit_faithfulness_missing"]
+    assert report["next_required_gate"] == "paper_obb_sphere_fit_faithfulness_audit"
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]
@@ -34,6 +155,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "implemented_fixture_scope"
     ]
     assert "postprocess_enclosed_primitive_culling_audit" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_polygon_quad_intake_policy_audit" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
 
@@ -47,6 +171,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
         "paper_nested_primitive",
+        "paper_quad_face_intake",
+        "paper_polygon_face_intake",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
 
