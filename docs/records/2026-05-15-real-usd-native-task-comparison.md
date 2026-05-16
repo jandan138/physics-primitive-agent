@@ -10,10 +10,12 @@ Complete
 
 ## Supersession Note
 
-This record captures the pre-cylinder-axis task comparison. Current status is superseded by
+This record captures the pre-cylinder-axis task comparison. It was superseded by
 [2026-05-15 Candidate Loss Diagnosis And Cylinder Axis](2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md),
-where capped Franka native selects `3` cylinders under the surrogate and still passes the
-contact-gated drop/settle plus sphere-rain smokes. This supersession does not add
+then by
+[2026-05-15 Low-Support Native Extension Admissibility](2026-05-15-low-support-native-extension-admissibility.md).
+The current support-aware status keeps capped Franka native box-only while reporting three cheaper
+raw-cost cylinders as support-blocked diagnostic accounting. This supersession does not add
 collision-quality evidence.
 
 ## Changes

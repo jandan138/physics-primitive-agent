@@ -1,0 +1,48 @@
+asset:
+  id: cylinder_scoring_policy_newton_probe
+  path: synthetic://cylinder_near_miss_cluster
+task:
+  primary: synthetic_cylinder_scoring_policy_newton_probe
+compile:
+  method: cpd_like_baseline
+  max_primitives: 1
+  allowed_fallback:
+    - convex_hull
+  verify:
+    - cpd_like_cylinder_scoring_policy_newton_probe
+  keep_visual: false
+newton:
+  source_dir: $NEWTON_SOURCE_DIR
+  expected_remote: https://github.com/newton-physics/newton.git
+  runtime_stage: source_import_check
+newton_diagnostic:
+  device: cpu
+  claim_boundary: synthetic_cylinder_scoring_policy_task_smoke_not_collision_quality_or_safety
+  drop_settle:
+    height_m: 0.25
+    frames: 360
+    substeps: 8
+    frame_dt_seconds: 0.016666666666666666
+    iterations: 2
+    gravity_mps2: -9.81
+    ground_height_m: 0.0
+    friction: 0.5
+    max_floor_breach_m: 0.05
+    max_settle_linear_speed_mps: 0.05
+  sphere_rain:
+    sphere_count_x: 3
+    sphere_count_y: 3
+    sphere_radius_m: 0.5
+    spawn_height_m: 2.0
+    frames: 240
+    substeps: 4
+    frame_dt_seconds: 0.016666666666666666
+    iterations: 4
+    gravity_mps2: -9.81
+    friction: 0.5
+    min_contact_density: 0.05
+    require_final_contact: false
+    rigid_contact_max: 4096
+report:
+  output_dir: reports/generated/cylinder_scoring_policy_newton_probe
+  evidence_level: synthetic_cylinder_scoring_policy_contact_gated_task_smoke

@@ -28,7 +28,8 @@ local USD mirror
 The important current limitation is simple:
 
 ```text
-the path runs, and one Franka native-lane selection changed, but quality is still unproven
+the path runs, and the Franka native-lane selection change is now explained by support accounting,
+but quality is still unproven
 ```
 
 So the next work should not be "add more assets" or "claim native primitives are better." The next
@@ -42,8 +43,8 @@ Current evidence supports this narrow story:
 1. Bed and Franka real USDs can be mirrored locally without committing raw assets.
 2. The runtime resolver prefers local mirrors when they exist.
 3. Capped bed and capped Franka first meshes can run through old/new CPD-like reports.
-4. Bed currently selects `box` primitives in both lanes; Franka's native lane now selects `3`
-   cylinders under the current surrogate.
+4. Bed currently selects `box` primitives in both lanes; Franka's support-aware native lane also
+   selects boxes, while three cheaper raw-cost cylinder candidates are support-blocked.
 5. The selected packages can map into Newton and run recorded smoke diagnostics.
 
 That is selection/accounting evidence. It is not evidence that the decomposition is good,
@@ -58,8 +59,8 @@ them as the reference state:
 
 ```text
 bed: legacy boxes vs native boxes
-Franka: legacy boxes vs native mostly boxes plus 3 cylinders
-candidate diagnosis: remaining box clusters lose by surrogate candidate cost
+Franka: legacy boxes vs support-aware native boxes
+candidate diagnosis: remaining box clusters lose by surrogate candidate cost or support admissibility
 Newton probes: allowed only after full mapping and contact canary
 ```
 
@@ -143,13 +144,13 @@ lane, it should record:
 This slice avoids guessing. It turns the current bed/Franka result from:
 
 ```text
-bed boxes won; Franka mostly boxes won, with 3 cylinders selected
+bed boxes won; Franka boxes won, with 3 raw-cost cylinder candidates support-blocked
 ```
 
 into:
 
 ```text
-remaining box selections won for measurable surrogate-cost reasons
+remaining box selections won for measurable surrogate-cost or support-admissibility reasons
 ```
 
 That gives the next algorithm change a target.

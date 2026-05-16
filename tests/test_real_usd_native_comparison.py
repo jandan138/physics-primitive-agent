@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import yaml
@@ -236,6 +237,115 @@ def test_real_usd_candidate_loss_diagnosis_treats_near_equal_extension_cost_as_t
     triage = report["cases"][0]["native_candidate_loss_diagnosis"]["triage"]
     assert triage["near_miss_cluster_count"] == 0
     assert triage["recommended_next_slice"]["target_type"] == "no_ranked_target"
+
+
+def test_real_usd_candidate_loss_diagnosis_explains_support_blocked_extension(
+    monkeypatch,
+):
+    mesh = real_usd_comparison.TriangleMesh(
+        points=[
+            (0.0, 0.0, 0.0),
+            (1.0, 0.0, 0.0),
+            (1.0, 1.0, 0.0),
+            (0.0, 1.0, 0.0),
+        ],
+        faces=[
+            (0, 1, 2),
+            (0, 2, 3),
+        ],
+    )
+    decomposition = SimpleNamespace(
+        primitive_count=1,
+        primitive_subset=("box", "cylinder"),
+        primitives=(
+            _primitive_fit("box", (0, 1), 2.0),
+        ),
+    )
+
+    def fake_candidates(mesh, face_ids, primitive_subset):
+        source_faces = tuple(sorted(face_ids))
+        return (
+            _primitive_fit("box", source_faces, 2.0),
+            _primitive_fit("cylinder", source_faces, 1.0),
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "fit_primitive_candidates", fake_candidates)
+
+    diagnosis = real_usd_comparison._candidate_loss_diagnosis(
+        mesh,
+        decomposition,
+        normalizer_volume=1.0,
+    )
+
+    cluster = diagnosis["clusters"][0]
+
+    assert cluster["selected_primitive_type"] == "box"
+    assert cluster["best_extension_candidate"]["primitive_type"] == "cylinder"
+    assert cluster["best_extension_candidate"]["raw_cost_rank"] == 1
+    assert cluster["best_extension_candidate"]["rank"] == 2
+    assert cluster["best_extension_candidate"]["selection_admissible"] is False
+    assert cluster["best_extension_candidate"]["selection_admissibility_reason"] == (
+        "insufficient_extension_support"
+    )
+    assert "extension_candidate_blocked_by_support" in cluster["diagnosis_labels"]
+    assert cluster["likely_bottleneck"] == "extension_support_admissibility"
+
+
+def test_real_usd_candidate_audit_summary_reports_support_blocked_raw_cost_winner(
+    monkeypatch,
+):
+    mesh = real_usd_comparison.TriangleMesh(
+        points=[
+            (0.0, 0.0, 0.0),
+            (1.0, 0.0, 0.0),
+            (1.0, 1.0, 0.0),
+            (0.0, 1.0, 0.0),
+        ],
+        faces=[
+            (0, 1, 2),
+            (0, 2, 3),
+        ],
+    )
+    decomposition = SimpleNamespace(
+        primitive_count=1,
+        primitive_subset=("box", "cylinder"),
+        primitives=(
+            _primitive_fit("box", (0, 1), 2.0),
+        ),
+    )
+
+    def fake_candidates(mesh, face_ids, primitive_subset):
+        source_faces = tuple(sorted(face_ids))
+        return (
+            _primitive_fit("box", source_faces, 2.0),
+            _primitive_fit("cylinder", source_faces, 1.0),
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "fit_primitive_candidates", fake_candidates)
+
+    audit = real_usd_comparison._candidate_audit_summary(
+        mesh,
+        decomposition,
+        normalizer_volume=1.0,
+    )
+
+    assert audit["ranking_semantics"] == {
+        "rank": "support_aware_selection_rank",
+        "raw_cost_rank": "cost_only_weighted_volume_rank",
+    }
+    assert audit["clusters_with_extension_best"] == 1
+    assert audit["clusters_with_support_blocked_raw_cost_extension_best"] == 1
+    assert audit["support_blocked_extension_count"] == 1
+    assert audit["support_blocked_extension_kind_counts"] == {"cylinder": 1}
+    target = audit["support_blocked_extension_targets"][0]
+    assert target["cluster_index"] == 0
+    assert target["selected_primitive_type"] == "box"
+    assert target["blocked_extension_primitive_type"] == "cylinder"
+    assert target["raw_cost_rank"] == 1
+    assert target["selection_rank"] == 2
+    assert target["selection_admissibility_reason"] == "insufficient_extension_support"
+    assert target["selection_support"]["source_face_count"] == 2
+    assert target["selection_support"]["unique_point_count"] == 4
 
 
 def test_real_usd_candidate_loss_diagnosis_triages_low_support_native_extension(

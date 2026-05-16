@@ -90,9 +90,9 @@ box, sphere, capsule, cylinder, cone, ellipsoid
 ```
 
 that opt-in path now has both a synthetic fitting comparison and a capped bed/Franka real-USD probe
-comparison. In the current real-USD run, bed still selects boxes in both lanes and capped Franka's
-native lane selects `3` cylinders under the surrogate, so it is selection/accounting evidence, not
-native primitive quality evidence.
+comparison. In the current support-aware real-USD run, bed and capped Franka both select boxes in
+both lanes, while three capped Franka raw-cost cylinder candidates are reported as support-blocked.
+This is selection/accounting evidence, not native primitive quality evidence.
 
 The offline capped-cylinder proxy remains separate:
 
@@ -182,8 +182,8 @@ ellipsoid proposals and map the resulting one-primitive packages through Newton 
 ```
 
 That statement is synthetic fitting evidence only. The separate capped bed/Franka real-USD probe
-comparison is selection/accounting and diagnostic-gate evidence; capped Franka selects three
-cylinders, but this is not native primitive quality evidence.
+comparison is selection/accounting and diagnostic-gate evidence; capped Franka now reports three
+support-blocked raw-cost cylinder candidates, but this is not native primitive quality evidence.
 
 ## Next Steps In The Story
 

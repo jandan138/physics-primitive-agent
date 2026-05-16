@@ -16,7 +16,12 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
     build_cpd_like_objective_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
-from primitive_collision_compiler.baselines.cpd_like.primitives import fit_primitive_candidates
+from primitive_collision_compiler.baselines.cpd_like.primitives import (
+    SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES,
+    SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS,
+    fit_primitive_candidates,
+    rank_primitive_candidates_for_selection,
+)
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
     NEWTON_NATIVE_EXTENDED_SUBSET,
     NEWTON_NATIVE_LEGACY_SUBSET,
@@ -60,8 +65,8 @@ LEGACY_LABEL = "legacy_box_sphere_capsule"
 NATIVE_LABEL = "native_newton_bundle"
 CANDIDATE_LOSS_TIE_TOLERANCE = 1e-12
 CANDIDATE_LOSS_NEAR_MISS_RELATIVE_GAP_THRESHOLD = 0.25
-CANDIDATE_LOSS_LOW_SUPPORT_FACE_THRESHOLD = 2
-CANDIDATE_LOSS_LOW_SUPPORT_POINT_THRESHOLD = 4
+CANDIDATE_LOSS_LOW_SUPPORT_FACE_THRESHOLD = SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES - 1
+CANDIDATE_LOSS_LOW_SUPPORT_POINT_THRESHOLD = SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS - 1
 CANDIDATE_LOSS_TRIAGE_CLAIM_BOUNDARY = "diagnostic_triage_not_collision_quality"
 
 
@@ -627,25 +632,46 @@ def _candidate_audit_summary(
     selected_vs_extension_margins: list[float] = []
     clusters_with_extension_best = 0
     clusters_where_extension_beats_selected = 0
+    clusters_with_support_blocked_raw_cost_extension_best = 0
+    support_blocked_extension_count = 0
+    support_blocked_extension_kind_counts: Counter[str] = Counter()
+    support_blocked_extension_targets: list[dict[str, object]] = []
     box_selected_cluster_count = 0
     box_selected_with_extension_second_count = 0
     normalizer = max(float(normalizer_volume), 1e-12)
 
-    for primitive in decomposition.primitives:
+    for cluster_index, primitive in enumerate(decomposition.primitives):
+        face_ids = frozenset(primitive.source_faces)
         candidates = fit_primitive_candidates(
             mesh,
-            frozenset(primitive.source_faces),
+            face_ids,
             decomposition.primitive_subset,
         )
         ranked = [
             {
-                "primitive_type": candidate.primitive_type,
-                "candidate_order": order,
-                "normalized_weighted_volume": float(candidate.weighted_volume / normalizer),
+                "primitive_type": ranked_candidate.candidate.primitive_type,
+                "candidate_order": ranked_candidate.candidate_order,
+                "raw_cost_rank": ranked_candidate.raw_cost_rank,
+                "normalized_weighted_volume": float(
+                    ranked_candidate.candidate.weighted_volume / normalizer
+                ),
+                "selection_admissible": ranked_candidate.selection_admissible,
+                "selection_admissibility_reason": (
+                    ranked_candidate.selection_admissibility_reason
+                ),
+                "selection_support": ranked_candidate.support,
             }
-            for order, candidate in enumerate(candidates)
+            for ranked_candidate in rank_primitive_candidates_for_selection(
+                mesh,
+                face_ids,
+                candidates,
+            )
         ]
-        ranked.sort(key=lambda row: (row["normalized_weighted_volume"], row["candidate_order"]))
+        ranked = [{**row, "rank": rank} for rank, row in enumerate(ranked, start=1)]
+        raw_cost_ranked = sorted(
+            ranked,
+            key=lambda row: (int(row["raw_cost_rank"]), int(row["candidate_order"])),
+        )
         selected_rank = _rank_for_primitive(ranked, primitive.primitive_type)
         selected_rank_counts[str(selected_rank)] += 1
         selected_kind_counts[primitive.primitive_type] += 1
@@ -659,23 +685,59 @@ def _candidate_audit_summary(
             selected_vs_best_nonselected_margins.append(
                 float(selected_cost - best_nonselected_cost)
             )
-            if primitive.primitive_type == "box" and ranked[1]["primitive_type"] in extension_kinds:
+            if (
+                primitive.primitive_type == "box"
+                and len(raw_cost_ranked) > 1
+                and raw_cost_ranked[1]["primitive_type"] in extension_kinds
+            ):
                 box_selected_with_extension_second_count += 1
 
-        extension_rows = [row for row in ranked if row["primitive_type"] in extension_kinds]
+        extension_rows = [
+            row for row in raw_cost_ranked if row["primitive_type"] in extension_kinds
+        ]
         if extension_rows:
             best_extension = extension_rows[0]
             best_extension_cost = float(best_extension["normalized_weighted_volume"])
             selected_vs_extension_margins.append(float(selected_cost - best_extension_cost))
-            if ranked[0]["primitive_type"] in extension_kinds:
+            if raw_cost_ranked[0]["primitive_type"] in extension_kinds:
                 clusters_with_extension_best += 1
-                extension_best_kind_counts[str(ranked[0]["primitive_type"])] += 1
+                extension_best_kind_counts[str(raw_cost_ranked[0]["primitive_type"])] += 1
+                if not bool(raw_cost_ranked[0]["selection_admissible"]):
+                    clusters_with_support_blocked_raw_cost_extension_best += 1
             if best_extension_cost < selected_cost:
                 clusters_where_extension_beats_selected += 1
+            for extension_row in extension_rows:
+                if bool(extension_row["selection_admissible"]):
+                    continue
+                support_blocked_extension_count += 1
+                support_blocked_extension_kind_counts[str(extension_row["primitive_type"])] += 1
+                if len(support_blocked_extension_targets) < 10:
+                    support_blocked_extension_targets.append(
+                        {
+                            "cluster_index": cluster_index,
+                            "source_faces": list(primitive.source_faces),
+                            "selected_primitive_type": primitive.primitive_type,
+                            "blocked_extension_primitive_type": extension_row["primitive_type"],
+                            "raw_cost_rank": int(extension_row["raw_cost_rank"]),
+                            "selection_rank": int(extension_row["rank"]),
+                            "normalized_weighted_volume": float(
+                                extension_row["normalized_weighted_volume"]
+                            ),
+                            "selected_normalized_weighted_volume": selected_cost,
+                            "selection_admissibility_reason": extension_row[
+                                "selection_admissibility_reason"
+                            ],
+                            "selection_support": extension_row["selection_support"],
+                        }
+                    )
 
     return {
         "scope": "per_selected_cluster",
         "cost_name": "normalized_weighted_primitive_volume",
+        "ranking_semantics": {
+            "rank": "support_aware_selection_rank",
+            "raw_cost_rank": "cost_only_weighted_volume_rank",
+        },
         "cluster_count": decomposition.primitive_count,
         "primitive_subset": list(decomposition.primitive_subset),
         "extension_candidate_kinds": list(extension_kinds),
@@ -684,6 +746,14 @@ def _candidate_audit_summary(
         "clusters_with_extension_best": clusters_with_extension_best,
         "extension_best_kind_counts": dict(extension_best_kind_counts),
         "clusters_where_extension_beats_selected": clusters_where_extension_beats_selected,
+        "clusters_with_support_blocked_raw_cost_extension_best": (
+            clusters_with_support_blocked_raw_cost_extension_best
+        ),
+        "support_blocked_extension_count": support_blocked_extension_count,
+        "support_blocked_extension_kind_counts": dict(
+            sorted(support_blocked_extension_kind_counts.items())
+        ),
+        "support_blocked_extension_targets": support_blocked_extension_targets,
         "box_selected_cluster_count": box_selected_cluster_count,
         "box_selected_with_extension_second_count": box_selected_with_extension_second_count,
         "margin_sign_convention": "selected_cost_minus_comparator_cost",
@@ -741,6 +811,8 @@ def _candidate_loss_diagnosis(
             decomposition.primitive_subset,
         )
         ranked = _ranked_candidate_rows(
+            mesh,
+            frozenset(primitive.source_faces),
             candidates,
             selected_primitive_type=primitive.primitive_type,
             extension_kinds=extension_kinds,
@@ -938,26 +1010,38 @@ def _recommended_next_slice(
 
 
 def _ranked_candidate_rows(
+    mesh: TriangleMesh,
+    face_ids: frozenset[int],
     candidates,
     *,
     selected_primitive_type: str,
     extension_kinds: tuple[str, ...],
     normalizer: float,
 ) -> list[dict[str, object]]:
+    ranked_candidates = rank_primitive_candidates_for_selection(mesh, face_ids, candidates)
     rows = [
         {
-            "primitive_type": candidate.primitive_type,
-            "candidate_order": order,
-            "weighted_volume": candidate.weighted_volume,
-            "normalized_weighted_volume": float(candidate.weighted_volume / normalizer),
-            "contains_assigned_points": candidate.contains_assigned_points,
-            "dimensions": candidate.dimensions,
-            "selected": candidate.primitive_type == selected_primitive_type,
-            "is_extension_candidate": candidate.primitive_type in extension_kinds,
+            "primitive_type": ranked_candidate.candidate.primitive_type,
+            "candidate_order": ranked_candidate.candidate_order,
+            "raw_cost_rank": ranked_candidate.raw_cost_rank,
+            "weighted_volume": ranked_candidate.candidate.weighted_volume,
+            "normalized_weighted_volume": float(
+                ranked_candidate.candidate.weighted_volume / normalizer
+            ),
+            "contains_assigned_points": ranked_candidate.candidate.contains_assigned_points,
+            "dimensions": ranked_candidate.candidate.dimensions,
+            "selected": ranked_candidate.candidate.primitive_type == selected_primitive_type,
+            "is_extension_candidate": (
+                ranked_candidate.candidate.primitive_type in extension_kinds
+            ),
+            "selection_admissible": ranked_candidate.selection_admissible,
+            "selection_admissibility_reason": (
+                ranked_candidate.selection_admissibility_reason
+            ),
+            "selection_support": ranked_candidate.support,
         }
-        for order, candidate in enumerate(candidates)
+        for ranked_candidate in ranked_candidates
     ]
-    rows.sort(key=lambda row: (row["normalized_weighted_volume"], row["candidate_order"]))
     return [{**row, "rank": rank} for rank, row in enumerate(rows, start=1)]
 
 
@@ -977,6 +1061,14 @@ def _candidate_loss_labels(
     if bool(selected_row["is_extension_candidate"]):
         labels.append("native_extension_selected")
         return labels, "native_extension_selected"
+    if (
+        best_extension_cost < selected_cost
+        and best_extension["selection_admissibility_reason"]
+        == "insufficient_extension_support"
+    ):
+        labels.append("extension_candidate_cheaper_than_selected")
+        labels.append("extension_candidate_blocked_by_support")
+        return labels, "extension_support_admissibility"
     if abs(best_extension_cost - selected_cost) <= CANDIDATE_LOSS_TIE_TOLERANCE:
         labels.append("extension_tied_selected")
         return labels, "tie_or_subset_order"

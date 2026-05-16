@@ -13,7 +13,10 @@ Complete
 This record captures the pre-cylinder-axis real-USD baseline. Current status is superseded by
 [2026-05-15 Candidate Loss Diagnosis And Cylinder Axis](2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md),
 where capped bed remains `32` boxes and capped Franka native selects `29` boxes plus `3`
-cylinders under the current surrogate.
+cylinders under the pre-support-aware surrogate, and then by
+[2026-05-15 Low-Support Native Extension Admissibility](2026-05-15-low-support-native-extension-admissibility.md),
+where capped Franka returns to box-only support-aware selection while reporting three cheaper
+raw-cost cylinders as support-blocked accounting.
 
 ## Changes
 
@@ -41,8 +44,8 @@ cylinders under the current surrogate.
   delta `0.0`.
 - `franka_import_smoke`: legacy `32` boxes, native `32` boxes, mapping clean, native normalized
   volume delta `0.0`.
-- Current native lane selected no `cylinder`, `cone`, or `ellipsoid` on these capped real USD
-  meshes.
+- At this record's time, the native lane selected no `cylinder`, `cone`, or `ellipsoid` on these
+  capped real USD meshes.
 - The regenerated report now includes `candidate_audit_summary`; both native lanes still have `0`
   clusters where an extension primitive is cheapest under the current surrogate.
 

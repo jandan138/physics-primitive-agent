@@ -33,7 +33,29 @@ The repository has not reached that full result. It has reached the workbench st
     weighted-volume tables and surrogate-cost margins.
 13. Capped bed and capped Franka real-USD lanes can run through fitting reports, candidate audit
     summaries, candidate-loss diagnosis, Newton contact canaries, and gated task smokes.
-14. Records and configs can preserve exactly what was run.
+14. An explicitly opt-in synthetic package probe can carry the cylinder scoring-policy multiplier
+    through `decompose_mesh` into a changed synthetic `CollisionPackage` and record a Newton
+    shape-mapping summary only. It does not change default package generation and does not run
+    Newton contact or task diagnostics.
+15. A follow-on explicitly opt-in synthetic Newton diagnostic can run named contact, drop/settle,
+    and sphere-rain smokes over that changed near-miss package pair under recorded settings.
+16. A command-only synthetic controlled merge-search package-path probe can carry the existing
+    `cost_guided_pair_choice` grouping difference into `CollisionPackage` and Newton shape-mapping
+    accounting, without running Newton contact or task diagnostics.
+17. A follow-on synthetic controlled merge-search Newton diagnostic can run named contact,
+    drop/settle, and sphere-rain smokes over that changed package pair under recorded settings.
+18. A command-only synthetic two-step lookahead merge/search diagnostic can show one bounded
+    non-greedy grouping change on a deterministic trap fixture, without package or Newton task
+    evidence.
+19. A command-only synthetic lookahead package-path probe can carry that bounded grouping change
+    into `CollisionPackage` lanes and Newton shape-mapping accounting, without contact/task
+    execution.
+20. An explicitly opt-in synthetic lookahead Newton diagnostic can run named contact, drop/settle,
+    and sphere-rain smokes over that changed package pair under recorded settings.
+21. A command-only four-block slice report can link the recorded lookahead evidence across
+    primitive fitting/selection, merge/search, offline diagnostics, and recorded Newton task-smoke
+    status without rerunning source reports, USD loading, real assets, or Newton tasks.
+22. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -46,6 +68,20 @@ This means the reproduction infrastructure is in place, and the first native pri
 hook exists for synthetic toy meshes. The paper-faithful decomposition and evaluation story still
 needs to be implemented.
 
+The 2026-05-16 four-block status audit summarized this position as an internal diagnostic
+workbench that was mostly missing integration/report ergonomics rather than Newton plumbing. The
+follow-on command-only four-block slice report now gathers primitive-selection, merge/search,
+offline report, package/mapping, and recorded Newton task-gate status for the recorded
+`cost_guided_lookahead` synthetic slice.
+
+For a step-by-step explanation of how mesh input, primitive fitting, objective terms,
+merge/search, `CollisionPackage`, Newton mapping, task smokes, and benchmark claims differ, see
+[CPD pipeline step-by-step explainer](cpd-pipeline-step-by-step-explainer.md).
+
+For the current row-by-row paper reproduction gap and the offline-first lane that should close
+the next gap, see [CPD paper reproduction gap matrix](cpd-paper-reproduction-gap-matrix.md) and
+[CPD paper-faithful offline lane spec](cpd-paper-faithful-offline-lane-spec.md).
+
 ## Paper Story Layers
 
 The CPD paper story can be read as eight layers.
@@ -54,7 +90,7 @@ The CPD paper story can be read as eight layers.
 | --- | --- | --- |
 | 1. Asset input | Can a complex mesh enter the pipeline? | Partially in place through USD-open and capped first-mesh extraction smokes. |
 | 2. Primitive proposal | Can the mesh become a small set of primitive candidates? | In place only as a restricted geometry-only CPD-like baseline, not the paper algorithm. An opt-in synthetic comparison can now include simple `cylinder`, `cone`, and `ellipsoid` proxy fits. |
-| 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the full paper objective. |
+| 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the paper collapse-cost rule plus primitive weighting. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for one deterministic synthetic fixture only. |
 | 5. Expected limitations | Can known CPD-paper gaps stay visible before algorithmic changes? | Narrowly in place as a deterministic expected-failure synthetic workbench over three in-memory fixtures. This is diagnostic limitation accounting, not validation or benchmark evidence. |
 | 6. Primitive vocabulary | Can one missing paper primitive category enter a restricted proposal lane? | Narrowly in place as an opt-in offline `capped_cylinder` proxy. This reduces the unsupported paper primitive count from 3 to 2 in one named report, but it is not paper-faithful primitive fitting. |
@@ -68,7 +104,8 @@ primitive proposals, and records the result. It exists because later paper-faith
 the same asset intake, report schema, collision-package bridge, and Newton diagnostic plumbing.
 
 The current baseline is useful for pipeline diagnostic plumbing. It is not a substitute for the
-paper's primitive coverage, objective formulation, optimization procedure, or benchmark evaluation.
+paper's primitive coverage, collapse-cost rule, primitive weighting, optimization procedure, or
+benchmark evaluation.
 
 ## What The Component-Merge Gate Adds
 
@@ -180,21 +217,55 @@ On the current toy fixture, the default policy records accepted normalized merge
 records `0.000055121`, about five thousandths of one percent. The smoke uses that difference only
 as diagnostic accounting for the toy decision.
 
-Why this matters for the paper story: CPD is ultimately about selecting a compact primitive set
-under geometric and collision-detection constraints. A face-merge baseline that only follows local
-adjacency is too weak to tell that story. The new smoke does not solve that problem, but it creates
-the first auditable place where a paper-shaped cost term changes a decomposition decision.
+The 2026-05-16 controlled merge-search package probe carries the same toy decision one step
+farther: the default package groups source faces as `[[0, 1], [2]]`, while the opt-in cost-guided
+package groups them as `[[0, 2], [1]]`. Both packages map to Newton shapes. This is package-path
+and mapping accounting only; it is not a Newton contact/task diagnostic, real-USD result, or
+collision-quality result.
+
+The 2026-05-16 controlled merge-search Newton probe is the next task-smoke layer for that same
+package pair. It runs `newton_contact_smoke` first, then runs `newton_drop_settle` and
+`newton_sphere_rain` only when contact passes. This shows that the changed synthetic package pair
+can enter named Newton diagnostics under recorded settings. It does not show that the opt-in
+merge/search policy is better, that a real USD package improved, or that collision quality was
+validated.
+
+The 2026-05-16 cost-guided lookahead merge report is a non-paper surrogate extension slice. It
+adds `two_step_lookahead` for tiny synthetic fixtures and compares it against greedy
+`cost_guided_pairwise` on `lookahead_merge_trap`. The paper method itself is greedy
+priority-queue collapse, not lookahead. The lookahead lane changes the toy grouping from
+`[[0, 2, 3], [1]]` to `[[0, 1], [2, 3]]` and records lower projected two-step normalized
+merge-excess. This is still only offline merge/search accounting. It does not create a package,
+run Newton tasks, prove merge-policy superiority, reproduce the paper optimizer, or touch real USD
+assets.
+
+Why this still matters for the workbench: CPD is ultimately about selecting a compact primitive
+set under geometric and collision-detection constraints. A face-merge baseline that only follows
+local adjacency is too weak to explore that engineering space. The lookahead smoke does not solve
+the paper problem, but it stress-tests whether a surrogate cost term can change a toy
+decomposition decision without confusing that result with paper-faithful search.
+
+The 2026-05-16 cost-guided lookahead package probe is the follow-on package-path gate for that
+same toy decision. It converts the greedy and lookahead decompositions into synthetic
+`CollisionPackage` lanes and records that both lanes map to Newton shapes. This matters because a
+Newton workbench needs an auditable path from a merge/search decision to an engine-facing package
+before it can run a task smoke. It still does not run Newton contact, drop/settle, or sphere-rain
+diagnostics, and it does not upgrade the lookahead result into a quality or superiority claim.
 
 What it does not yet cover:
 
 - global search over many primitive sets;
-- the paper's full objective formula;
+- the paper collapse-cost rule plus primitive weighting;
 - richer primitive fitting beyond the current restricted proposals;
 - collision-quality measurement;
 - benchmark comparison.
 
 So the right interpretation is: this is the first cost-aware decision hook in the workbench, not
 the CPD optimizer.
+
+The next paper-aligned step is therefore not another Newton task or real-USD rerun. It is an
+offline paper lane that can compute and audit paper-side operator, primitive-fit, and collapse-cost
+fields on tiny synthetic fixtures first.
 
 ## What The Expected-Failure Workbench Adds
 
@@ -303,15 +374,33 @@ franka_import_smoke
 
 For each role, it runs the legacy `box`/`sphere`/`capsule` lane and the six-kind Newton-native
 lane under the same face cap and merge policy. After the controlled cylinder-axis fitting update,
-bed still selects only `box` primitives in both lanes, while capped Franka's native lane selects
-`29` boxes plus `3` cylinders. That means the pipeline can expose a native-lane selection change,
-but it does not show that the native lane improved the real-asset packages.
+bed still selected only `box` primitives in both lanes, while capped Franka's native lane selected
+`29` boxes plus `3` cylinders. The subsequent support-aware admissibility slice reclassified those
+three Franka cylinder wins as cheaper raw-cost extension candidates with insufficient face/point
+support, so the current capped Franka support-aware native lane selects `32` boxes. That means the
+pipeline can expose and then constrain a native-lane selection change, but it does not show that
+either selection is better collision geometry.
 
 The probe comparison then requires full Newton mapping before contact canary, and gates
 drop/settle plus sphere-rain behind contact success. Under the clean Newton conda environment, the
 bed and Franka old/new packages passed the recorded contact and task smokes.
 
 This is a real-USD diagnostic smoke milestone, not a benchmark or collision-quality milestone.
+
+## What The Support-Aware Native-Extension Rule Adds
+
+The support-aware rule is a narrow Layer 2 guardrail. It changes primitive selection only when a
+Newton-native extension candidate (`cylinder`, `cone`, or `ellipsoid`) has too little local
+support and a fallback primitive is available. The current thresholds are three source faces and
+five unique assigned points.
+
+The report keeps the distinction between raw cost rank and support-aware selection rank. This
+matters because a cylinder can be cheapest under the raw weighted-volume surrogate while still
+being blocked from replacing a box because it was fit from only a tiny patch.
+
+This rule is not the CPD paper algorithm. It does not implement the paper's full objective,
+priority-queue collapse procedure, primitive vocabulary, or benchmark evaluation. It is a local
+diagnostic selection guard that makes the next fitting or clustering experiment easier to inspect.
 
 For a more detailed plain-language explanation of why this slice matters but does not prove native
 primitive value, see
@@ -349,6 +438,7 @@ USD assets
 -> paper-aligned surrogate objective report
 -> synthetic objective comparison
 -> focused cost-guided merge-search smoke using one objective term
+-> synthetic offline merge-step trace diagnostic accounting for the cost-guided fixture
 -> expected-failure workbench for known CPD-paper gaps
 -> opt-in capped-cylinder proxy objective report (offline only; not Newton-mapped)
 -> historical mapped collision package using Newton-supported primitives
@@ -357,17 +447,47 @@ USD assets
 -> synthetic native selection audit for toy primitive choices
 -> real-USD old/new native probe comparison for capped bed and capped Franka
 -> candidate-loss diagnosis and controlled cylinder-axis fitting smoke
+-> support-aware low-support native-extension admissibility guard
+-> synthetic cylinder near-miss fixture
+-> synthetic cylinder near-miss fit-ablation report
+-> synthetic cylinder near-miss scoring-sensitivity report
+-> synthetic cylinder near-miss report-only scoring-policy ablation
+-> synthetic cylinder scoring-policy guardrail on a clearly boxy cuboid
+-> synthetic offline opt-in scoring-policy selection probe
+-> explicitly opt-in synthetic package probe plus Newton shape-mapping summary only
+-> explicitly opt-in synthetic Newton contact/drop/sphere-rain task smokes
+-> synthetic controlled merge-search package-path probe plus Newton shape-mapping summary only
+-> synthetic controlled merge-search Newton contact/drop/sphere-rain task smokes
+-> synthetic two-step lookahead merge/search diagnostic accounting
+-> synthetic lookahead package-path probe plus Newton shape-mapping summary only
+-> synthetic lookahead Newton contact/drop/sphere-rain task smokes
+-> command-only four-block slice report linking the recorded lookahead evidence
 -> dated records
 ```
 
-The next paper-story position should be:
+The current paper-story position is now:
 
 ```text
 local USD mirrors or synthetic fixtures
 -> use current candidate-loss labels
--> one next controlled primitive-fitting or merge-search improvement
--> synthetic workbench rerun
--> bed/Franka rerun under full mapping, contact, and task gates
+-> direct cylinder near-miss fixture
+-> diagnostic fit-ablation report for containment-preserving cylinder fits
+-> diagnostic scoring-sensitivity report for the current surrogate
+-> report-only scoring-policy ablation for one synthetic near miss
+-> use the boxy guardrail to decide whether one later scoring, primitive-fitting, or merge-search
+   change is justified
+-> run a synthetic offline opt-in selection probe before any package or Newton task rerun
+-> run an explicitly opt-in synthetic package probe before any Newton contact or task rerun
+-> run an explicitly opt-in synthetic Newton diagnostic before any real-USD rerun
+-> use that synthetic evidence to justify one separate controlled merge/search behavior change
+-> synthetic package-path and mapping rerun for the behavior change
+-> synthetic Newton task probe for the behavior change, if the changed package maps fully and has
+   not already been task-smoked
+-> synthetic Newton task probe for the two-step lookahead package pair
+-> four-block status audit that identifies the missing workbench integration/report slice
+-> command-only four-block slice report for the recorded cost-guided lookahead synthetic slice
+-> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
+   package change is explicit
 ```
 
 ## Safe Current Wording
@@ -381,6 +501,7 @@ Use:
 - "paper-aligned surrogate objective report";
 - "synthetic objective comparison";
 - "focused CPD-like cost-guided merge-search smoke";
+- "synthetic offline merge-step trace diagnostic accounting";
 - "deterministic expected-failure synthetic workbench";
 - "expected limitation fixtures";
 - "opt-in offline capped-cylinder geometry proposal proxy";
@@ -390,6 +511,18 @@ Use:
 - "synthetic Newton-native primitive diagnostic smoke";
 - "controlled cylinder-axis fitting smoke";
 - "real-USD candidate-loss diagnosis";
+- "synthetic report-only scoring-policy ablation";
+- "counterfactual scoring-policy ablation over one synthetic fixture";
+- "synthetic report-only scoring-policy guardrail";
+- "counterfactual selectivity check over deterministic synthetic fixtures";
+- "synthetic offline opt-in scoring-policy selection probe";
+- "explicitly opt-in synthetic package probe";
+- "Newton shape-mapping summary";
+- "explicitly opt-in synthetic Newton diagnostic";
+- "named synthetic contact/drop/sphere-rain task smokes";
+- "synthetic controlled merge-search Newton task-smoke probe";
+- "synthetic two-step merge-search lookahead smoke";
+- "bounded diagnostic merge/search heuristic";
 - "real-USD native probe diagnostic smoke";
 - "capped bed and capped Franka first-mesh scope";
 - "paper-alignment offline lane";
@@ -408,22 +541,40 @@ Avoid:
 - "Newton supports capped cylinders";
 - "broad Newton-native primitive quality";
 - "CPD-like generator emits new native primitive kinds by default";
+- "Newton task checked" for package-probe-only reports;
+- "simulation-checked" for shape-mapping-only reports;
+- "synthetic task smoke proves collision quality";
 - "paper primitive vocabulary is runtime-supported";
 - "safe collider";
 - "validated robot collider."
 
 ## Recommended Next Slices
 
-The next slices should move toward primitive-selection usefulness without overclaiming:
+The immediate next slice should now make the algorithm itself more paper-aligned without adding
+stronger evaluation claims:
 
-1. Use the current candidate-loss diagnosis labels to pick one next fitting or merge-search target.
-2. Improve one controlled primitive-fitting or merge-search piece on synthetic fixtures first.
-3. Re-run capped bed/Franka only after the synthetic diagnostic explains a real selection change.
-4. Keep contact and task probes gated by full mapping and dated records.
+1. Pick one bounded paper-aligned objective, primitive-fitting, or merge/search gap from the
+   four-block report.
+2. Build it first on synthetic toy meshes with strict before/after accounting.
+3. Carry any changed synthetic package through mapping, contact, task, and dated-record gates
+   before considering real assets.
+4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
+   contact, task, and dated-record gates.
+5. Treat the four-block report as the review checklist, not as new benchmark or quality evidence.
 
 ## Claim Boundary
 
 This page adds narrow synthetic native-bundle, opt-in synthetic native-fitting, synthetic
-native-selection audit, and capped bed/Franka first-mesh real-USD diagnostic-smoke claims. It does
-not add benchmark, collision-quality, native primitive improvement, asset-wide, whole-robot, or
-paper-scope reproduction claims.
+native-selection audit, synthetic cylinder near-miss fixture, fit-ablation, scoring-sensitivity,
+report-only scoring-policy ablation, report-only scoring-policy guardrail, synthetic offline
+opt-in scoring-policy selection probe, explicitly opt-in synthetic package probe, synthetic
+controlled merge-search package-path probe, and capped bed/Franka first-mesh real-USD
+diagnostic-smoke claims. It also adds narrow explicitly opt-in synthetic Newton task-smoke claims
+for the changed near-miss package pair and the changed controlled merge/search package pair, plus
+a narrow offline synthetic two-step lookahead merge/search accounting claim, a narrow
+lookahead-changed package-pair synthetic Newton task-smoke claim under recorded settings, and a
+command-only four-block evidence-map claim for the recorded lookahead slice. It does not add
+benchmark, collision-quality, native
+primitive improvement, asset-wide, whole-robot, scoring-policy improvement, merge-policy
+superiority, package-path evidence for the offline lookahead report, Newton contact/task evidence
+for package-probe-only records, or paper-scope reproduction claims.

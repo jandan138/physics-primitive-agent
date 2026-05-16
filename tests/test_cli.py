@@ -578,6 +578,7 @@ def test_cli_run_cpd_like_accepts_cost_guided_merge_search_policy(tmp_path, caps
                 "  max_source_faces: 8",
                 "  component_merge: virtual_pairwise",
                 "  merge_search_policy: cost_guided_pairwise",
+                "  report_merge_trace: steps",
             ]
         ),
         encoding="utf-8",
@@ -591,6 +592,54 @@ def test_cli_run_cpd_like_accepts_cost_guided_merge_search_policy(tmp_path, caps
     assert payload["merge_search_policy"] == "cost_guided_pairwise"
     assert payload["topology_merge_count"] == 0
     assert payload["virtual_component_merge_count"] == 1
+    assert payload["merge_trace"][0]["decision"] == "accepted"
+    assert payload["merge_trace"][0]["merge_kind"] == "virtual_component"
+
+
+def test_cli_run_cpd_like_summary_merge_trace_omits_trace_key(tmp_path, capsys):
+    asset_path = tmp_path / "cost_guided_pair_choice.usda"
+    _write_mesh_usd(
+        asset_path,
+        [
+            (0.0, 0.0, 0.0),
+            (1.0, 0.0, 0.0),
+            (0.0, 1.0, 0.0),
+            (10.0, 10.0, 10.0),
+            (0.05, 0.05, 0.05),
+            (1.05, 0.05, 0.05),
+            (0.05, 1.05, 0.05),
+        ],
+        [3, 3, 3],
+        [0, 1, 2, 1, 2, 3, 4, 5, 6],
+    )
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: cost_guided_pair_choice",
+                f"  path: {asset_path}",
+                "task:",
+                "  primary: collision_proxy_diagnostic",
+                "compile:",
+                "  method: cpd_like_baseline",
+                "  max_primitives: 2",
+                "cpd_like:",
+                "  primitive_subset:",
+                "    - box",
+                "  max_source_faces: 8",
+                "  component_merge: virtual_pairwise",
+                "  merge_search_policy: cost_guided_pairwise",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert cli.main(["--config", str(config_path), "--run-cpd-like"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["merge_search_policy"] == "cost_guided_pairwise"
+    assert "merge_trace" not in payload
 
 
 def test_cli_run_cpd_like_objective_report_emits_json_for_tiny_usd(tmp_path, capsys):
@@ -1034,7 +1083,7 @@ def test_cli_run_newton_native_fitting_comparison_emits_json_without_config(caps
     assert payload["status"] == "smoke_passed"
     assert payload["cases"][0]["native"]["selected_primitive_kind"] == "cylinder"
     assert payload["cases"][0]["native"]["selection_policy"] == (
-        "min_weighted_volume_surrogate_v0"
+        "support_aware_min_weighted_volume_surrogate_v1"
     )
     assert payload["cases"][0]["native"]["candidate_audit"][0]["primitive_type"] == "cylinder"
     assert payload["cases"][0]["native"]["candidate_audit"][0]["selected"] is True
@@ -1187,6 +1236,1334 @@ def test_cli_run_real_usd_candidate_loss_diagnosis_emits_json(
     payload = json.loads(capsys.readouterr().out)
     assert payload["stage"] == "cpd_like_real_usd_candidate_loss_diagnosis"
     assert payload["status"] == "smoke_passed"
+
+
+def test_cli_run_cpd_like_near_miss_workbench_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-near-miss-workbench"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["stage"] == "cpd_like_near_miss_fixture_workbench"
+    assert payload["status"] == "smoke_passed"
+    assert payload["cases"][0]["case_id"] == "cylinder_near_miss_cluster"
+    assert payload["cases"][0]["best_extension_candidate"]["primitive_type"] == "cylinder"
+
+
+def test_cli_run_cpd_like_cylinder_near_miss_fit_ablation_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-cylinder-near-miss-fit-ablation"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["stage"] == "cpd_like_cylinder_near_miss_fit_ablation"
+    assert payload["status"] == "smoke_passed"
+    assert payload["cases"][0]["case_id"] == "cylinder_near_miss_cluster"
+    assert payload["cases"][0]["ablation"]["lower_bound_volume_beats_selected"] is False
+    assert payload["cases"][0]["decision"]["recommended_next_component"] == (
+        "scoring_or_merge_search_not_radial_center_refinement"
+    )
+
+
+def test_cli_run_cpd_like_cylinder_near_miss_fit_ablation_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cylinder_near_miss_fit_ablation_report",
+        lambda: {
+            "stage": "cpd_like_cylinder_near_miss_fit_ablation",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cylinder-near-miss-fit-ablation"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_cylinder_near_miss_scoring_sensitivity_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-cylinder-near-miss-scoring-sensitivity"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["stage"] == "cpd_like_cylinder_near_miss_scoring_sensitivity"
+    assert payload["status"] == "smoke_passed"
+    assert payload["cases"][0]["case_id"] == "cylinder_near_miss_cluster"
+    assert (
+        0.0
+        < payload["cases"][0]["scoring_sensitivity"]["extension_score_multiplier_to_tie"]
+        < 1.0
+    )
+    assert payload["cases"][0]["decision"]["newton_task_comparison_triggered"] is False
+
+
+def test_cli_run_cpd_like_cylinder_near_miss_scoring_sensitivity_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cylinder_near_miss_scoring_sensitivity_report",
+        lambda: {
+            "stage": "cpd_like_cylinder_near_miss_scoring_sensitivity",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cylinder-near-miss-scoring-sensitivity"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_cylinder_near_miss_scoring_policy_ablation_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-cylinder-near-miss-scoring-policy-ablation"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["stage"] == "cpd_like_cylinder_near_miss_scoring_policy_ablation"
+    assert payload["status"] == "smoke_passed"
+    cases = {case["case_id"]: case for case in payload["cases"]}
+    assert set(cases) == {"cylinder_near_miss_cluster", "boxy_cuboid_guardrail"}
+    assert cases["cylinder_near_miss_cluster"]["default_selected_primitive_type"] == "box"
+    assert (
+        cases["cylinder_near_miss_cluster"]["counterfactual_selected_primitive_type"]
+        == "cylinder"
+    )
+    assert cases["boxy_cuboid_guardrail"]["default_selected_primitive_type"] == "box"
+    assert cases["boxy_cuboid_guardrail"]["counterfactual_selected_primitive_type"] == "box"
+    assert (
+        cases["cylinder_near_miss_cluster"]["selection_policy_applied_to_default_pipeline"]
+        is False
+    )
+
+
+def test_cli_run_cpd_like_cylinder_near_miss_scoring_policy_ablation_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cylinder_near_miss_scoring_policy_ablation_report",
+        lambda: {
+            "stage": "cpd_like_cylinder_near_miss_scoring_policy_ablation",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cylinder-near-miss-scoring-policy-ablation"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_selection_probe_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-cylinder-scoring-policy-selection-probe"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    cases = {case["case_id"]: case for case in payload["cases"]}
+
+    assert payload["stage"] == "cpd_like_cylinder_scoring_policy_selection_probe"
+    assert payload["status"] == "smoke_passed"
+    assert cases["cylinder_near_miss_cluster"]["default_selected_primitive_type"] == "box"
+    assert cases["cylinder_near_miss_cluster"]["opt_in_selected_primitive_type"] == "cylinder"
+    assert cases["boxy_cuboid_guardrail"]["default_selected_primitive_type"] == "box"
+    assert cases["boxy_cuboid_guardrail"]["opt_in_selected_primitive_type"] == "box"
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_selection_probe_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cylinder_scoring_policy_selection_probe_report",
+        lambda: {
+            "stage": "cpd_like_cylinder_scoring_policy_selection_probe",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cylinder-scoring-policy-selection-probe"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_package_probe_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-cylinder-scoring-policy-package-probe"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    cases = {case["case_id"]: case for case in payload["cases"]}
+
+    assert payload["stage"] == "cpd_like_cylinder_scoring_policy_package_probe"
+    assert payload["status"] == "smoke_passed"
+    assert cases["cylinder_near_miss_cluster"]["default_package"]["primitive_kinds"] == ["box"]
+    assert cases["cylinder_near_miss_cluster"]["opt_in_package"]["primitive_kinds"] == [
+        "cylinder"
+    ]
+    assert cases["cylinder_near_miss_cluster"]["opt_in_package_mapping"]["fully_mapped"] is True
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_package_probe_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cylinder_scoring_policy_package_probe_report",
+        lambda: {
+            "stage": "cpd_like_cylinder_scoring_policy_package_probe",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cylinder-scoring-policy-package-probe"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_controlled_merge_search_package_probe_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-controlled-merge-search-package-probe"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    cases = {case["case_id"]: case for case in payload["cases"]}
+
+    assert payload["stage"] == "cpd_like_controlled_merge_search_package_probe"
+    assert payload["status"] == "smoke_passed"
+    assert cases["cost_guided_pair_choice"]["opt_in_package_changed"] is True
+    assert cases["cost_guided_pair_choice"]["opt_in_package_mapping"]["fully_mapped"] is True
+
+
+def test_cli_run_cpd_like_controlled_merge_search_package_probe_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_controlled_merge_search_package_probe_report",
+        lambda: {
+            "stage": "cpd_like_controlled_merge_search_package_probe",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-controlled-merge-search-package-probe"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_controlled_merge_search_package_probe_rejects_nonfinite_json(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_controlled_merge_search_package_probe_report",
+        lambda: {
+            "stage": "cpd_like_controlled_merge_search_package_probe",
+            "status": "smoke_passed",
+            "nonfinite": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-controlled-merge-search-package-probe"]) == 2
+
+    stderr = capsys.readouterr().err
+    assert "contains non-finite JSON values" in stderr
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_merge_report_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-cost-guided-lookahead-merge-report"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    case = payload["cases"][0]
+
+    assert payload["stage"] == "cpd_like_cost_guided_lookahead_merge_report"
+    assert payload["status"] == "smoke_passed"
+    assert case["case_id"] == "lookahead_merge_trap"
+    assert case["decision"]["lookahead_decision_changed"] is True
+    assert case["decision"]["newton_task_comparison_triggered"] is False
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_merge_report_rejects_nonfinite_json(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cost_guided_lookahead_merge_report",
+        lambda: {
+            "stage": "cpd_like_cost_guided_lookahead_merge_report",
+            "status": "smoke_passed",
+            "nonfinite": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cost-guided-lookahead-merge-report"]) == 2
+
+    stderr = capsys.readouterr().err
+    assert "cpd_like_cost_guided_lookahead_merge_report" in stderr
+    assert "contains non-finite JSON values" in stderr
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_package_probe_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-cost-guided-lookahead-package-probe"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    case = payload["cases"][0]
+
+    assert payload["stage"] == "cpd_like_cost_guided_lookahead_package_probe"
+    assert payload["status"] == "smoke_passed"
+    assert case["case_id"] == "lookahead_merge_trap"
+    assert case["package_pair_changed"] is True
+    assert case["lookahead_package_mapping"]["fully_mapped"] is True
+    assert case["decision"]["newton_task_comparison_triggered"] is False
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_package_probe_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cost_guided_lookahead_package_probe_report",
+        lambda: {
+            "stage": "cpd_like_cost_guided_lookahead_package_probe",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cost-guided-lookahead-package-probe"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_package_probe_rejects_nonfinite_json(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cost_guided_lookahead_package_probe_report",
+        lambda: {
+            "stage": "cpd_like_cost_guided_lookahead_package_probe",
+            "status": "smoke_passed",
+            "nonfinite": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-cost-guided-lookahead-package-probe"]) == 2
+
+    stderr = capsys.readouterr().err
+    assert "cpd_like_cost_guided_lookahead_package_probe" in stderr
+    assert "contains non-finite JSON values" in stderr
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_requires_config(capsys):
+    assert cli.main(["--run-cpd-like-cost-guided-lookahead-newton-probe"]) == 2
+
+    assert (
+        "--run-cpd-like-cost-guided-lookahead-newton-probe requires --config"
+        in capsys.readouterr().err
+    )
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_requires_source_dir(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://lookahead_merge_trap",
+                "task:",
+                "  primary: synthetic_cost_guided_lookahead_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cost_guided_lookahead_newton_probe",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cost-guided-lookahead-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "dependency_gap"
+    assert "newton.source_dir" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_rejects_wrong_fixture(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cost_guided_pair_choice",
+                "task:",
+                "  primary: synthetic_cost_guided_lookahead_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cost_guided_lookahead_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cost-guided-lookahead-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "synthetic://lookahead_merge_trap" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_rejects_wrong_task(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://lookahead_merge_trap",
+                "task:",
+                "  primary: synthetic_controlled_merge_search_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cost_guided_lookahead_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cost-guided-lookahead-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "synthetic_cost_guided_lookahead_newton_probe" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_rejects_missing_verify(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://lookahead_merge_trap",
+                "task:",
+                "  primary: synthetic_cost_guided_lookahead_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cost_guided_lookahead_package_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cost-guided-lookahead-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "compile.verify" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_emits_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: cost_guided_lookahead_newton_probe",
+                "  path: synthetic://lookahead_merge_trap",
+                "task:",
+                "  primary: synthetic_cost_guided_lookahead_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cost_guided_lookahead_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  device: cpu",
+                "  synthetic_newton_probe_claim_boundary: custom_probe_boundary",
+                "  contact_claim_boundary: custom_contact_boundary",
+                "  claim_boundary: custom_task_boundary",
+                "  drop_settle:",
+                "    frames: 12",
+                "  sphere_rain:",
+                "    sphere_count_x: 2",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_report(**kwargs):
+        assert kwargs["source_dir"] == str(tmp_path / "newton")
+        assert kwargs["device"] == "cpu"
+        assert kwargs["drop_settle_options"].frames == 12
+        assert kwargs["sphere_rain_options"].sphere_count_x == 2
+        assert kwargs["claim_boundary"] == "custom_probe_boundary"
+        assert kwargs["contact_claim_boundary"] == "custom_contact_boundary"
+        assert kwargs["task_claim_boundary"] == "custom_task_boundary"
+        return {
+            "stage": "cpd_like_cost_guided_lookahead_newton_probe",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cost_guided_lookahead_newton_probe_report",
+        fake_report,
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cost-guided-lookahead-newton-probe",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_cost_guided_lookahead_newton_probe"
+    assert payload["status"] == "smoke_passed"
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_rejects_nonfinite_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://lookahead_merge_trap",
+                "task:",
+                "  primary: synthetic_cost_guided_lookahead_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cost_guided_lookahead_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cost_guided_lookahead_newton_probe_report",
+        lambda **kwargs: {
+            "stage": "cpd_like_cost_guided_lookahead_newton_probe",
+            "status": "smoke_passed",
+            "nonfinite": float("nan"),
+        },
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cost-guided-lookahead-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    assert "contains non-finite JSON values" in capsys.readouterr().err
+
+
+def test_cli_run_cpd_like_cost_guided_lookahead_newton_probe_returns_nonzero_for_partial(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://lookahead_merge_trap",
+                "task:",
+                "  primary: synthetic_cost_guided_lookahead_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cost_guided_lookahead_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cost_guided_lookahead_newton_probe_report",
+        lambda **kwargs: {
+            "stage": "cpd_like_cost_guided_lookahead_newton_probe",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cost-guided-lookahead-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_four_block_slice_report_emits_json(capsys):
+    assert cli.main(["--run-cpd-like-four-block-slice-report"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_four_block_slice_report"
+    assert payload["status"] == "smoke_passed"
+    assert payload["slice_id"] == "cost_guided_lookahead"
+    assert "greedy_contact" not in json.dumps(payload)
+
+
+def test_cli_run_cpd_like_four_block_slice_report_does_not_call_runtime_helpers(
+    monkeypatch,
+    capsys,
+):
+    def unexpected_call(*args, **kwargs):
+        raise AssertionError("four-block CLI must only emit the record-map report")
+
+    for helper_name in (
+        "decompose_mesh",
+        "load_first_mesh",
+        "package_from_cpd_like_report",
+        "run_newton_contact_smoke",
+        "run_newton_drop_settle",
+        "run_newton_sphere_rain",
+        "build_cpd_like_cost_guided_lookahead_merge_report",
+        "build_cpd_like_cost_guided_lookahead_package_probe_report",
+        "build_cpd_like_cost_guided_lookahead_newton_probe_report",
+    ):
+        monkeypatch.setattr(cli, helper_name, unexpected_call)
+
+    assert cli.main(["--run-cpd-like-four-block-slice-report"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_four_block_slice_report"
+    assert payload["status"] == "smoke_passed"
+
+
+def test_cli_run_cpd_like_four_block_slice_report_returns_nonzero_for_partial(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_four_block_slice_report",
+        lambda: {
+            "stage": "cpd_like_four_block_slice_report",
+            "status": "partial",
+            "slice_id": "cost_guided_lookahead",
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-four-block-slice-report"]) == 2
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_four_block_slice_report_rejects_nonfinite_json(
+    monkeypatch,
+    capsys,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_four_block_slice_report",
+        lambda: {
+            "stage": "cpd_like_four_block_slice_report",
+            "status": "smoke_passed",
+            "nonfinite": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-like-four-block-slice-report"]) == 2
+
+    stderr = capsys.readouterr().err
+    assert "cpd_like_four_block_slice_report" in stderr
+    assert "contains non-finite JSON values" in stderr
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_newton_probe_requires_config(capsys):
+    assert cli.main(["--run-cpd-like-cylinder-scoring-policy-newton-probe"]) == 2
+
+    assert (
+        "--run-cpd-like-cylinder-scoring-policy-newton-probe requires --config"
+        in capsys.readouterr().err
+    )
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_newton_probe_requires_source_dir(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cylinder_near_miss_cluster",
+                "task:",
+                "  primary: synthetic_cylinder_scoring_policy_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cylinder_scoring_policy_newton_probe",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cylinder-scoring-policy-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "dependency_gap"
+    assert "newton.source_dir" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_newton_probe_rejects_wrong_fixture(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: assets/bed.usd",
+                "task:",
+                "  primary: real_usd_native_task_comparison",
+                "compile:",
+                "  verify:",
+                "    - newton_real_usd_native_task_comparison",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cylinder-scoring-policy-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "synthetic://cylinder_near_miss_cluster" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_newton_probe_rejects_wrong_task(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cylinder_near_miss_cluster",
+                "task:",
+                "  primary: real_usd_native_task_comparison",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cylinder_scoring_policy_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cylinder-scoring-policy-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "synthetic_cylinder_scoring_policy_newton_probe" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_newton_probe_rejects_missing_verify(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cylinder_near_miss_cluster",
+                "task:",
+                "  primary: synthetic_cylinder_scoring_policy_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - newton_real_usd_native_task_comparison",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cylinder-scoring-policy-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "compile.verify" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_newton_probe_emits_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: synthetic_newton_probe",
+                "  path: synthetic://cylinder_near_miss_cluster",
+                "task:",
+                "  primary: synthetic_cylinder_scoring_policy_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cylinder_scoring_policy_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  device: cpu",
+                "  synthetic_newton_probe_claim_boundary: custom_synthetic_probe_boundary",
+                "  contact_claim_boundary: custom_contact_boundary",
+                "  claim_boundary: custom_task_boundary",
+                "  drop_settle:",
+                "    frames: 12",
+                "  sphere_rain:",
+                "    sphere_count_x: 2",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_report(**kwargs):
+        assert kwargs["source_dir"] == str(tmp_path / "newton")
+        assert kwargs["device"] == "cpu"
+        assert kwargs["drop_settle_options"].frames == 12
+        assert kwargs["sphere_rain_options"].sphere_count_x == 2
+        assert kwargs["claim_boundary"] == "custom_synthetic_probe_boundary"
+        assert kwargs["contact_claim_boundary"] == "custom_contact_boundary"
+        assert kwargs["task_claim_boundary"] == "custom_task_boundary"
+        return {
+            "stage": "cpd_like_cylinder_scoring_policy_newton_probe",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cylinder_scoring_policy_newton_probe_report",
+        fake_report,
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cylinder-scoring-policy-newton-probe",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_cylinder_scoring_policy_newton_probe"
+    assert payload["status"] == "smoke_passed"
+
+
+def test_cli_run_cpd_like_cylinder_scoring_policy_newton_probe_returns_nonzero_for_partial(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cylinder_near_miss_cluster",
+                "task:",
+                "  primary: synthetic_cylinder_scoring_policy_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_cylinder_scoring_policy_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_cylinder_scoring_policy_newton_probe_report",
+        lambda **kwargs: {
+            "stage": "cpd_like_cylinder_scoring_policy_newton_probe",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-cylinder-scoring-policy-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_requires_config(capsys):
+    assert cli.main(["--run-cpd-like-controlled-merge-search-newton-probe"]) == 2
+
+    assert (
+        "--run-cpd-like-controlled-merge-search-newton-probe requires --config"
+        in capsys.readouterr().err
+    )
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_requires_source_dir(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cost_guided_pair_choice",
+                "task:",
+                "  primary: synthetic_controlled_merge_search_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_controlled_merge_search_newton_probe",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-controlled-merge-search-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "dependency_gap"
+    assert "newton.source_dir" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_rejects_wrong_fixture(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: assets/bed.usd",
+                "task:",
+                "  primary: synthetic_controlled_merge_search_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_controlled_merge_search_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-controlled-merge-search-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "synthetic://cost_guided_pair_choice" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_rejects_wrong_task(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cost_guided_pair_choice",
+                "task:",
+                "  primary: synthetic_cylinder_scoring_policy_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_controlled_merge_search_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-controlled-merge-search-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "synthetic_controlled_merge_search_newton_probe" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_rejects_missing_verify(
+    tmp_path,
+    capsys,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cost_guided_pair_choice",
+                "task:",
+                "  primary: synthetic_controlled_merge_search_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_controlled_merge_search_package_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-controlled-merge-search-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "config_error"
+    assert "compile.verify" in payload["fallback_reason"]
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_emits_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: controlled_merge_search_newton_probe",
+                "  path: synthetic://cost_guided_pair_choice",
+                "task:",
+                "  primary: synthetic_controlled_merge_search_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_controlled_merge_search_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+                "newton_diagnostic:",
+                "  device: cpu",
+                "  synthetic_newton_probe_claim_boundary: custom_probe_boundary",
+                "  contact_claim_boundary: custom_contact_boundary",
+                "  claim_boundary: custom_task_boundary",
+                "  drop_settle:",
+                "    frames: 12",
+                "  sphere_rain:",
+                "    sphere_count_x: 2",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_report(**kwargs):
+        assert kwargs["source_dir"] == str(tmp_path / "newton")
+        assert kwargs["device"] == "cpu"
+        assert kwargs["drop_settle_options"].frames == 12
+        assert kwargs["sphere_rain_options"].sphere_count_x == 2
+        assert kwargs["claim_boundary"] == "custom_probe_boundary"
+        assert kwargs["contact_claim_boundary"] == "custom_contact_boundary"
+        assert kwargs["task_claim_boundary"] == "custom_task_boundary"
+        return {
+            "stage": "cpd_like_controlled_merge_search_newton_probe",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_controlled_merge_search_newton_probe_report",
+        fake_report,
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-controlled-merge-search-newton-probe",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "cpd_like_controlled_merge_search_newton_probe"
+    assert payload["status"] == "smoke_passed"
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_rejects_nonfinite_json(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cost_guided_pair_choice",
+                "task:",
+                "  primary: synthetic_controlled_merge_search_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_controlled_merge_search_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_controlled_merge_search_newton_probe_report",
+        lambda **kwargs: {
+            "stage": "cpd_like_controlled_merge_search_newton_probe",
+            "status": "smoke_passed",
+            "nonfinite": float("nan"),
+        },
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-controlled-merge-search-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    assert "contains non-finite JSON values" in capsys.readouterr().err
+
+
+def test_cli_run_cpd_like_controlled_merge_search_newton_probe_returns_nonzero_for_partial(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "config.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  path: synthetic://cost_guided_pair_choice",
+                "task:",
+                "  primary: synthetic_controlled_merge_search_newton_probe",
+                "compile:",
+                "  verify:",
+                "    - cpd_like_controlled_merge_search_newton_probe",
+                "newton:",
+                f"  source_dir: {tmp_path / 'newton'}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_like_controlled_merge_search_newton_probe_report",
+        lambda **kwargs: {
+            "stage": "cpd_like_controlled_merge_search_newton_probe",
+            "status": "partial",
+            "cases": [],
+        },
+    )
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-cpd-like-controlled-merge-search-newton-probe",
+            ]
+        )
+        == 2
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "partial"
 
 
 def test_cli_run_real_usd_candidate_loss_diagnosis_reads_custom_metadata(

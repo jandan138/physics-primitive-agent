@@ -62,14 +62,17 @@ box, sphere, capsule, cylinder, cone, ellipsoid
 ```
 
 The native lane is allowed to choose the extra Newton-native primitive kinds. After the controlled
-cylinder-axis fitting update, bed still selects only `box` primitives in both lanes, while capped
-Franka's native lane selects `29` boxes plus `3` cylinders under the current surrogate.
+cylinder-axis fitting update, bed still selected only `box` primitives in both lanes, while capped
+Franka's native lane selected `29` boxes plus `3` cylinders under the raw surrogate. The follow-up
+support-aware admissibility rule now blocks those three low-support raw-cost cylinder wins, so the
+current capped Franka native lane selects `32` boxes and reports the blocked cylinders in
+candidate-loss diagnosis.
 
 That result matters because it keeps the interpretation honest:
 
 ```text
 what passed: real-USD diagnostic pipeline
-what changed: capped Franka native-lane primitive selection under a surrogate
+what changed: capped Franka native-lane primitive selection and support-aware accounting under a surrogate
 what did not happen: collision-quality validation or whole-robot collider-quality validation
 ```
 
@@ -151,8 +154,9 @@ The missing paper-reproduction work is still substantial:
 - the paper's full primitive vocabulary is not implemented in the runtime path;
 - the paper's full objective and optimizer are not implemented;
 - the current native fitter is still simple and local;
-- bed still does not exercise extra native primitive kinds; capped Franka now exercises
-  `cylinder` under the surrogate, without collision-quality evidence;
+- bed and capped Franka do not select extra native primitive kinds in the current support-aware
+  run; capped Franka only reports three cheaper raw-cost `cylinder` candidates as support-blocked
+  diagnostic accounting;
 - there is no benchmark or collision-quality comparison.
 
 ## How To Read The Latest Result

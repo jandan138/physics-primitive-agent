@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from math import pi
+from typing import Iterable, Mapping
 
 import numpy as np
 from numpy.typing import NDArray
@@ -21,6 +22,9 @@ PAPER_SCOPE_PRIMITIVES = ("capped_cylinder", "frustum", "trapezoidal_prism")
 UNSUPPORTED_PAPER_PRIMITIVES = PAPER_SCOPE_PRIMITIVES
 MIN_DIMENSION = 1e-6
 CONTAINMENT_TOLERANCE = 1e-8
+SUPPORT_AWARE_EXTENSION_PRIMITIVES = ("cylinder", "cone", "ellipsoid")
+SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES = 3
+SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS = 5
 
 
 @dataclass(frozen=True)
@@ -54,14 +58,101 @@ class PrimitiveFit:
         }
 
 
+@dataclass(frozen=True)
+class PrimitiveCandidateSelection:
+    candidate: PrimitiveFit
+    candidate_order: int
+    raw_cost_rank: int
+    selection_admissible: bool
+    selection_admissibility_reason: str
+    support: dict[str, object]
+    score_multiplier: float = 1.0
+    effective_score: float = 0.0
+
+    @property
+    def primitive_type(self) -> str:
+        return self.candidate.primitive_type
+
+
 def fit_best_primitive(
     mesh: TriangleMesh,
     face_ids: frozenset[int],
     primitive_subset: tuple[str, ...],
+    *,
+    primitive_score_multipliers: Mapping[str, float] | None = None,
 ) -> PrimitiveFit:
     candidates = fit_primitive_candidates(mesh, face_ids, primitive_subset)
-    best = min(enumerate(candidates), key=lambda item: (item[1].weighted_volume, item[0]))[1]
-    return best
+    ranked = rank_primitive_candidates_for_selection(
+        mesh,
+        face_ids,
+        candidates,
+        primitive_score_multipliers=primitive_score_multipliers,
+    )
+    return ranked[0].candidate
+
+
+def rank_primitive_candidates_for_selection(
+    mesh: TriangleMesh,
+    face_ids: frozenset[int],
+    candidates: Iterable[PrimitiveFit],
+    *,
+    primitive_score_multipliers: Mapping[str, float] | None = None,
+) -> tuple[PrimitiveCandidateSelection, ...]:
+    candidate_tuple = tuple(candidates)
+    if not candidate_tuple:
+        raise ValueError("candidates must not be empty")
+    multipliers = _validated_score_multipliers(primitive_score_multipliers)
+
+    support = _selection_support(mesh, face_ids)
+    fallback_available = any(
+        candidate.primitive_type not in SUPPORT_AWARE_EXTENSION_PRIMITIVES
+        for candidate in candidate_tuple
+    )
+    raw_cost_ranks = {
+        candidate_order: rank
+        for rank, (_, candidate_order) in enumerate(
+            sorted(
+                (candidate.weighted_volume, candidate_order)
+                for candidate_order, candidate in enumerate(candidate_tuple)
+            ),
+            start=1,
+        )
+    }
+    rows = tuple(
+        _candidate_selection_row(
+            candidate,
+            candidate_order=candidate_order,
+            raw_cost_rank=raw_cost_ranks[candidate_order],
+            support=support,
+            fallback_available=fallback_available,
+            primitive_score_multipliers=multipliers,
+        )
+        for candidate_order, candidate in enumerate(candidate_tuple)
+    )
+    return tuple(
+        sorted(
+            rows,
+            key=lambda row: (
+                not row.selection_admissible,
+                row.effective_score,
+                row.candidate_order,
+            ),
+        )
+    )
+
+
+def _validated_score_multipliers(
+    primitive_score_multipliers: Mapping[str, float] | None,
+) -> dict[str, float]:
+    if primitive_score_multipliers is None:
+        return {}
+    multipliers: dict[str, float] = {}
+    for primitive_type, multiplier in primitive_score_multipliers.items():
+        value = float(multiplier)
+        if not np.isfinite(value) or value <= 0.0:
+            raise ValueError("primitive score multipliers must be finite and positive")
+        multipliers[str(primitive_type)] = value
+    return multipliers
 
 
 def fit_primitive_candidates(
@@ -87,6 +178,65 @@ def fit_primitive_candidates(
         )
         for primitive in supported_requested
     )
+
+
+def _selection_support(mesh: TriangleMesh, face_ids: frozenset[int]) -> dict[str, object]:
+    unique_point_indices = {
+        int(point_index)
+        for face_id in face_ids
+        for point_index in mesh.faces[int(face_id)]
+    }
+    return {
+        "source_face_count": len(face_ids),
+        "unique_point_count": len(unique_point_indices),
+        "min_extension_source_faces": SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES,
+        "min_extension_unique_points": SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS,
+    }
+
+
+def _candidate_selection_row(
+    candidate: PrimitiveFit,
+    *,
+    candidate_order: int,
+    raw_cost_rank: int,
+    support: dict[str, object],
+    fallback_available: bool,
+    primitive_score_multipliers: Mapping[str, float],
+) -> PrimitiveCandidateSelection:
+    reason = _candidate_selection_admissibility_reason(
+        candidate,
+        support=support,
+        fallback_available=fallback_available,
+    )
+    score_multiplier = float(primitive_score_multipliers.get(candidate.primitive_type, 1.0))
+    return PrimitiveCandidateSelection(
+        candidate=candidate,
+        candidate_order=candidate_order,
+        raw_cost_rank=raw_cost_rank,
+        selection_admissible=reason != "insufficient_extension_support",
+        selection_admissibility_reason=reason,
+        support=support,
+        score_multiplier=score_multiplier,
+        effective_score=float(candidate.weighted_volume * score_multiplier),
+    )
+
+
+def _candidate_selection_admissibility_reason(
+    candidate: PrimitiveFit,
+    *,
+    support: dict[str, object],
+    fallback_available: bool,
+) -> str:
+    if candidate.primitive_type not in SUPPORT_AWARE_EXTENSION_PRIMITIVES:
+        return "legacy_or_non_extension_primitive"
+    if not fallback_available:
+        return "no_fallback_candidate_available"
+    if (
+        int(support["source_face_count"]) < SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES
+        or int(support["unique_point_count"]) < SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS
+    ):
+        return "insufficient_extension_support"
+    return "support_thresholds_met"
 
 
 def _fit_primitive(

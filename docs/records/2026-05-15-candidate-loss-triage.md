@@ -8,6 +8,14 @@
 
 Complete
 
+## Supersession Note
+
+This record captures the pre-support-aware triage where capped Franka had three low-support
+`cylinder` selections. Current status is superseded by
+[2026-05-15 Low-Support Native Extension Admissibility](2026-05-15-low-support-native-extension-admissibility.md),
+where those cases are reported as cheaper raw-cost cylinders blocked by support admissibility.
+This supersession does not add collision-quality evidence.
+
 ## Changes
 
 - Added a `triage` block to `cpd_like_real_usd_candidate_loss_diagnosis`.
@@ -39,9 +47,10 @@ Complete
 
 - Current capped bed triage reports one `cylinder` near-miss target, where the best cylinder is
   about `13%` more expensive than the selected box under the current surrogate.
-- Current capped Franka triage reports three low-support `cylinder` selections, each with two
-  source faces and four points.
-- Current capped Franka triage also reports three `cylinder` near-miss box-selected clusters.
+- At this record's time, capped Franka triage reported three low-support `cylinder` selections,
+  each with two source faces and four points.
+- At this record's time, capped Franka triage also reported three `cylinder` near-miss
+  box-selected clusters.
 
 ## Claim Impact
 

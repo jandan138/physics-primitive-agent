@@ -135,9 +135,10 @@ Completed. The report answers:
 - Did any primitive produce a Newton mapping gap?
 - Did the old or native path add new failure labels?
 
-After the controlled cylinder-axis fitting update, the native path still selects boxes for bed but
-selects `3` cylinders for capped Franka. This is useful selection/accounting evidence, but it is
-not native primitive quality or collision-quality improvement evidence.
+After the support-aware admissibility update, the native path still selects boxes for bed and
+capped Franka. Three capped Franka raw-cost cylinder candidates are now reported as
+support-blocked. This is useful selection/accounting evidence, but it is not native primitive
+quality or collision-quality improvement evidence.
 
 ### Step 3: Decide Whether Contact Canary Is Allowed
 

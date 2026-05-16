@@ -180,6 +180,66 @@ def test_cpd_like_component_merge_gate_config_is_opt_in_and_claim_bounded():
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
 
 
+def test_cylinder_scoring_policy_newton_probe_config_is_synthetic_and_claim_bounded():
+    config_path = Path("configs/experiments/cylinder_scoring_policy_newton_probe.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "cylinder_scoring_policy_newton_probe"
+    assert config.asset_path == "synthetic://cylinder_near_miss_cluster"
+    assert config.task == "synthetic_cylinder_scoring_policy_newton_probe"
+    assert config.max_primitives == 1
+    assert config.verify == ("cpd_like_cylinder_scoring_policy_newton_probe",)
+    assert config.protocol["newton"]["source_dir"] == "$NEWTON_SOURCE_DIR"
+    assert config.protocol["newton_diagnostic"]["device"] == "cpu"
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "synthetic_cylinder_scoring_policy_task_smoke_not_collision_quality_or_safety"
+    )
+    assert config.protocol["report"]["evidence_level"] == (
+        "synthetic_cylinder_scoring_policy_contact_gated_task_smoke"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_controlled_merge_search_newton_probe_config_is_synthetic_and_claim_bounded():
+    config_path = Path("configs/experiments/controlled_merge_search_newton_probe.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "controlled_merge_search_newton_probe"
+    assert config.asset_path == "synthetic://cost_guided_pair_choice"
+    assert config.task == "synthetic_controlled_merge_search_newton_probe"
+    assert config.max_primitives == 2
+    assert config.verify == ("cpd_like_controlled_merge_search_newton_probe",)
+    assert config.protocol["newton"]["source_dir"] == "$NEWTON_SOURCE_DIR"
+    assert config.protocol["newton_diagnostic"]["device"] == "cpu"
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "synthetic_controlled_merge_search_task_smoke_not_collision_quality_or_merge_superiority"
+    )
+    assert config.protocol["report"]["evidence_level"] == (
+        "synthetic_controlled_merge_search_contact_gated_task_smoke"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_cost_guided_lookahead_newton_probe_config_is_synthetic_and_claim_bounded():
+    config_path = Path("configs/experiments/cost_guided_lookahead_newton_probe.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "cost_guided_lookahead_newton_probe"
+    assert config.asset_path == "synthetic://lookahead_merge_trap"
+    assert config.task == "synthetic_cost_guided_lookahead_newton_probe"
+    assert config.max_primitives == 2
+    assert config.verify == ("cpd_like_cost_guided_lookahead_newton_probe",)
+    assert config.protocol["newton"]["source_dir"] == "$NEWTON_SOURCE_DIR"
+    assert config.protocol["newton_diagnostic"]["device"] == "cpu"
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "synthetic_cost_guided_lookahead_task_smoke_not_quality_or_policy_ranking"
+    )
+    assert config.protocol["report"]["evidence_level"] == (
+        "synthetic_cost_guided_lookahead_contact_gated_task_smoke"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
 def test_cpd_like_objective_report_config_is_offline_and_claim_bounded():
     config_path = Path("configs/experiments/cpd_like_objective_report.yaml")
     config = load_compile_config(config_path)
@@ -252,7 +312,7 @@ def test_newton_native_fitting_comparison_config_includes_bed_and_franka_scope()
     assert config.protocol["native_fitting_comparison"]["selection_audit"] == {
         "enabled": True,
         "claim_boundary": "synthetic_selection_audit_not_paper_optimizer_or_collision_quality",
-        "selection_policy": "min_weighted_volume_surrogate_v0",
+        "selection_policy": "support_aware_min_weighted_volume_surrogate_v1",
     }
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
 

@@ -80,6 +80,83 @@ experiments:
     claims_supported:
       - focused CPD-like cost-guided merge-search smoke only
       - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
+  - id: cost-guided-merge-step-trace
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cost-guided-synthetic-comparison
+    record: docs/records/2026-05-16-cost-guided-merge-step-trace.md
+    purpose: >
+      Record synthetic offline merge-step trace diagnostic accounting rows for the existing
+      cost-guided merge fixture.
+    claims_supported:
+      - synthetic offline merge-step trace diagnostic accounting only
+      - no merge-policy improvement, collision-quality, benchmark, Newton task, paper-faithful optimization, or full CPD reproduction claim
+  - id: controlled-merge-search-package-probe
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-controlled-merge-search-package-probe
+    record: docs/records/2026-05-16-controlled-merge-search-package-probe.md
+    purpose: >
+      Run a command-only synthetic package-path probe that carries the existing cost-guided
+      merge-search fixture into CollisionPackage generation and Newton shape-mapping accounting.
+    claims_supported:
+      - synthetic package-path and Newton shape-mapping accounting only
+      - records a package grouping change for topology_then_virtual versus cost_guided_pairwise on one deterministic fixture
+      - no default merge/package behavior change, Newton contact/task claim, real-USD claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: controlled-merge-search-newton-probe
+    status: complete
+    config: configs/experiments/controlled_merge_search_newton_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/controlled_merge_search_newton_probe.yaml --run-cpd-like-controlled-merge-search-newton-probe
+    record: docs/records/2026-05-16-controlled-merge-search-newton-probe.md
+    purpose: >
+      Run named synthetic contact, drop/settle, and sphere-rain smokes over the controlled
+      merge-search default and opt-in package lanes.
+    claims_supported:
+      - synthetic controlled merge-search Newton task-smoke execution only
+      - records contact-gated task status for topology_then_virtual and cost_guided_pairwise packages on one deterministic fixture
+      - no default merge/package behavior change, merge-policy superiority claim, real-USD claim, bed/Franka claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cost-guided-lookahead-merge
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cost-guided-lookahead-merge-report
+    record: docs/records/2026-05-16-cost-guided-lookahead-merge.md
+    purpose: >
+      Run a command-only synthetic two-step lookahead merge/search diagnostic over the
+      lookahead_merge_trap fixture.
+    claims_supported:
+      - bounded synthetic two-step merge/search lookahead accounting only
+      - records a grouping change for cost_guided_pairwise versus two_step_lookahead on one deterministic fixture
+      - no default merge/package behavior change, merge-policy superiority claim, Newton contact/task claim, real-USD claim, bed/Franka claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cost-guided-lookahead-package-probe
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cost-guided-lookahead-package-probe
+    record: docs/records/2026-05-16-cost-guided-lookahead-package-probe.md
+    purpose: >
+      Run a command-only synthetic package-path and Newton shape-mapping probe over the
+      lookahead_merge_trap greedy and two_step_lookahead package lanes.
+    claims_supported:
+      - synthetic lookahead package-path and Newton shape-mapping accounting only
+      - records a package grouping change for cost_guided_pairwise versus two_step_lookahead on one deterministic fixture
+      - no default merge/package behavior change, policy ranking claim, Newton runtime-task claim, real-asset claim, bed or Franka claim, collision geometry quality claim, benchmark-suite claim, deployment or certification claim, or paper-reproduction claim
+  - id: cost-guided-lookahead-newton-probe
+    status: complete
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/cost_guided_lookahead_newton_probe.yaml --run-cpd-like-cost-guided-lookahead-newton-probe
+    record: docs/records/2026-05-16-cost-guided-lookahead-newton-probe.md
+    purpose: >
+      Run a synthetic contact-gated Newton task-smoke probe over the lookahead_merge_trap
+      greedy and two_step_lookahead package lanes.
+    claims_supported:
+      - synthetic lookahead Newton task-smoke status under recorded settings only
+      - records contact-gated task status for cost_guided_pairwise and two_step_lookahead packages on one deterministic fixture
+      - no default merge/package behavior change, policy ranking claim, real-asset claim, bed or Franka claim, collision geometry quality claim, benchmark-suite claim, deployment or certification claim, or paper-reproduction claim
+  - id: four-block-slice-report
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-four-block-slice-report
+    record: docs/records/2026-05-16-four-block-slice-report.md
+    purpose: >
+      Emit a command-only four-block evidence map for the already recorded
+      cost_guided_lookahead synthetic slice.
+    claims_supported:
+      - command-only evidence map across primitive fitting/selection, merge/search, offline diagnostics, and recorded Newton task-smoke evidence
+      - links blocks to dated records without rerunning source reports, USD loading, real assets, or Newton runtime tasks
+      - no new Newton task result, real-asset claim, bed or Franka claim, collision geometry quality claim, policy ranking claim, benchmark-suite claim, deployment or certification claim, or paper-reproduction claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench
@@ -122,7 +199,7 @@ experiments:
     purpose: >
       Record candidate weighted-volume audit tables for the deterministic synthetic native fitting
       fixtures, explaining why the six-kind lane selects cylinder, cone, and ellipsoid under the
-      current surrogate primitive-choice rule.
+      current support-aware surrogate primitive-choice rule.
     claims_supported:
       - synthetic native primitive selection audit on toy meshes only
       - no collision-quality, benchmark, real-USD improvement, paper-faithful optimization, or full CPD reproduction claim
@@ -131,28 +208,144 @@ experiments:
     config: configs/experiments/bed_franka_native_probe_comparison.yaml
     command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-native-task-comparison
     record: docs/records/2026-05-15-real-usd-native-task-comparison.md
+    superseded_by: low-support-native-extension-admissibility
     purpose: >
-      Run the final contact-gated drop/settle plus sphere-rain task-smoke comparison for capped
-      bed and capped Franka first-mesh old/new lanes. Offline fitting and contact-canary evidence
-      are recorded separately.
+      Run the contact-gated drop/settle plus sphere-rain task-smoke comparison for the earlier
+      capped bed and capped Franka first-mesh old/new lanes. Offline fitting and contact-canary
+      evidence are recorded separately.
     claims_supported:
-      - capped bed and capped Franka real-USD diagnostic smoke only
-      - current bed native lane still selects boxes; current Franka native lane selects 29 boxes plus 3 cylinders under the surrogate
-      - no native primitive improvement claim from this selection change
+      - historical capped bed and capped Franka real-USD diagnostic smoke only
+      - this historical entry is superseded; current support-aware status lives in low-support-native-extension-admissibility
       - no collision-quality, benchmark, broad asset/task, paper-faithful optimization, or full CPD reproduction claim
   - id: real-usd-candidate-loss-diagnosis
     status: complete
     config: configs/experiments/bed_franka_native_probe_comparison.yaml
     command: PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-candidate-loss-diagnosis
     record: docs/records/2026-05-15-candidate-loss-triage.md
+    superseded_by: low-support-native-extension-admissibility
     purpose: >
       Record per-selected-cluster candidate-loss diagnosis for capped bed and capped Franka
-      first-mesh native lanes after the controlled cylinder-axis fitting update.
+      first-mesh native lanes after the controlled cylinder-axis fitting update and before the
+      support-aware admissibility update.
     claims_supported:
       - real-USD surrogate candidate-loss accounting under capped first-mesh scope only
-      - bed native lane still selects boxes; Franka native lane selects 3 cylinders under the current surrogate
+      - bed native lane still selects boxes; capped Franka native lane selects 3 cylinders under the pre-support-aware surrogate
       - next-slice triage metadata ranks near-miss and low-support native-extension targets for planning
       - no collision-quality, benchmark, whole-robot collider-quality, paper-faithful optimization, or full CPD reproduction claim
+  - id: low-support-native-extension-admissibility
+    status: complete
+    config: configs/experiments/bed_franka_native_probe_comparison.yaml
+    command: >
+      PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --run-newton-native-fitting-comparison
+      &&
+      PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-candidate-loss-diagnosis
+      &&
+      NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-native-contact-comparison
+      &&
+      NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-native-task-comparison
+    record: docs/records/2026-05-15-low-support-native-extension-admissibility.md
+    purpose: >
+      Add a support-aware admissibility guard for low-support Newton-native extension candidates
+      and rerun capped bed/Franka candidate-loss, contact, and task diagnostics.
+    claims_supported:
+      - deterministic low-support native-extension selection guard under the current surrogate
+      - capped Franka support-aware native lane now selects boxes while reporting 3 cheaper raw-cost cylinders as support-blocked
+      - capped bed and capped Franka packages pass named Newton contact and task smokes in the conda-managed Newton environment
+      - no collision-quality, benchmark, whole-robot collider-quality, paper-faithful optimization, or full CPD reproduction claim
+  - id: cylinder-near-miss-cluster-fixture
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-near-miss-workbench
+    record: docs/records/2026-05-16-cylinder-near-miss-cluster-fixture.md
+    purpose: >
+      Add a synthetic near-miss workbench report for a support-admissible cylinder near miss where
+      the current surrogate still selects box.
+    claims_supported:
+      - synthetic near-miss primitive-ranking workbench only
+      - support-admissible cylinder near-miss diagnostic target under the current surrogate
+      - no real-USD package change, Newton task claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cylinder-near-miss-fit-ablation
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cylinder-near-miss-fit-ablation
+    record: docs/records/2026-05-16-cylinder-near-miss-fit-ablation.md
+    purpose: >
+      Run a diagnostic fit-ablation report for the synthetic cylinder near-miss fixture, recording
+      the containment-preserving circular-cylinder radial lower bound and why the current surrogate
+      still selects box.
+    claims_supported:
+      - synthetic cylinder near-miss fit-ablation accounting only
+      - records that radial-center refinement cannot flip this fixture under containment and the current surrogate
+      - no primitive selection change, real-USD package change, Newton task claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cylinder-near-miss-scoring-sensitivity
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cylinder-near-miss-scoring-sensitivity
+    record: docs/records/2026-05-16-cylinder-near-miss-scoring-sensitivity.md
+    purpose: >
+      Run a diagnostic scoring-sensitivity report for the synthetic cylinder near-miss fixture,
+      recording the counterfactual cylinder score multiplier and cost reduction required to tie
+      the selected box under the current weighted-volume surrogate.
+    claims_supported:
+      - synthetic cylinder near-miss scoring-sensitivity accounting only
+      - records the counterfactual score change required to tie box without applying that change
+      - no primitive selection change, scoring-policy improvement claim, real-USD package change, Newton task claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cylinder-near-miss-scoring-policy-ablation
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cylinder-near-miss-scoring-policy-ablation
+    record: docs/records/2026-05-16-cylinder-near-miss-scoring-policy-ablation.md
+    purpose: >
+      Run a report-only counterfactual scoring-policy ablation for the synthetic cylinder near-miss
+      fixture, applying a fixed cylinder multiplier inside the report and recording whether the
+      fixture would flip under that hypothetical policy.
+    claims_supported:
+      - synthetic report-only scoring-policy ablation accounting only
+      - records a counterfactual synthetic flip and a clearly boxy no-flip guardrail without applying the multiplier to default selection
+      - no primitive selection change, scoring-policy improvement claim, real-USD package change, Newton task claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cylinder-scoring-policy-guardrail
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cylinder-near-miss-scoring-policy-ablation
+    record: docs/records/2026-05-16-cylinder-scoring-policy-guardrail.md
+    purpose: >
+      Record a clearly boxy cuboid negative-control fixture in the report-only cylinder scoring
+      ablation command, checking that the same counterfactual multiplier does not flip every
+      box-selected synthetic fixture.
+    claims_supported:
+      - synthetic report-only scoring-policy guardrail accounting only
+      - records counterfactual selectivity across a near-miss fixture and a clearly boxy cuboid fixture
+      - no default selection change, scoring-policy improvement claim, real-USD package change, Newton task claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cylinder-scoring-policy-selection-probe
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cylinder-scoring-policy-selection-probe
+    record: docs/records/2026-05-16-cylinder-scoring-policy-selection-probe.md
+    purpose: >
+      Run a synthetic offline opt-in scoring-policy selection probe that applies the cylinder
+      multiplier through candidate selection for the near-miss and boxy guardrail fixtures.
+    claims_supported:
+      - synthetic offline opt-in scoring-policy selection probe only
+      - records that the near-miss flips while the boxy guardrail remains box under the explicit opt-in multiplier
+      - no default selection change, scoring-policy improvement claim, real-USD package change, Newton task claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cylinder-scoring-policy-package-probe
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-cylinder-scoring-policy-package-probe
+    record: docs/records/2026-05-16-cylinder-scoring-policy-package-probe.md
+    purpose: >
+      Run an explicitly opt-in synthetic package probe that applies the cylinder multiplier
+      through decomposition and CollisionPackage generation, then records Newton shape-mapping
+      coverage without running Newton contact or task diagnostics.
+    claims_supported:
+      - explicitly opt-in synthetic package-path and mapping accounting only
+      - records a near-miss package change to cylinder and a boxy guardrail no-change package
+      - no default package change, scoring calibration claim, real-USD package change, Newton contact/task claim, collision-quality claim, benchmark claim, or CPD reproduction claim
+  - id: cylinder-scoring-policy-newton-probe
+    status: complete
+    config: configs/experiments/cylinder_scoring_policy_newton_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/cylinder_scoring_policy_newton_probe.yaml --run-cpd-like-cylinder-scoring-policy-newton-probe
+    record: docs/records/2026-05-16-cylinder-scoring-policy-newton-probe.md
+    purpose: >
+      Run named synthetic contact, drop/settle, and sphere-rain smokes over the explicitly opt-in
+      changed cylinder near-miss package pair.
+    claims_supported:
+      - explicitly opt-in synthetic Newton task-smoke execution only
+      - records contact-gated task status for a default box package and an opt-in cylinder package
+      - no default package change, scoring calibration claim, real-USD package change, bed/Franka claim, collision-quality claim, benchmark claim, or CPD reproduction claim
   - id: real-usd-candidate-audit
     status: complete
     config: configs/experiments/bed_franka_native_probe_comparison.yaml

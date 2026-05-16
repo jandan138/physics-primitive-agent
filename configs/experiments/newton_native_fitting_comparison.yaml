@@ -65,7 +65,7 @@ native_fitting_comparison:
   selection_audit:
     enabled: true
     claim_boundary: synthetic_selection_audit_not_paper_optimizer_or_collision_quality
-    selection_policy: min_weighted_volume_surrogate_v0
+    selection_policy: support_aware_min_weighted_volume_surrogate_v1
 newton:
   source_dir: $NEWTON_SOURCE_DIR
   expected_remote: https://github.com/newton-physics/newton.git

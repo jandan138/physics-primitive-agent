@@ -33,11 +33,27 @@ The repository has reached a narrow slice of layer 3:
 - Layer 2 now has one opt-in extension: a component-merge gate that can try disconnected-component
   pairwise merges after topological adjacency merges are exhausted.
 - Layer 2 also has one restricted cost-guided merge-search smoke over a deterministic toy mesh.
+- Layer 2 also has one bounded two-step lookahead merge/search diagnostic over a deterministic
+  trap fixture. It is synthetic-only and does not change default behavior.
 - Layer 2 now has an opt-in offline capped-cylinder proposal proxy that reduces the named
   unsupported paper primitive gap from 3 to 2 without adding Newton mapping.
 - Layer 3 now has an offline paper-aligned surrogate objective report over the capped bed
   CPD-like baseline.
 - Layer 3 also has a command-only synthetic objective comparison over deterministic toy meshes.
+- Layer 3 now has an explicitly opt-in synthetic package probe that carries one scoring-policy
+  multiplier through `decompose_mesh` into `CollisionPackage` generation and records Newton
+  shape-mapping coverage. It does not run Newton contact or task diagnostics.
+- Layer 3 now also has a follow-on explicitly opt-in synthetic Newton diagnostic over that changed
+  near-miss package pair. It runs named contact, drop/settle, and sphere-rain task smokes, but
+  only for synthetic packages and not as collision-quality evidence.
+- Layer 3 also has a controlled merge-search package-path probe for the existing
+  `cost_guided_pair_choice` fixture. It carries the `topology_then_virtual` versus
+  `cost_guided_pairwise` grouping difference into `CollisionPackage` and Newton shape-mapping
+  accounting, without running Newton contact or task diagnostics.
+- Layer 3 also has a follow-on controlled merge-search Newton probe for that changed synthetic
+  package pair. It runs contact, drop/settle, and sphere-rain smokes under recorded settings, but
+  still only as synthetic task-smoke execution, not merge-policy superiority or collision-quality
+  evidence.
 - Layer 3 has a contact-only Newton canary plus two named capped-bed task smokes: drop/settle and
   sphere-rain contact-density proxy.
 - Benchmark evaluation has not started.
@@ -83,6 +99,41 @@ That extra-volume proxy is AABB-normalized merge-excess. On the current `cost_gu
 toy fixture, the opt-in policy chooses the lower-cost virtual component merge while the default
 policy chooses the available topology merge first.
 
+The 2026-05-16 synthetic offline merge-step trace diagnostic accounting makes that toy decision
+inspectable. With `report_merge_trace: steps`, the report records whether a merge was accepted or
+blocked, whether it was a topology or virtual-component merge, which faces/components were joined,
+and the raw plus AABB-normalized merge-excess. This is still diagnostic accounting over one
+deterministic fixture, not a better merge policy or collision-quality result.
+
+The 2026-05-16 controlled merge-search package probe carries the same toy decision one step farther:
+the default package groups source faces as `[[0, 1], [2]]`, while the opt-in cost-guided package
+groups them as `[[0, 2], [1]]`. Both packages map to Newton shapes. This is package-path and
+mapping accounting only; it is not a Newton contact/task diagnostic, real-USD result, or
+collision-quality result.
+
+The 2026-05-16 controlled merge-search Newton probe is the follow-on task-smoke layer. It uses the
+same default and opt-in packages, runs `newton_contact_smoke` first, and only then runs
+`newton_drop_settle` and `newton_sphere_rain`. This means the changed toy package pair can be
+exercised by named Newton diagnostics. It does not mean the opt-in grouping is better, that a real
+USD package changed, or that collision quality improved.
+
+The 2026-05-16 cost-guided lookahead merge report adds a second, still-synthetic merge/search
+idea. Instead of picking only the locally cheapest first merge, `two_step_lookahead` scores a first
+merge plus the best immediate follow-up merge on a tiny trap fixture. On that fixture it changes
+the grouping from greedy `[[0, 2, 3], [1]]` to `[[0, 1], [2, 3]]`. This is offline algorithmic
+accounting only; it is not a package probe, Newton diagnostic, real-USD result, or quality claim.
+
+The 2026-05-16 cost-guided lookahead package probe takes exactly that toy grouping change and asks
+one narrower engineering question: if we package both lanes, do they produce different
+`CollisionPackage` source-face groupings and can both lanes map to Newton shapes? The answer is
+recorded as package-path and mapping accounting only. It still does not run Newton contact,
+drop/settle, or sphere-rain diagnostics, and it still does not say the lookahead grouping is better.
+
+The 2026-05-16 cost-guided lookahead Newton probe is the next gate for that same toy package pair.
+It runs contact first for each lane, then only runs drop/settle and sphere-rain for lanes whose
+contact canary passes. This is named synthetic task-smoke status under recorded settings, not a
+claim that the lookahead grouping is better geometry.
+
 In plain terms, AABB-normalized merge-excess is the "empty wrapper space" penalty for a merge. If
 two separate face groups each fit cleanly into small primitives, but one merged primitive must be
 much larger to cover both, the merge has high excess. If the merged primitive is only slightly
@@ -120,6 +171,7 @@ This baseline is useful because it exercises the pipeline that a real CPD reprod
 - explicit unsupported primitive reporting;
 - conversion into a `CollisionPackage`;
 - Newton-independent shape mapping;
+- explicitly opt-in package-path probes before Newton task reruns;
 - contact-only Newton canary execution;
 - one named Newton drop/settle task smoke;
 - JSON reports and dated evidence records.
@@ -201,11 +253,14 @@ Avoid:
 
 The next useful step is not to strengthen the claim on this baseline. The repository now has the
 second asset-class smoke, the small CPD-like component-merge gate, an offline paper-aligned
-surrogate objective report, deterministic synthetic comparison cases, and one focused
-cost-guided merge-search smoke, a deterministic expected-failure workbench, and one opt-in offline
-capped-cylinder proxy report. The next paper-story slice should choose one named primitive-fit
-quality, primitive-vocabulary, or merge-search target, then re-run bed and Franka smoke paths only
-after a diagnostic change is visible. Newton probes should not be broadened for new primitive kinds
-until mapping support and a dated diagnostic record exist. Paper-faithful CPD decomposition work
-should still avoid full reproduction claims until primitive coverage, benchmark settings, and
-dated experiment records exist.
+surrogate objective report, deterministic synthetic comparison cases, one focused cost-guided
+merge-search smoke, deterministic expected-failure workbench coverage, one opt-in offline
+capped-cylinder proxy report, synthetic package/Newton probes for controlled primitive selection
+and merge/search changes, a bounded two-step lookahead merge/search diagnostic, a follow-on
+synthetic package/mapping probe for the lookahead-changed toy grouping, and an in-review synthetic
+Newton task-smoke probe for that same package pair. Bed/Franka reruns should wait until a separate
+real package changes and passes full mapping, contact-canary, task-gate, and dated-record gates.
+Newton probes should not be broadened for new primitive kinds until mapping support and a dated
+diagnostic record exist. Paper-faithful CPD decomposition work should still avoid full
+reproduction claims until primitive coverage, benchmark settings, and dated experiment records
+exist.

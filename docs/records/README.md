@@ -85,6 +85,8 @@ Proposed | In progress | Complete | Failed | Superseded
   component-merge accounting.
 - [2026-05-15 CPD-Like Cost-Guided Merge](2026-05-15-cpd-like-cost-guided-merge.md):
   focused CPD-like cost-guided merge-search smoke over one deterministic synthetic fixture.
+- [2026-05-16 Cost-Guided Merge Step Trace](2026-05-16-cost-guided-merge-step-trace.md):
+  synthetic offline merge-step trace diagnostic accounting for the existing cost-guided fixture.
 - [2026-05-15 CPD Synthetic Expected-Failure Workbench](2026-05-15-cpd-synthetic-expected-failure-workbench.md):
   deterministic expected-failure workbench that reports known CPD-paper gaps as diagnostic
   limitation flags.
@@ -143,6 +145,66 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Candidate Loss Triage](2026-05-15-candidate-loss-triage.md):
   next-slice triage metadata for near-miss extension candidates and low-support native-extension
   selections in the real-USD candidate-loss diagnosis.
+- [2026-05-15 Low-Support Native Extension Admissibility](2026-05-15-low-support-native-extension-admissibility.md):
+  support-aware primitive-selection guard for low-support Newton-native extension candidates,
+  with capped bed/Franka candidate-loss and Newton smoke reruns.
+- [2026-05-16 Cylinder Near-Miss Cluster Fixture](2026-05-16-cylinder-near-miss-cluster-fixture.md):
+  synthetic support-admissible cylinder near-miss fixture for the next primitive-fitting or
+  merge/search slice.
+- [2026-05-16 Cylinder Near-Miss Fit Ablation](2026-05-16-cylinder-near-miss-fit-ablation.md):
+  diagnostic lower-bound report showing the current cylinder near-miss fixture cannot be flipped
+  by radial-center refinement while preserving containment.
+- [2026-05-16 Cylinder Near-Miss Scoring Sensitivity](2026-05-16-cylinder-near-miss-scoring-sensitivity.md):
+  counterfactual scoring-sensitivity report for the synthetic cylinder near-miss fixture, without
+  changing default selection or Newton packages.
+- [2026-05-16 Cylinder Near-Miss Scoring Policy Ablation](2026-05-16-cylinder-near-miss-scoring-policy-ablation.md):
+  report-only counterfactual scoring-policy ablation for the synthetic cylinder near-miss fixture,
+  without changing default selection or Newton packages.
+- [2026-05-16 Cylinder Scoring Policy Guardrail](2026-05-16-cylinder-scoring-policy-guardrail.md):
+  extension of the report-only scoring-policy ablation with a clearly boxy cuboid negative-control
+  fixture.
+- [2026-05-16 Cylinder Scoring Policy Selection Probe](2026-05-16-cylinder-scoring-policy-selection-probe.md):
+  synthetic offline opt-in scoring-policy selection probe where the near-miss flips and the boxy
+  guardrail remains box, without changing default packages or Newton tasks.
+- [2026-05-16 Cylinder Scoring Policy Package Probe](2026-05-16-cylinder-scoring-policy-package-probe.md):
+  explicitly opt-in synthetic package probe where the near-miss package changes to `cylinder`,
+  the boxy guardrail remains `box`, and Newton shape-mapping coverage is recorded without running
+  Newton contact or task diagnostics.
+- [2026-05-16 Cylinder Scoring Policy Newton Probe](2026-05-16-cylinder-scoring-policy-newton-probe.md):
+  explicitly opt-in synthetic Newton diagnostic over the changed near-miss package pair, with
+  contact-gated drop/settle and sphere-rain task-smoke status under recorded settings.
+- [2026-05-16 Controlled Merge-Search Package Probe](2026-05-16-controlled-merge-search-package-probe.md):
+  command-only synthetic package-path probe that carries the existing `cost_guided_pair_choice`
+  merge/search behavior difference into `CollisionPackage` and Newton shape-mapping accounting.
+- [2026-05-16 Controlled Merge-Search Newton Probe](2026-05-16-controlled-merge-search-newton-probe.md):
+  synthetic contact-gated Newton task-smoke probe over the changed controlled merge/search package
+  pair.
+- [2026-05-16 Cost-Guided Lookahead Merge](2026-05-16-cost-guided-lookahead-merge.md):
+  command-only synthetic two-step lookahead merge/search diagnostic over one deterministic trap
+  fixture.
+- [2026-05-16 Cost-Guided Lookahead Package Probe](2026-05-16-cost-guided-lookahead-package-probe.md):
+  command-only synthetic package-path and Newton shape-mapping probe for the lookahead-changed
+  package pair.
+- [2026-05-16 Cost-Guided Lookahead Newton Probe](2026-05-16-cost-guided-lookahead-newton-probe.md):
+  synthetic contact-gated Newton task-smoke probe for the lookahead-changed package pair.
+- [2026-05-16 Four-Block Slice Report](2026-05-16-four-block-slice-report.md):
+  command-only evidence map that summarizes the recorded cost-guided lookahead synthetic slice
+  across primitive fitting/selection, merge/search, offline diagnostics, and Newton task
+  comparison by linking existing dated records without rerunning source reports, USD loading, or
+  Newton tasks.
+- [2026-05-16 Newton CPD Workbench Four-Block Status Audit](2026-05-16-newton-cpd-workbench-four-block-status-audit.md):
+  status audit mapping primitive fitting/selection, merge/search, offline reports, and Newton task
+  comparison to current evidence and remaining gaps.
+- [2026-05-16 Four-Block Workbench Completion Audit](2026-05-16-four-block-workbench-completion-audit.md):
+  completion audit for the bounded Newton CPD workbench slice, mapping the four-block objective to
+  code, CLI, tests, dated records, review fixes, and verification evidence.
+- [2026-05-16 CPD Pipeline Step-By-Step Explainer](2026-05-16-cpd-pipeline-step-by-step-explainer.md):
+  documentation update that explains the full mesh-to-benchmark pipeline and separates CPD
+  algorithm work from Newton workbench and evaluation claims.
+- [2026-05-16 CPD Paper Gap Matrix And Offline Lane Spec](2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
+  documentation update that maps paper requirements to current surrogates and defines the next
+  planned fixture-scoped offline paper-faithful lane before any real-USD, Newton runtime, or
+  benchmark expansion.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
@@ -152,6 +214,12 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 CPD Full Text Import And Translation](2026-05-15-cpd-full-text-import-translation.md):
   full-section CPD companion import with AI-assisted draft translations, gated source LaTeX
   blocks, and `not_started` reproduction states.
+- [2026-05-16 Paper Site Visual QA](2026-05-16-paper-site-visual-qa.md):
+  browser-rendered paper companion visual QA for formula overflow, figure readability, image
+  upscaling, preserved source blocks, and responsive layout.
+- [2026-05-16 Paper Equation Rendering Fix](2026-05-16-paper-equation-rendering-fix.md):
+  reader-facing display-equation rendering fix for source-paper `equation` and `align`
+  environments on the paper companion pages.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

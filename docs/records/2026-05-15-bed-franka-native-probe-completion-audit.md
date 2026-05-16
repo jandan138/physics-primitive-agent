@@ -13,8 +13,11 @@ Complete
 This audit captures the pre-cylinder-axis completion state. Current status is superseded by
 [2026-05-15 Candidate Loss Diagnosis And Cylinder Axis](2026-05-15-candidate-loss-diagnosis-and-cylinder-axis.md),
 which adds candidate-loss diagnosis, a controlled cylinder-axis fitting update, and a rerun where
-capped Franka native selects `3` cylinders under the surrogate. This remains diagnostic evidence,
-not native primitive quality evidence.
+capped Franka native selects `3` cylinders under the pre-support-aware surrogate. It is then
+superseded by
+[2026-05-15 Low-Support Native Extension Admissibility](2026-05-15-low-support-native-extension-admissibility.md),
+where those low-support raw-cost cylinder wins are blocked by support-aware admissibility. This
+remains diagnostic evidence, not native primitive quality evidence.
 
 ## Objective
 

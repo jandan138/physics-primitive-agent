@@ -33,8 +33,21 @@ from primitive_collision_compiler.baselines.cpd_like.synthetic import (
     NEWTON_NATIVE_FITTING_COMPARISON_CLAIM_BOUNDARY,
     NEWTON_NATIVE_FITTING_COMPARISON_EVIDENCE_LEVEL,
     NEWTON_NATIVE_LEGACY_SUBSET,
+    build_cpd_like_cylinder_near_miss_fit_ablation_report,
+    build_cpd_like_cylinder_near_miss_scoring_policy_ablation_report,
+    build_cpd_like_cylinder_near_miss_scoring_sensitivity_report,
+    build_cpd_like_cylinder_scoring_policy_newton_probe_report,
+    build_cpd_like_cylinder_scoring_policy_package_probe_report,
+    build_cpd_like_cylinder_scoring_policy_selection_probe_report,
+    build_cpd_like_controlled_merge_search_package_probe_report,
+    build_cpd_like_controlled_merge_search_newton_probe_report,
+    build_cpd_like_cost_guided_lookahead_merge_report,
+    build_cpd_like_cost_guided_lookahead_newton_probe_report,
+    build_cpd_like_cost_guided_lookahead_package_probe_report,
     build_cpd_like_cost_guided_synthetic_comparison_report,
     build_cpd_like_expected_failure_synthetic_workbench_report,
+    build_cpd_like_four_block_slice_report,
+    build_cpd_like_near_miss_workbench_report,
     build_cpd_like_synthetic_comparison_report,
     build_newton_native_fitting_comparison_report,
 )
@@ -93,6 +106,71 @@ def build_parser():
         "--run-cpd-like-expected-failure-workbench",
         action="store_true",
         help="run offline synthetic expected-failure workbench for known CPD-like gaps",
+    )
+    parser.add_argument(
+        "--run-cpd-like-near-miss-workbench",
+        action="store_true",
+        help="run offline synthetic near-miss primitive-ranking fixture workbench",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cylinder-near-miss-fit-ablation",
+        action="store_true",
+        help="run offline synthetic cylinder near-miss radial fit-ablation diagnostics",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cylinder-near-miss-scoring-sensitivity",
+        action="store_true",
+        help="run offline synthetic cylinder near-miss scoring sensitivity diagnostics",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cylinder-near-miss-scoring-policy-ablation",
+        action="store_true",
+        help="run offline synthetic report-only cylinder near-miss scoring-policy ablation",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cylinder-scoring-policy-selection-probe",
+        action="store_true",
+        help="run offline synthetic opt-in cylinder scoring-policy selection probe",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cylinder-scoring-policy-package-probe",
+        action="store_true",
+        help="run offline synthetic opt-in cylinder scoring-policy package probe",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cylinder-scoring-policy-newton-probe",
+        action="store_true",
+        help="run synthetic opt-in cylinder scoring-policy Newton contact/task probe",
+    )
+    parser.add_argument(
+        "--run-cpd-like-controlled-merge-search-package-probe",
+        action="store_true",
+        help="run synthetic opt-in controlled merge-search package probe",
+    )
+    parser.add_argument(
+        "--run-cpd-like-controlled-merge-search-newton-probe",
+        action="store_true",
+        help="run synthetic controlled merge-search Newton contact/task probe",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cost-guided-lookahead-merge-report",
+        action="store_true",
+        help="run synthetic two-step lookahead merge-search diagnostic report",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cost-guided-lookahead-package-probe",
+        action="store_true",
+        help="run synthetic two-step lookahead package/mapping probe",
+    )
+    parser.add_argument(
+        "--run-cpd-like-cost-guided-lookahead-newton-probe",
+        action="store_true",
+        help="run synthetic two-step lookahead Newton contact/task probe",
+    )
+    parser.add_argument(
+        "--run-cpd-like-four-block-slice-report",
+        action="store_true",
+        help="emit a command-only four-block report for a recorded synthetic slice",
     )
     parser.add_argument(
         "--run-newton-native-fitting-comparison",
@@ -357,6 +435,45 @@ def main(argv=None):
             return 2
         return 0 if report["status"] == "smoke_passed" else 2
 
+    if args.run_cpd_like_cost_guided_lookahead_merge_report:
+        report = build_cpd_like_cost_guided_lookahead_merge_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cost_guided_lookahead_merge_report "
+                f"contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cost_guided_lookahead_package_probe:
+        report = build_cpd_like_cost_guided_lookahead_package_probe_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cost_guided_lookahead_package_probe "
+                f"contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_four_block_slice_report:
+        report = build_cpd_like_four_block_slice_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_four_block_slice_report "
+                f"contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
     if args.run_cpd_like_expected_failure_workbench:
         report = build_cpd_like_expected_failure_synthetic_workbench_report()
         try:
@@ -369,6 +486,361 @@ def main(argv=None):
             )
             return 2
         return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_near_miss_workbench:
+        report = build_cpd_like_near_miss_workbench_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_near_miss_workbench report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cylinder_near_miss_fit_ablation:
+        report = build_cpd_like_cylinder_near_miss_fit_ablation_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cylinder_near_miss_fit_ablation report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cylinder_near_miss_scoring_sensitivity:
+        report = build_cpd_like_cylinder_near_miss_scoring_sensitivity_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cylinder_near_miss_scoring_sensitivity "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cylinder_near_miss_scoring_policy_ablation:
+        report = build_cpd_like_cylinder_near_miss_scoring_policy_ablation_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cylinder_near_miss_scoring_policy_ablation "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cylinder_scoring_policy_selection_probe:
+        report = build_cpd_like_cylinder_scoring_policy_selection_probe_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cylinder_scoring_policy_selection_probe "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cylinder_scoring_policy_package_probe:
+        report = build_cpd_like_cylinder_scoring_policy_package_probe_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cylinder_scoring_policy_package_probe "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_controlled_merge_search_package_probe:
+        report = build_cpd_like_controlled_merge_search_package_probe_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_controlled_merge_search_package_probe "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_controlled_merge_search_newton_probe and args.config:
+        try:
+            config = load_compile_config(args.config)
+            _validate_controlled_merge_search_newton_probe_config(config)
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError(
+                    "--run-cpd-like-controlled-merge-search-newton-probe requires "
+                    "config key newton.source_dir"
+                )
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            device = str(diagnostic_section.get("device", "cpu"))
+            top_claim_boundary = str(
+                diagnostic_section.get(
+                    "synthetic_newton_probe_claim_boundary",
+                    (
+                        "synthetic_controlled_merge_search_newton_probe_not_"
+                        "collision_quality_or_merge_superiority"
+                    ),
+                )
+            )
+            contact_claim_boundary = str(
+                diagnostic_section.get(
+                    "contact_claim_boundary",
+                    "synthetic_controlled_merge_search_contact_canary_not_collision_quality",
+                )
+            )
+            task_claim_boundary = str(
+                diagnostic_section.get(
+                    "claim_boundary",
+                    (
+                        "synthetic_controlled_merge_search_task_smoke_not_"
+                        "collision_quality_or_merge_superiority"
+                    ),
+                )
+            )
+            drop_options = _newton_drop_settle_options(
+                {**diagnostic_section, "probe_type": "drop_settle"}
+            )["options"]
+            sphere_options = _newton_sphere_rain_options(
+                {**diagnostic_section, "probe_type": "sphere_rain"}
+            )["options"]
+            with contextlib.redirect_stdout(sys.stderr):
+                report = build_cpd_like_controlled_merge_search_newton_probe_report(
+                    source_dir=source_dir,
+                    device=device,
+                    drop_settle_options=drop_options,
+                    sphere_rain_options=sphere_options,
+                    claim_boundary=top_claim_boundary,
+                    contact_claim_boundary=contact_claim_boundary,
+                    task_claim_boundary=task_claim_boundary,
+                )
+        except ValueError as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "cpd_like_controlled_merge_search_newton_probe",
+                        "status": _controlled_merge_search_newton_probe_error_status(
+                            str(exc)
+                        ),
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_controlled_merge_search_newton_probe "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cost_guided_lookahead_newton_probe and args.config:
+        try:
+            config = load_compile_config(args.config)
+            _validate_cost_guided_lookahead_newton_probe_config(config)
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError(
+                    "--run-cpd-like-cost-guided-lookahead-newton-probe requires "
+                    "config key newton.source_dir"
+                )
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            device = str(diagnostic_section.get("device", "cpu"))
+            top_claim_boundary = str(
+                diagnostic_section.get(
+                    "synthetic_newton_probe_claim_boundary",
+                    (
+                        "synthetic_cost_guided_lookahead_newton_probe_not_"
+                        "quality_or_policy_ranking"
+                    ),
+                )
+            )
+            contact_claim_boundary = str(
+                diagnostic_section.get(
+                    "contact_claim_boundary",
+                    "synthetic_cost_guided_lookahead_contact_canary_not_quality",
+                )
+            )
+            task_claim_boundary = str(
+                diagnostic_section.get(
+                    "claim_boundary",
+                    (
+                        "synthetic_cost_guided_lookahead_task_smoke_not_"
+                        "quality_or_policy_ranking"
+                    ),
+                )
+            )
+            drop_options = _newton_drop_settle_options(
+                {**diagnostic_section, "probe_type": "drop_settle"}
+            )["options"]
+            sphere_options = _newton_sphere_rain_options(
+                {**diagnostic_section, "probe_type": "sphere_rain"}
+            )["options"]
+            with contextlib.redirect_stdout(sys.stderr):
+                report = build_cpd_like_cost_guided_lookahead_newton_probe_report(
+                    source_dir=source_dir,
+                    device=device,
+                    drop_settle_options=drop_options,
+                    sphere_rain_options=sphere_options,
+                    claim_boundary=top_claim_boundary,
+                    contact_claim_boundary=contact_claim_boundary,
+                    task_claim_boundary=task_claim_boundary,
+                )
+        except ValueError as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "cpd_like_cost_guided_lookahead_newton_probe",
+                        "status": _cost_guided_lookahead_newton_probe_error_status(
+                            str(exc)
+                        ),
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cost_guided_lookahead_newton_probe "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cylinder_scoring_policy_newton_probe and args.config:
+        try:
+            config = load_compile_config(args.config)
+            _validate_cylinder_scoring_policy_newton_probe_config(config)
+            newton_section = config.protocol.get("newton", {})
+            if not isinstance(newton_section, dict):
+                newton_section = {}
+            source_dir = newton_section.get("source_dir")
+            if not source_dir:
+                raise ValueError(
+                    "--run-cpd-like-cylinder-scoring-policy-newton-probe requires "
+                    "config key newton.source_dir"
+                )
+            source_dir = _expand_env_path(str(source_dir), "newton.source_dir")
+            diagnostic_section = config.protocol.get("newton_diagnostic", {})
+            if not isinstance(diagnostic_section, dict):
+                diagnostic_section = {}
+            device = str(diagnostic_section.get("device", "cpu"))
+            top_claim_boundary = str(
+                diagnostic_section.get(
+                    "synthetic_newton_probe_claim_boundary",
+                    "synthetic_cylinder_scoring_policy_newton_probe_not_collision_quality_or_real_usd",
+                )
+            )
+            contact_claim_boundary = str(
+                diagnostic_section.get(
+                    "contact_claim_boundary",
+                    "synthetic_cylinder_scoring_policy_contact_canary_not_collision_quality",
+                )
+            )
+            task_claim_boundary = str(
+                diagnostic_section.get(
+                    "claim_boundary",
+                    "synthetic_cylinder_scoring_policy_task_smoke_not_collision_quality_or_safety",
+                )
+            )
+            drop_options = _newton_drop_settle_options(
+                {**diagnostic_section, "probe_type": "drop_settle"}
+            )["options"]
+            sphere_options = _newton_sphere_rain_options(
+                {**diagnostic_section, "probe_type": "sphere_rain"}
+            )["options"]
+            with contextlib.redirect_stdout(sys.stderr):
+                report = build_cpd_like_cylinder_scoring_policy_newton_probe_report(
+                    source_dir=source_dir,
+                    device=device,
+                    drop_settle_options=drop_options,
+                    sphere_rain_options=sphere_options,
+                    claim_boundary=top_claim_boundary,
+                    contact_claim_boundary=contact_claim_boundary,
+                    task_claim_boundary=task_claim_boundary,
+                )
+        except ValueError as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "cpd_like_cylinder_scoring_policy_newton_probe",
+                        "status": _cylinder_scoring_policy_newton_probe_error_status(
+                            str(exc)
+                        ),
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_like_cylinder_scoring_policy_newton_probe "
+                f"report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_like_cylinder_scoring_policy_newton_probe:
+        print(
+            "npc-compile: --run-cpd-like-cylinder-scoring-policy-newton-probe requires --config.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if args.run_cpd_like_controlled_merge_search_newton_probe:
+        print(
+            "npc-compile: --run-cpd-like-controlled-merge-search-newton-probe requires --config.",
+            file=sys.stderr,
+        )
+        return 2
+
+    if args.run_cpd_like_cost_guided_lookahead_newton_probe:
+        print(
+            "npc-compile: --run-cpd-like-cost-guided-lookahead-newton-probe requires --config.",
+            file=sys.stderr,
+        )
+        return 2
 
     if args.run_newton_native_fitting_comparison:
         try:
@@ -1300,6 +1772,84 @@ def _newton_sphere_rain_error_status(message):
     ):
         return "dependency_gap"
     return "runtime_failure"
+
+
+def _validate_cylinder_scoring_policy_newton_probe_config(config):
+    if config.asset_path != "synthetic://cylinder_near_miss_cluster":
+        raise ValueError(
+            "--run-cpd-like-cylinder-scoring-policy-newton-probe requires "
+            "asset.path synthetic://cylinder_near_miss_cluster"
+        )
+    if config.task != "synthetic_cylinder_scoring_policy_newton_probe":
+        raise ValueError(
+            "--run-cpd-like-cylinder-scoring-policy-newton-probe requires "
+            "task.primary synthetic_cylinder_scoring_policy_newton_probe"
+        )
+    if "cpd_like_cylinder_scoring_policy_newton_probe" not in config.verify:
+        raise ValueError(
+            "--run-cpd-like-cylinder-scoring-policy-newton-probe requires "
+            "compile.verify to include cpd_like_cylinder_scoring_policy_newton_probe"
+        )
+
+
+def _validate_controlled_merge_search_newton_probe_config(config):
+    if config.asset_path != "synthetic://cost_guided_pair_choice":
+        raise ValueError(
+            "--run-cpd-like-controlled-merge-search-newton-probe requires "
+            "asset.path synthetic://cost_guided_pair_choice"
+        )
+    if config.task != "synthetic_controlled_merge_search_newton_probe":
+        raise ValueError(
+            "--run-cpd-like-controlled-merge-search-newton-probe requires "
+            "task.primary synthetic_controlled_merge_search_newton_probe"
+        )
+    if "cpd_like_controlled_merge_search_newton_probe" not in config.verify:
+        raise ValueError(
+            "--run-cpd-like-controlled-merge-search-newton-probe requires "
+            "compile.verify to include cpd_like_controlled_merge_search_newton_probe"
+        )
+
+
+def _validate_cost_guided_lookahead_newton_probe_config(config):
+    if config.asset_path != "synthetic://lookahead_merge_trap":
+        raise ValueError(
+            "--run-cpd-like-cost-guided-lookahead-newton-probe requires "
+            "asset.path synthetic://lookahead_merge_trap"
+        )
+    if config.task != "synthetic_cost_guided_lookahead_newton_probe":
+        raise ValueError(
+            "--run-cpd-like-cost-guided-lookahead-newton-probe requires "
+            "task.primary synthetic_cost_guided_lookahead_newton_probe"
+        )
+    if "cpd_like_cost_guided_lookahead_newton_probe" not in config.verify:
+        raise ValueError(
+            "--run-cpd-like-cost-guided-lookahead-newton-probe requires "
+            "compile.verify to include cpd_like_cost_guided_lookahead_newton_probe"
+        )
+
+
+def _cylinder_scoring_policy_newton_probe_error_status(message):
+    if "requires asset.path" in message or "requires task.primary" in message:
+        return "config_error"
+    if "requires compile.verify" in message:
+        return "config_error"
+    return _newton_sphere_rain_error_status(message)
+
+
+def _controlled_merge_search_newton_probe_error_status(message):
+    if "requires asset.path" in message or "requires task.primary" in message:
+        return "config_error"
+    if "requires compile.verify" in message:
+        return "config_error"
+    return _newton_sphere_rain_error_status(message)
+
+
+def _cost_guided_lookahead_newton_probe_error_status(message):
+    if "requires asset.path" in message or "requires task.primary" in message:
+        return "config_error"
+    if "requires compile.verify" in message:
+        return "config_error"
+    return _newton_sphere_rain_error_status(message)
 
 
 def _expand_env_path(value, key):

@@ -1,13 +1,54 @@
 # Documentation Index
 
-Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries with next-slice triage metadata, contact canaries, and gated task smokes; bed still selects boxes in both lanes, while Franka's native lane now selects 29 boxes plus 3 cylinders under the surrogate. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
+Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries with next-slice triage metadata, contact canaries, and gated task smokes; bed and capped Franka both select boxes in the current support-aware lanes, while three capped Franka cheaper raw-cost cylinder candidates are reported as support-blocked. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: use the candidate-loss triage to choose between a low-support native-extension
-admissibility fixture and a cylinder near-miss fitting fixture. The latest controlled cylinder-axis
-update gives one synthetic improvement and changes capped Franka native selection to 3 cylinders,
-but it is still not collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
+Current next action: the explicitly opt-in synthetic Newton task-smoke probe over the
+lookahead-changed package pair is complete under recorded settings. The next step is not a capped
+bed/Franka rerun unless a separate real package change is introduced and passes full mapping,
+contact-canary, task-gate, and dated-record gates. The
+completed cylinder branch remains useful context: the `cylinder_near_miss_cluster` fixture,
+near-miss workbench, fit-ablation report, scoring-sensitivity report, report-only scoring-policy
+ablation, and boxy guardrail extension show how synthetic changes are gated before broader runs.
+The fit-ablation report shows this fixture cannot be flipped by radial-center refinement while
+preserving containment; the sensitivity report quantifies the counterfactual cylinder scoring
+change required to tie box; the report-only policy ablation applies a fixed hypothetical
+multiplier only inside the synthetic report; and the boxy guardrail remains `box` under the same
+multiplier. The synthetic offline opt-in
+scoring-policy selection probe now routes the same multiplier through an explicit synthetic
+candidate-selection path, flipping the near-miss but not the boxy guardrail. The explicit
+synthetic package probe now pushes that opt-in choice through `decompose_mesh` into a changed
+synthetic `CollisionPackage` and records a Newton shape-mapping summary only, while the default
+package path and the boxy guardrail stay unchanged. It does not run Newton contact or task
+diagnostics. The synthetic Newton probe now runs named contact, drop/settle, and sphere-rain task
+smokes over the changed near-miss package pair only, with default package generation and all
+real-USD packages unchanged. The controlled merge-search package probe now carries the existing
+cost-guided toy merge/search behavior difference into synthetic `CollisionPackage` and Newton
+shape-mapping accounting. The controlled merge-search Newton probe then runs named contact,
+drop/settle, and sphere-rain task smokes over that changed synthetic package pair only. The
+bounded synthetic `two_step_lookahead` diagnostic, follow-on package/mapping probe, follow-on
+synthetic Newton task-smoke probe, and command-only four-block slice report for the
+lookahead-changed package pair are now complete under recorded settings. The CPD paper gap matrix
+and planned fixture-scoped offline lane spec now make the next step explicit: implement an
+offline-only toy fixture slice for paper operator, primitive-fit, and collapse-cost audit fields
+before bed/Franka, Newton package probes, or benchmark work. A capped bed/Franka rerun should wait
+unless a separate real package change is introduced and passes full mapping, contact-canary,
+task-gate, and dated-record gates. The
+low-support branch is now guarded by support-aware admissibility, but that is still not
+collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
 `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
 records exist.
+
+## Current CPD Paper Plan
+
+- [CPD paper reproduction gap matrix](reference/cpd-paper-reproduction-gap-matrix.md): current
+  paper requirements versus repository surrogates, with Newton runtime boundaries.
+- [CPD paper-faithful offline lane spec](reference/cpd-paper-faithful-offline-lane-spec.md):
+  planned fixture-scoped offline lane for paper mechanics before real USD, Newton, or benchmark
+  expansion.
+- [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
+  the planned `paper_faithful_offline` status.
+- [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
+  dated record for this planning update and review status.
 
 ## DeepDive Package
 
@@ -32,6 +73,16 @@ records exist.
 - [CPD paper story status](reference/cpd-paper-story-status.md):
   plain-language map from the paper's reproduction story to the repository's current workbench
   status and next slices.
+- [CPD pipeline step-by-step explainer](reference/cpd-pipeline-step-by-step-explainer.md):
+  plain-language guide to the difference between the CPD algorithm steps, the Newton workbench
+  steps, and benchmark/evaluation claims.
+- [CPD paper reproduction gap matrix](reference/cpd-paper-reproduction-gap-matrix.md):
+  row-by-row audit of paper requirements, current repository artifacts, surrogate status,
+  offline-first work, Newton runtime admissibility, and claim boundaries.
+- [CPD paper-faithful offline lane spec](reference/cpd-paper-faithful-offline-lane-spec.md):
+  offline-only specification for the planned fixture-scoped paper operator, primitive-fit,
+  collapse-cost, search, and postprocessing lane before any real-USD, Newton, or benchmark
+  expansion.
 - [CPD objective report alignment](reference/cpd-objective-report-alignment.md):
   plain-language boundary between design-aligned surrogate objective accounting and a
   paper-faithful CPD objective implementation.
@@ -97,6 +148,8 @@ records exist.
   component-merge accounting.
 - [CPD-like cost-guided merge record](records/2026-05-15-cpd-like-cost-guided-merge.md):
   focused cost-guided merge-search smoke over one deterministic synthetic fixture.
+- [Cost-guided merge step trace record](records/2026-05-16-cost-guided-merge-step-trace.md):
+  synthetic offline merge-step trace diagnostic accounting for the existing cost-guided fixture.
 - [CPD synthetic expected-failure workbench record](records/2026-05-15-cpd-synthetic-expected-failure-workbench.md):
   command-only deterministic expected-failure workbench that reports known CPD-paper gaps as
   diagnostic flags.
@@ -153,6 +206,63 @@ records exist.
 - [Candidate loss triage record](records/2026-05-15-candidate-loss-triage.md):
   next-slice triage metadata for near-miss extension candidates and low-support native-extension
   selections in the real-USD candidate-loss diagnosis.
+- [Low-support native extension admissibility record](records/2026-05-15-low-support-native-extension-admissibility.md):
+  support-aware admissibility guard for low-support native-extension candidates, with current
+  bed/Franka support-aware rerun and Newton diagnostic-gate evidence.
+- [Cylinder near-miss cluster fixture record](records/2026-05-16-cylinder-near-miss-cluster-fixture.md):
+  synthetic support-admissible cylinder near-miss fixture for the next primitive-fitting or
+  merge/search slice.
+- [Cylinder near-miss fit ablation record](records/2026-05-16-cylinder-near-miss-fit-ablation.md):
+  synthetic lower-bound diagnostic showing this fixture cannot be flipped by radial-center
+  refinement while preserving containment.
+- [Cylinder near-miss scoring sensitivity record](records/2026-05-16-cylinder-near-miss-scoring-sensitivity.md):
+  synthetic counterfactual scoring-sensitivity diagnostic for the same near-miss fixture, without
+  applying a scoring-policy change.
+- [Cylinder near-miss scoring policy ablation record](records/2026-05-16-cylinder-near-miss-scoring-policy-ablation.md):
+  synthetic report-only scoring-policy ablation for the same near-miss fixture, without changing
+  default selection or Newton packages.
+- [Cylinder scoring policy guardrail record](records/2026-05-16-cylinder-scoring-policy-guardrail.md):
+  synthetic boxy cuboid negative-control extension for the report-only scoring-policy ablation.
+- [Cylinder scoring policy selection probe record](records/2026-05-16-cylinder-scoring-policy-selection-probe.md):
+  synthetic offline opt-in scoring-policy selection probe where the near-miss flips and the boxy
+  guardrail remains box, without changing default packages or Newton tasks.
+- [Cylinder scoring policy package probe record](records/2026-05-16-cylinder-scoring-policy-package-probe.md):
+  explicitly opt-in synthetic package probe where the near-miss package changes to `cylinder`,
+  the boxy guardrail remains `box`, and a Newton shape-mapping summary is recorded without
+  running Newton contact or task diagnostics.
+- [Cylinder scoring policy Newton probe record](records/2026-05-16-cylinder-scoring-policy-newton-probe.md):
+  explicitly opt-in synthetic Newton diagnostic over the changed near-miss package pair, with
+  contact-gated drop/settle and sphere-rain task-smoke status under recorded settings.
+- [Controlled merge-search package probe record](records/2026-05-16-controlled-merge-search-package-probe.md):
+  command-only synthetic package-path probe that carries the existing cost-guided merge-search
+  fixture into `CollisionPackage` and Newton shape-mapping accounting.
+- [Controlled merge-search Newton probe record](records/2026-05-16-controlled-merge-search-newton-probe.md):
+  synthetic contact-gated Newton task-smoke probe over the changed controlled merge/search package
+  pair.
+- [Cost-guided lookahead merge record](records/2026-05-16-cost-guided-lookahead-merge.md):
+  command-only synthetic two-step lookahead merge/search diagnostic over one deterministic trap
+  fixture.
+- [Cost-guided lookahead package probe record](records/2026-05-16-cost-guided-lookahead-package-probe.md):
+  command-only synthetic package-path and Newton shape-mapping probe for the lookahead-changed
+  toy package pair.
+- [Cost-guided lookahead Newton probe record](records/2026-05-16-cost-guided-lookahead-newton-probe.md):
+  synthetic contact-gated Newton task-smoke probe for the lookahead-changed toy package pair.
+- [Four-block slice report record](records/2026-05-16-four-block-slice-report.md):
+  command-only evidence map for the recorded cost-guided lookahead synthetic slice across
+  primitive fitting/selection, merge/search, offline diagnostics, and Newton task comparison. It
+  links existing dated records and does not rerun source reports, USD loading, or Newton tasks.
+- [Newton CPD workbench four-block status audit](records/2026-05-16-newton-cpd-workbench-four-block-status-audit.md):
+  status map for primitive fitting/selection, merge/search, offline reports, and Newton task
+  comparison, including current gaps and the recommended next slice.
+- [Four-block workbench completion audit](records/2026-05-16-four-block-workbench-completion-audit.md):
+  completion audit that maps the bounded four-block workbench objective to the report, CLI, tests,
+  dated records, review fixes, and verification evidence.
+- [CPD pipeline step-by-step explainer record](records/2026-05-16-cpd-pipeline-step-by-step-explainer.md):
+  documentation update that explains the whole mesh-to-benchmark pipeline and where the current
+  Newton workbench fits relative to the CPD paper algorithm.
+- [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
+  documentation update that turns the paper reproduction gap into an offline-first paper-lane
+  spec, without adding benchmark, Newton runtime, real-USD, or collision-quality evidence.
 - [CPD latest diagnostic loop explainer docs record](records/2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
@@ -209,10 +319,30 @@ records exist.
   comparison config that points to the real-USD probe comparison config.
 - `configs/experiments/bed_franka_native_probe_comparison.yaml`: real-USD capped bed and capped
   Franka old/new fitting, contact, and gated task-smoke comparison config.
+- `configs/experiments/cylinder_scoring_policy_newton_probe.yaml`: explicitly opt-in synthetic
+  near-miss package-pair Newton task-smoke config.
 - `npc-compile --run-cpd-like-synthetic-comparison`: command-only deterministic synthetic
   objective comparison, recorded in `experiments/registry.yaml` without a config file.
 - `npc-compile --run-cpd-like-cost-guided-synthetic-comparison`: command-only deterministic
   cost-guided synthetic comparison, recorded in `experiments/registry.yaml` without a config file.
+- `npc-compile --run-cpd-like-controlled-merge-search-package-probe`: command-only synthetic
+  package-path probe for the existing cost-guided merge-search fixture, with Newton shape-mapping
+  coverage and no contact/task execution.
+- `npc-compile --config configs/experiments/controlled_merge_search_newton_probe.yaml
+  --run-cpd-like-controlled-merge-search-newton-probe`: synthetic-only contact-gated Newton
+  task-smoke comparison for the controlled merge-search default and opt-in packages.
+- `npc-compile --run-cpd-like-cost-guided-lookahead-merge-report`: command-only synthetic
+  two-step lookahead merge/search diagnostic over one trap fixture, with no package or Newton task
+  execution.
+- `npc-compile --run-cpd-like-cost-guided-lookahead-package-probe`: command-only synthetic
+  package-path and Newton shape-mapping probe for the lookahead-changed toy package pair, with no
+  contact/task execution.
+- `npc-compile --config configs/experiments/cost_guided_lookahead_newton_probe.yaml
+  --run-cpd-like-cost-guided-lookahead-newton-probe`: synthetic contact-gated Newton task-smoke
+  probe for the lookahead-changed toy package pair.
+- `npc-compile --run-cpd-like-four-block-slice-report`: command-only evidence map for the
+  recorded lookahead slice. It links existing dated records and does not rerun source reports,
+  USD loading, real assets, or Newton tasks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.
@@ -226,6 +356,9 @@ records exist.
   --run-real-usd-native-contact-comparison`: full-mapping-gated contact canary comparison.
 - `npc-compile --config configs/experiments/bed_franka_native_probe_comparison.yaml
   --run-real-usd-native-task-comparison`: contact-gated drop/settle and sphere-rain comparison.
+- `npc-compile --config configs/experiments/cylinder_scoring_policy_newton_probe.yaml
+  --run-cpd-like-cylinder-scoring-policy-newton-probe`: synthetic-only contact-gated Newton
+  task-smoke comparison for the default `box` and opt-in `cylinder` near-miss packages.
 - `npc-compile --config configs/experiments/bed_franka_native_probe_comparison.yaml
   --materialize-assets`: ignored repo-local USD dependency-closure mirror for the current bed and
   Franka smoke assets.
@@ -259,10 +392,22 @@ The runtime primitive roadmap is Newton-native first: the native `cylinder`, `co
 `ellipsoid` bundle now has mapping, diagnostic construction, tests, and a dated synthetic runtime
 smoke record. The opt-in native fitting comparison can emit those kinds on deterministic synthetic
 meshes, but this does not mean they are default asset behavior or real-USD improvement evidence.
-The real-USD bed/Franka probe comparison can run old/new lanes through offline reports, candidate
-diagnostics, contact canaries, and gated task smokes; the current run keeps bed at boxes and changes
-capped Franka's native lane to 3 cylinders under the surrogate, but it still does not prove native
-primitive quality improvement. It does not add support for paper-only
+The synthetic cylinder scoring-policy Newton probe can run contact-gated task smokes over one
+explicitly opt-in changed near-miss package pair. The controlled merge-search package probe can
+carry one synthetic merge/search behavior difference into package and mapping accounting without
+running Newton tasks. The controlled merge-search Newton probe can run contact-gated task smokes
+over that changed synthetic merge/search package pair, still without default merge-policy,
+real-USD, collision-quality, benchmark, or CPD reproduction claims. The synthetic two-step
+lookahead merge report can record one bounded offline merge/search decision change. The follow-on
+lookahead package probe adds package-path and mapping accounting, and the completed lookahead
+Newton probe adds synthetic contact-gated task-smoke status under recorded settings. These
+lookahead probes still do not add real-USD, collision-quality, benchmark, or CPD reproduction
+evidence. The real-USD bed/Franka probe
+comparison can run old/new lanes through offline reports, candidate
+diagnostics, contact canaries, and gated task smokes; the current support-aware run keeps bed and
+capped Franka at boxes while reporting three capped Franka raw-cost cylinder candidates as
+support-blocked accounting, but it still does not prove native primitive quality improvement. It
+does not add support for paper-only
 `capped_cylinder`, `frustum`, or `trapezoidal_prism` in Newton runtime.
 These evidence layers are not benchmark, collision-quality, whole-robot quality, real
 contact-stress, or CPD reproduction evidence.

@@ -56,11 +56,15 @@ box, sphere, capsule, cylinder, cone, ellipsoid
 ```
 
 The native lane is allowed to choose Newton-native `cylinder`, `cone`, or `ellipsoid`. After the
-controlled cylinder-axis fitting update, bed still selects `box` primitives in both lanes, while
-Franka's native lane selects `29` boxes plus `3` cylinders under the current surrogate.
+controlled cylinder-axis fitting update, bed still selected `box` primitives in both lanes, while
+Franka's native lane selected `29` boxes plus `3` cylinders under the raw surrogate. The follow-up
+support-aware admissibility rule now blocks those three low-support raw-cost cylinder wins, so the
+current native lane selects `32` boxes and explains the blocked cylinders in candidate-loss
+diagnosis.
 
-That is useful selection/accounting evidence. It says the simple native proxy fitters can now
-change one capped real-USD lane, but it still does not prove collision-quality improvement.
+That is useful selection/accounting evidence. It says the workbench can expose a native-lane
+selection change and then constrain it with support accounting, but it still does not prove
+collision-quality improvement.
 
 The offline fitting report now also includes `candidate_audit_summary` for each lane, and the
 candidate-loss diagnosis report adds per-cluster reasons for remaining box selections. These are
@@ -68,29 +72,27 @@ diagnostic explanation layers, not collision-quality metrics.
 
 ## Current Results
 
-Offline fitting report after the controlled cylinder-axis update:
+Offline fitting report after the support-aware admissibility update:
 
 - `bed_dev_smoke`: legacy `32` boxes, native `32` boxes, mapping clean, normalized volume delta
   `0.0`.
-- `franka_import_smoke`: legacy `32` boxes, native `29` boxes plus `3` cylinders, mapping clean.
+- `franka_import_smoke`: legacy `32` boxes, native `32` boxes, mapping clean.
 - real-USD candidate-loss diagnosis: bed has `32` box-selected clusters where extension
   candidates are more expensive under the surrogate; Franka has `29` such box-selected clusters
-  and `3` clusters where `cylinder` is selected.
+  and `3` clusters where cheaper raw-cost `cylinder` candidates are support-blocked.
 
 Contact comparison:
 
 - all four lanes passed the contact canary;
 - all four packages had `32` mapped primitives;
 - box-only lanes produced representative `box` canary contacts;
-- capped Franka native also produced a representative `cylinder` canary contact.
+- capped Franka native is now also box-only after support-aware admissibility.
 
 Task comparison:
 
 - all four lanes passed drop/settle and sphere-rain under the recorded config;
-- bed drop/settle final speed was about `0.0404565 m/s`;
-- Franka legacy drop/settle final speed was about `0.0005830 m/s`, and Franka native was about
-  `0.0004622 m/s`;
-- both assets reported sphere-rain contact-density proxy `0.1111111111111111`.
+- these are named smoke diagnostics for mapping/contact/task execution, not a collision-quality
+  comparison.
 
 ## What This Means In The CPD Story
 
@@ -103,9 +105,10 @@ synthetic native fitting works on controlled toy meshes
 -> named task smokes can run after contact canary passes
 ```
 
-It does not mean the native lane is better. In this run, one capped Franka lane changes primitive
-selection, but the record is still a diagnostic-gate and surrogate-accounting result, not a
-collision-quality result.
+It does not mean the native lane is better. The pre-support-aware run produced three capped
+Franka cylinder selections; the current support-aware run keeps capped Franka box-only and reports
+those cylinders as cheaper raw-cost candidates blocked by support admissibility. The record is
+still a diagnostic-gate and surrogate-accounting result, not a collision-quality result.
 
 The simple mental model is:
 

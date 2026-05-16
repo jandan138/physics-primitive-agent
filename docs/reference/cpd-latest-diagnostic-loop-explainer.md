@@ -1,15 +1,15 @@
 # CPD Latest Diagnostic Loop Explainer
 
-This page explains the latest candidate-loss and cylinder-axis slice in the story of reproducing
-Convex Primitive Decomposition for Collision Detection. It is a teaching note and navigation aid,
-not new experiment evidence.
+This page explains the latest candidate-loss, cylinder-axis, and support-aware admissibility loop
+in the story of reproducing Convex Primitive Decomposition for Collision Detection. It is a
+teaching note and navigation aid, not new experiment evidence.
 
 ## One-Sentence Version
 
 The latest work did not reproduce the CPD paper algorithm. It built a small, repeatable diagnostic
-loop that can explain a primitive-selection weakness, make one controlled fitting change, verify
-that change on toy meshes, and then rerun capped bed/Franka through Newton gates without changing
-the claim boundary.
+loop that can explain a primitive-selection weakness, gate a report-only scoring idea through
+synthetic selection/package probes, and run synthetic contact-gated Newton task smokes without
+changing the claim boundary.
 
 ## The Paper Story In Plain Terms
 
@@ -55,9 +55,11 @@ What label should guide the next change?
 In the current capped real-USD run:
 
 - bed native lane selects `32` boxes;
-- Franka native lane selects `29` boxes and `3` cylinders;
+- Franka native lane selects `32` boxes after support-aware admissibility blocks three low-support
+  raw-cost cylinder wins;
 - the remaining bed box clusters and Franka box clusters usually have extension candidates, but
-  those candidates are more expensive under the current weighted-volume surrogate.
+  those candidates are either more expensive under the current weighted-volume surrogate or
+  blocked by the support-aware guard.
 
 This is useful because it turns "why are we still seeing boxes?" into reviewable rows. It does not
 say the boxes are correct, only that the current local surrogate prefers them.
@@ -111,9 +113,9 @@ Current summary:
 | Asset role | Legacy lane result | Native lane result | Interpretation |
 | --- | --- | --- | --- |
 | `bed_dev_smoke` | `32` boxes | `32` boxes | No native extension selected under the current surrogate. |
-| `franka_import_smoke` | `32` boxes | `29` boxes + `3` cylinders | The native lane can now select cylinder on three capped Franka clusters. |
+| `franka_import_smoke` | `32` boxes | `32` boxes | Three cheaper raw-cost cylinders are now support-blocked instead of selected. |
 
-The Franka result is a primitive-selection change, not a quality result.
+The Franka result is a primitive-selection/accounting change, not a quality result.
 
 ### 5. Newton Contact And Task Gates
 
@@ -171,6 +173,7 @@ The candidate-loss report should drive the next algorithmic slice. Read it like 
 | --- | --- | --- |
 | `selected_box` + `extension_fit_cost_higher_than_selected` | The native extension was available but cost more under the surrogate. | Improve fitting quality or the surrogate before expecting a different selection. |
 | `native_extension_selected` | A Newton-native extension won locally. | Check whether the selection is stable under synthetic and Newton gates. |
+| `extension_candidate_blocked_by_support` | An extension was cheaper by raw surrogate cost, but had too little face/point support to replace the fallback primitive. | Keep the guardrail, then inspect whether fitting or clustering should improve on a richer fixture. |
 | many high-aspect-ratio box clusters | The current local primitive candidates may be too box-biased. | Add a synthetic fixture that matches the shape, then improve fitting or merge search. |
 | disconnected or wrapper-like clusters | The grouping may be the problem rather than the primitive kind. | Try a controlled merge-search change before changing primitive formulas. |
 
@@ -198,7 +201,7 @@ The low-support bucket means:
 cylinder/cone/ellipsoid won, but the cluster has very little geometric support
 ```
 
-On the current capped bed/Franka report:
+Before the support-aware admissibility slice, the capped bed/Franka report showed:
 
 - bed has one `cylinder` near-miss target, with the best cylinder about `13%` more expensive than
   the selected box under the surrogate;
@@ -206,7 +209,7 @@ On the current capped bed/Franka report:
   points;
 - Franka also has three `cylinder` near-miss box-selected clusters.
 
-That makes the next decision clearer. There are two defensible next synthetic fixtures:
+That made the next decision clearer. There were two defensible next synthetic fixtures:
 
 - `low_support_native_extension_patch`, to test whether a native extension should require more
   geometric support before it can replace a box;
@@ -216,18 +219,133 @@ That makes the next decision clearer. There are two defensible next synthetic fi
 The triage recommendation is still planning metadata. It is not an optimizer, not a quality score,
 and not proof that cylinder is better or worse.
 
-## Recommended Next Sequence
+## What The Support-Aware Slice Adds
 
-The next few steps should be:
+The follow-up slice executed the low-support branch. It adds a selection-time admissibility rule:
 
-1. Pick one candidate-loss pattern as the next target.
-2. Build or extend one synthetic fixture that reproduces that pattern.
-3. Improve exactly one fitting or merge-search component.
-4. Rerun the synthetic native fitting/audit reports.
-5. Rerun capped bed/Franka fitting only if the synthetic result is explainable.
-6. If fitting changes, rerun candidate-loss diagnosis.
-7. If real packages still fully map, rerun Newton contact and task gates.
-8. Record the result and update claim boundaries before making stronger wording.
+```text
+fit all candidates as before
+-> rank admissible candidates before under-supported native extensions
+-> still expose raw cost rank so the report can explain what was blocked
+```
+
+The first support gate is deliberately narrow:
+
+- it only applies to Newton-native extension candidates `cylinder`, `cone`, and `ellipsoid`;
+- it requires at least three source faces and five unique assigned points when a fallback
+  primitive is available;
+- if a primitive subset contains only extension candidates, the best extension is still returned
+  instead of failing the smoke path.
+
+On the current support-aware capped bed/Franka rerun:
+
+- bed still selects `32` boxes;
+- Franka now selects `32` boxes instead of `29` boxes plus `3` cylinders;
+- the three formerly selected Franka cylinders now appear as cheaper raw-cost extension
+  candidates with `extension_candidate_blocked_by_support`;
+- both bed and Franka still have `cylinder` near-miss targets, so the next algorithmic target moves
+  from low-support admissibility to cylinder near-miss fitting or clustering.
+
+This is not a quality result. It only says the workbench can stop a low-support native extension
+from replacing a fallback primitive under the current surrogate and can explain that decision in
+the candidate-loss report.
+
+## Completed Sequence And Current Next Step
+
+After the support-aware slice, the near-miss branch moved through these steps:
+
+1. Build a `cylinder_near_miss_cluster` fixture from the recorded bed/Franka near-miss pattern.
+2. Add a fit-ablation report that asks whether a containment-preserving cylinder fit can reduce
+   the surrogate gap on that fixture.
+3. Add a scoring-sensitivity report that asks how large a counterfactual cylinder score change
+   would need to be after fitting is ruled out.
+4. Add a report-only scoring-policy ablation that applies a fixed hypothetical multiplier inside
+   the synthetic report and checks whether the fixture would flip.
+5. Route the same multiplier through explicit synthetic selection and package probes.
+6. Run a synthetic Newton task-smoke probe over the changed near-miss package pair.
+7. Carry the existing cost-guided merge-search behavior difference into synthetic package and
+   mapping accounting.
+8. Run a synthetic Newton task-smoke probe over the changed controlled merge/search package pair.
+9. Add a bounded synthetic two-step lookahead merge/search diagnostic over one trap fixture.
+10. Carry the lookahead-changed package pair into synthetic package and Newton shape-mapping
+    accounting.
+11. Run an explicitly opt-in synthetic Newton task-smoke probe over the lookahead-changed package
+    pair.
+12. Add a command-only four-block slice report that links the recorded lookahead evidence across
+    primitive fitting/selection, merge/search, offline diagnostics, and Newton task comparison.
+
+The current next step is not another claim update on that same multiplier. For the merge/search
+branch, the next narrow gate is to use the four-block report as the checklist for one bounded
+paper-aligned objective, primitive-fitting, or merge/search change. Capped bed/Franka
+candidate-loss diagnosis and Newton gates should rerun only if real packages change and pass full
+mapping, contact-canary, task-gate, and dated-record gates.
+
+The 2026-05-16 near-miss fixture slice starts step 1. It adds a direct synthetic primitive-ranking
+fixture and a dedicated near-miss workbench report where `box` still wins and `cylinder` is close,
+support-admissible, and ready to drive the next controlled fitting or merge/search change. It is
+not a native fitting success case.
+
+The 2026-05-16 fit-ablation slice starts step 2. It records that the fixture's containing-cylinder
+radius already matches the pairwise radial lower bound, so radial-center refinement cannot flip the
+selection without relaxing containment or changing the objective. It does not change the generated
+package, so no Newton task rerun is triggered by this slice.
+
+The 2026-05-16 scoring-sensitivity slice starts step 3. It reports that the support-admissible
+cylinder would need a counterfactual score multiplier of about `0.8869`, or about an `11.31%`
+cost reduction, to tie the selected box on this fixture. The multiplier is not applied; default
+selection and Newton packages remain unchanged.
+
+The 2026-05-16 report-only scoring-policy ablation starts step 4. It applies a fixed hypothetical
+cylinder multiplier of `0.88` inside the synthetic report and records that the counterfactual
+ranking would flip to `cylinder` for the near-miss fixture. The 2026-05-16 guardrail extension
+adds a clearly boxy cuboid negative control that remains `box` under the same report-only
+multiplier. This does not change default selection or generated packages, so no Newton task rerun
+is triggered.
+
+The 2026-05-16 synthetic offline opt-in scoring-policy selection probe is the next small step after
+the report-only ablation. It routes the same multiplier through an explicit candidate-selection
+path for synthetic fixtures only: the near-miss flips to `cylinder`, while the boxy guardrail
+remains `box`. Default package generation and Newton task gates remain unchanged.
+
+The 2026-05-16 synthetic package probe is the next bridge after selection. It routes the same
+explicit multiplier through `decompose_mesh` and `CollisionPackage` generation for synthetic
+fixtures only. The near-miss package changes from `box` to `cylinder`, the boxy guardrail package
+stays `box`, and the report records Newton shape-mapping coverage. This is still not a Newton
+contact or task diagnostic: no contact canary, drop/settle, or sphere-rain task is run by this
+slice.
+
+The 2026-05-16 synthetic Newton probe is the follow-on task-smoke slice. It leaves the package
+probe's mapping-only boundary intact, then runs named contact, drop/settle, and sphere-rain smokes
+over the changed near-miss package pair only. This is synthetic execution evidence under recorded
+settings, not proof that the scoring policy is calibrated or that the cylinder package has better
+collision quality.
+
+The 2026-05-16 controlled merge-search package and Newton probes repeat the same discipline for
+the merge/search branch. The package probe first records that `cost_guided_pairwise` changes the
+toy package grouping from `[[0, 1], [2]]` to `[[0, 2], [1]]` and that both lanes map to Newton
+shapes. The Newton probe then runs contact, drop/settle, and sphere-rain smokes over that changed
+synthetic package pair. This is task-smoke execution for one toy merge/search pair, not a default
+merge-policy change, real-USD result, merge-policy superiority result, or collision-quality
+validation.
+
+The 2026-05-16 cost-guided lookahead merge report is the next direct merge/search algorithmic
+slice, but it stays offline. It adds `two_step_lookahead` for tiny synthetic fixtures and records
+that the `lookahead_merge_trap` grouping changes from greedy `[[0, 2, 3], [1]]` to
+`[[0, 1], [2, 3]]` with lower projected two-step normalized merge-excess. This is not package
+evidence, Newton task evidence, real-USD evidence, merge-policy superiority, or collision-quality
+validation.
+
+The 2026-05-16 cost-guided lookahead package probe carries that offline grouping change one gate
+farther. It converts the greedy and `two_step_lookahead` decompositions into synthetic
+`CollisionPackage` lanes, compares their source-face groupings, and records Newton shape-mapping
+coverage. It still does not run Newton runtime tasks, touch real assets, rank merge policies, or
+measure collision geometry quality.
+
+The 2026-05-16 cost-guided lookahead Newton probe is the follow-on task-smoke gate for that same
+synthetic package pair. It runs contact first for each lane, then runs drop/settle and sphere-rain
+only for lanes whose contact canary passes. This records named synthetic Newton task status under
+recorded settings; it still does not touch real assets, rank merge policies, or measure collision
+geometry quality.
 
 Good first targets are:
 
@@ -237,9 +355,11 @@ Good first targets are:
 - merge-search changes, if box selections look caused by bad cluster grouping rather than bad
   primitive fitting.
 
-The safest immediate recommendation is to let the triage output choose the fixture category first.
-On the current report, that means choosing between a low-support native-extension admissibility
-fixture and a cylinder near-miss fitting fixture before changing any selection logic.
+The safest immediate recommendation is now to use the four-block slice report as the review
+checklist for the next bounded paper-aligned objective, primitive-fitting, or merge/search change.
+Bed/Franka Newton task reruns should wait until a default or explicitly experimental real-asset
+package actually changes and passes full mapping, contact-canary, task-gate, and dated-record
+gates.
 
 ## Related Pages
 

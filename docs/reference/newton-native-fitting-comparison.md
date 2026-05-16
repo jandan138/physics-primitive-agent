@@ -114,9 +114,11 @@ scope_declared_not_run
 ```
 
 The follow-up real-USD probe comparison has now been run through a separate config and report path.
-After the controlled cylinder-axis fitting update, bed still selects only `box` primitives in both
-old and native lanes, while capped Franka's native lane selects `29` boxes plus `3` cylinders. The
-real-USD result is a selection/accounting milestone, not native primitive quality evidence.
+After the controlled cylinder-axis fitting update, bed still selected only `box` primitives in
+both old and native lanes, while capped Franka's native lane selected `29` boxes plus `3`
+cylinders. The follow-up support-aware admissibility rule now blocks those three low-support
+raw-cost cylinder wins, so the current capped Franka support-aware native lane selects `32` boxes.
+The real-USD result is a selection/accounting milestone, not native primitive quality evidence.
 
 ## Where This Sits In The Paper Story
 
@@ -148,7 +150,8 @@ native subset picks the intended primitive:
 If that does not work on toy meshes, running bed or Franka only creates noisy failure output. That
 follow-up has now been run under explicit face caps in
 `configs/experiments/bed_franka_native_probe_comparison.yaml`; the current real-USD run keeps bed
-at boxes and changes capped Franka's native lane to 3 cylinders under the surrogate.
+at boxes and records three capped Franka raw-cost cylinder candidates as support-blocked rather
+than selected.
 
 ## Current Narrow Evidence
 
@@ -178,7 +181,7 @@ The real-USD result is:
 
 1. old/new CPD-like objective reports ran on capped bed and capped Franka meshes;
 2. bed selected `32` boxes in both lanes, while Franka selected `32` boxes in the legacy lane and
-   `29` boxes plus `3` cylinders in the native lane;
+   `32` boxes in the support-aware native lane;
 3. all packages mapped cleanly into Newton shape descriptors;
 4. contact canaries passed for all four lanes;
 5. gated drop/settle and sphere-rain task smokes passed under the recorded config.

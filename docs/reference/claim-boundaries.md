@@ -32,12 +32,17 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   merge-excess accounting, assigned-point containment proxy, unsupported paper primitive gaps, and
   component/fallback labels. This is not full CPD paper reproduction, paper-faithful optimization,
   benchmark evidence, or collision-quality validation. "Paper-aligned" means design-aligned with
-  the paper story's accounting categories, not the paper's exact objective formula or search
-  procedure.
+  the paper story's accounting categories, not the paper's collapse-cost rule, primitive
+  weighting, or search procedure.
 - The current objective report can include structured Eq.4 alignment metadata that maps current
   surrogate merge-excess fields to the CPD paper's collapse-cost role for audit. This is metadata,
   not Eq.4 implementation, paper-faithful scoring, benchmark evidence, or collision-quality
   validation.
+- The documentation can define a planned `paper_faithful_offline` status for future
+  fixture-scoped paper mechanics. That status is not currently supported by code. When implemented,
+  it may only describe the declared offline fixture scope and must remain separate from full CPD
+  paper reproduction, Newton runtime support, benchmark evidence, collision-quality validation,
+  deployment readiness, or safety certification.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper
@@ -46,6 +51,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   uses AABB-normalized merge-excess as a decision-making cost and compares old/new diagnostic
   accounting on a deterministic synthetic fixture. This is not full CPD paper reproduction,
   paper-faithful optimization, benchmark evidence, or collision-quality validation.
+- The current code can run synthetic offline merge-step trace diagnostic accounting for the
+  cost-guided merge-search smoke when `report_merge_trace: steps` is requested. The trace records
+  accepted or blocked merge decisions, source faces/components, merged primitive type, and
+  raw/normalized merge-excess for inspection. This is not a merge-policy improvement,
+  collision-quality result, benchmark result, Newton task result, paper-faithful search trace, or
+  CPD optimizer implementation.
 - The current code can run a deterministic expected-failure synthetic workbench over in-memory
   fixtures that checks whether known CPD-like limitation flags remain visible. A `smoke_passed`
   result means expected limitation flags matched observed flags, not decomposition success,
@@ -68,26 +79,122 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   primitive fitting, broad asset evidence, or completed bed/Franka evidence.
 - The current synthetic native fitting comparison can include a candidate weighted-volume audit
   table that explains why the toy fixtures selected `cylinder`, `cone`, or `ellipsoid` under the
-  current surrogate primitive-choice rule. This is synthetic diagnostic accounting, not a
-  paper-faithful CPD optimizer, real-USD improvement evidence, benchmark evidence, or
+  current support-aware surrogate primitive-choice rule. This is synthetic diagnostic accounting,
+  not a paper-faithful CPD optimizer, real-USD improvement evidence, benchmark evidence, or
+  collision-quality validation.
+- The current code can run a deterministic low-support native-extension admissibility fixture and
+  can rank `cylinder`, `cone`, and `ellipsoid` candidates as selection-inadmissible when they have
+  too few source faces or unique assigned points and a fallback primitive exists. This is a local
+  diagnostic selection guard, not paper-faithful primitive fitting, not benchmark evidence, and not
   collision-quality validation.
 - The current code can run a real-USD old/new native fitting diagnostic over capped
-  `bed_dev_smoke` and capped `franka_import_smoke` first-mesh scope. The current dated run keeps
-  bed at `32` boxes in both lanes and changes the Franka native lane to `29` boxes plus `3`
-  cylinders under the current surrogate. This is selection/accounting evidence, not evidence that
-  native primitives improved those assets.
+  `bed_dev_smoke` and capped `franka_import_smoke` first-mesh scope. The current support-aware
+  dated run keeps bed at `32` boxes in both lanes and capped Franka at `32` boxes in both lanes,
+  while reporting three Franka cheaper raw-cost cylinder candidates as support-blocked extension
+  candidates. This is selection/accounting evidence, not evidence that boxes or cylinders improved
+  those assets.
 - The real-USD native fitting diagnostic can include a per-selected-cluster candidate audit
-  summary that reports whether `cylinder`, `cone`, or `ellipsoid` was the cheapest candidate under
-  the current surrogate. This is diagnostic accounting for why the current lanes select their
-  primitives, not a quality metric or native primitive improvement claim.
+  summary that reports whether `cylinder`, `cone`, or `ellipsoid` was the cheapest raw-cost
+  candidate and whether it was support-admissible under the current surrogate. This is diagnostic
+  accounting for why the current lanes select their primitives, not a quality metric or native
+  primitive improvement claim.
 - The current code can run a real-USD candidate-loss diagnosis over capped bed and capped Franka
   native lanes. It reports per-cluster selected primitive ranks, extension-candidate margins,
-  simple cluster geometry hints, and likely surrogate bottleneck labels. This is diagnostic
-  accounting, not collision-quality evidence, benchmark evidence, or a paper-faithful optimizer.
+  support-aware selection admissibility, simple cluster geometry hints, and likely surrogate
+  bottleneck labels. This is diagnostic accounting, not collision-quality evidence, benchmark
+  evidence, or a paper-faithful optimizer.
 - The real-USD candidate-loss diagnosis can include next-slice triage metadata. It ranks
   near-miss extension candidates and low-support native-extension selections so the next synthetic
   fixture can be chosen from recorded accounting. This is planning metadata, not evidence that the
   ranked primitive kind is better.
+- The current code can include a direct synthetic `cylinder_near_miss_cluster` fixture where `box`
+  still wins, `cylinder` is support-admissible, and the relative weighted-volume gap is small.
+  The fixture can be exposed through `cpd_like_near_miss_fixture_workbench`. This is a
+  primitive-ranking diagnostic target for future fitting or merge/search work, not a native
+  primitive success case and not collision-quality evidence.
+- The current code can run `cpd_like_cylinder_near_miss_fit_ablation`, a synthetic offline report
+  for the `cylinder_near_miss_cluster` fixture that records the current containing-cylinder radius
+  and a pairwise radial lower bound. It can say that radial-center refinement cannot flip this
+  fixture under containment and the current surrogate. This is diagnostic accounting, not a
+  primitive-selection change, native primitive improvement, real-USD result, Newton task result,
+  benchmark, collision-quality validation, or CPD paper reproduction.
+- The current code can run `cpd_like_cylinder_near_miss_scoring_sensitivity`, a synthetic offline
+  report for the same fixture that computes the counterfactual cylinder score multiplier and cost
+  reduction required to tie the selected box under the current weighted-volume surrogate. This is
+  sensitivity accounting for planning, not a scoring-policy change, primitive-selection
+  improvement, evidence that cylinder is better, real-USD result, Newton task result, benchmark,
+  collision-quality validation, or CPD paper reproduction.
+- The current code can run `cpd_like_cylinder_near_miss_scoring_policy_ablation`, a synthetic
+  offline report that applies a fixed counterfactual cylinder multiplier inside the report only.
+  It records that the cylinder near-miss fixture would flip under that hypothetical scoring policy
+  and that a clearly boxy cuboid guardrail fixture remains `box`. This is report-only
+  sensitivity/guardrail accounting for planning, not a default scoring-policy change,
+  primitive-selection improvement, evidence that cylinder is better, evidence the multiplier is
+  safe or calibrated, real-USD result, Newton task result, benchmark, collision-quality validation,
+  or CPD paper reproduction.
+- The current code can run `cpd_like_cylinder_scoring_policy_selection_probe`, a synthetic offline
+  opt-in selection probe that applies the same fixed cylinder multiplier to candidate selection
+  only when explicitly requested by the probe. It records that the near-miss fixture flips while a
+  clearly boxy cuboid guardrail remains `box`. This is a synthetic opt-in primitive-choice probe,
+  not a default scoring-policy change, primitive-selection improvement, evidence that cylinder is
+  better, evidence the multiplier is safe or calibrated, real-USD result, Newton task result,
+  benchmark, collision-quality validation, or CPD paper reproduction.
+- The current code can run `cpd_like_cylinder_scoring_policy_package_probe`, an explicitly opt-in
+  synthetic package probe that passes `primitive_score_multipliers={"cylinder": 0.88}` through
+  `decompose_mesh`, produces a changed synthetic `CollisionPackage` for the near-miss fixture,
+  keeps the boxy guardrail package unchanged, and records Newton shape-mapping coverage. This is
+  package-path and mapping-accounting evidence only, not default package behavior, scoring
+  calibration, real-USD evidence, Newton contact/task evidence, collision-quality validation,
+  benchmark evidence, or CPD paper reproduction.
+- The current code can run `cpd_like_controlled_merge_search_package_probe`, a command-only
+  synthetic package-path probe that carries the existing `cost_guided_pair_choice` fixture through
+  `CollisionPackage` generation for `topology_then_virtual` versus `cost_guided_pairwise` lanes and
+  records Newton shape-mapping coverage. This is package-path and mapping-accounting evidence only,
+  not a default merge-policy change, merge-policy superiority result, real-USD evidence, Newton
+  contact/task evidence, collision-quality validation, benchmark evidence, or CPD paper
+  reproduction.
+- The current code can run `cpd_like_controlled_merge_search_newton_probe`, a synthetic Newton
+  diagnostic over the changed `cost_guided_pair_choice` package pair. It runs named
+  `newton_contact_smoke`, `newton_drop_settle`, and `newton_sphere_rain` smokes behind the contact
+  gate and records task status under recorded settings. This is synthetic task-smoke execution
+  evidence for one changed merge/search package pair, not default merge behavior, merge-policy
+  superiority, real-USD evidence, collision-quality validation, benchmark evidence, real
+  contact-stress measurement, safety certification, or CPD paper reproduction.
+- The current code can run `cpd_like_cost_guided_lookahead_merge_report`, a command-only
+  synthetic two-step lookahead merge/search diagnostic over one deterministic trap fixture. It
+  records that `two_step_lookahead` changes the toy grouping relative to greedy
+  `cost_guided_pairwise` and lowers projected two-step normalized merge-excess under the current
+  surrogate. This is offline synthetic merge/search accounting only, not default merge behavior,
+  merge-policy superiority, package-path evidence, Newton contact/task evidence, real-USD evidence,
+  collision-quality validation, benchmark evidence, or CPD paper reproduction.
+- The current code can run `cpd_like_cost_guided_lookahead_package_probe`, a command-only
+  synthetic package-path probe over the existing `lookahead_merge_trap` fixture. It converts greedy
+  `cost_guided_pairwise` and opt-in `two_step_lookahead` decompositions into `CollisionPackage`,
+  compares source-face groupings, and records Newton shape-mapping coverage. This is package-path
+  and mapping-accounting evidence only; it does not change default merge behavior, rank merge
+  policies, run Newton runtime tasks, touch real assets, measure collision geometry quality,
+  compare against a benchmark suite, or complete paper-level reproduction.
+- The current code can run `cpd_like_cost_guided_lookahead_newton_probe`, an explicitly opt-in
+  synthetic Newton diagnostic over the lookahead-changed `lookahead_merge_trap` package pair. It
+  runs named `newton_contact_smoke`, `newton_drop_settle`, and `newton_sphere_rain` smokes behind
+  per-lane contact gates and records task status under recorded settings. This is synthetic
+  task-smoke status only; it does not change default merge behavior, rank merge policies, touch
+  real assets, report bed or Franka results, measure collision geometry quality, compare against a
+  benchmark suite, support deployment or certification conclusions, find or rule out broad failure
+  modes, or complete paper-level reproduction.
+- The current code can run `cpd_like_four_block_slice_report`, a command-only evidence map for the
+  already recorded `cost_guided_lookahead` synthetic slice. It summarizes primitive
+  fitting/selection, merge/search, offline diagnostics, and recorded Newton task-smoke evidence by
+  linking to dated records. This report does not invoke decomposition, USD loading, package
+  builders, Newton runtime tasks, real assets, benchmark measurement, collision-quality
+  evaluation, policy ranking, deployment/certification checks, or paper-level reproduction.
+- The current code can run `cpd_like_cylinder_scoring_policy_newton_probe`, an explicitly opt-in
+  synthetic Newton diagnostic over the changed `cylinder_near_miss_cluster` package pair. It runs
+  named `newton_contact_smoke`, `newton_drop_settle`, and `newton_sphere_rain` smokes behind the
+  contact gate and records task status under recorded settings. This is synthetic task-smoke
+  execution evidence for one opt-in changed package, not default package behavior, scoring
+  calibration, real-USD evidence, collision-quality validation, benchmark evidence, real
+  contact-stress measurement, safety certification, or CPD paper reproduction.
 - The current code can run a gated real-USD Newton probe comparison for capped bed and capped
   Franka first-mesh packages: full package mapping, contact canary, then drop/settle and
   sphere-rain only after contact passes. This is named diagnostic smoke evidence under recorded
@@ -120,7 +227,8 @@ Use these only after a dated record links them to Phase 0 assets, configs, logs,
 - A baseline comparison includes primitive count, fallback ratio, step time, contact count, and
   penetration or jitter measurements.
 - A generated collision package is simulation-checked for a named task in a named environment,
-  beyond the recorded capped-bed, capped-Franka first-mesh, and synthetic native-bundle smokes.
+  beyond the recorded capped-bed, capped-Franka first-mesh, synthetic native-bundle, synthetic
+  cylinder scoring-policy, synthetic controlled merge-search, and synthetic lookahead smokes.
 - A DLC-worker or experiment-specific Python/Newton environment has passed readiness checks for a
   named source checkout and hardware environment.
 
@@ -169,12 +277,15 @@ Use these only after broader benchmark records exist.
 - Do not claim broad Newton-native primitive quality for `cylinder`, `cone`, or `ellipsoid`
   beyond the dated synthetic diagnostic-path, opt-in synthetic fitting, and capped real-USD
   diagnostic records. Do not claim the CPD-like generator emits these kinds by default for normal
-  asset configs. Do not claim bed or Franka native-fitting improvement from the current real-USD
-  records; bed still selects boxes, and Franka's 3-cylinder native-lane selection is surrogate
-  accounting, not quality evidence.
+  asset configs. Do not claim bed or Franka native-fitting improvement from the current
+  support-aware real-USD records; bed and Franka currently select boxes, and the three
+  support-blocked Franka cylinder candidates are surrogate accounting, not quality evidence.
 - Do not describe the synthetic native selection audit as a quality metric, paper-faithful
   optimizer, proof that native primitives are broadly better, real-USD improvement, or collision
   validation. It is a candidate-cost diagnostic table over toy meshes.
+- Do not describe support-aware native-extension admissibility as a paper objective, learned
+  classifier, safety filter, or proof that low-support native primitives are bad. It is a local
+  face/point support guard for the current diagnostic workbench.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are
@@ -183,6 +294,33 @@ Use these only after broader benchmark records exist.
   proof that boxes or cylinders are better, or evidence that the Franka collider is good.
 - Do not describe candidate-loss triage as an optimizer or as proof of the next algorithmic
   direction. It is a deterministic sorting aid for choosing the next synthetic diagnostic target.
+- Do not describe the `cylinder_near_miss_cluster` fixture as a resolved near miss, a native
+  fitting improvement, or a real-USD package improvement. It is a synthetic limitation target.
+- Do not describe `cpd_like_cylinder_near_miss_fit_ablation` as fixing cylinder fitting or proving
+  cylinder quality. It is a containment-preserving lower-bound diagnostic that keeps default
+  selection and Newton packages unchanged.
+- Do not describe `cpd_like_cylinder_near_miss_scoring_sensitivity` as improving the objective,
+  calibrating scoring, proving boxes are wrong, or recommending a cylinder bias. It is
+  counterfactual sensitivity accounting and does not apply the multiplier it reports.
+- Do not describe `cpd_like_cylinder_near_miss_scoring_policy_ablation` as a new default scoring
+  policy, calibrated objective, selection improvement, recommended cylinder bias, or Newton-checked
+  flip. It is a report-only counterfactual over deterministic synthetic fixtures.
+- Do not describe `cpd_like_cylinder_scoring_policy_package_probe` as a default package change,
+  calibrated scoring policy, Newton diagnostic run, simulation-checked package, real-USD package
+  improvement, or collision-quality result. It is an explicitly opt-in synthetic package and
+  Newton shape-mapping summary only.
+- Do not describe `cpd_like_controlled_merge_search_package_probe` as a default merge-policy change,
+  merge-policy superiority result, Newton diagnostic run, simulation-checked package, real-USD
+  package improvement, or collision-quality result. It is a single-fixture synthetic package-path
+  and Newton shape-mapping summary only.
+- Do not use the synthetic `cpd_like_controlled_merge_search_newton_probe` as evidence that
+  `cost_guided_pairwise` is better than `topology_then_virtual`, that merge policy was validated,
+  that real-USD/bed/Franka packages improved, or that collision quality was validated. It is a named
+  synthetic task-smoke diagnostic over one changed package pair.
+- Do not use the synthetic `cpd_like_cylinder_scoring_policy_newton_probe` as evidence that the
+  cylinder multiplier is calibrated, that cylinder is better than box, that real-USD/bed/Franka
+  packages improved, that failure modes were found or ruled out, or that collision quality was
+  validated. It is a named synthetic task-smoke diagnostic over one opt-in changed package pair.
 - Do not use CPD paper primitive-vocabulary completeness as a runtime support claim. Paper-only
   primitives remain offline diagnostics unless separately mapped and verified.
 
