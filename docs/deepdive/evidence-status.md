@@ -95,14 +95,22 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run `cpd_paper_offline_report`, a command-only partial
   offline CPD paper-lane audit over deterministic toy fixtures. It now includes a
   `paper_faithful_offline_scope_audit` criteria table with `decision: remain_partial`,
-  `paper_faithful_offline_supported: false`, and next gate
-  `paper_fixture_breadth_expansion_plan`. This is scope accounting for the offline paper lane, not
-  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
-  real-USD evidence, benchmark evidence, or collision-quality validation.
+  `paper_faithful_offline_supported: false`, and a prior scope-audit gate of
+  `paper_fixture_breadth_expansion_plan`. The current gate is now updated below by Batch A. This is
+  scope accounting for the offline paper lane, not `paper_faithful_offline`, full CPD reproduction,
+  package generation, Newton runtime support, real-USD evidence, benchmark evidence, or
+  collision-quality validation.
 - The current documentation can define an offline-only fixture-breadth expansion plan for the nine
-  blocking scope-audit rows and recommend `paper_fixture_breadth_batch_a` as the next code slice.
-  This is not executable evidence and does not implement new fixtures, package generation, Newton
-  runtime support, real-USD evidence, benchmark evidence, or collision-quality validation.
+  blocking scope-audit rows. The plan is not executable evidence by itself and does not implement
+  package generation, Newton runtime support, real-USD evidence, benchmark evidence, or
+  collision-quality validation.
+- The current executable surface can run the Batch A fixture-breadth source/preprocess/intake/
+  operator slice inside `cpd_paper_offline_report`, adding
+  `paper_mixed_face_preprocess_operator`, `paper_degenerate_preprocess_face_drop`, and
+  `paper_concave_polygon_rejected` as synthetic offline cases. The report remains partial and
+  points the next gate to `paper_fixture_breadth_batch_b`; this is not `paper_faithful_offline`,
+  package generation, Newton runtime support, real-USD evidence, benchmark evidence, or
+  collision-quality validation.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

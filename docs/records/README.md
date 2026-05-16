@@ -243,6 +243,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Fixture Breadth Expansion Plan](2026-05-16-cpd-paper-fixture-breadth-expansion-plan.md):
   documentation-only plan that maps the nine scope-audit blockers to future synthetic fixture
   batches and recommends Batch A as the next code slice.
+- [2026-05-16 CPD Paper Fixture Breadth Batch A](2026-05-16-cpd-paper-fixture-breadth-batch-a.md):
+  partial command-only source/preprocess/intake/operator fixture-breadth audit inside
+  `cpd_paper_offline_report`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

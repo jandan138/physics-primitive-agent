@@ -79,34 +79,43 @@ source-face intake, and operator accounting at the same time, while still stayin
 | `paper_rotated_nested_primitive` | enclosed primitive postprocess | Inner and outer OBBs share a rotated non-identity axis frame, with the inner primitive fully enclosed. | Rotated axes, inner and outer ids, corner containment status, before/after count, and cull reason. | Assert the inner OBB is culled only after all transformed corners are contained. | No general containment library claim. | Toy postprocess containment breadth only. |
 | `paper_cross_type_enclosure_boundary` | enclosed primitive postprocess | A sphere or capsule lies inside an OBB, or the report explicitly marks cross-type culling unsupported. | Containment test type, supported or unsupported label, cull/no-cull decision, and claim boundary. | Assert cross-type containment is either implemented with a deterministic check or explicitly blocked with no silent cull. | No broad redundant primitive removal quality claim. | Toy cross-type containment boundary only. |
 
-## Recommended First Code Slice
+## Batch Status
+
+Batch A is now implemented in `cpd_paper_offline_report`:
+
+```text
+paper_fixture_breadth_batch_a
+-> `paper_mixed_face_preprocess_operator`
+-> `paper_degenerate_preprocess_face_drop`
+-> `paper_concave_polygon_rejected`
+-> report remains partial
+-> no package generation, Newton, real USD, or benchmark work
+```
 
 The next code slice should be:
 
 ```text
-paper_fixture_breadth_batch_a
--> add `paper_mixed_face_preprocess_operator`
--> add `paper_degenerate_preprocess_face_drop`
--> add `paper_concave_polygon_rejected`
--> update `cpd_paper_offline_report` while keeping `status: partial`
+paper_fixture_breadth_batch_b
+-> primitive-fit breadth for all six paper primitive names
+-> report remains partial
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
-Batch A is first because it improves the source mesh, source-face intake, and operator criteria
-that every later primitive-fit and search fixture depends on.
+Batch A stays important because it improves the source mesh, source-face intake, and operator
+criteria that every later primitive-fit and search fixture depends on.
 
 ## Claim Boundary
 
 This plan supports only this statement:
 
 ```text
-The repository has a documented offline-only fixture-breadth expansion plan for the blocking
-scope-audit criteria.
+The repository has an offline-only fixture-breadth expansion plan and a Batch A synthetic
+source/preprocess/intake/operator implementation inside the partial paper report.
 ```
 
 It does not support:
 
-- implemented fixture breadth;
+- implemented Batch B-E fixture breadth;
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
 - package generation;

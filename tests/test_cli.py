@@ -1528,7 +1528,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert payload["next_required_gate"] == "paper_fixture_breadth_expansion_plan"
+    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_b"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1565,6 +1565,9 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_nested_primitive",
         "paper_quad_face_intake",
         "paper_polygon_face_intake",
+        "paper_mixed_face_preprocess_operator",
+        "paper_degenerate_preprocess_face_drop",
+        "paper_concave_polygon_rejected",
     ]
     single_box = payload["cases"][0]
     candidate_names = [
@@ -1628,6 +1631,42 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "exact_coordinate_duplicate_vertex_fixture"
     )
     assert duplicate_case["collapse_trace"]["initial_edge_count"] == 1
+
+    batch_a_cases = {
+        case["case_id"]: case
+        for case in payload["cases"]
+        if case["case_id"]
+        in {
+            "paper_mixed_face_preprocess_operator",
+            "paper_degenerate_preprocess_face_drop",
+            "paper_concave_polygon_rejected",
+        }
+    }
+    assert set(batch_a_cases) == {
+        "paper_mixed_face_preprocess_operator",
+        "paper_degenerate_preprocess_face_drop",
+        "paper_concave_polygon_rejected",
+    }
+    assert batch_a_cases["paper_mixed_face_preprocess_operator"][
+        "fixture_breadth_batch"
+    ] == "paper_fixture_breadth_batch_a"
+    mixed_aggregate = batch_a_cases["paper_mixed_face_preprocess_operator"][
+        "operator_audit"
+    ]["source_face_operator_aggregates"][0]
+    assert mixed_aggregate["eigenvalues"]
+    assert mixed_aggregate["eigenvector_matrix_layout"] == "columns_are_eigenvectors"
+    assert batch_a_cases["paper_degenerate_preprocess_face_drop"][
+        "preprocessing_audit"
+    ]["degenerate_face_dropped_count"] == 1
+    assert batch_a_cases["paper_degenerate_preprocess_face_drop"][
+        "primitive_fit_audit"
+    ]["source_faces"] == [1]
+    concave_case = batch_a_cases["paper_concave_polygon_rejected"]
+    assert concave_case["case_status"] == "unsupported_fixture_policy"
+    assert concave_case["mesh_intake_policy_audit"]["failure_label"] == (
+        "source_face_intake_unsupported_concave_polygon"
+    )
+    assert "primitive_fit_audits" not in concave_case
 
 
 def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):

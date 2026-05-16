@@ -60,18 +60,26 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   topology-change accounting, and a topology trace over the deduplicated executable mesh. The
   report now also includes a `paper_faithful_offline_scope_audit` criteria table with
   `decision: remain_partial`, non-blocking package/Newton/real-USD/benchmark boundary rows, and
-  next gate `paper_fixture_breadth_expansion_plan`. The report remains `status: partial` with
+  prior scope-audit gate `paper_fixture_breadth_expansion_plan`; the current gate is advanced by
+  the Batch A fixture-breadth slice below. The report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
   package generation, not real-USD evidence, not benchmark evidence, and not collision-quality
   validation.
 - The documentation can define a fixture-breadth expansion plan for the nine blocking
-  scope-audit rows and can recommend `paper_fixture_breadth_batch_a` as the next offline code
-  slice. This is a planning artifact only. It does not implement new fixtures, does not change
-  `cpd_paper_offline_report`, does not support `paper_faithful_offline`, and does not add package
-  generation, Newton runtime, real-USD, benchmark, collision-quality, deployment, or safety
-  evidence.
+  scope-audit rows. The plan is a planning artifact for future batches; implemented evidence must
+  still come from code, tests, and dated records. The plan alone does not support
+  `paper_faithful_offline`, package generation, Newton runtime, real-USD, benchmark,
+  collision-quality, deployment, or safety evidence.
+- The current code can add the Batch A source/preprocess/intake/operator fixture-breadth cases to
+  the partial `cpd_paper_offline_report`: `paper_mixed_face_preprocess_operator`,
+  `paper_degenerate_preprocess_face_drop`, and `paper_concave_polygon_rejected`. The report can
+  advance its next required gate to `paper_fixture_breadth_batch_b`. This is synthetic offline
+  fixture accounting only. It does not support broad mesh cleanup, general polygon intake,
+  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
+  real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
+  safety certification.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper

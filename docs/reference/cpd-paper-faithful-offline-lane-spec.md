@@ -582,15 +582,15 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 
 ## Next Implementation Slice
 
-The next paper-lane gate is:
+The next paper-lane gate after Batch A is:
 
 ```text
-paper_fixture_breadth_batch_a
--> add source/preprocess/intake/operator fixture breadth
+paper_fixture_breadth_batch_b
+-> add primitive-fit breadth for all six paper primitive names
 -> keep report status partial
 -> keep package generation, Newton, real USD, and benchmarks out of scope
 ```
 
-The documentation-only fixture-breadth expansion plan defines later B-E batches, but Batch A is
-the next code slice because it broadens mesh policy, source-face accounting, and operator
-evidence used by every later primitive-fit and search fixture.
+Batch A now broadens mesh policy, source-face accounting, and operator evidence. Batch B should
+broaden primitive-fit evidence for OBB, sphere, capsule, capped cylinder, frustum, and trapezoidal
+prism without adding Newton runtime support.

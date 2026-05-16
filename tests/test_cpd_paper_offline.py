@@ -260,10 +260,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_fixture_breadth_gap():
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
 
 
-def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_plan():
+def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_b():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_fixture_breadth_expansion_plan"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_b"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -546,6 +546,64 @@ def test_cpd_paper_offline_report_records_polygon_quad_intake_policy():
     )
 
 
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_a():
+    report = build_cpd_paper_offline_report()
+    cases = {case["case_id"]: case for case in report["cases"]}
+
+    mixed = cases["paper_mixed_face_preprocess_operator"]
+    assert mixed["fixture_breadth_batch"] == "paper_fixture_breadth_batch_a"
+    assert mixed["source_mesh"]["source_face_arities"] == [3, 4, 5]
+    assert mixed["source_mesh"]["duplicate_vertex_preprocessing"] == (
+        "exact_coordinate_deduplication_for_fixture"
+    )
+    assert mixed["preprocessing_audit"]["duplicate_cluster_count"] == 1
+    assert mixed["preprocessing_audit"]["degenerate_face_dropped_count"] == 0
+    assert mixed["mesh_intake_policy_audit"]["source_face_arities"] == [3, 4, 5]
+    assert mixed["mesh_intake_policy_audit"]["triangulated_face_count"] == 6
+    assert mixed["operator_audit"]["face_scope"] == "triangle_subfaces_from_source_face"
+    assert len(mixed["operator_audit"]["source_face_operator_aggregates"]) == 3
+    for aggregate in mixed["operator_audit"]["source_face_operator_aggregates"]:
+        assert aggregate["q_matrix"]
+        assert len(aggregate["eigenvalues"]) == 3
+        assert aggregate["eigenvector_matrix_layout"] == "columns_are_eigenvectors"
+        assert isinstance(aggregate["degeneracy_labels"], list)
+
+    degenerate = cases["paper_degenerate_preprocess_face_drop"]
+    assert degenerate["fixture_breadth_batch"] == "paper_fixture_breadth_batch_a"
+    degenerate_audit = degenerate["preprocessing_audit"]
+    assert degenerate_audit["degenerate_face_dropped_count"] == 1
+    assert degenerate_audit["dropped_source_face_ids"] == [0]
+    assert degenerate_audit["retained_source_face_ids"] == [1]
+    assert degenerate_audit["preprocessing_source_face_remap"][0]["drop_reason"] == (
+        "degenerate_after_deduplication"
+    )
+    assert degenerate_audit["executable_deduplicated_faces"] == [[2, 3, 4]]
+    assert degenerate["source_mesh"]["face_count"] == 1
+    assert degenerate["operator_audit"]["preprocessing_degeneracy_labels"] == [
+        "dropped_degenerate_faces_after_preprocessing"
+    ]
+    assert degenerate["operator_audit"]["faces"][0]["source_face_id"] == 1
+    assert degenerate["operator_audit"]["merged_group"]["source_faces"] == [1]
+    assert degenerate["primitive_fit_audit"]["source_faces"] == [1]
+    assert degenerate["primitive_fit_audit"]["source_face_ids"] == [1]
+    assert degenerate["primitive_fit_audit"]["generated_triangle_face_ids"] == [0]
+
+    concave = cases["paper_concave_polygon_rejected"]
+    assert concave["fixture_breadth_batch"] == "paper_fixture_breadth_batch_a"
+    assert concave["case_status"] == "unsupported_fixture_policy"
+    intake = concave["mesh_intake_policy_audit"]
+    assert intake["failure_label"] == "source_face_intake_unsupported_concave_polygon"
+    assert intake["source_face_arities"] == [5]
+    assert intake["generated_triangle_face_ids"] == []
+    assert intake["triangulated_face_count"] == 0
+    assert intake["top_level_failure_label"] is False
+    assert "primitive_fit_audits" not in concave
+    assert concave["package_generation_triggered"] is False
+    assert concave["newton_runtime_triggered"] is False
+    assert concave["real_usd_triggered"] is False
+    assert concave["benchmark_triggered"] is False
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -561,7 +619,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert report["next_required_gate"] == "paper_fixture_breadth_expansion_plan"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_b"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
         "paper_fixture_breadth_expansion"
     ]
@@ -587,6 +645,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
     assert "paper_faithful_offline_scope_audit" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_fixture_breadth_batch_a_source_preprocess_intake_operator" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
 
@@ -644,9 +705,14 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_nested_primitive",
         "paper_quad_face_intake",
         "paper_polygon_face_intake",
+        "paper_mixed_face_preprocess_operator",
+        "paper_degenerate_preprocess_face_drop",
+        "paper_concave_polygon_rejected",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
     for case in cases.values():
+        if "primitive_fit_audits" not in case:
+            continue
         for audit in case["primitive_fit_audits"]:
             paper_primitives = [row["paper_primitive"] for row in audit["candidates"]]
             assert len(paper_primitives) == len(set(paper_primitives))

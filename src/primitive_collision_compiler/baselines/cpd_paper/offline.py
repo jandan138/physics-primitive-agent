@@ -87,6 +87,16 @@ class _DuplicateVertexPreprocessingAudit:
 
 
 @dataclass(frozen=True)
+class _UnsupportedSourceFaceIntakeAudit:
+    source_face_id: int
+    source_face_arity: int
+    source_vertex_ids: tuple[int, ...]
+    failure_label: str = "source_face_intake_unsupported_concave_polygon"
+    case_status: str = "unsupported_fixture_policy"
+    rejection_reason: str = "concave_non_triangle_source_face"
+
+
+@dataclass(frozen=True)
 class _PaperToyCase:
     case_id: str
     description: str
@@ -99,6 +109,9 @@ class _PaperToyCase:
     postprocess_fixture: bool = False
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None
     duplicate_vertex_preprocessing_audit: _DuplicateVertexPreprocessingAudit | None = None
+    unsupported_source_face_intake_audit: _UnsupportedSourceFaceIntakeAudit | None = None
+    fixture_breadth_batch: str | None = None
+    executable_source_face_ids: tuple[int, ...] | None = None
 
 
 def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
@@ -399,7 +412,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_fixture_breadth_expansion_plan",
+        "next_required_gate": "paper_fixture_breadth_batch_b",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -415,6 +428,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "paper_obb_sphere_fit_faithfulness_audit",
                 "paper_duplicate_vertex_preprocessing_audit",
                 "paper_faithful_offline_scope_audit",
+                "paper_fixture_breadth_batch_a_source_preprocess_intake_operator",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -427,6 +441,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
 
 
 def _case_payload(case: _PaperToyCase) -> dict[str, object]:
+    if case.unsupported_source_face_intake_audit is not None:
+        return _unsupported_source_face_case_payload(case)
+
     preprocessing_boundary = (
         "exact_coordinate_duplicate_vertex_fixture"
         if case.duplicate_vertex_preprocessing_audit is not None
@@ -438,6 +455,7 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             face_group,
             case.source_face_intake_audit,
             preprocessing_boundary,
+            case.executable_source_face_ids,
         )
         for face_group in case.face_groups
     ]
@@ -448,12 +466,14 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             case.mesh,
             case.source_face_intake_audit,
             case.duplicate_vertex_preprocessing_audit,
+            case.executable_source_face_ids,
         ),
         "operator_audit": _operator_audit_payload(
             case.mesh,
             case.face_groups,
             case.source_face_intake_audit,
             preprocessing_boundary,
+            case.executable_source_face_ids,
         ),
         "primitive_fit_audit": primitive_fit_audits[-1],
         "primitive_fit_audits": primitive_fit_audits,
@@ -462,6 +482,8 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
         "real_usd_triggered": False,
         "benchmark_triggered": False,
     }
+    if case.fixture_breadth_batch is not None:
+        payload["fixture_breadth_batch"] = case.fixture_breadth_batch
     if case.collapse_pair is not None:
         left, right = case.collapse_pair
         payload["collapse_cost_audit"] = _collapse_cost_payload(case.mesh, left, right)
@@ -488,10 +510,31 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
     return payload
 
 
+def _unsupported_source_face_case_payload(case: _PaperToyCase) -> dict[str, object]:
+    audit = case.unsupported_source_face_intake_audit
+    if audit is None:
+        raise ValueError("unsupported source face intake audit is required")
+    payload: dict[str, object] = {
+        "case_id": case.case_id,
+        "description": case.description,
+        "case_status": audit.case_status,
+        "source_mesh": _unsupported_source_mesh_payload(audit),
+        "mesh_intake_policy_audit": _unsupported_source_face_intake_audit_payload(audit),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+    if case.fixture_breadth_batch is not None:
+        payload["fixture_breadth_batch"] = case.fixture_breadth_batch
+    return payload
+
+
 def _source_mesh_payload(
     mesh: TriangleMesh,
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
     duplicate_vertex_preprocessing_audit: _DuplicateVertexPreprocessingAudit | None = None,
+    executable_source_face_ids: tuple[int, ...] | None = None,
 ) -> dict[str, object]:
     payload: dict[str, object] = {
         "fixture_scope": "synthetic_toy_mesh",
@@ -519,6 +562,10 @@ def _source_mesh_payload(
                 ),
             }
         )
+    if executable_source_face_ids is not None:
+        payload["executable_source_face_ids"] = [
+            int(source_face_id) for source_face_id in executable_source_face_ids
+        ]
     if source_face_intake_audit is None:
         return payload
 
@@ -545,6 +592,30 @@ def _source_mesh_payload(
     return payload
 
 
+def _unsupported_source_mesh_payload(
+    audit: _UnsupportedSourceFaceIntakeAudit,
+) -> dict[str, object]:
+    return {
+        "fixture_scope": "synthetic_unsupported_source_face_fixture",
+        "face_arity_policy": "reject_unsupported_concave_polygon",
+        "vertex_count": len(audit.source_vertex_ids),
+        "face_count": 0,
+        "source_face_count": 1,
+        "source_face_arities": [int(audit.source_face_arity)],
+        "source_face_remap": [],
+        "triangulated_face_count": 0,
+        "executable_triangle_face_count": 0,
+        "executable_triangle_faces": [],
+        "duplicate_vertex_preprocessing": "not_applied_unsupported_intake_fixture",
+        "source_face_preconditions": [
+            "planar",
+            "concave",
+            "non_degenerate",
+            "consistently_wound",
+        ],
+    }
+
+
 def _duplicate_vertex_source_face_remap(
     audit: _DuplicateVertexPreprocessingAudit,
 ) -> list[dict[str, object]]:
@@ -569,6 +640,16 @@ def _duplicate_vertex_source_face_remap(
     return rows
 
 
+def _executable_deduplicated_faces(
+    audit: _DuplicateVertexPreprocessingAudit,
+) -> tuple[tuple[int, int, int], ...]:
+    return tuple(
+        tuple(int(vertex_id) for vertex_id in face)
+        for face in audit.deduplicated_faces
+        if len(set(face)) == len(face)
+    )
+
+
 def _preprocessing_audit_payload(
     audit: _DuplicateVertexPreprocessingAudit,
 ) -> dict[str, object]:
@@ -583,9 +664,10 @@ def _preprocessing_audit_payload(
         points=np.asarray(audit.input_points, dtype=np.float64),
         faces=np.asarray(audit.input_faces, dtype=np.int64),
     )
+    executable_faces = _executable_deduplicated_faces(audit)
     deduplicated_mesh = TriangleMesh(
         points=np.asarray(audit.deduplicated_points, dtype=np.float64),
-        faces=np.asarray(audit.deduplicated_faces, dtype=np.int64),
+        faces=np.asarray(executable_faces, dtype=np.int64),
     )
     return {
         "audit_scope": "duplicate_vertex_preprocessing_fixture",
@@ -607,6 +689,9 @@ def _preprocessing_audit_payload(
         "deduplicated_faces": [
             [int(vertex_id) for vertex_id in face] for face in audit.deduplicated_faces
         ],
+        "executable_deduplicated_faces": [
+            [int(vertex_id) for vertex_id in face] for face in executable_faces
+        ],
         "preprocessing_source_face_remap": source_face_remap,
         "retained_source_face_ids": retained_source_face_ids,
         "dropped_source_face_ids": dropped_source_face_ids,
@@ -626,6 +711,7 @@ def _operator_audit_payload(
     face_groups: tuple[frozenset[int], ...],
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
     preprocessing_boundary: str | None = None,
+    executable_source_face_ids: tuple[int, ...] | None = None,
 ) -> dict[str, object]:
     merged_group = face_groups[-1]
     merged_operator = _group_operator(mesh, merged_group)
@@ -633,11 +719,23 @@ def _operator_audit_payload(
         "operator": "area_weighted_normal_plus_tangent_outer_product",
         "epsilon": PAPER_Q_EPSILON,
         "face_scope": "triangle_only",
-        "faces": [_face_operator_payload(mesh, face_id) for face_id in range(mesh.face_count)],
+        "faces": [
+            _face_operator_payload(
+                mesh,
+                face_id,
+                (
+                    executable_source_face_ids[face_id]
+                    if executable_source_face_ids is not None
+                    else None
+                ),
+            )
+            for face_id in range(mesh.face_count)
+        ],
         "merged_group": _group_operator_payload(
             merged_operator,
             merged_group,
             source_face_intake_audit,
+            executable_source_face_ids,
         ),
     }
     if source_face_intake_audit is not None:
@@ -648,12 +746,20 @@ def _operator_audit_payload(
         )
     if preprocessing_boundary is not None:
         payload["preprocessing_boundary"] = preprocessing_boundary
+    if executable_source_face_ids is not None:
+        payload["preprocessing_degeneracy_labels"] = [
+            "dropped_degenerate_faces_after_preprocessing"
+        ]
     return payload
 
 
-def _face_operator_payload(mesh: TriangleMesh, face_id: int) -> dict[str, object]:
+def _face_operator_payload(
+    mesh: TriangleMesh,
+    face_id: int,
+    source_face_id: int | None = None,
+) -> dict[str, object]:
     area, normal, tangent, operator = _face_operator_terms(mesh, face_id)
-    return {
+    payload: dict[str, object] = {
         "face_id": int(face_id),
         "area": area,
         "normal": _vector(normal),
@@ -661,6 +767,9 @@ def _face_operator_payload(mesh: TriangleMesh, face_id: int) -> dict[str, object
         "q_matrix": _matrix(operator),
         "degeneracy_labels": _operator_degeneracy_labels(operator),
     }
+    if source_face_id is not None:
+        payload["source_face_id"] = int(source_face_id)
+    return payload
 
 
 def _source_face_ids_for_generated_group(
@@ -680,6 +789,7 @@ def _group_operator_payload(
     operator: NDArray[np.float64],
     face_group: frozenset[int],
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
+    executable_source_face_ids: tuple[int, ...] | None = None,
 ) -> dict[str, object]:
     eigenvalues, eigenvectors = np.linalg.eigh(operator)
     order = np.argsort(eigenvalues)[::-1]
@@ -689,10 +799,16 @@ def _group_operator_payload(
         sorted_vectors[:, -1] *= -1.0
     generated_triangle_face_ids = sorted(int(face_id) for face_id in face_group)
     source_face_ids = _source_face_ids_for_generated_group(face_group, source_face_intake_audit)
+    if executable_source_face_ids is not None:
+        source_face_ids = [
+            int(executable_source_face_ids[int(face_id)])
+            for face_id in sorted(face_group)
+        ]
     payload: dict[str, object] = {
         "source_faces": (
             source_face_ids
             if source_face_intake_audit is not None
+            or executable_source_face_ids is not None
             else generated_triangle_face_ids
         ),
         "q_matrix": _matrix(operator),
@@ -712,6 +828,7 @@ def _primitive_fit_audit_payload(
     face_group: frozenset[int],
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
     preprocessing_boundary: str | None = None,
+    executable_source_face_ids: tuple[int, ...] | None = None,
 ) -> dict[str, object]:
     obb_row = _paper_obb_candidate_payload(mesh, face_group)
     rows = [
@@ -725,10 +842,16 @@ def _primitive_fit_audit_payload(
     selected = min(rows, key=lambda row: (float(row["weighted_volume"]), row["candidate_order"]))
     generated_triangle_face_ids = sorted(int(face_id) for face_id in face_group)
     source_face_ids = _source_face_ids_for_generated_group(face_group, source_face_intake_audit)
+    if executable_source_face_ids is not None:
+        source_face_ids = [
+            int(executable_source_face_ids[int(face_id)])
+            for face_id in sorted(face_group)
+        ]
     payload: dict[str, object] = {
         "source_faces": (
             source_face_ids
             if source_face_intake_audit is not None
+            or executable_source_face_ids is not None
             else generated_triangle_face_ids
         ),
         "candidate_scope": "paper_primitive_set_offline_audit_slice",
@@ -737,7 +860,7 @@ def _primitive_fit_audit_payload(
         "candidates": rows,
         "selected": selected,
     }
-    if source_face_intake_audit is not None:
+    if source_face_intake_audit is not None or executable_source_face_ids is not None:
         payload["generated_triangle_face_ids"] = generated_triangle_face_ids
         payload["source_face_ids"] = source_face_ids
     if preprocessing_boundary is not None:
@@ -1432,6 +1555,39 @@ def _source_face_intake_audit_payload(audit: _SourceFaceIntakeAudit) -> dict[str
     }
 
 
+def _unsupported_source_face_intake_audit_payload(
+    audit: _UnsupportedSourceFaceIntakeAudit,
+) -> dict[str, object]:
+    return {
+        "audit_scope": "unsupported_source_face_intake_policy_fixture",
+        "source_face_policy": "reject_unsupported_concave_polygon",
+        "triangulation_policy": "no_triangulation_for_unsupported_concave_polygon",
+        "operator_ownership_policy": "no_executable_operator_rows_for_unsupported_face",
+        "source_face_count": 1,
+        "source_face_arities": [int(audit.source_face_arity)],
+        "source_face_id": int(audit.source_face_id),
+        "source_vertex_ids": [int(vertex_id) for vertex_id in audit.source_vertex_ids],
+        "generated_triangle_face_ids": [],
+        "generated_triangle_vertex_ids": [],
+        "triangulated_face_count": 0,
+        "executable_triangle_face_count": 0,
+        "failure_label": audit.failure_label,
+        "top_level_failure_label": False,
+        "case_status": audit.case_status,
+        "rejection_reason": audit.rejection_reason,
+        "source_face_preconditions": [
+            "planar",
+            "concave",
+            "non_degenerate",
+            "consistently_wound",
+        ],
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _source_face_remap_payload(
     remaps: tuple[_SourceFaceRemap, ...],
 ) -> list[dict[str, object]]:
@@ -1465,6 +1621,10 @@ def _source_face_operator_aggregates(
         q_matrix = np.zeros((3, 3), dtype=np.float64)
         for face_id in remap.generated_triangle_face_ids:
             q_matrix += _face_operator_terms(mesh, int(face_id))[3]
+        eigen_payload = _group_operator_payload(
+            q_matrix,
+            frozenset(int(face_id) for face_id in remap.generated_triangle_face_ids),
+        )
         rows.append(
             {
                 "source_face_id": int(remap.source_face_id),
@@ -1478,6 +1638,10 @@ def _source_face_operator_aggregates(
                     for triangle in remap.generated_triangle_vertex_ids
                 ],
                 "q_matrix": _matrix(q_matrix),
+                "eigenvalues": eigen_payload["eigenvalues"],
+                "eigenvectors": eigen_payload["eigenvectors"],
+                "eigenvector_matrix_layout": eigen_payload["eigenvector_matrix_layout"],
+                "degeneracy_labels": eigen_payload["degeneracy_labels"],
             }
         )
     return rows
@@ -2094,6 +2258,32 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             face_groups=(frozenset({0, 1, 2}),),
             source_face_intake_audit=_polygon_face_intake_audit(),
         ),
+        _PaperToyCase(
+            case_id="paper_mixed_face_preprocess_operator",
+            description="Batch A mixed triangle/quad/polygon source-face fixture with exact-coordinate preprocessing",
+            mesh=_mixed_face_preprocess_operator_mesh(),
+            face_groups=(frozenset(range(6)),),
+            source_face_intake_audit=_mixed_face_preprocess_operator_intake_audit(),
+            duplicate_vertex_preprocessing_audit=_mixed_face_preprocess_operator_audit(),
+            fixture_breadth_batch="paper_fixture_breadth_batch_a",
+        ),
+        _PaperToyCase(
+            case_id="paper_degenerate_preprocess_face_drop",
+            description="Batch A exact-coordinate preprocessing fixture that drops one degenerate source face",
+            mesh=_degenerate_preprocess_face_drop_mesh(),
+            face_groups=(frozenset({0}),),
+            duplicate_vertex_preprocessing_audit=_degenerate_preprocess_face_drop_audit(),
+            fixture_breadth_batch="paper_fixture_breadth_batch_a",
+            executable_source_face_ids=(1,),
+        ),
+        _PaperToyCase(
+            case_id="paper_concave_polygon_rejected",
+            description="Batch A concave non-triangle source face rejected by conservative intake policy",
+            mesh=_unsupported_source_face_placeholder_mesh(),
+            face_groups=(frozenset({0}),),
+            unsupported_source_face_intake_audit=_concave_polygon_rejected_audit(),
+            fixture_breadth_batch="paper_fixture_breadth_batch_a",
+        ),
     )
 
 
@@ -2382,6 +2572,175 @@ def _polygon_face_intake_audit() -> _SourceFaceIntakeAudit:
                 generated_triangle_vertex_ids=((0, 1, 2), (0, 2, 3), (0, 3, 4)),
             ),
         ),
+    )
+
+
+def _mixed_face_preprocess_operator_input_points() -> tuple[tuple[float, float, float], ...]:
+    return (
+        (0.0, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0),
+        (1.0, 0.0, 0.0),
+        (2.0, 0.0, 0.0),
+        (2.0, 1.0, 0.0),
+        (1.0, 1.0, 0.0),
+        (3.0, 0.0, 0.0),
+        (4.0, 0.0, 0.0),
+        (4.4, 0.6, 0.0),
+        (3.7, 1.2, 0.0),
+        (3.0, 0.8, 0.0),
+    )
+
+
+def _deduplicate_exact_points(
+    input_points: tuple[tuple[float, float, float], ...],
+) -> tuple[
+    tuple[tuple[float, float, float], ...],
+    tuple[int, ...],
+    tuple[tuple[int, ...], ...],
+]:
+    deduplicated_points: list[tuple[float, float, float]] = []
+    coordinate_to_deduplicated_id: dict[tuple[float, float, float], int] = {}
+    original_to_deduplicated_vertex_ids: list[int] = []
+    duplicate_clusters_by_deduplicated_id: dict[int, list[int]] = {}
+    for input_vertex_id, point in enumerate(input_points):
+        if point not in coordinate_to_deduplicated_id:
+            coordinate_to_deduplicated_id[point] = len(deduplicated_points)
+            deduplicated_points.append(point)
+        deduplicated_id = coordinate_to_deduplicated_id[point]
+        original_to_deduplicated_vertex_ids.append(deduplicated_id)
+        duplicate_clusters_by_deduplicated_id.setdefault(deduplicated_id, []).append(
+            input_vertex_id
+        )
+    duplicate_clusters = tuple(
+        tuple(vertex_ids)
+        for vertex_ids in duplicate_clusters_by_deduplicated_id.values()
+        if len(vertex_ids) > 1
+    )
+    return (
+        tuple(deduplicated_points),
+        tuple(original_to_deduplicated_vertex_ids),
+        duplicate_clusters,
+    )
+
+
+def _mixed_face_preprocess_operator_audit() -> _DuplicateVertexPreprocessingAudit:
+    input_points = _mixed_face_preprocess_operator_input_points()
+    input_faces = (
+        (0, 1, 2),
+        (3, 4, 5),
+        (3, 5, 6),
+        (7, 8, 9),
+        (7, 9, 10),
+        (7, 10, 11),
+    )
+    deduplicated_points, original_to_deduplicated_vertex_ids, duplicate_clusters = (
+        _deduplicate_exact_points(input_points)
+    )
+    deduplicated_faces = tuple(
+        tuple(original_to_deduplicated_vertex_ids[vertex_id] for vertex_id in face)
+        for face in input_faces
+    )
+    return _DuplicateVertexPreprocessingAudit(
+        input_points=input_points,
+        input_faces=input_faces,
+        deduplicated_points=deduplicated_points,
+        deduplicated_faces=deduplicated_faces,
+        original_to_deduplicated_vertex_ids=original_to_deduplicated_vertex_ids,
+        duplicate_clusters=duplicate_clusters,
+    )
+
+
+def _mixed_face_preprocess_operator_mesh() -> TriangleMesh:
+    audit = _mixed_face_preprocess_operator_audit()
+    return TriangleMesh(
+        points=np.asarray(audit.deduplicated_points, dtype=np.float64),
+        faces=np.asarray(_executable_deduplicated_faces(audit), dtype=np.int64),
+    )
+
+
+def _mixed_face_preprocess_operator_intake_audit() -> _SourceFaceIntakeAudit:
+    return _SourceFaceIntakeAudit(
+        source_face_arities=(3, 4, 5),
+        source_face_remap=(
+            _SourceFaceRemap(
+                source_face_id=0,
+                source_face_arity=3,
+                source_vertex_ids=(0, 1, 2),
+                generated_triangle_face_ids=(0,),
+                generated_triangle_vertex_ids=((0, 1, 2),),
+            ),
+            _SourceFaceRemap(
+                source_face_id=1,
+                source_face_arity=4,
+                source_vertex_ids=(3, 4, 5, 6),
+                generated_triangle_face_ids=(1, 2),
+                generated_triangle_vertex_ids=((1, 3, 4), (1, 4, 5)),
+            ),
+            _SourceFaceRemap(
+                source_face_id=2,
+                source_face_arity=5,
+                source_vertex_ids=(7, 8, 9, 10, 11),
+                generated_triangle_face_ids=(3, 4, 5),
+                generated_triangle_vertex_ids=((6, 7, 8), (6, 8, 9), (6, 9, 10)),
+            ),
+        ),
+    )
+
+
+def _degenerate_preprocess_face_drop_audit() -> _DuplicateVertexPreprocessingAudit:
+    input_points = (
+        (0.0, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0),
+        (1.0, 1.0, 0.0),
+        (0.0, 2.0, 0.0),
+    )
+    input_faces = ((0, 1, 2), (3, 4, 5))
+    deduplicated_points, original_to_deduplicated_vertex_ids, duplicate_clusters = (
+        _deduplicate_exact_points(input_points)
+    )
+    deduplicated_faces = tuple(
+        tuple(original_to_deduplicated_vertex_ids[vertex_id] for vertex_id in face)
+        for face in input_faces
+    )
+    return _DuplicateVertexPreprocessingAudit(
+        input_points=input_points,
+        input_faces=input_faces,
+        deduplicated_points=deduplicated_points,
+        deduplicated_faces=deduplicated_faces,
+        original_to_deduplicated_vertex_ids=original_to_deduplicated_vertex_ids,
+        duplicate_clusters=duplicate_clusters,
+    )
+
+
+def _degenerate_preprocess_face_drop_mesh() -> TriangleMesh:
+    audit = _degenerate_preprocess_face_drop_audit()
+    return TriangleMesh(
+        points=np.asarray(audit.deduplicated_points, dtype=np.float64),
+        faces=np.asarray(_executable_deduplicated_faces(audit), dtype=np.int64),
+    )
+
+
+def _unsupported_source_face_placeholder_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array([[0, 1, 2]], dtype=np.int64)
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _concave_polygon_rejected_audit() -> _UnsupportedSourceFaceIntakeAudit:
+    return _UnsupportedSourceFaceIntakeAudit(
+        source_face_id=0,
+        source_face_arity=5,
+        source_vertex_ids=(0, 1, 2, 3, 4),
     )
 
 
