@@ -182,8 +182,11 @@ offline matrix before package conversion. The changed-decomposition output contr
 implemented as an offline changed-decomposition output contract, not a `CollisionPackage`. The
 package-adapter contract is now implemented as a command-only offline adapter decision table, not a
 `CollisionPackage`. The unsupported-primitive policy is now implemented as a command-only offline
-policy table, not a `CollisionPackage`. The current next gate is
-`paper_package_conversion_mapped_subset_plan`. Batch C stays important because it checks
+policy table, not a `CollisionPackage`. The mapped-subset package-conversion plan is now
+implemented as a command-only offline planning table, not a `CollisionPackage`; it keeps the
+current unmapped trapezoidal-prism rows offline and records zero current package-conversion
+candidates. The current next gate is `paper_mapped_subset_conversion_candidate_matrix`. Batch C
+stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it
 checks multiple component-pair candidates and capped

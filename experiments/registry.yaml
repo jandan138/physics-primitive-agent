@@ -455,7 +455,20 @@ experiments:
       work.
     claims_supported:
       - partial command-only offline unsupported-primitive policy for deterministic synthetic fixture records only
-      - records a closed paper_package_adapter_unsupported_primitive_policy gate while keeping paper_package_conversion_mapped_subset_plan missing
+      - records a closed paper_package_adapter_unsupported_primitive_policy gate; at that stage paper_package_conversion_mapped_subset_plan was the follow-up gate
+      - no package-readiness claim, Newton-readiness claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-package-conversion-mapped-subset-plan
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-package-conversion-mapped-subset-plan.md
+    purpose: >
+      Add a command-only offline mapped-subset package-conversion planning table, not a
+      CollisionPackage, for the CPD paper offline lane before any candidate matrix, package
+      generation, runtime admissibility, or Newton runtime work.
+    claims_supported:
+      - partial command-only offline mapped-subset conversion planning for deterministic synthetic fixture records only
+      - identifies future native-mapped paper primitive families while recording zero current package-conversion candidates
+      - records a closed paper_package_conversion_mapped_subset_plan gate and advances the next gate to paper_mapped_subset_conversion_candidate_matrix
       - no package-readiness claim, Newton-readiness claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete

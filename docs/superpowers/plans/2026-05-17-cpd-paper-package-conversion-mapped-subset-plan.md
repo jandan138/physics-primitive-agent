@@ -75,7 +75,7 @@ Add:
 
 ```python
 def _paper_remaining_gaps_after_conversion_mapped_subset_plan() -> list[str]:
-    return [_PAPER_PACKAGE_CONVERSION_CONTRACT]
+    return [_PAPER_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX]
 ```
 
 - [ ] **Step 3: Add family conversion-plan row builder**

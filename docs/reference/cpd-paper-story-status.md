@@ -121,7 +121,14 @@ The repository has not reached that full result. It has reached the workbench st
     `block_package_conversion`, records zero package-candidate rows, keeps
     package generation/Newton/real-USD/benchmark triggers false, keeps the report partial, and
     points next to `paper_package_conversion_mapped_subset_plan`.
-40. Records and configs can preserve exactly what was run.
+40. `paper_package_conversion_mapped_subset_plan` is now implemented as a command-only offline
+    mapped-subset package-conversion planning table, not a `CollisionPackage`. It closes only that
+    planning gate, identifies `oriented_bounding_box`, `sphere`, and `capsule` as future
+    native-mapping families, keeps the current 16 `trapezoidal_prism` / `offline_only_unmapped`
+    rows offline, records zero current package-conversion candidates, keeps
+    package generation/Newton/real-USD/benchmark triggers false, keeps the report partial, and
+    points next to `paper_mapped_subset_conversion_candidate_matrix`.
+41. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -449,8 +456,9 @@ implemented as an offline matrix before package conversion. The changed-decompos
 contract is now implemented as an offline changed-decomposition output contract, not a
 `CollisionPackage`. The package-adapter contract now also exists as a command-only offline
 adapter decision table, not a `CollisionPackage`. The unsupported-primitive policy now also exists
-as a command-only offline policy table, not a `CollisionPackage`; the next code slice is
-`paper_package_conversion_mapped_subset_plan`.
+as a command-only offline policy table, not a `CollisionPackage`. The mapped-subset
+package-conversion plan now also exists as a command-only offline planning table, not a
+`CollisionPackage`; the next code slice is `paper_mapped_subset_conversion_candidate_matrix`.
 
 ## What The Newton-Native Policy Changes
 
@@ -661,7 +669,8 @@ local USD mirrors or synthetic fixtures
 -> changed-decomposition output contract, still partial and still without package/Newton/real-USD
 -> package-adapter contract, still partial and still without package/Newton/real-USD
 -> unsupported-primitive policy, still partial and still without package/Newton/real-USD
--> next: paper_package_conversion_mapped_subset_plan
+-> mapped-subset package-conversion plan, still partial and still without package/Newton/real-USD
+-> next: paper_mapped_subset_conversion_candidate_matrix
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -752,14 +761,14 @@ Fixture-breadth Batch A, Batch B, Batch C, Batch D, Batch E, the command-only sy
 fixture-breadth completion review, the command-only generalization planning table, and the
 source-policy, primitive-fit engine, search-engine, postprocess-policy, and package-boundary
 readiness generalization matrices now exist. The offline changed-decomposition output contract,
-offline package-adapter contract, and offline unsupported-primitive policy now also exist. The
-immediate next code slice should stay offline and define mapped-subset conversion planning without
-adding stronger evaluation claims:
+offline package-adapter contract, offline unsupported-primitive policy, and offline mapped-subset
+conversion plan now also exist. The immediate next code slice should stay offline and define the
+candidate matrix without adding stronger evaluation claims:
 
-1. Implement `paper_package_conversion_mapped_subset_plan` after the unsupported-primitive policy.
-2. Define which explicitly native/mapped paper-lane records may later enter package conversion,
-   while current paper-only or unmapped rows stay offline unless a separate mapping or
-   approximation policy exists.
+1. Implement `paper_mapped_subset_conversion_candidate_matrix` after the mapped-subset planning
+   gate.
+2. Convert the future native-family plan into explicit candidate rows, while current unmapped rows
+   remain offline unless a later mapping or approximation policy exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime

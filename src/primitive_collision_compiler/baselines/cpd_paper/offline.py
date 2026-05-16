@@ -76,6 +76,9 @@ _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY = (
 _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN = (
     "paper_package_conversion_mapped_subset_plan"
 )
+_PAPER_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX = (
+    "paper_mapped_subset_conversion_candidate_matrix"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -660,6 +663,10 @@ def _paper_remaining_gaps_after_package_adapter_contract() -> list[str]:
 
 def _paper_remaining_gaps_after_unsupported_primitive_policy() -> list[str]:
     return [_PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN]
+
+
+def _paper_remaining_gaps_after_conversion_mapped_subset_plan() -> list[str]:
+    return [_PAPER_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -2057,6 +2064,229 @@ def _paper_package_adapter_unsupported_primitive_policy_payload(
     }
 
 
+def _paper_family_conversion_plan_row(
+    family_row: dict[str, object],
+) -> dict[str, object]:
+    paper_primitive = str(family_row["paper_primitive"])
+    direct_candidate = (
+        family_row["adapter_policy"] == "candidate_for_mapped_subset_plan"
+    )
+    current_count = int(family_row["current_row_evidence_count"])
+    if direct_candidate:
+        conversion_decision = "plan_direct_native_mapping_later"
+        package_candidate_status = (
+            "future_candidate_family_no_current_rows"
+            if current_count == 0
+            else "future_candidate_family_with_current_rows"
+        )
+        planned_runtime_kind = family_row["newton_runtime_kind"]
+    else:
+        conversion_decision = (
+            "exclude_requires_explicit_mapping_or_approximation_policy"
+        )
+        package_candidate_status = (
+            "not_package_candidate_unsupported_policy_block"
+        )
+        planned_runtime_kind = "offline_only_unmapped"
+
+    return {
+        "conversion_plan_row_id": f"{paper_primitive}:mapped_subset_family_plan",
+        "source_policy_row_id": family_row["policy_row_id"],
+        "paper_primitive": paper_primitive,
+        "input_adapter_policy": family_row["adapter_policy"],
+        "conversion_plan_decision": conversion_decision,
+        "planned_runtime_kind": planned_runtime_kind,
+        "package_candidate_status": package_candidate_status,
+        "current_row_evidence_count": current_count,
+        "package_conversion_enabled_by_this_gate": False,
+        "requires_explicit_mapping_or_approximation_policy": (
+            not direct_candidate
+        ),
+        "claim_boundary": "family_plan_only_not_package_conversion_or_newton_runtime",
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _paper_current_row_conversion_plan_row(
+    policy_row: dict[str, object],
+) -> dict[str, object]:
+    input_policy_decision = policy_row["unsupported_policy_decision"]
+    runtime_kind = policy_row["offline_runtime_kind_label"]
+    if input_policy_decision == "candidate_for_mapped_subset_plan":
+        conversion_decision = "plan_direct_native_mapping_later"
+        action = "defer_to_candidate_matrix"
+        status = "future_candidate_row_no_package_conversion"
+        package_conversion_candidate = False
+    elif input_policy_decision == "preserve_adapter_contract_block":
+        conversion_decision = "exclude_adapter_contract_block"
+        action = "keep_offline"
+        status = "not_package_candidate_adapter_contract_block"
+        package_conversion_candidate = False
+    else:
+        conversion_decision = (
+            "exclude_requires_explicit_mapping_or_approximation_policy"
+        )
+        action = "keep_offline"
+        status = "not_package_candidate_unsupported_policy_block"
+        package_conversion_candidate = False
+
+    return {
+        "conversion_plan_row_id": (
+            f"{policy_row['policy_decision_id']}:mapped_subset_plan"
+        ),
+        "source_policy_decision_id": policy_row["policy_decision_id"],
+        "source_adapter_decision_id": policy_row["source_adapter_decision_id"],
+        "source_output_id": policy_row["source_output_id"],
+        "evidence_case_id": policy_row["evidence_case_id"],
+        "offline_primitive_id": policy_row["offline_primitive_id"],
+        "paper_primitive": policy_row["paper_primitive"],
+        "offline_runtime_kind_label": runtime_kind,
+        "input_unsupported_policy_decision": input_policy_decision,
+        "conversion_plan_decision": conversion_decision,
+        "conversion_plan_action": action,
+        "package_conversion_candidate": package_conversion_candidate,
+        "package_candidate_status": status,
+        "required_later_gate": _PAPER_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
+        "required_future_policy": (
+            "candidate_matrix_before_any_package_conversion_contract"
+        ),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _paper_package_conversion_mapped_subset_plan_payload(
+    unsupported_payload: dict[str, object],
+) -> dict[str, object]:
+    family_rows = [
+        _paper_family_conversion_plan_row(row)
+        for row in unsupported_payload["paper_primitive_family_policy_rows"]
+    ]
+    current_rows = [
+        _paper_current_row_conversion_plan_row(row)
+        for row in unsupported_payload["current_adapter_decision_policy_rows"]
+    ]
+    direct_current_candidate_count = sum(
+        row["conversion_plan_decision"] == "plan_direct_native_mapping_later"
+        for row in current_rows
+    )
+    future_candidate_family_no_current_count = sum(
+        row["conversion_plan_decision"] == "plan_direct_native_mapping_later"
+        and row["current_row_evidence_count"] == 0
+        for row in family_rows
+    )
+    excluded_requires_policy_count = sum(
+        row["conversion_plan_decision"]
+        == "exclude_requires_explicit_mapping_or_approximation_policy"
+        for row in current_rows
+    )
+    adapter_contract_blocked_count = sum(
+        row["conversion_plan_decision"] == "exclude_adapter_contract_block"
+        for row in current_rows
+    )
+    package_candidate_count = sum(
+        bool(row["package_conversion_candidate"]) for row in current_rows
+    )
+    dropped_count = sum(
+        row["conversion_plan_action"] == "drop" for row in current_rows
+    )
+    remaining_gaps = _paper_remaining_gaps_after_conversion_mapped_subset_plan()
+    return {
+        "gate_id": _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+        "gate_status": "implemented_offline_mapped_subset_plan_only_partial",
+        "closed_gate": _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+        "input_gate_id": _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
+        "next_required_gate": _PAPER_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
+        "decision": "remain_partial",
+        "decision_reason": "mapped_subset_plan_complete_candidate_matrix_missing",
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": "offline_mapped_subset_plan_not_collision_package",
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_conversion_plan_no_collision_package_no_primitivespec_no_newton"
+        ),
+        "input_contract_summary": {
+            "input_gate_id": unsupported_payload["gate_id"],
+            "input_artifact_kind": unsupported_payload["artifact_kind"],
+            "paper_primitive_family_policy_row_count": unsupported_payload[
+                "coverage_summary"
+            ]["paper_primitive_family_policy_row_count"],
+            "current_adapter_decision_policy_row_count": unsupported_payload[
+                "coverage_summary"
+            ]["current_adapter_decision_policy_row_count"],
+            "unsupported_policy_blocked_record_count": unsupported_payload[
+                "coverage_summary"
+            ]["unsupported_policy_blocked_record_count"],
+            "package_candidate_record_count": unsupported_payload[
+                "coverage_summary"
+            ]["package_candidate_record_count"],
+        },
+        "mapped_subset_plan_contract": {
+            "decision_values": [
+                "plan_direct_native_mapping_later",
+                "exclude_requires_explicit_mapping_or_approximation_policy",
+                "exclude_adapter_contract_block",
+            ],
+            "package_candidate_status_values": [
+                "future_candidate_family_no_current_rows",
+                "future_candidate_family_with_current_rows",
+                "future_candidate_row_no_package_conversion",
+                "not_package_candidate_unsupported_policy_block",
+                "not_package_candidate_adapter_contract_block",
+            ],
+            "package_generation_allowed": False,
+            "primitive_spec_generation_allowed": False,
+            "collision_package_generation_allowed": False,
+            "newton_runtime_allowed": False,
+            "runtime_admissibility_supported": False,
+            "approximation_policy_enabled": False,
+            "silent_drop_allowed": False,
+        },
+        "paper_primitive_family_conversion_plan_rows": family_rows,
+        "current_row_conversion_plan_rows": current_rows,
+        "coverage_summary": {
+            "decomposition_output_row_count": unsupported_payload[
+                "coverage_summary"
+            ]["decomposition_output_row_count"],
+            "primitive_decision_row_count": unsupported_payload[
+                "coverage_summary"
+            ]["primitive_decision_row_count"],
+            "paper_primitive_family_conversion_plan_row_count": len(family_rows),
+            "current_row_conversion_plan_row_count": len(current_rows),
+            "direct_mapped_current_candidate_record_count": (
+                direct_current_candidate_count
+            ),
+            "future_candidate_family_without_current_rows_count": (
+                future_candidate_family_no_current_count
+            ),
+            "excluded_requires_policy_record_count": excluded_requires_policy_count,
+            "adapter_contract_blocked_record_count": adapter_contract_blocked_count,
+            "package_candidate_record_count": package_candidate_count,
+            "dropped_record_count": dropped_count,
+            "current_paper_primitive_distribution": _paper_policy_distribution(
+                current_rows,
+                "paper_primitive",
+            ),
+            "current_runtime_kind_distribution": _paper_policy_distribution(
+                current_rows,
+                "offline_runtime_kind_label",
+            ),
+        },
+        "remaining_gaps": remaining_gaps,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -2213,8 +2443,13 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             package_adapter_contract
         )
     )
+    package_conversion_mapped_subset_plan = (
+        _paper_package_conversion_mapped_subset_plan_payload(
+            package_adapter_unsupported_policy
+        )
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_unsupported_primitive_policy()
+        _paper_remaining_gaps_after_conversion_mapped_subset_plan()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -2233,7 +2468,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+        "next_required_gate": _PAPER_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -2270,6 +2505,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
                 _PAPER_PACKAGE_ADAPTER_CONTRACT,
                 _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
+                _PAPER_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -2303,6 +2539,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         "paper_package_adapter_contract": package_adapter_contract,
         "paper_package_adapter_unsupported_primitive_policy": (
             package_adapter_unsupported_policy
+        ),
+        "paper_package_conversion_mapped_subset_plan": (
+            package_conversion_mapped_subset_plan
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

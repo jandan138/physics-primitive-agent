@@ -80,8 +80,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `CollisionPackage`. The report now also closes only `paper_package_adapter_contract` with a
   command-only offline package-adapter contract, not a `CollisionPackage`. The report now also
   closes only `paper_package_adapter_unsupported_primitive_policy` with a command-only offline
-  unsupported-primitive policy table, not a `CollisionPackage`, and advances the current next gate
-  to `paper_package_conversion_mapped_subset_plan`. The
+  unsupported-primitive policy table, not a `CollisionPackage`. The report now also closes only
+  `paper_package_conversion_mapped_subset_plan` with a command-only offline mapped-subset planning
+  table, not a `CollisionPackage`, and advances the current next gate to
+  `paper_mapped_subset_conversion_candidate_matrix`. The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
@@ -139,10 +141,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_package_conversion_mapped_subset_plan` after the source-policy, primitive-fit
+  `paper_mapped_subset_conversion_candidate_matrix` after the source-policy, primitive-fit
   engine, search-engine, postprocess-policy, package-boundary readiness, offline
-  changed-decomposition output contract, offline package-adapter contract, and offline
-  unsupported-primitive policy slices.
+  changed-decomposition output contract, offline package-adapter contract, offline
+  unsupported-primitive policy, and mapped-subset planning slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -203,8 +205,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   changed-decomposition primitive records as adapter input rows, emits 16 adapter decision rows,
   classifies all current `trapezoidal_prism` / `offline_only_unmapped` records as
   `later_policy_required`. At that adapter-contract stage the follow-up gate was
-  `paper_package_adapter_unsupported_primitive_policy`; the current next gate is now
-  `paper_package_conversion_mapped_subset_plan` after the unsupported-primitive policy below. It
+  `paper_package_adapter_unsupported_primitive_policy`; after the unsupported-primitive policy the
+  follow-up gate was `paper_package_conversion_mapped_subset_plan`, which is now closed by the
+  mapped-subset planning table below. It
   is not package readiness, Newton
   readiness, runtime admissibility, package generation, Newton runtime execution, real-USD asset
   evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
@@ -214,10 +217,21 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   policy table, not a `CollisionPackage`. It classifies all six paper primitive families, keeps
   the current 16 `trapezoidal_prism` / `offline_only_unmapped` rows offline with
   `block_package_conversion`, records zero package-candidate rows, and advances the next gate to
-  `paper_package_conversion_mapped_subset_plan`. It is not package readiness, Newton readiness,
+  `paper_package_conversion_mapped_subset_plan` at that unsupported-policy stage. It is not
+  package readiness, Newton readiness,
   runtime admissibility, approximation support, package generation, Newton runtime execution,
   real-USD asset evidence, benchmark evidence, `paper_faithful_offline` support, full CPD
   reproduction, collision-quality evidence, deployment readiness, or safety certification.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_package_conversion_mapped_subset_plan`, a command-only offline mapped-subset
+  package-conversion planning table, not a `CollisionPackage`. It identifies
+  `oriented_bounding_box`, `sphere`, and `capsule` as future native-mapping families, keeps the
+  current 16 `trapezoidal_prism` / `offline_only_unmapped` rows offline, records zero current
+  package-conversion candidates, and advances the next gate to
+  `paper_mapped_subset_conversion_candidate_matrix`. It is not package readiness, Newton
+  readiness, runtime admissibility, approximation support, package generation, Newton runtime
+  execution, real-USD asset evidence, benchmark evidence, `paper_faithful_offline` support, full
+  CPD reproduction, collision-quality evidence, deployment readiness, or safety certification.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper
@@ -501,6 +515,9 @@ Use these only after broader benchmark records exist.
 - Do not describe `paper_package_adapter_unsupported_primitive_policy` as package readiness,
   Newton support, runtime admissibility, approximation support, or package-generation gate
   completion. It is offline policy accounting only.
+- Do not describe `paper_package_conversion_mapped_subset_plan` as package readiness, package
+  conversion execution, Newton support, runtime admissibility, approximation support, or
+  package-generation gate completion. It is offline mapped-subset planning only.
 
 ## Wording Rules
 

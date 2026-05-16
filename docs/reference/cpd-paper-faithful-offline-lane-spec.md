@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the unsupported-primitive policy:
-  `paper_package_conversion_mapped_subset_plan_missing`.
+- the current top-level failure label after the mapped-subset planning gate:
+  `paper_mapped_subset_conversion_candidate_matrix_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -591,7 +591,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate: paper_package_conversion_mapped_subset_plan
+-> current next gate: paper_mapped_subset_conversion_candidate_matrix
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -680,4 +680,16 @@ decision rows. The payload classifies all six paper primitive families, keeps al
 Newton readiness, runtime admissibility, approximation support, package generation, Newton
 runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full
 CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
-next current gate is `paper_package_conversion_mapped_subset_plan`.
+follow-up gate at that stage was `paper_package_conversion_mapped_subset_plan`.
+
+`paper_package_conversion_mapped_subset_plan` closes only the offline mapped-subset planning gate.
+It records a command-only package-conversion planning table, not a `CollisionPackage`, over the
+unsupported-primitive policy rows. The payload identifies `oriented_bounding_box`, `sphere`, and
+`capsule` as future native-mapping families, keeps all current `trapezoidal_prism` /
+`offline_only_unmapped` rows offline, records zero current package-conversion candidates, and
+keeps package generation, Newton runtime execution, real-USD, and benchmark triggers false. It is
+not package readiness, Newton readiness, runtime admissibility, approximation support, package
+generation, Newton runtime execution, real-USD evidence, benchmark evidence,
+`paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
+readiness, or safety certification. The next current gate is
+`paper_mapped_subset_conversion_candidate_matrix`.

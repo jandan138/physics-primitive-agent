@@ -74,9 +74,16 @@ primitive records as adapter input rows and classifies all current `trapezoidal_
 `paper_package_adapter_unsupported_primitive_policy`, a command-only offline policy table, not a
 `CollisionPackage`. That policy keeps the current 16 unmapped trapezoidal-prism rows offline,
 records six paper primitive family policy rows, and advances the next paper-lane gate to
-`paper_package_conversion_mapped_subset_plan`. These source-policy,
+`paper_package_conversion_mapped_subset_plan`. The report now also includes
+`paper_package_conversion_mapped_subset_plan`, a command-only offline mapped-subset
+package-conversion planning table, not a `CollisionPackage`. That table identifies
+`oriented_bounding_box`, `sphere`, and `capsule` as future native-mapping families, keeps the
+current 16 unmapped trapezoidal-prism rows offline, records zero current package-conversion
+candidates, keeps package/Newton/real-USD/benchmark triggers false, and advances the next
+paper-lane gate to `paper_mapped_subset_conversion_candidate_matrix`. These source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
-changed-decomposition-contract, adapter-contract, and unsupported-primitive-policy slices do not
+changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
+mapped-subset-planning slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
