@@ -37,10 +37,10 @@ The scope audit keeps these nine criteria blocking before stronger offline wordi
 | `source_face_intake_policy` | Current non-triangle source-face evidence is one quad and one convex five-vertex polygon. |
 | `operator_q_audit` | Operator evidence exists for named fixtures, but not enough degeneracy or source-policy breadth. |
 | `primitive_vocabulary_and_fit` | All six paper primitive names have audit rows, but fitting breadth is limited. |
-| `paper_collapse_cost_and_weighting` | Cost evidence is still toy-scoped after Batch C, even though weighted ordering and positive finite threshold accounting now exist. |
-| `greedy_priority_queue_trace` | Queue traces remain toy-scoped after Batch C and still need broader component-pair and postprocess breadth. |
-| `target_count_and_threshold_stop` | Target and threshold stops remain toy-scoped after Batch C, including one positive finite component-pair threshold fixture. |
-| `component_pair_edge_handling` | Component-pair evidence has one accepted and one blocked all-pairs case only. |
+| `paper_collapse_cost_and_weighting` | Cost evidence is still toy-scoped after Batch D, even though weighted ordering, positive finite threshold, and component-pair candidate accounting now exist. |
+| `greedy_priority_queue_trace` | Queue traces remain toy-scoped after Batch D and still need broader postprocess breadth. |
+| `target_count_and_threshold_stop` | Target and threshold stops remain toy-scoped after Batch D, including one positive finite component-pair threshold fixture and one capped skipped-pair fixture. |
+| `component_pair_edge_handling` | Component-pair evidence now includes accepted, blocked, multi-candidate, and capped skipped-pair toy cases only. |
 | `enclosed_primitive_postprocess` | Postprocess evidence is one explicit identity-axis OBB canary. |
 
 ## Fixture Batches
@@ -117,11 +117,21 @@ paper_fixture_breadth_batch_c
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
-The next code slice should be:
+Batch D is now implemented in `cpd_paper_offline_report`:
 
 ```text
 paper_fixture_breadth_batch_d
--> component-pair breadth fixtures
+-> `paper_component_pair_multi_candidate_order`
+-> `paper_component_pair_cap_skipped`
+-> report remains partial
+-> no package generation, Newton, real USD, or benchmark work
+```
+
+The next code slice should be:
+
+```text
+paper_fixture_breadth_batch_e
+-> postprocess breadth fixtures
 -> report remains partial
 -> no package generation, Newton, real USD, or benchmark work
 ```
@@ -131,7 +141,8 @@ criteria that every later primitive-fit and search fixture depends on. Batch B s
 because it broadens primitive-fit evidence before cost/search fixtures start comparing candidate
 choices. Batch C stays important because it checks weighted-priority ordering, deterministic queue
 ties/eager-stale-prune events, and one positive finite threshold block before broader component-pair
-cases.
+cases. Batch D stays important because it checks multiple component-pair candidates and capped
+skipped-pair accounting before postprocess breadth.
 
 ## Claim Boundary
 
@@ -140,12 +151,13 @@ This plan supports only this statement:
 ```text
 The repository has an offline-only fixture-breadth expansion plan and a Batch A synthetic
 source/preprocess/intake/operator implementation plus a Batch B primitive-fit implementation
-plus a Batch C cost/search/stop implementation inside the partial paper report.
+plus a Batch C cost/search/stop implementation plus a Batch D component-pair implementation inside
+the partial paper report.
 ```
 
 It does not support:
 
-- implemented Batch D-E fixture breadth;
+- implemented Batch E fixture breadth;
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
 - package generation;

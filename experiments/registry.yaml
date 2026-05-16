@@ -323,6 +323,17 @@ experiments:
       - partial fixture-scoped offline cost/search/stop Batch C audit only
       - records branching weighted-priority ordering where base-cost and weighted-priority choices differ, equal-cost deterministic queue tie and eager-stale-prune behavior, one positive finite component-pair threshold block, and the next gate paper_fixture_breadth_batch_d
       - no paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-fixture-breadth-batch-d
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-fixture-breadth-batch-d.md
+    purpose: >
+      Extend the command-only partial offline CPD paper-lane audit with Batch D component-pair
+      fixture breadth.
+    claims_supported:
+      - partial fixture-scoped offline component-pair Batch D audit only
+      - records multi-candidate component-pair ordering, deterministic capped skipped-pair accounting, component-pair candidate tables, and the next gate paper_fixture_breadth_batch_e
+      - no paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

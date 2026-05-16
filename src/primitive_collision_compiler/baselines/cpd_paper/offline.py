@@ -106,6 +106,7 @@ class _PaperToyCase:
     priority_queue_target_count: int | None = None
     component_pair_edge_insertion: bool = False
     component_pair_excess_volume_threshold: float | None = None
+    component_pair_candidate_cap: int | None = None
     postprocess_fixture: bool = False
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None
     duplicate_vertex_preprocessing_audit: _DuplicateVertexPreprocessingAudit | None = None
@@ -249,8 +250,9 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "reach the target."
             ),
             "current_evidence": (
-                "One accepted threshold-disabled component-pair trace and one finite-threshold "
-                "blocked trace exist."
+                "Accepted and blocked component-pair toy traces exist, and Batch D records "
+                "multi-candidate component-pair ordering plus deterministic skipped-pair "
+                "accounting under a fixture cap."
             ),
             "status": "partial_fixture_scope",
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -258,7 +260,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Component merging evidence is diagnostic accounting, not broad asset evidence."
             ),
-            "next_action": "Decide whether capped skipped-pair fixtures are needed.",
+            "next_action": "Continue with postprocess fixture breadth before stronger wording.",
         },
         {
             "criterion_id": "enclosed_primitive_postprocess",
@@ -415,7 +417,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_fixture_breadth_batch_d",
+        "next_required_gate": "paper_fixture_breadth_batch_e",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -434,6 +436,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "paper_fixture_breadth_batch_a_source_preprocess_intake_operator",
                 "paper_fixture_breadth_batch_b_primitive_fit",
                 "paper_fixture_breadth_batch_c_cost_search_stop",
+                "paper_fixture_breadth_batch_d_component_pair",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -500,6 +503,7 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             case.priority_queue_target_count,
             allow_component_pair_edges=case.component_pair_edge_insertion,
             component_pair_excess_volume_threshold=case.component_pair_excess_volume_threshold,
+            component_pair_candidate_cap=case.component_pair_candidate_cap,
             preprocessing_boundary=preprocessing_boundary,
         )
     if case.postprocess_fixture:
@@ -1817,12 +1821,15 @@ def _priority_queue_trace_payload(
     *,
     allow_component_pair_edges: bool = False,
     component_pair_excess_volume_threshold: float | None = None,
+    component_pair_candidate_cap: int | None = None,
     preprocessing_boundary: str | None = None,
 ) -> dict[str, object]:
     if component_pair_excess_volume_threshold is not None and not np.isfinite(
         component_pair_excess_volume_threshold
     ):
         raise ValueError("component_pair_excess_volume_threshold must be finite")
+    if component_pair_candidate_cap is not None and component_pair_candidate_cap < 1:
+        raise ValueError("component_pair_candidate_cap must be positive")
     active_groups = set(initial_groups)
     insertion_order = 0
     queue: list[dict[str, object]] = []
@@ -1838,6 +1845,9 @@ def _priority_queue_trace_payload(
     component_pair_edge_insertion_triggered = False
     topology_queue_exhausted_before_component_pair_insertion = False
     component_pair_candidate_count = 0
+    component_pair_available_pair_count = 0
+    component_pair_candidates: list[dict[str, object]] = []
+    skipped_component_pair_keys: list[dict[str, object]] = []
     component_pair_attempted_pairs: set[tuple[tuple[int, ...], tuple[int, ...]]] = set()
     threshold_blocked = False
 
@@ -1854,16 +1864,27 @@ def _priority_queue_trace_payload(
                 break
             topology_queue_exhausted_before_component_pair_insertion = True
             component_pair_edge_insertion_triggered = True
-            for left, right in component_pairs:
-                queue.append(
-                    _queue_candidate_payload(
-                        mesh,
-                        left,
-                        right,
-                        insertion_order,
-                        edge_source="component_pair",
-                    )
+            component_pair_available_pair_count += len(component_pairs)
+            if component_pair_candidate_cap is None:
+                admitted_component_pairs = component_pairs
+                skipped_component_pairs: list[tuple[frozenset[int], frozenset[int]]] = []
+            else:
+                admitted_component_pairs = component_pairs[:component_pair_candidate_cap]
+                skipped_component_pairs = component_pairs[component_pair_candidate_cap:]
+            for left, right in skipped_component_pairs:
+                skipped_component_pair_keys.append(
+                    _skipped_component_pair_payload(left, right)
                 )
+            for left, right in admitted_component_pairs:
+                entry = _queue_candidate_payload(
+                    mesh,
+                    left,
+                    right,
+                    insertion_order,
+                    edge_source="component_pair",
+                )
+                queue.append(entry)
+                component_pair_candidates.append(_queue_candidate_summary(entry))
                 insertion_order += 1
                 component_pair_candidate_count += 1
             continue
@@ -1972,9 +1993,13 @@ def _priority_queue_trace_payload(
         if allow_component_pair_edges
         else "disabled"
     )
-    component_pair_candidate_cap = (
-        "all_pairs_for_fixture" if allow_component_pair_edges else "disabled"
-    )
+    component_pair_candidate_cap_value: int | str
+    if allow_component_pair_edges and component_pair_candidate_cap is None:
+        component_pair_candidate_cap_value = "all_pairs_for_fixture"
+    elif allow_component_pair_edges:
+        component_pair_candidate_cap_value = int(component_pair_candidate_cap)
+    else:
+        component_pair_candidate_cap_value = "disabled"
     if component_pair_excess_volume_threshold is None:
         excess_volume_threshold: float | str = "default_inf"
         threshold_policy = "disabled"
@@ -1996,10 +2021,13 @@ def _priority_queue_trace_payload(
         "topology_queue_exhausted_before_component_pair_insertion": (
             topology_queue_exhausted_before_component_pair_insertion
         ),
+        "component_pair_available_pair_count": component_pair_available_pair_count,
         "component_pair_candidate_count": component_pair_candidate_count,
-        "component_pair_candidate_cap": component_pair_candidate_cap,
+        "component_pair_candidate_cap": component_pair_candidate_cap_value,
+        "component_pair_candidates": component_pair_candidates,
         "component_pair_attempted_pair_count": len(component_pair_attempted_pairs),
-        "skipped_component_pair_count": 0,
+        "skipped_component_pair_count": len(skipped_component_pair_keys),
+        "skipped_component_pair_keys": skipped_component_pair_keys,
         "initial_active_groups": _sorted_group_payload(initial_groups),
         "initial_edge_count": len(initial_candidates),
         "initial_candidates": initial_candidates,
@@ -2144,6 +2172,19 @@ def _component_pair_key(
 ) -> tuple[tuple[int, ...], tuple[int, ...]]:
     left, right = _ordered_group_pair(left, right)
     return _group_sort_key(left), _group_sort_key(right)
+
+
+def _skipped_component_pair_payload(
+    left: frozenset[int],
+    right: frozenset[int],
+) -> dict[str, object]:
+    left, right = _ordered_group_pair(left, right)
+    return {
+        "source_faces_left": sorted(int(face_id) for face_id in left),
+        "source_faces_right": sorted(int(face_id) for face_id in right),
+        "source_faces_merged": sorted(int(face_id) for face_id in left | right),
+        "skip_reason": "component_pair_candidate_cap_reached",
+    }
 
 
 def _groups_share_mesh_edge(
@@ -2371,6 +2412,25 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             component_pair_excess_volume_threshold=1e-6,
             fixture_breadth_batch="paper_fixture_breadth_batch_c",
         ),
+        _PaperToyCase(
+            case_id="paper_component_pair_multi_candidate_order",
+            description="Batch D three disconnected components fixture for component-pair candidate ordering",
+            mesh=_three_disconnected_components_mesh(),
+            face_groups=(frozenset({0}), frozenset({1}), frozenset({2})),
+            priority_queue_target_count=2,
+            component_pair_edge_insertion=True,
+            fixture_breadth_batch="paper_fixture_breadth_batch_d",
+        ),
+        _PaperToyCase(
+            case_id="paper_component_pair_cap_skipped",
+            description="Batch D four disconnected components fixture for capped skipped-pair accounting",
+            mesh=_four_disconnected_components_mesh(),
+            face_groups=(frozenset({0}), frozenset({1}), frozenset({2}), frozenset({3})),
+            priority_queue_target_count=3,
+            component_pair_edge_insertion=True,
+            component_pair_candidate_cap=2,
+            fixture_breadth_batch="paper_fixture_breadth_batch_d",
+        ),
     )
 
 
@@ -2508,6 +2568,62 @@ def _disconnected_components_mesh() -> TriangleMesh:
         [
             [0, 1, 2],
             [3, 4, 5],
+        ],
+        dtype=np.int64,
+    )
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _three_disconnected_components_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [3.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0],
+            [3.0, 1.0, 0.0],
+            [0.0, 3.0, 0.0],
+            [1.0, 3.0, 0.0],
+            [0.0, 4.0, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array(
+        [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+        ],
+        dtype=np.int64,
+    )
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _four_disconnected_components_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [3.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0],
+            [3.0, 1.0, 0.0],
+            [0.0, 3.0, 0.0],
+            [1.0, 3.0, 0.0],
+            [0.0, 4.0, 0.0],
+            [3.0, 3.0, 0.0],
+            [4.0, 3.0, 0.0],
+            [3.0, 4.0, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array(
+        [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [9, 10, 11],
         ],
         dtype=np.int64,
     )

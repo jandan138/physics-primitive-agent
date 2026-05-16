@@ -56,10 +56,12 @@ implemented with synthetic offline fixtures for OBB, sphere, capsule, capped cyl
 and trapezoidal prism. Batch B previously advanced the next required gate to
 `paper_fixture_breadth_batch_c`; Batch C cost/search/stop breadth is now implemented with synthetic
 offline fixtures for weighted-priority ordering, deterministic queue tie/eager-stale-prune
-behavior, and one positive finite component-pair threshold block, while keeping the report partial
-and advancing the next required gate to `paper_fixture_breadth_batch_d`. The next code slice is
-component-pair breadth, not a capped bed/Franka rerun unless a separate real package change is
-introduced and passes full mapping, contact-canary, task-gate, and dated-record gates. The
+behavior, and one positive finite component-pair threshold block. Batch D component-pair breadth is
+now implemented with multi-candidate component-pair ordering and deterministic capped skipped-pair
+accounting, while keeping the report partial and advancing the next required gate to
+`paper_fixture_breadth_batch_e`. The next code slice is postprocess breadth, not a capped
+bed/Franka rerun unless a separate real package change is introduced and passes full mapping,
+contact-canary, task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
 collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
 `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
@@ -74,7 +76,7 @@ records exist.
   expansion.
 - [CPD paper fixture-breadth expansion plan](reference/cpd-paper-fixture-breadth-expansion-plan.md):
   documentation-only plan that maps the nine blocking scope-audit rows to future synthetic
-  fixture batches; Batch A, Batch B, and Batch C are now implemented and Batch D is next.
+  fixture batches; Batch A, Batch B, Batch C, and Batch D are now implemented and Batch E is next.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -123,6 +125,8 @@ records exist.
   dated implementation record for the primitive-fit fixture-breadth slice.
 - [CPD paper fixture-breadth Batch C record](records/2026-05-16-cpd-paper-fixture-breadth-batch-c.md):
   dated implementation record for the cost/search/stop fixture-breadth slice.
+- [CPD paper fixture-breadth Batch D record](records/2026-05-16-cpd-paper-fixture-breadth-batch-d.md):
+  dated implementation record for the component-pair fixture-breadth slice.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
   asset permission-evidence validation without changing reproduction or benchmark evidence.
@@ -456,11 +460,12 @@ records exist.
   finite-threshold component-pair blocked trace, one explicit enclosed-primitive postprocess cull
   audit, one quad plus one five-vertex polygon intake policy audit, and one exact-coordinate
   duplicate-vertex preprocessing audit, Batch A fixture-breadth source/preprocess/intake/operator
-  cases, Batch B primitive-fit breadth cases for all six paper primitive names, and Batch C
+  cases, Batch B primitive-fit breadth cases for all six paper primitive names, Batch C
   cost/search/stop breadth cases for weighted-priority ordering, equal-cost queue
-  tie/eager-stale-prune behavior, and one positive finite component-pair threshold block. It also records
-  a scope-audit table with `decision: remain_partial`, reports
-  `next_required_gate: paper_fixture_breadth_batch_d`, and does not run Newton, real USD, package
+  tie/eager-stale-prune behavior, and one positive finite component-pair threshold block, plus
+  Batch D component-pair breadth cases for multi-candidate ordering and capped skipped-pair
+  accounting. It also records a scope-audit table with `decision: remain_partial`, reports
+  `next_required_gate: paper_fixture_breadth_batch_e`, and does not run Newton, real USD, package
   generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config

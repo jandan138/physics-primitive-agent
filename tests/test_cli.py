@@ -1528,7 +1528,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_d"
+    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_e"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1578,6 +1578,8 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_branching_cost_order",
         "paper_equal_cost_queue_tie",
         "paper_nonzero_threshold_block",
+        "paper_component_pair_multi_candidate_order",
+        "paper_component_pair_cap_skipped",
     }.issubset(set(case_ids))
     assert case_ids[:15] == [
         "paper_single_box",
@@ -1755,6 +1757,33 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert batch_c_cases["paper_nonzero_threshold_block"]["collapse_trace"][
         "excess_volume_threshold"
     ] == 1e-6
+
+    batch_d_cases = {
+        case["case_id"]: case
+        for case in payload["cases"]
+        if case["case_id"]
+        in {
+            "paper_component_pair_multi_candidate_order",
+            "paper_component_pair_cap_skipped",
+        }
+    }
+    assert set(batch_d_cases) == {
+        "paper_component_pair_multi_candidate_order",
+        "paper_component_pair_cap_skipped",
+    }
+    for case in batch_d_cases.values():
+        trace = case["collapse_trace"]
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_d"
+        assert trace["component_pair_edge_insertion_triggered"] is True
+        assert trace["component_pair_candidate_count"] > 1
+        assert trace["component_pair_available_pair_count"] >= trace[
+            "component_pair_candidate_count"
+        ]
+        assert trace["component_pair_candidates"]
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
 
 
 def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):

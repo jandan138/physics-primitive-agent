@@ -141,8 +141,9 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "reach the target."
         ),
         "current_evidence": (
-            "One accepted threshold-disabled component-pair trace and one finite-threshold "
-            "blocked trace exist."
+            "Accepted and blocked component-pair toy traces exist, and Batch D records "
+            "multi-candidate component-pair ordering plus deterministic skipped-pair "
+            "accounting under a fixture cap."
         ),
         "status": "partial_fixture_scope",
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -150,7 +151,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Component merging evidence is diagnostic accounting, not broad asset evidence."
         ),
-        "next_action": "Decide whether capped skipped-pair fixtures are needed.",
+        "next_action": "Continue with postprocess fixture breadth before stronger wording.",
     },
     {
         "criterion_id": "enclosed_primitive_postprocess",
@@ -263,10 +264,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_fixture_breadth_gap():
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
 
 
-def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_d():
+def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_e():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_d"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_e"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -923,6 +924,83 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_c():
     assert blocked_event["blocked_reason"] == "component_pair_threshold_exceeded"
 
 
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_d():
+    report = build_cpd_paper_offline_report()
+    cases = {case["case_id"]: case for case in report["cases"]}
+
+    expected_case_ids = {
+        "paper_component_pair_multi_candidate_order",
+        "paper_component_pair_cap_skipped",
+    }
+    assert expected_case_ids.issubset(cases)
+    for case_id in expected_case_ids:
+        case = cases[case_id]
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_d"
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
+        trace = case["collapse_trace"]
+        assert trace["trace_scope"] == "component_pair_priority_queue_trace_fixture"
+        assert trace["component_pair_edge_insertion_triggered"] is True
+        assert trace["topology_queue_exhausted_before_component_pair_insertion"] is True
+        assert trace["initial_edge_count"] == 0
+        assert trace["initial_candidates"] == []
+        assert trace["package_generation_triggered"] is False
+        assert trace["newton_runtime_triggered"] is False
+        assert trace["real_usd_triggered"] is False
+        assert trace["benchmark_triggered"] is False
+
+    multi = cases["paper_component_pair_multi_candidate_order"]["collapse_trace"]
+    assert multi["target_primitive_count"] == 2
+    assert multi["threshold_policy"] == "disabled"
+    assert multi["component_pair_candidate_cap"] == "all_pairs_for_fixture"
+    assert multi["component_pair_available_pair_count"] == 3
+    assert multi["component_pair_candidate_count"] == 3
+    assert multi["skipped_component_pair_count"] == 0
+    assert multi["skipped_component_pair_keys"] == []
+    assert len(multi["component_pair_candidates"]) == 3
+    assert all(
+        candidate["edge_source"] == "component_pair"
+        for candidate in multi["component_pair_candidates"]
+    )
+    selected = [event for event in multi["events"] if event["accepted"]][0]
+    min_candidate = min(
+        multi["component_pair_candidates"],
+        key=lambda candidate: candidate["queue_key"],
+    )
+    assert selected["queue_key"] == min_candidate["queue_key"]
+    assert selected["source_faces_merged"] == min_candidate["source_faces_merged"]
+    assert multi["accepted_merge_count"] == 1
+    assert multi["blocked_merge_count"] == 0
+    assert multi["component_pair_attempted_pair_count"] == 1
+    assert multi["stop_reason"] == "target_count_reached"
+    assert len(multi["final_active_groups"]) == 2
+
+    capped = cases["paper_component_pair_cap_skipped"]["collapse_trace"]
+    assert capped["target_primitive_count"] == 3
+    assert capped["threshold_policy"] == "disabled"
+    assert capped["component_pair_candidate_cap"] == 2
+    assert capped["component_pair_available_pair_count"] == 6
+    assert capped["component_pair_candidate_count"] == 2
+    assert capped["skipped_component_pair_count"] == 4
+    assert len(capped["skipped_component_pair_keys"]) == 4
+    assert len(capped["component_pair_candidates"]) == 2
+    assert all(
+        candidate["edge_source"] == "component_pair"
+        for candidate in capped["component_pair_candidates"]
+    )
+    assert all(
+        skipped["skip_reason"] == "component_pair_candidate_cap_reached"
+        for skipped in capped["skipped_component_pair_keys"]
+    )
+    assert capped["component_pair_attempted_pair_count"] == 1
+    assert capped["accepted_merge_count"] == 1
+    assert capped["blocked_merge_count"] == 0
+    assert capped["stop_reason"] == "target_count_reached"
+    assert len(capped["final_active_groups"]) == 3
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -938,7 +1016,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_d"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_e"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
         "paper_fixture_breadth_expansion"
     ]
@@ -973,6 +1051,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
     assert "paper_fixture_breadth_batch_c_cost_search_stop" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_fixture_breadth_batch_d_component_pair" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
 
@@ -1042,6 +1123,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_branching_cost_order",
         "paper_equal_cost_queue_tie",
         "paper_nonzero_threshold_block",
+        "paper_component_pair_multi_candidate_order",
+        "paper_component_pair_cap_skipped",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
     for case in cases.values():

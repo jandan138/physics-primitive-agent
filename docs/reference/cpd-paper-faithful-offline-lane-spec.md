@@ -582,11 +582,11 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 
 ## Current Fixture-Breadth Position
 
-The paper-lane gate after Batch C is:
+The paper-lane gate after Batch D is:
 
 ```text
-paper_fixture_breadth_batch_d
--> add component-pair breadth fixtures
+paper_fixture_breadth_batch_e
+-> add postprocess breadth fixtures
 -> keep report status partial
 -> keep package generation, Newton, real USD, and benchmarks out of scope
 ```
@@ -595,4 +595,6 @@ Batch A broadens mesh policy, source-face accounting, and operator evidence. Bat
 primitive-fit evidence for OBB, sphere, capsule, capped cylinder, frustum, and trapezoidal prism
 without adding Newton runtime support. Batch C broadens weighted-priority ordering, queue
 tie/eager-stale-prune behavior, and positive nonzero threshold blocking without adding Newton
-runtime support. Batch D should broaden disconnected component-pair accounting next.
+runtime support. Batch D broadens disconnected component-pair ordering and capped skipped-pair
+accounting without adding Newton runtime support. Batch E should broaden postprocess accounting
+next.

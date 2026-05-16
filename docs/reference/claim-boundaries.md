@@ -61,7 +61,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   report now also includes a `paper_faithful_offline_scope_audit` criteria table with
   `decision: remain_partial`, non-blocking package/Newton/real-USD/benchmark boundary rows, and
   prior scope-audit gate `paper_fixture_breadth_expansion_plan`; later fixture-breadth slices below
-  advance the current report gate to `paper_fixture_breadth_batch_d`. The report remains
+  advance the current report gate to `paper_fixture_breadth_batch_e`. The report remains
   `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
@@ -90,9 +90,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   deployment readiness, or safety certification.
 - The partial `cpd_paper_offline_report` includes the Batch C cost/search/stop fixture-breadth
   cases: `paper_branching_cost_order`, `paper_equal_cost_queue_tie`, and
-  `paper_nonzero_threshold_block`. The report advances its next required gate to
-  `paper_fixture_breadth_batch_d`. This is synthetic offline cost/search/threshold-stop accounting
+  `paper_nonzero_threshold_block`. This is synthetic offline cost/search/threshold-stop accounting
   only, including one component-pair positive finite threshold block. It does not support
+  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
+  real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
+  safety certification.
+- The partial `cpd_paper_offline_report` includes the Batch D component-pair fixture-breadth cases:
+  `paper_component_pair_multi_candidate_order` and `paper_component_pair_cap_skipped`. The report
+  advances its next required gate to `paper_fixture_breadth_batch_e`. This is synthetic offline
+  component-pair candidate ordering and skipped-pair accounting only. It does not support
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
   safety certification.

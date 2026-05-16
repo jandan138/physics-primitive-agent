@@ -96,7 +96,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   offline CPD paper-lane audit over deterministic toy fixtures. It now includes a
   `paper_faithful_offline_scope_audit` criteria table with `decision: remain_partial`,
   `paper_faithful_offline_supported: false`, and a prior scope-audit gate of
-  `paper_fixture_breadth_expansion_plan`. The current gate is now updated below by Batch C. This is
+  `paper_fixture_breadth_expansion_plan`. The current gate is now updated below by Batch D. This is
   scope accounting for the offline paper lane, not `paper_faithful_offline`, full CPD
   reproduction, package generation, Newton runtime support, real-USD evidence, benchmark
   evidence, or collision-quality validation.
@@ -121,7 +121,12 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run the Batch C fixture-breadth cost/search/stop slice inside
   `cpd_paper_offline_report`, adding `paper_branching_cost_order`,
   `paper_equal_cost_queue_tie`, and `paper_nonzero_threshold_block` as synthetic offline cases.
-  The report remains partial and points the next gate to `paper_fixture_breadth_batch_d`; this is
+  This is not `paper_faithful_offline`, package generation, Newton runtime support, real-USD
+  evidence, benchmark evidence, or collision-quality validation.
+- The current executable surface can run the Batch D fixture-breadth component-pair slice inside
+  `cpd_paper_offline_report`, adding `paper_component_pair_multi_candidate_order` and
+  `paper_component_pair_cap_skipped` as synthetic offline cases. The report remains partial and
+  points the next gate to `paper_fixture_breadth_batch_e`; this is
   not `paper_faithful_offline`, package generation, Newton runtime support, real-USD evidence,
   benchmark evidence, or collision-quality validation.
 - The current executable surface can convert the CPD-like geometry report into a common collision
