@@ -92,6 +92,13 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current CPD paper-story position is documented as a reproduction workbench, not as a
   paper-faithful implementation. See
   [CPD paper story status](../reference/cpd-paper-story-status.md).
+- The current executable surface can run `cpd_paper_offline_report`, a command-only partial
+  offline CPD paper-lane audit over deterministic toy fixtures. It now includes a
+  `paper_faithful_offline_scope_audit` criteria table with `decision: remain_partial`,
+  `paper_faithful_offline_supported: false`, and next gate
+  `paper_fixture_breadth_expansion_plan`. This is scope accounting for the offline paper lane, not
+  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
+  real-USD evidence, benchmark evidence, or collision-quality validation.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

@@ -1527,12 +1527,31 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["status"] == "partial"
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
-    assert payload["failure_labels"] == ["paper_faithful_offline_scope_missing"]
-    assert payload["next_required_gate"] == "paper_faithful_offline_scope_audit"
+    assert payload["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
+    assert payload["next_required_gate"] == "paper_fixture_breadth_expansion_plan"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
     assert payload["benchmark_triggered"] is False
+    scope_audit = payload["paper_faithful_offline_scope_audit"]
+    assert scope_audit["decision"] == "remain_partial"
+    assert scope_audit["paper_faithful_offline_allowed"] is False
+    assert [row["criterion_id"] for row in scope_audit["criteria"]] == [
+        "source_mesh_and_preprocessing_policy",
+        "source_face_intake_policy",
+        "operator_q_audit",
+        "primitive_vocabulary_and_fit",
+        "paper_collapse_cost_and_weighting",
+        "greedy_priority_queue_trace",
+        "target_count_and_threshold_stop",
+        "component_pair_edge_handling",
+        "enclosed_primitive_postprocess",
+        "report_schema_tests_and_records",
+        "package_generation_boundary",
+        "newton_runtime_boundary",
+        "real_usd_boundary",
+        "benchmark_evaluation_boundary",
+    ]
     assert [case["case_id"] for case in payload["cases"]] == [
         "paper_single_box",
         "paper_two_face_merge",

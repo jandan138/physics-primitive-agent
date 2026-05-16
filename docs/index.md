@@ -43,8 +43,11 @@ component-pair blocked trace, an explicit identity-axis OBB enclosed-primitive p
 audit, a fan-triangulated quad/polygon source-face intake policy audit, and an exact-coordinate
 duplicate-vertex preprocessing audit while keeping Newton, bed/Franka, package generation, and
 benchmark work out of scope. The audited primitive rows, postprocess cull, intake policy, and
-duplicate-vertex preprocessing fixture are fixture-scoped audit data, not a full decomposition.
-The next paper-lane gate is `paper_faithful_offline_scope_audit`, not a
+duplicate-vertex preprocessing fixture are fixture-scoped audit data, not a full decomposition. It
+now also records `paper_faithful_offline_scope_audit`, a criteria table that keeps the lane
+`partial`, leaves `paper_faithful_offline_supported: false`, and advances the next gate to
+`paper_fixture_breadth_expansion_plan`.
+The next paper-lane gate is fixture-breadth expansion, not a
 capped bed/Franka rerun
 unless a separate real package change is introduced and passes full mapping, contact-canary,
 task-gate, and dated-record gates. The
@@ -97,6 +100,9 @@ records exist.
 - [CPD paper duplicate-vertex preprocessing record](records/2026-05-16-cpd-paper-duplicate-vertex-preprocessing.md):
   dated implementation record for the exact-coordinate duplicate-vertex preprocessing audit in the
   partial `cpd_paper_offline_report`.
+- [CPD paper faithful offline scope audit record](records/2026-05-16-cpd-paper-faithful-offline-scope-audit.md):
+  dated implementation record for the offline scope-audit criteria table that keeps the lane
+  partial and points the next gate to fixture-breadth expansion.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
   asset permission-evidence validation without changing reproduction or benchmark evidence.
@@ -426,8 +432,9 @@ records exist.
   priority-queue trace fields, a threshold-disabled component-pair insertion trace, a
   finite-threshold component-pair blocked trace, one explicit enclosed-primitive postprocess cull
   audit, one quad plus one five-vertex polygon intake policy audit, and one exact-coordinate
-  duplicate-vertex preprocessing audit, and does not run Newton, real USD, package generation, or
-  benchmarks.
+  duplicate-vertex preprocessing audit. It also records a scope-audit table with
+  `decision: remain_partial` and next gate `paper_fixture_breadth_expansion_plan`, and does not
+  run Newton, real USD, package generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.

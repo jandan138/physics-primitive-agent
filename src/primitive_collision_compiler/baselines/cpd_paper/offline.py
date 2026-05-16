@@ -44,6 +44,18 @@ _NEWTON_RUNTIME_KIND = {
     "box": "box",
     "sphere": "sphere",
 }
+_SCOPE_AUDIT_ALLOWED_STATUSES = {
+    "implemented_fixture_scope",
+    "partial_fixture_scope",
+    "not_started",
+    "blocked_until_later_gate",
+}
+_SCOPE_AUDIT_ALLOWED_ALIGNMENT_LABELS = {
+    "fixture_scoped_paper_shaped",
+    "paper_aligned_boundary",
+    "not_paper_faithful",
+    "out_of_offline_scope",
+}
 
 
 @dataclass(frozen=True)
@@ -89,12 +101,286 @@ class _PaperToyCase:
     duplicate_vertex_preprocessing_audit: _DuplicateVertexPreprocessingAudit | None = None
 
 
+def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
+    criteria: list[dict[str, object]] = [
+        {
+            "criterion_id": "source_mesh_and_preprocessing_policy",
+            "paper_requirement": (
+                "Mesh vertices/faces plus duplicate or overlapped vertex preprocessing "
+                "and source-face remap."
+            ),
+            "current_evidence": (
+                "Triangle toy fixtures, fan-triangulated source-face fixtures, and one "
+                "exact-coordinate duplicate-vertex fixture; broader unclean-mesh policy is absent."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": (
+                "Exact-overlap toy preprocessing only; no robust arbitrary mesh cleanup."
+            ),
+            "next_action": (
+                "Expand preprocessing/source-mesh fixture breadth before stronger wording."
+            ),
+        },
+        {
+            "criterion_id": "source_face_intake_policy",
+            "paper_requirement": (
+                "Preserve face ownership across triangle, quad, and polygon source faces."
+            ),
+            "current_evidence": (
+                "One quad and one five-vertex polygon fan-triangulation fixture with "
+                "source-face remap and operator ownership accounting."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": (
+                "Source-face intake is toy-scoped, not a general polygon mesh implementation."
+            ),
+            "next_action": "Add broader source-face cases only after a fixture-breadth plan.",
+        },
+        {
+            "criterion_id": "operator_q_audit",
+            "paper_requirement": (
+                "Per-face and merged-group Q operators with eigen decomposition."
+            ),
+            "current_evidence": (
+                "Per-face and merged-group operator rows exist for named toy fixtures, "
+                "including source-face aggregate rows."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": (
+                "Operator evidence is named-fixture audit data, not full paper decomposition."
+            ),
+            "next_action": "Expand operator degeneracy and fixture coverage.",
+        },
+        {
+            "criterion_id": "primitive_vocabulary_and_fit",
+            "paper_requirement": (
+                "Audit the six paper primitive candidates, containment, formulas, axis "
+                "policies, and primitive weights."
+            ),
+            "current_evidence": (
+                "All six paper primitive names have fixture-scoped audit rows, but capped "
+                "cylinder, frustum, and trapezoidal prism remain offline-only and fitting "
+                "breadth is limited."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": (
+                "Primitive rows are audit rows, not Newton runtime support or "
+                "collision-quality evidence."
+            ),
+            "next_action": "Expand fitting fixtures and paper-specific invariants.",
+        },
+        {
+            "criterion_id": "paper_collapse_cost_and_weighting",
+            "paper_requirement": (
+                "Use paper base collapse cost, separate weighted priority cost, and no "
+                "intersection-volume primary cost."
+            ),
+            "current_evidence": (
+                "One two-face cost fixture plus priority-queue event fields record base "
+                "and weighted costs."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": "Cost rows are toy accounting, not optimizer or benchmark evidence.",
+            "next_action": "Broaden merge-cost fixtures and threshold cases.",
+        },
+        {
+            "criterion_id": "greedy_priority_queue_trace",
+            "paper_requirement": (
+                "Initialize adjacent face-pair candidates, pop minimum priority cost, "
+                "handle stale entries, and merge greedily."
+            ),
+            "current_evidence": (
+                "Topology, deduplicated-topology, and component-pair toy traces exist "
+                "with deterministic queue keys."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": (
+                "Search traces are toy-scoped and do not prove merge-policy superiority."
+            ),
+            "next_action": "Expand priority-queue fixtures before stronger wording.",
+        },
+        {
+            "criterion_id": "target_count_and_threshold_stop",
+            "paper_requirement": (
+                "Stop at target primitive count or when valid threshold policy blocks "
+                "remaining candidates."
+            ),
+            "current_evidence": (
+                "Target-count traces and one zero finite-threshold component-pair block exist."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": "Threshold evidence is narrow toy accounting.",
+            "next_action": "Add fixture-breadth plan for target/threshold combinations.",
+        },
+        {
+            "criterion_id": "component_pair_edge_handling",
+            "paper_requirement": (
+                "Insert pairwise component candidates when disconnected topology cannot "
+                "reach the target."
+            ),
+            "current_evidence": (
+                "One accepted threshold-disabled component-pair trace and one finite-threshold "
+                "blocked trace exist."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": (
+                "Component merging evidence is diagnostic accounting, not broad asset evidence."
+            ),
+            "next_action": "Decide whether capped skipped-pair fixtures are needed.",
+        },
+        {
+            "criterion_id": "enclosed_primitive_postprocess",
+            "paper_requirement": "Remove primitives enclosed by other primitives.",
+            "current_evidence": (
+                "One explicit identity-axis nested OBB cull fixture exists; generated-search "
+                "postprocess breadth is absent."
+            ),
+            "status": "partial_fixture_scope",
+            "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
+            "blocking_for_paper_faithful_offline": True,
+            "claim_boundary": (
+                "Postprocess cull evidence is one offline canary, not a general containment library."
+            ),
+            "next_action": "Expand postprocess fixtures if required by scope audit follow-up.",
+        },
+        {
+            "criterion_id": "report_schema_tests_and_records",
+            "paper_requirement": (
+                "Keep report schema, tests, registry, and dated records reproducible."
+            ),
+            "current_evidence": (
+                "This slice adds RED/GREEN tests, registry metadata, and a dated "
+                "record path."
+            ),
+            "status": "implemented_fixture_scope",
+            "surrogate_or_paper_faithful": "paper_aligned_boundary",
+            "blocking_for_paper_faithful_offline": False,
+            "claim_boundary": (
+                "Reproducibility evidence supports the audit record only, not stronger "
+                "algorithm claims."
+            ),
+            "next_action": "Keep records updated for every future gate.",
+        },
+        {
+            "criterion_id": "package_generation_boundary",
+            "paper_requirement": "Keep offline paper mechanics separate from package conversion.",
+            "current_evidence": (
+                "The report records package-generation false triggers and no CollisionPackage conversion."
+            ),
+            "status": "blocked_until_later_gate",
+            "surrogate_or_paper_faithful": "out_of_offline_scope",
+            "blocking_for_paper_faithful_offline": False,
+            "claim_boundary": "Package generation is a later explicit adapter gate.",
+            "next_action": (
+                "Add package conversion only after a changed offline package boundary exists."
+            ),
+        },
+        {
+            "criterion_id": "newton_runtime_boundary",
+            "paper_requirement": (
+                "Keep offline paper mechanics separate from Newton runtime diagnostics."
+            ),
+            "current_evidence": "The report records Newton false triggers and no runtime execution.",
+            "status": "blocked_until_later_gate",
+            "surrogate_or_paper_faithful": "out_of_offline_scope",
+            "blocking_for_paper_faithful_offline": False,
+            "claim_boundary": "Newton support requires separate mapping and diagnostic records.",
+            "next_action": (
+                "Run Newton only after package conversion and runtime admissibility are recorded."
+            ),
+        },
+        {
+            "criterion_id": "real_usd_boundary",
+            "paper_requirement": "Keep toy fixture audit separate from real asset evidence.",
+            "current_evidence": (
+                "The report records real-USD false triggers and uses synthetic toy fixtures only."
+            ),
+            "status": "blocked_until_later_gate",
+            "surrogate_or_paper_faithful": "out_of_offline_scope",
+            "blocking_for_paper_faithful_offline": False,
+            "claim_boundary": "Real-USD evidence requires separate asset manifests and records.",
+            "next_action": (
+                "Defer bed/Franka or other real assets until a package-changing gate exists."
+            ),
+        },
+        {
+            "criterion_id": "benchmark_evaluation_boundary",
+            "paper_requirement": (
+                "Keep paper benchmark evaluation separate from offline paper-mechanics audit."
+            ),
+            "current_evidence": (
+                "The report records benchmark false triggers and no timing, surface-distance, "
+                "byte-cost, or baseline comparison metrics."
+            ),
+            "status": "blocked_until_later_gate",
+            "surrogate_or_paper_faithful": "out_of_offline_scope",
+            "blocking_for_paper_faithful_offline": False,
+            "claim_boundary": (
+                "Benchmark evidence is not required for bounded offline status and is not claimed here."
+            ),
+            "next_action": (
+                "Defer benchmarks until offline decomposition and runtime package gates are ready."
+            ),
+        },
+    ]
+    for row in criteria:
+        if row["status"] not in _SCOPE_AUDIT_ALLOWED_STATUSES:
+            raise ValueError(f"unsupported scope audit status: {row['status']}")
+        if (
+            row["surrogate_or_paper_faithful"]
+            not in _SCOPE_AUDIT_ALLOWED_ALIGNMENT_LABELS
+        ):
+            raise ValueError(
+                "unsupported scope audit alignment label: "
+                f"{row['surrogate_or_paper_faithful']}"
+            )
+    return criteria
+
+
+def _paper_faithful_offline_scope_audit_payload() -> dict[str, object]:
+    criteria = _paper_faithful_offline_scope_criteria()
+    blocking = [
+        str(row["criterion_id"])
+        for row in criteria
+        if row["blocking_for_paper_faithful_offline"]
+    ]
+    return {
+        "audit_scope": "fixture_scoped_offline_paper_lane",
+        "audit_version": 1,
+        "decision": "remain_partial",
+        "paper_faithful_offline_allowed": False,
+        "decision_reason": "fixture_scope_still_partial",
+        "criteria": criteria,
+        "blocking_criteria_ids": blocking,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def build_cpd_paper_offline_report() -> dict[str, object]:
     """Build the first fixture-scoped offline CPD paper mechanics audit."""
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
-        "paper_faithful_offline_scope",
+        "paper_fixture_breadth_expansion",
     ]
     return {
         "stage": "cpd_paper_offline_report",
@@ -113,7 +399,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_faithful_offline_scope_audit",
+        "next_required_gate": "paper_fixture_breadth_expansion_plan",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -128,9 +414,13 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "paper_polygon_quad_intake_policy_audit",
                 "paper_obb_sphere_fit_faithfulness_audit",
                 "paper_duplicate_vertex_preprocessing_audit",
+                "paper_faithful_offline_scope_audit",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
+        "paper_faithful_offline_scope_audit": (
+            _paper_faithful_offline_scope_audit_payload()
+        ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,
     }

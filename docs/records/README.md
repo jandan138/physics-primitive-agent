@@ -237,6 +237,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Duplicate Vertex Preprocessing](2026-05-16-cpd-paper-duplicate-vertex-preprocessing.md):
   partial command-only exact-coordinate duplicate-vertex preprocessing audit on one deterministic
   toy fixture.
+- [2026-05-16 CPD Paper Faithful Offline Scope Audit](2026-05-16-cpd-paper-faithful-offline-scope-audit.md):
+  partial command-only scope-audit criteria table that keeps the offline paper lane partial and
+  advances the next gate to fixture-breadth expansion.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

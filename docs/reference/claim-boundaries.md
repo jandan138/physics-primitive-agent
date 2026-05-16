@@ -58,9 +58,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   OBB enclosed-primitive postprocess cull audit. It also reports one exact-coordinate
   duplicate-vertex preprocessing fixture with before/after vertex counts, source-face remap,
   topology-change accounting, and a topology trace over the deduplicated executable mesh. The
-  report remains `status: partial` with `paper_faithful_offline_supported: false`. This is
-  fixture-scoped offline audit data for exact overlaps only, not nonzero-threshold mesh cleanup,
-  not `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
+  report now also includes a `paper_faithful_offline_scope_audit` criteria table with
+  `decision: remain_partial`, non-blocking package/Newton/real-USD/benchmark boundary rows, and
+  next gate `paper_fixture_breadth_expansion_plan`. The report remains `status: partial` with
+  `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
+  overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
+  `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
   package generation, not real-USD evidence, not benchmark evidence, and not collision-quality
   validation.
 - The current code can run a command-only deterministic synthetic objective comparison over

@@ -48,8 +48,8 @@ sphere-rain, or read large real USD assets.
 
 ## Planned Artifacts
 
-These names are lane interfaces. Only the first `cpd_paper_offline_report` slice is currently
-implemented, and it is still a `partial` report rather than `paper_faithful_offline`.
+These names are lane interfaces. `cpd_paper_offline_report` is currently implemented as a
+multi-slice `partial` report rather than `paper_faithful_offline`.
 
 | Artifact | Purpose |
 | --- | --- |
@@ -61,6 +61,7 @@ implemented, and it is still a `partial` report rather than `paper_faithful_offl
 | `paper_polygon_quad_intake_policy_audit` | Explicit triangle, quad, and polygon intake policy before stronger paper-lane wording. |
 | `paper_obb_sphere_fit_faithfulness_audit` | Offline fixture-scoped paper-shaped OBB and sphere fit audit rows. |
 | `paper_duplicate_vertex_preprocessing_audit` | Offline duplicate/overlapped vertex preprocessing policy and remap audit. |
+| `paper_faithful_offline_scope_audit` | Offline criteria table that compares current fixture-scoped evidence against the gap matrix, keeps the lane partial, and advances the next gate to fixture-breadth expansion. |
 | `paper_faithful_offline` | Report status allowed only after the required tests and dated records exist. |
 
 ## Canonical Paper Mechanics Checklist
@@ -295,8 +296,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- failure label `paper_faithful_offline_scope_missing` after duplicate-vertex preprocessing has
-  tests and a dated record.
+- the current top-level failure label after the completed scope audit:
+  `paper_fixture_breadth_expansion_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -357,6 +358,9 @@ These fixtures are not benchmark assets. They are unit-test-grade checks for the
 10. OBB/sphere fit faithfulness gate: OBB and sphere rows use the paper construction for the
     declared fixture scope or explicitly record why they remain surrogates.
 11. Record gate: a dated record states the fixture scope and verification commands.
+12. Scope-audit gate: a top-level criteria table records which paper-lane mechanics are still
+    fixture-scoped, which boundaries are out of offline scope, and why the report remains
+    `partial`.
 
 Only after these gates should a separate package-adaptation slice be planned.
 
@@ -555,15 +559,33 @@ paper_duplicate_vertex_preprocessing_audit
 This closes only the named exact-overlap fixture audit. It should not be broadened into package
 generation, Newton diagnostics, benchmark work, broad mesh cleanup, or a bed/Franka rerun.
 
-## Next Implementation Slice
+## Twelfth Implementation Slice
 
-The next paper-lane gate is:
+The twelfth implementation slice is now:
 
 ```text
 paper_faithful_offline_scope_audit
 -> check every gap-matrix row and every offline-lane criterion
 -> decide which fixture-scoped mechanics are still partial
--> decide whether any bounded `paper_faithful_offline` wording is allowed
+-> reject stronger `paper_faithful_offline` wording for this fixture scope
+-> record non-blocking package/Newton/real-USD/benchmark boundary rows
+-> advance the next gate to `paper_fixture_breadth_expansion_plan`
 -> keep package generation, Newton, real USD, and benchmarks blocked unless a later slice creates
    an explicit package boundary with dated mapping and diagnostic records
+```
+
+This slice is a decision table, not a new decomposition algorithm. It records
+`decision: remain_partial`, `paper_faithful_offline_allowed: false`, and the nine blocking
+fixture-scope criteria that need a fixture-breadth plan before any stronger offline wording.
+
+## Next Implementation Slice
+
+The next paper-lane gate is:
+
+```text
+paper_fixture_breadth_expansion_plan
+-> read the nine blocking rows from `paper_faithful_offline_scope_audit`
+-> choose the smallest additional synthetic fixtures needed to broaden those rows
+-> keep package generation, Newton, real USD, and benchmarks out of scope unless a later package
+   boundary changes
 ```

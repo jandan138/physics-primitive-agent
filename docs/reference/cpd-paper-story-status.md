@@ -62,7 +62,10 @@ The repository has not reached that full result. It has reached the workbench st
     component-pair traces, one explicit enclosed-primitive postprocess cull audit,
     fan-triangulated quad/polygon source-face intake policy fixtures, and one exact-coordinate
     duplicate-vertex preprocessing audit.
-23. Records and configs can preserve exactly what was run.
+23. The same report now includes a scope-audit criteria table that decides the current fixture
+    scope must remain `partial`, keeps `paper_faithful_offline_supported: false`, and points the
+    next paper-lane gate to `paper_fixture_breadth_expansion_plan`.
+24. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -72,8 +75,8 @@ from 3 to 2 in a named report. The runtime roadmap now stays Newton-native first
 primitive is considered for Newton tasks.
 
 This means the reproduction infrastructure is in place, and the first native primitive fitting
-hook exists for synthetic toy meshes. The paper-lane primitive-fit audit has also started, but the
-paper-faithful decomposition and evaluation story still needs to be implemented.
+hook exists for synthetic toy meshes. The paper-lane audit now has an explicit scope decision, but
+the paper-faithful decomposition and evaluation story still needs to be implemented.
 
 The 2026-05-16 four-block status audit summarized this position as an internal diagnostic
 workbench that was mostly missing integration/report ergonomics rather than Newton plumbing. The
@@ -350,13 +353,17 @@ That partial report now records:
   `paper_duplicate_vertex_preprocessing`, including first-occurrence vertex remap, duplicate
   clusters, source-face remap, before/after component counts, retained/dropped source-face ids,
   and a topology trace over the deduplicated executable mesh.
+- a top-level `paper_faithful_offline_scope_audit` criteria table with
+  `decision: remain_partial`, nine blocking fixture-scope criteria, non-blocking
+  package/Newton/real-USD/benchmark boundary rows, and next gate
+  `paper_fixture_breadth_expansion_plan`.
 
 This closes the narrow capsule axis-policy audit gap and adds the first topology-only
 priority-queue trace plus component-pair accepted/blocked toy events, postprocess culling,
 source-face intake policy fixtures, OBB/sphere fit-faithfulness rows, and exact-overlap
-duplicate-vertex preprocessing inside the report, but it does not make the lane
-`paper_faithful_offline`. The next paper-lane gate is
-`paper_faithful_offline_scope_audit`.
+duplicate-vertex preprocessing inside the report. The scope audit then records why these remain
+fixture-scoped and why the lane is still not `paper_faithful_offline`. The next paper-lane gate is
+`paper_fixture_breadth_expansion_plan`.
 
 ## What The Newton-Native Policy Changes
 
@@ -550,7 +557,8 @@ local USD mirrors or synthetic fixtures
 -> polygon/quad source-face intake policy audit, still without package/Newton/real-USD
 -> OBB/sphere fit-faithfulness audit, still without package/Newton/real-USD
 -> exact-coordinate duplicate-vertex preprocessing audit, still without package/Newton/real-USD
--> next: paper_faithful_offline_scope_audit
+-> scope-audit criteria table, still without package/Newton/real-USD
+-> next: paper_fixture_breadth_expansion_plan
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -599,6 +607,8 @@ Use:
 - "offline enclosed-primitive postprocess cull audit";
 - "offline polygon/quad source-face intake policy audit";
 - "offline OBB/sphere fit-faithfulness audit";
+- "offline paper scope-audit criteria table";
+- "fixture-breadth expansion plan";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -623,12 +633,15 @@ Avoid:
 
 ## Recommended Next Slices
 
-The immediate next slice should now decide whether the offline paper lane is ready for any bounded
-paper-faithfulness wording, without adding stronger evaluation claims:
+The immediate next slice should now turn the completed scope audit into a fixture-breadth plan,
+without adding stronger evaluation claims:
 
-1. Run `paper_faithful_offline_scope_audit` against the gap matrix and offline lane spec.
-2. Mark which mechanics are fixture-scoped paper-shaped audits and which still need expansion.
-3. Keep the lane `partial` unless the scope audit justifies narrower bounded wording with records.
+1. Read the nine blocking rows from `paper_faithful_offline_scope_audit`.
+2. Choose the smallest additional synthetic fixtures needed to broaden preprocessing, source-face
+   intake, operator, primitive-fit, cost, queue, target/threshold, component-pair, and postprocess
+   evidence.
+3. Keep the lane `partial` unless a later fixture-breadth implementation and dated records justify
+   narrower bounded wording.
 4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 5. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality

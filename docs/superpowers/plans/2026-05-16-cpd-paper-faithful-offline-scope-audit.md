@@ -246,8 +246,8 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "Keep report schema, tests, registry, and dated records reproducible."
         ),
         "current_evidence": (
-            "This slice adds RED/GREEN tests, final verification, registry entry, "
-            "and a dated record."
+            "This slice adds RED/GREEN tests, registry metadata, and a dated "
+            "record path."
         ),
         "status": "implemented_fixture_scope",
         "surrogate_or_paper_faithful": "paper_aligned_boundary",
