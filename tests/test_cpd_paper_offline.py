@@ -1,5 +1,7 @@
 import json
+from math import pi
 
+from primitive_collision_compiler.baselines.cpd_like.primitives import SUPPORTED_PRIMITIVES
 from primitive_collision_compiler.baselines.cpd_paper.offline import (
     CPD_PAPER_OFFLINE_CLAIM_BOUNDARY,
     build_cpd_paper_offline_report,
@@ -22,16 +24,19 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert set(report["failure_labels"]) == {
         "polygon_and_quad_face_policy_missing",
         "paper_flat_capped_cylinder_fit_missing",
-        "frustum_fit_missing",
-        "trapezoidal_prism_fit_missing",
         "full_priority_queue_trace_missing",
         "component_pair_edge_insertion_missing",
         "postprocess_enclosed_primitive_culling_missing",
     }
-    assert report["next_required_gate"] == "frustum_and_trapezoidal_prism_fit_audit"
+    assert report["next_required_gate"] == "paper_flat_capped_cylinder_fit_audit"
 
     cases = {case["case_id"]: case for case in report["cases"]}
-    assert set(cases) == {"paper_single_box", "paper_two_face_merge"}
+    assert set(cases) == {
+        "paper_single_box",
+        "paper_two_face_merge",
+        "paper_frustum_like",
+        "paper_trapezoid_prism_like",
+    }
 
     single_box = cases["paper_single_box"]
     assert single_box["source_mesh"]["face_arity_policy"] == "triangle_only_fixture"
@@ -50,6 +55,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "sphere",
         "capsule",
         "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
     }
     box = [
         row
@@ -67,8 +74,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert capped["implementation_status"] == "current_proxy_not_paper_faithful"
     assert capped["fit_model"] == "current_axis_span_radial_proxy_with_hemisphere_caps"
     assert capped["newton_runtime_kind"] == "unmapped_current_proxy"
-    assert "frustum" in single_box["primitive_fit_audit"]["missing_paper_primitives"]
-    assert "trapezoidal_prism" in single_box["primitive_fit_audit"]["missing_paper_primitives"]
+    assert single_box["primitive_fit_audit"]["missing_paper_primitives"] == []
 
     merge_case = cases["paper_two_face_merge"]
     assert [
@@ -95,6 +101,13 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert cost["left_fit_audit"]["candidates"]
     assert cost["right_fit_audit"]["candidates"]
     assert cost["merged_fit_audit"]["candidates"]
+    merge_frustum = [
+        row
+        for row in merge_case["primitive_fit_audit"]["candidates"]
+        if row["paper_primitive"] == "frustum"
+    ][0]
+    assert merge_frustum["contains_assigned_points"] is True
+    assert merge_frustum["fit_failure_reason"] is None
 
 
 def test_cpd_paper_offline_report_is_strict_json_serializable():
@@ -103,3 +116,101 @@ def test_cpd_paper_offline_report_is_strict_json_serializable():
     encoded = json.dumps(report, allow_nan=False, sort_keys=True)
 
     assert "cpd_paper_offline_report" in encoded
+
+
+def test_cpd_paper_offline_report_audits_frustum_and_trapezoidal_prism_candidates():
+    report = build_cpd_paper_offline_report()
+    cases = {case["case_id"]: case for case in report["cases"]}
+
+    frustum_case = cases["paper_frustum_like"]
+    frustum_rows = {
+        row["paper_primitive"]: row
+        for row in frustum_case["primitive_fit_audit"]["candidates"]
+    }
+    frustum = frustum_rows["frustum"]
+    assert frustum["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert frustum["fit_model"] == "paper_frustum_axis_from_min_cost_flat_cylinder"
+    assert frustum["newton_runtime_kind"] == "offline_only_unmapped"
+    assert frustum["contains_assigned_points"] is True
+    assert frustum["paper_weight"] == 2.1
+    frustum_dims = frustum["dimensions"]
+    assert frustum_dims["axis_selection_policy"] == "min_volume_flat_cylinder_axis"
+    assert frustum_dims["volume_formula"] == "pi*h/3*(rt^2 + rt*rb + rb^2)"
+    assert len(frustum_dims["flat_cylinder_axis_candidates"]) == 3
+    flat_volumes = [
+        row["flat_cylinder_volume"]
+        for row in frustum_dims["flat_cylinder_axis_candidates"]
+    ]
+    selected_axis = frustum_dims["selected_axis_index"]
+    selected_flat = [
+        row
+        for row in frustum_dims["flat_cylinder_axis_candidates"]
+        if row["axis_index"] == selected_axis
+    ][0]
+    assert selected_flat["flat_cylinder_volume"] == min(flat_volumes)
+    assert frustum_dims["height"] > 0.0
+    assert frustum_dims["top_radius"] > 0.0
+    assert frustum_dims["bottom_radius"] > 0.0
+    expected_frustum_volume = (
+        pi
+        * frustum_dims["height"]
+        / 3.0
+        * (
+            frustum_dims["top_radius"] ** 2
+            + frustum_dims["top_radius"] * frustum_dims["bottom_radius"]
+            + frustum_dims["bottom_radius"] ** 2
+        )
+    )
+    assert abs(frustum["volume"] - expected_frustum_volume) < 1e-9
+    assert abs(frustum["weighted_volume"] - frustum["volume"] * 2.1) < 1e-9
+
+    trap_case = cases["paper_trapezoid_prism_like"]
+    trap_rows = {
+        row["paper_primitive"]: row
+        for row in trap_case["primitive_fit_audit"]["candidates"]
+    }
+    trap = trap_rows["trapezoidal_prism"]
+    assert trap["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert trap["fit_model"] == "paper_isosceles_trapezoidal_prism_six_axis_orders"
+    assert trap["newton_runtime_kind"] == "offline_only_unmapped"
+    assert trap["contains_assigned_points"] is True
+    assert trap["paper_weight"] == 1.4
+    trap_dims = trap["dimensions"]
+    assert trap_dims["axis_order_attempt_count"] == 6
+    assert sorted(trap_dims["axis_order"]) == [0, 1, 2]
+    assert trap_dims["volume_formula"] == "4*h_x*h_y*(h_zt + h_zb)"
+    axis_orders = [tuple(row["axis_order"]) for row in trap_dims["axis_order_attempts"]]
+    assert set(axis_orders) == {
+        (0, 1, 2),
+        (0, 2, 1),
+        (1, 0, 2),
+        (1, 2, 0),
+        (2, 0, 1),
+        (2, 1, 0),
+    }
+    containing_attempts = [
+        row for row in trap_dims["axis_order_attempts"] if row["contains_assigned_points"]
+    ]
+    assert tuple(trap_dims["axis_order"]) in {
+        tuple(row["axis_order"])
+        for row in containing_attempts
+        if row["volume"] == min(attempt["volume"] for attempt in containing_attempts)
+    }
+    assert all(row["contains_assigned_points"] for row in trap_dims["axis_order_attempts"])
+    assert trap_dims["h_x"] > 0.0
+    assert trap_dims["h_y"] > 0.0
+    assert trap_dims["h_zt"] > 0.0
+    assert trap_dims["h_zb"] > 0.0
+    expected_trap_volume = (
+        4.0
+        * trap_dims["h_x"]
+        * trap_dims["h_y"]
+        * (trap_dims["h_zt"] + trap_dims["h_zb"])
+    )
+    assert abs(trap["volume"] - expected_trap_volume) < 1e-9
+    assert abs(trap["weighted_volume"] - trap["volume"] * 1.4) < 1e-9
+
+
+def test_cpd_paper_frustum_and_trapezoidal_prism_stay_out_of_runtime_primitives():
+    assert "frustum" not in SUPPORTED_PRIMITIVES
+    assert "trapezoidal_prism" not in SUPPORTED_PRIMITIVES

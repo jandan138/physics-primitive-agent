@@ -29,13 +29,14 @@ bounded synthetic `two_step_lookahead` diagnostic, follow-on package/mapping pro
 synthetic Newton task-smoke probe, and command-only four-block slice report for the
 lookahead-changed package pair are now complete under recorded settings. The first
 fixture-scoped `cpd_paper_offline_report` slice is now implemented as a command-only partial
-offline paper-lane audit over `paper_single_box` and `paper_two_face_merge`. It records paper
-operator, primitive-fit subset, left/right/merged merge-cost inputs, and base-collapse-cost versus
-weighted-priority-cost fields while keeping Newton, bed/Franka, and benchmark work out of scope.
-The audited primitive rows are explicitly current surrogate/proxy rows, not paper-faithful fitting.
-The next paper-lane gate is frustum and trapezoidal-prism fit audit, not a capped bed/Franka rerun
-unless a separate real package change is introduced and passes full mapping, contact-canary,
-task-gate, and dated-record gates. The
+offline paper-lane audit over `paper_single_box`, `paper_two_face_merge`, `paper_frustum_like`, and
+`paper_trapezoid_prism_like`. It records paper operator, primitive-fit subset,
+left/right/merged merge-cost inputs, offline-only frustum/trapezoidal-prism candidate rows, and
+base-collapse-cost versus weighted-priority-cost fields while keeping Newton, bed/Franka, and
+benchmark work out of scope. The audited primitive rows are explicitly current surrogate/proxy or
+offline-only audit rows, not paper-faithful fitting. The next paper-lane gate is paper-flat
+capped-cylinder fitting, not a capped bed/Franka rerun unless a separate real package change is
+introduced and passes full mapping, contact-canary, task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
 collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
 `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
@@ -55,6 +56,9 @@ records exist.
 - [CPD paper offline first fixture slice record](records/2026-05-16-cpd-paper-offline-first-fixture-slice.md):
   dated implementation record for the partial `cpd_paper_offline_report` over two synthetic toy
   fixtures, with no Newton, real-USD, benchmark, or collision-quality claim.
+- [CPD paper frustum/trapezoid audit record](records/2026-05-16-cpd-paper-frustum-trapezoid-audit.md):
+  dated implementation record for offline-only frustum and trapezoidal-prism fit-audit rows in the
+  partial `cpd_paper_offline_report`.
 
 ## DeepDive Package
 
@@ -272,6 +276,9 @@ records exist.
 - [CPD paper offline first fixture slice record](records/2026-05-16-cpd-paper-offline-first-fixture-slice.md):
   partial command-only offline paper-lane audit over `paper_single_box` and `paper_two_face_merge`,
   without Newton, real-USD, package, benchmark, or collision-quality claims.
+- [CPD paper frustum/trapezoid audit record](records/2026-05-16-cpd-paper-frustum-trapezoid-audit.md):
+  partial command-only offline fit-audit row expansion for `frustum` and `trapezoidal_prism`,
+  without Newton, real-USD, package, benchmark, or collision-quality claims.
 - [CPD latest diagnostic loop explainer docs record](records/2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
@@ -353,8 +360,9 @@ records exist.
   recorded lookahead slice. It links existing dated records and does not rerun source reports,
   USD loading, real assets, or Newton tasks.
 - `npc-compile --run-cpd-paper-offline-report`: command-only partial offline paper-lane audit over
-  `paper_single_box` and `paper_two_face_merge`; exits successfully when the JSON report is emitted,
-  returns `status: partial`, and does not run Newton, real USD, package generation, or benchmarks.
+  `paper_single_box`, `paper_two_face_merge`, `paper_frustum_like`, and
+  `paper_trapezoid_prism_like`; exits successfully when the JSON report is emitted, returns
+  `status: partial`, and does not run Newton, real USD, package generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.

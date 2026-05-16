@@ -169,6 +169,17 @@ experiments:
       - partial fixture-scoped offline paper-lane audit only
       - records triangle-only operator audit, four-primitive fit-audit subset, and base-cost versus weighted-priority-cost fields on two deterministic toy fixtures
       - no paper_faithful_offline claim, full CPD reproduction claim, Newton runtime support, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-frustum-trapezoid-audit
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-frustum-trapezoid-audit.md
+    purpose: >
+      Extend the command-only partial offline CPD paper-lane audit with offline-only frustum and
+      trapezoidal-prism fit-audit rows on deterministic toy fixtures.
+    claims_supported:
+      - partial fixture-scoped offline primitive-fit audit only
+      - records offline-only frustum and trapezoidal-prism candidate fields, formulas, containment checks, and paper weights on deterministic toy fixtures
+      - no paper_faithful_offline claim, full CPD reproduction claim, Newton runtime support, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

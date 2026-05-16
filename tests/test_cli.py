@@ -1528,9 +1528,13 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["newton_runtime_triggered"] is False
+    assert payload["real_usd_triggered"] is False
+    assert payload["benchmark_triggered"] is False
     assert [case["case_id"] for case in payload["cases"]] == [
         "paper_single_box",
         "paper_two_face_merge",
+        "paper_frustum_like",
+        "paper_trapezoid_prism_like",
     ]
 
 

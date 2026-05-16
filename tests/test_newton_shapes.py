@@ -173,6 +173,31 @@ def test_map_package_shapes_keeps_capped_cylinder_as_mapping_gap():
     assert "unsupported primitive kind: capped_cylinder" in mappings[0].detail
 
 
+def test_map_package_shapes_keeps_paper_only_primitives_as_mapping_gaps():
+    package = CollisionPackage(
+        package_id="pkg",
+        asset_id="asset",
+        primitives=(
+            PrimitiveSpec(
+                primitive_id="frustum0",
+                kind="frustum",
+                dimensions={"height": 1.0, "top_radius": 0.25, "bottom_radius": 0.5},
+            ),
+            PrimitiveSpec(
+                primitive_id="trapezoid0",
+                kind="trapezoidal_prism",
+                dimensions={"h_x": 1.0, "h_y": 0.5, "h_zt": 0.25, "h_zb": 0.5},
+            ),
+        ),
+    )
+
+    mappings = map_package_shapes(package)
+
+    assert [mapping.status for mapping in mappings] == ["mapping_gap", "mapping_gap"]
+    assert "unsupported primitive kind: frustum" in mappings[0].detail
+    assert "unsupported primitive kind: trapezoidal_prism" in mappings[1].detail
+
+
 def test_map_package_shapes_rejects_nonfinite_values_and_bad_axes():
     package = CollisionPackage(
         package_id="pkg",

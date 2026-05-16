@@ -318,6 +318,23 @@ paper_single_box + paper_two_face_merge
 ```
 
 This gives the smallest useful evidence slice that the offline lane can compute paper-side operator,
-primitive-fit, and cost fields before implementing frustum, trapezoidal prism, full priority-queue
-search, real USD, or benchmark tasks. The audited primitive rows are explicitly labeled as current
-surrogates/proxies; they are not paper-faithful primitive fitting.
+primitive-fit, and cost fields before implementing full priority-queue search, real USD, or
+benchmark tasks. The audited primitive rows are explicitly labeled as current surrogates/proxies;
+they are not paper-faithful primitive fitting.
+
+## Second Implementation Slice
+
+The second implementation slice is now:
+
+```text
+paper_frustum_like + paper_trapezoid_prism_like
+-> offline frustum candidate fit audit row
+-> offline trapezoidal-prism candidate fit audit row
+-> weight, volume, formula, axis-policy, and containment sanity checks
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice removes the "missing paper primitive row" gap for `frustum` and `trapezoidal_prism`
+inside the fixture-scoped audit report only. It does not close the remaining paper-faithful gaps:
+paper-flat capped-cylinder fitting, full paper capsule/cylinder axis policy, polygon/quad intake,
+priority-queue trace, component-pair insertion, and enclosed-primitive postprocessing.

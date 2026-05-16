@@ -208,6 +208,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Offline First Fixture Slice](2026-05-16-cpd-paper-offline-first-fixture-slice.md):
   partial command-only offline paper-lane audit over `paper_single_box` and `paper_two_face_merge`,
   including operator, primitive-fit subset, and collapse-cost fields.
+- [2026-05-16 CPD Paper Frustum Trapezoid Audit](2026-05-16-cpd-paper-frustum-trapezoid-audit.md):
+  partial command-only offline primitive-fit audit row expansion for frustum and trapezoidal-prism
+  candidates on deterministic toy fixtures.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
