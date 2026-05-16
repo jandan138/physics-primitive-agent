@@ -178,8 +178,9 @@ offline report-only matrix over deterministic in-memory probes. The search-engin
 gate is now also implemented as an offline report-only matrix over existing deterministic topology,
 threshold, and component-pair traces. The postprocess-policy generalization gate is now implemented
 as an offline report-only matrix, and the package-boundary readiness gate is now implemented as an
-offline matrix before package conversion. The current next gate is
-`paper_offline_changed_decomposition_output_contract`. Batch C stays important because it checks
+offline matrix before package conversion. The changed-decomposition output contract is now
+implemented as an offline changed-decomposition output contract, not a `CollisionPackage`. The
+current next gate is `paper_package_adapter_contract`. Batch C stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it
 checks multiple component-pair candidates and capped
@@ -198,7 +199,8 @@ source/preprocess/intake/operator implementation plus a Batch B primitive-fit im
 plus a Batch C cost/search/stop implementation plus a Batch D component-pair implementation plus a
 Batch E postprocess implementation plus a command-only synthetic fixture-breadth completion review,
 a source-policy generalization matrix, a primitive-fit engine generalization matrix, and a
-search-engine generalization matrix, plus a postprocess-policy generalization matrix inside the
+search-engine generalization matrix, plus a postprocess-policy generalization matrix, a
+package-boundary readiness matrix, and an offline changed-decomposition output contract inside the
 partial paper report.
 ```
 

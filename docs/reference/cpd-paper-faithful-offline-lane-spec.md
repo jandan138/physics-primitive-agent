@@ -298,9 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure labels after the package-boundary readiness matrix:
-  `paper_offline_changed_decomposition_output_contract_missing` and
-  `paper_package_generation_contract_missing`.
+- the current top-level failure label after the changed-decomposition output contract:
+  `paper_package_adapter_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -592,7 +591,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> next after the package-boundary readiness matrix: paper_offline_changed_decomposition_output_contract
+-> next after the changed-decomposition output contract: paper_package_adapter_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -650,4 +649,14 @@ Newton runtime execution remain blocked; real-USD and benchmark gates remain lat
 package readiness, Newton readiness, package generation, Newton runtime execution, real-USD
 evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
 collision-quality evidence, deployment readiness, or safety certification. The next current gate is
-`paper_offline_changed_decomposition_output_contract`.
+`paper_offline_changed_decomposition_output_contract` at the historical Batch E stage.
+
+`paper_offline_changed_decomposition_output_contract` closes only the offline output-contract
+gate. It records an offline changed-decomposition output contract, not a `CollisionPackage`, over
+synthetic toy fixture evidence. The payload carries decomposition output rows, stable offline
+primitive ids, source-face/group ids, selected paper primitive audit fields, explicit postprocess
+state rows, unsupported runtime boundaries, and package/Newton/real-USD/benchmark false triggers.
+It is not package readiness, Newton readiness, package generation, Newton runtime execution,
+real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
+collision-quality evidence, deployment readiness, or safety certification. The next current gate
+is `paper_package_adapter_contract`.

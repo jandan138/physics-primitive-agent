@@ -275,6 +275,9 @@ Proposed | In progress | Complete | Failed | Superseded
   `cpd_paper_offline_report`.
 - [2026-05-17 CPD Paper Generalization Batch E Package Boundary Readiness](2026-05-17-cpd-paper-generalization-batch-e-package-boundary-readiness.md):
   partial command-only package-boundary readiness matrix inside `cpd_paper_offline_report`.
+- [2026-05-17 CPD Paper Changed-Decomposition Output Contract](2026-05-17-cpd-paper-changed-decomposition-output-contract.md):
+  partial offline changed-decomposition output contract inside `cpd_paper_offline_report`, not a
+  `CollisionPackage`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

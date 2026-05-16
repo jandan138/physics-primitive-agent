@@ -61,12 +61,17 @@ before/after primitive counts, cull or unsupported reasons, and false package, N
 and benchmark triggers. It now also includes
 `paper_generalization_batch_e_package_boundary_readiness`, a command-only offline
 package-boundary readiness matrix before package conversion. That matrix records that Batches A-D
-produce audit matrices rather than a durable changed-decomposition output contract, keeps package
-generation and Newton runtime blocked, and advances the next paper-lane gate to
-`paper_offline_changed_decomposition_output_contract`. These source-policy, primitive-fit-engine,
-search-engine, postprocess-policy, and package-boundary-readiness slices do not support full CPD
-reproduction, package generation, Newton runtime execution, real-USD evidence, collision-quality
-evidence, benchmark evidence, deployment readiness, or safety certification. See
+produce audit matrices rather than a durable changed-decomposition output contract, and keeps
+package generation and Newton runtime blocked. It now also includes
+`paper_offline_changed_decomposition_output_contract`, an offline changed-decomposition output
+contract, not a `CollisionPackage`. That contract records synthetic toy fixture decomposition
+rows, stable offline primitive ids, source-face/group ids, selected paper primitive audit fields,
+explicit postprocess state rows, and package/Newton/real-USD/benchmark false triggers, then
+advances the next paper-lane gate to `paper_package_adapter_contract`. These source-policy,
+primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
+changed-decomposition-contract slices do not support full CPD reproduction, package generation,
+Newton runtime execution, real-USD evidence, collision-quality evidence, benchmark evidence,
+deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

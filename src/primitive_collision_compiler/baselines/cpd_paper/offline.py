@@ -69,9 +69,10 @@ _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
 )
 _PAPER_PACKAGE_GENERATION_CONTRACT = "paper_package_generation_contract"
+_PAPER_PACKAGE_ADAPTER_CONTRACT = "paper_package_adapter_contract"
 _PAPER_GENERALIZATION_NEXT_ACTION = (
-    "Proceed to paper_offline_changed_decomposition_output_contract after the "
-    "package-boundary readiness review; keep package/Newton wording blocked."
+    "Proceed to paper_package_adapter_contract after the changed-decomposition "
+    "output contract; keep package/Newton wording blocked."
 )
 
 
@@ -643,6 +644,10 @@ def _paper_remaining_gaps_after_package_boundary() -> list[str]:
     ]
 
 
+def _paper_remaining_gaps_after_changed_decomposition_contract() -> list[str]:
+    return [_PAPER_PACKAGE_ADAPTER_CONTRACT]
+
+
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
     planned_batches = _paper_faithful_offline_generalization_batches()
     remaining_generalization_gates = (
@@ -653,12 +658,12 @@ def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
         "closed_gate": "paper_faithful_offline_generalization_plan",
         "decision": "remain_partial",
         "decision_reason": (
-            "generalization_batches_complete_changed_decomposition_output_contract_missing"
+            "changed_decomposition_output_contract_complete_package_adapter_contract_missing"
         ),
         "generalization_plan_complete": True,
         "paper_faithful_offline_allowed": False,
-        "next_required_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
-        "first_unresolved_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        "next_required_gate": _PAPER_PACKAGE_ADAPTER_CONTRACT,
+        "first_unresolved_gate": _PAPER_PACKAGE_ADAPTER_CONTRACT,
         "planned_batches": planned_batches,
         "remaining_generalization_gates": remaining_generalization_gates,
         "blocked_runtime_gates": [
@@ -1267,6 +1272,292 @@ def _paper_package_boundary_readiness_payload() -> dict[str, object]:
     }
 
 
+def _source_face_ids_for_contract_group(
+    source_mesh: dict[str, object],
+    generated_triangle_face_ids: list[int],
+) -> list[int]:
+    remap = source_mesh.get("source_face_remap")
+    if not isinstance(remap, list):
+        return list(generated_triangle_face_ids)
+
+    source_face_ids: list[int] = []
+    for generated_face_id in generated_triangle_face_ids:
+        for row in remap:
+            generated_ids = row.get("generated_triangle_face_ids", [])
+            if generated_face_id in generated_ids:
+                source_face_id = int(row["source_face_id"])
+                if source_face_id not in source_face_ids:
+                    source_face_ids.append(source_face_id)
+    return source_face_ids
+
+
+def _source_mesh_contract_summary(case_payload: dict[str, object]) -> dict[str, object]:
+    source_mesh = case_payload["source_mesh"]
+    preprocessing = case_payload.get("preprocessing_audit", {})
+    return {
+        "vertex_count": source_mesh["vertex_count"],
+        "face_count": source_mesh["face_count"],
+        "connected_component_count": source_mesh["connected_component_count"],
+        "source_face_count": source_mesh.get("source_face_count"),
+        "source_face_arities": source_mesh.get("source_face_arities"),
+        "duplicate_vertex_preprocessing": source_mesh.get(
+            "duplicate_vertex_preprocessing"
+        ),
+        "source_face_remap_policy": (
+            "explicit_generated_triangle_to_source_face_map"
+            if isinstance(source_mesh.get("source_face_remap"), list)
+            else source_mesh.get("source_face_remap")
+        ),
+        "retained_source_face_ids": preprocessing.get("retained_source_face_ids"),
+        "dropped_source_face_ids": preprocessing.get("dropped_source_face_ids"),
+    }
+
+
+def _search_contract_summary(trace: dict[str, object]) -> dict[str, object]:
+    return {
+        "target_primitive_count": trace["target_primitive_count"],
+        "initial_active_groups": trace["initial_active_groups"],
+        "final_active_groups": trace["final_active_groups"],
+        "stop_reason": trace["stop_reason"],
+        "accepted_merge_count": trace["accepted_merge_count"],
+        "blocked_merge_count": trace["blocked_merge_count"],
+        "stale_entry_skipped_count": trace["stale_entry_skipped_count"],
+        "threshold_policy": trace["threshold_policy"],
+        "excess_volume_threshold": trace["excess_volume_threshold"],
+        "component_pair_edge_insertion_triggered": trace[
+            "component_pair_edge_insertion_triggered"
+        ],
+        "component_pair_candidate_count": trace["component_pair_candidate_count"],
+        "skipped_component_pair_count": trace["skipped_component_pair_count"],
+    }
+
+
+def _offline_decomposition_primitive_records(
+    case_payload: dict[str, object],
+) -> list[dict[str, object]]:
+    trace = case_payload["collapse_trace"]
+    source_mesh = case_payload["source_mesh"]
+    selected = case_payload["primitive_fit_audit"]["selected"]
+    records = []
+    for index, final_group in enumerate(trace["final_active_groups"]):
+        generated_triangle_face_ids = [int(face_id) for face_id in final_group]
+        records.append(
+            {
+                "offline_primitive_id": (
+                    f"{case_payload['case_id']}:offline_primitive:{index}"
+                ),
+                "source_faces": generated_triangle_face_ids,
+                "source_face_ids": _source_face_ids_for_contract_group(
+                    source_mesh,
+                    generated_triangle_face_ids,
+                ),
+                "generated_triangle_face_ids": generated_triangle_face_ids,
+                "paper_primitive": selected["paper_primitive"],
+                "center": selected["center"],
+                "axes": selected["axes"],
+                "dimensions": selected["dimensions"],
+                "volume": selected["volume"],
+                "paper_weight": selected["paper_weight"],
+                "weighted_volume": selected["weighted_volume"],
+                "contains_assigned_points": selected["contains_assigned_points"],
+                "newton_runtime_kind": selected["newton_runtime_kind"],
+                "primitive_fit_scope": (
+                    "case_selected_candidate_reused_for_contract_row_not_group_refit"
+                ),
+                "conversion_status": "offline_contract_only_not_package_candidate",
+            }
+        )
+    return records
+
+
+def _offline_changed_decomposition_output_rows(
+    cases: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    rows = []
+    for case_payload in cases:
+        trace = case_payload.get("collapse_trace")
+        if not isinstance(trace, dict) or not isinstance(
+            trace.get("final_active_groups"), list
+        ):
+            continue
+        rows.append(
+            {
+                "output_id": (
+                    f"{case_payload['case_id']}:changed_decomposition_output"
+                ),
+                "evidence_case_id": case_payload["case_id"],
+                "row_status": "implemented_offline_contract_row",
+                "source_mesh_summary": _source_mesh_contract_summary(case_payload),
+                "search_summary": _search_contract_summary(trace),
+                "primitive_records": _offline_decomposition_primitive_records(
+                    case_payload
+                ),
+                "postprocess_state": "not_applied_to_search_output",
+                "unsupported_boundaries": {
+                    "package_adapter_contract_required": True,
+                    "runtime_mapping_not_attempted": True,
+                    "real_usd_not_loaded": True,
+                    "benchmark_not_run": True,
+                },
+                "claim_boundary": (
+                    "offline_changed_decomposition_contract_row_not_collision_package"
+                ),
+                "package_generation_triggered": False,
+                "newton_runtime_triggered": False,
+                "real_usd_triggered": False,
+                "benchmark_triggered": False,
+            }
+        )
+    return rows
+
+
+def _paper_postprocess_state_contract_rows(
+    cases: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    rows = []
+    for case_payload in cases:
+        postprocess = case_payload.get("postprocess_audit")
+        if not isinstance(postprocess, dict):
+            continue
+        rows.append(
+            {
+                "state_id": f"{case_payload['case_id']}:postprocess_state",
+                "evidence_case_id": case_payload["case_id"],
+                "state_scope": "explicit_postprocess_audit_fixture_not_search_output",
+                "postprocess_input_source": postprocess["postprocess_input_source"],
+                "postprocess_policy": postprocess["postprocess_policy"],
+                "kept_primitive_ids": postprocess["kept_primitive_ids"],
+                "culled_primitive_ids": postprocess["culled_primitive_ids"],
+                "cull_record_count": len(postprocess["cull_records"]),
+                "unsupported_record_count": len(
+                    postprocess.get("unsupported_records", [])
+                ),
+                "unsupported_containment_label": postprocess.get(
+                    "unsupported_containment_label"
+                ),
+                "package_generation_triggered": False,
+                "newton_runtime_triggered": False,
+                "real_usd_triggered": False,
+                "benchmark_triggered": False,
+            }
+        )
+    return rows
+
+
+def _paper_changed_decomposition_output_contract_payload(
+    cases: list[dict[str, object]],
+) -> dict[str, object]:
+    decomposition_rows = _offline_changed_decomposition_output_rows(cases)
+    postprocess_rows = _paper_postprocess_state_contract_rows(cases)
+    source_policy = _paper_source_policy_generalization_payload(cases)
+    primitive_fit = _paper_primitive_fit_engine_generalization_payload()
+    search_engine = _paper_search_engine_generalization_payload(cases)
+    package_boundary = _paper_package_boundary_readiness_payload()
+    primitive_record_count = sum(
+        len(row["primitive_records"]) for row in decomposition_rows
+    )
+    return {
+        "gate_id": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        "gate_status": "implemented_offline_contract_only_partial",
+        "closed_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        "next_required_gate": _PAPER_PACKAGE_ADAPTER_CONTRACT,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "changed_decomposition_output_contract_complete_package_adapter_"
+            "contract_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": "offline_changed_decomposition_output_not_collision_package",
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_report_contract_no_collision_package_no_newton"
+        ),
+        "output_contract": {
+            "required_output_fields": [
+                "output_id",
+                "evidence_case_id",
+                "source_mesh_summary",
+                "search_summary",
+                "primitive_records",
+                "postprocess_state",
+                "unsupported_boundaries",
+                "claim_boundary",
+            ],
+            "primitive_record_fields": [
+                "offline_primitive_id",
+                "source_faces",
+                "generated_triangle_face_ids",
+                "source_face_ids",
+                "paper_primitive",
+                "center",
+                "axes",
+                "dimensions",
+                "volume",
+                "paper_weight",
+                "weighted_volume",
+                "contains_assigned_points",
+                "newton_runtime_kind",
+                "conversion_status",
+            ],
+            "conversion_status": "offline_contract_only_not_package_candidate",
+        },
+        "source_policy_summary": {
+            "policy_row_count": len(source_policy["policy_matrix"]),
+            "general_mesh_cleanup_supported": False,
+        },
+        "primitive_vocabulary_summary": {
+            "primitive_family_count": len(primitive_fit["primitive_family_matrix"]),
+            "offline_only_unmapped_primitives": primitive_fit["engine_contract"][
+                "offline_only_unmapped_primitives"
+            ],
+        },
+        "search_contract_summary": {
+            "search_trace_summary_row_count": len(
+                search_engine["search_trace_matrix"]
+            ),
+            "search_policy": search_engine["search_engine_contract"][
+                "primary_policy"
+            ],
+        },
+        "postprocess_contract_summary": {
+            "postprocess_state_row_count": len(postprocess_rows),
+            "postprocess_policy_row_count": len(
+                _paper_postprocess_policy_generalization_payload(cases)[
+                    "postprocess_policy_matrix"
+                ]
+            ),
+        },
+        "package_boundary_summary": {
+            "boundary_review_row_count": len(
+                package_boundary["boundary_review_matrix"]
+            ),
+            "package_generation_allowed": False,
+        },
+        "decomposition_output_rows": decomposition_rows,
+        "postprocess_state_rows": postprocess_rows,
+        "coverage_summary": {
+            "decomposition_output_row_count": len(decomposition_rows),
+            "primitive_record_count": primitive_record_count,
+            "postprocess_state_row_count": len(postprocess_rows),
+            "source_policy_summary_row_count": len(source_policy["policy_matrix"]),
+            "primitive_family_count": len(primitive_fit["primitive_family_matrix"]),
+            "search_trace_summary_row_count": len(
+                search_engine["search_trace_matrix"]
+            ),
+            "package_boundary_row_count": len(
+                package_boundary["boundary_review_matrix"]
+            ),
+        },
+        "remaining_gaps": _paper_remaining_gaps_after_changed_decomposition_contract(),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -1412,7 +1703,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     """Build the first fixture-scoped offline CPD paper mechanics audit."""
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
-    missing_before_paper_faithful = _paper_remaining_gaps_after_package_boundary()
+    missing_before_paper_faithful = (
+        _paper_remaining_gaps_after_changed_decomposition_contract()
+    )
     return {
         "stage": "cpd_paper_offline_report",
         "status": "partial",
@@ -1430,7 +1723,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        "next_required_gate": _PAPER_PACKAGE_ADAPTER_CONTRACT,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -1463,6 +1756,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
                 _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
             ],
+            "implemented_output_contract_scope": [
+                _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+            ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
         "paper_faithful_offline_scope_audit": (
@@ -1488,6 +1784,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_generalization_batch_e_package_boundary_readiness": (
             _paper_package_boundary_readiness_payload()
+        ),
+        "paper_offline_changed_decomposition_output_contract": (
+            _paper_changed_decomposition_output_contract_payload(cases)
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

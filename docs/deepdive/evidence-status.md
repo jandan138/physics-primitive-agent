@@ -146,8 +146,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_offline_changed_decomposition_output_contract` after the source-policy,
-  primitive-fit engine, search-engine, postprocess-policy, and package-boundary readiness matrices.
+  `paper_package_adapter_contract` after the source-policy, primitive-fit engine, search-engine,
+  postprocess-policy, package-boundary readiness, and offline changed-decomposition output
+  contract slices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -197,8 +198,19 @@ This file separates current evidence from future claims. See [message-map.md](me
   current source-policy, primitive-fit, search-engine, and postprocess-policy outputs are audit
   matrices rather than a durable changed-decomposition output contract, keeps package generation
   and Newton runtime execution blocked, and advances the next required gate to
-  `paper_offline_changed_decomposition_output_contract`. This is not package readiness,
-  Newton readiness, `paper_faithful_offline`, full CPD reproduction, package generation, Newton
+  `paper_offline_changed_decomposition_output_contract`. This was package-boundary accounting, not
+  package readiness, Newton readiness, `paper_faithful_offline`, full CPD reproduction, package generation, Newton
+  runtime support, real-USD evidence, benchmark evidence, collision-quality validation, deployment
+  readiness, or safety certification.
+- The current executable surface can also run
+  `paper_offline_changed_decomposition_output_contract` inside `cpd_paper_offline_report`. It
+  closes only that output-contract gate by adding an offline changed-decomposition output contract,
+  not a `CollisionPackage`. The contract records synthetic toy fixture decomposition rows, stable
+  offline primitive ids, source-face/group ids, selected paper primitive audit fields, explicit
+  postprocess state rows, and package/Newton/real-USD/benchmark false triggers. The report remains
+  partial, keeps `paper_faithful_offline_supported: false`, and advances the next required gate to
+  `paper_package_adapter_contract`. This is not package readiness, Newton readiness,
+  `paper_faithful_offline`, full CPD reproduction, package generation, Newton
   runtime support, real-USD evidence, benchmark evidence, collision-quality validation, deployment
   readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision

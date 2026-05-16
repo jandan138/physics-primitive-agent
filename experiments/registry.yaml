@@ -420,7 +420,18 @@ experiments:
       generalization implementation gate.
     claims_supported:
       - partial offline package-boundary readiness matrix before package conversion only
-      - records a closed paper_generalization_batch_e_package_boundary_readiness gate while keeping paper_offline_changed_decomposition_output_contract and paper_package_generation_contract missing
+      - records a closed paper_generalization_batch_e_package_boundary_readiness gate; at that stage paper_offline_changed_decomposition_output_contract and paper_package_generation_contract were still missing
+      - no package-readiness claim, Newton-readiness claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-changed-decomposition-output-contract
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-changed-decomposition-output-contract.md
+    purpose: >
+      Add an offline changed-decomposition output contract, not a CollisionPackage, for the CPD
+      paper offline lane before any package adapter or Newton runtime work.
+    claims_supported:
+      - partial offline changed-decomposition output contract for deterministic synthetic fixtures only
+      - records a closed paper_offline_changed_decomposition_output_contract gate while keeping paper_package_adapter_contract missing
       - no package-readiness claim, Newton-readiness claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
