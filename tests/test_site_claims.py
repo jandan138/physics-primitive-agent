@@ -114,3 +114,11 @@ def test_section_route_passes_nonempty_description_to_layout():
 
     assert "description=" in text
     assert "content.description" in text
+
+
+def test_fraction_math_stays_inline_on_mobile():
+    layout = Path(__file__).resolve().parents[1] / "site/src/layouts/PaperLayout.astro"
+    text = layout.read_text(encoding="utf-8")
+
+    assert "math-display" not in text
+    assert "math-fraction" in text

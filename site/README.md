@@ -74,6 +74,31 @@ PYTHONDONTWRITEBYTECODE=1 python scripts/validate_site_claims.py
 npm --prefix site run build
 ```
 
+## Visual QA
+
+Browser review is required after changing paper rendering, figure handling, generated assets, or
+reader CSS. The current visual QA record is:
+
+```text
+docs/records/2026-05-16-paper-site-visual-qa.md
+```
+
+The review must use the built site through Astro preview, not only source inspection:
+
+```bash
+npm --prefix site run build
+npm --prefix site run preview -- --host 127.0.0.1 --port 4321
+```
+
+At minimum, check `/paper/` and every manifest section at desktop, tablet, and mobile widths for:
+
+- page-wide horizontal overflow;
+- broken images or HTTP errors after scrolling lazy images into view;
+- over-compressed, undersized, distorted, or upscaled figures;
+- raw LaTeX leakage outside intentional source blocks;
+- formula overflow, cramped fractions, and scientific-notation spacing regressions;
+- unreadable preserved LaTeX/table source blocks.
+
 ## Deployment
 
 The public page is served from GitHub Pages at:

@@ -134,6 +134,38 @@ def test_generate_mdx_renders_latex_blocks_with_gate_copy():
     assert "```latex" in mdx
 
 
+def test_generate_mdx_renders_display_math_blocks_as_equations():
+    importer = _load_importer()
+    section = {
+        "slug": "method",
+        "title": "Method",
+        "blocks": [
+            {
+                "type": "latex_block",
+                "id": "method-l001",
+                "environment": "equation",
+                "text": "\\begin{equation}\\label{eq:cost}\nC(p_0, p_1) = V(p_0 \\cap p_1)\n\\end{equation}",
+            },
+            {
+                "type": "latex_block",
+                "id": "method-l002",
+                "environment": "align",
+                "text": "\\begin{align}\na &= b \\\\\nc &= d\n\\end{align}",
+            },
+        ],
+    }
+
+    mdx = importer.render_section_mdx(section, {})
+
+    assert 'import EquationBlock from "../../components/EquationBlock.astro";' in mdx
+    assert '<EquationBlock id="method-l001"' in mdx
+    assert '<EquationBlock id="method-l002"' in mdx
+    assert 'label="Method / equation / method-l001"' in mdx
+    assert 'latex={"\\\\begin{equation}\\\\label{eq:cost}\\nC(p_0, p_1) = V(p_0 \\\\cap p_1)\\n\\\\end{equation}"}' in mdx
+    assert '<LatexBlock id="method-l001"' not in mdx
+    assert "```latex" not in mdx
+
+
 def test_generate_mdx_renders_figure_panel_for_graphic_blocks():
     importer = _load_importer()
     section = {
@@ -286,6 +318,19 @@ def test_clean_inline_latex_strips_unsupported_num_macro_inside_math():
     assert r"\num" not in cleaned
     assert r"1e-3" in cleaned
     assert r"\frac" in cleaned
+
+
+def test_clean_inline_latex_keeps_scientific_notation_compact_after_latex_commands():
+    importer = _load_importer()
+
+    cleaned = importer.clean_inline_latex(
+        r"Thresholds are $\leq1e-4$ and $\textbf{6.95e-3}, 9.91e-3$."
+    )
+
+    assert r"\leq\text{1e-4}" in cleaned
+    assert r"\textbf{6.95e-3}" in cleaned
+    assert r"\text{9.91e-3}" in cleaned
+    assert r"6.\text{95e-3}" not in cleaned
 
 
 def test_parser_does_not_split_inline_bmatrix_from_paragraph():

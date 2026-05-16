@@ -5,6 +5,7 @@ slug: "method"
 import PaperBlock from "../../components/PaperBlock.astro";
 import FigurePanel from "../../components/FigurePanel.astro";
 import LatexBlock from "../../components/LatexBlock.astro";
+import EquationBlock from "../../components/EquationBlock.astro";
 
 # Method
 
@@ -201,8 +202,8 @@ import LatexBlock from "../../components/LatexBlock.astro";
 <PaperBlock
   id="method-p012"
   section="Method"
-  original="Oriented Bounding Boxes: Oriented bounding boxes are the foundation of all other primitives since they do not require an initial position and their position can be used for other primitives. The bounds ($u_x,u_y,u_z,l_x,l_y,l_z\in\mathbb{R}$) of OBBs are computed per axis as $u_i = \max_{\vect{p}\in P}(\vect{v}_i^\top \vect{p})$ and $l_i =\min_{\vect{p}\in P}(\vect{v}_i^\top\vect{p}), i\in \{x , y, z\}$. The half-extent along each axis is $h_i = \max(\frac{1}{2}(u_i - l_i), 1e-3)$, where $1e-3$ is included to prevent degenerate volumes. We apply the same clamping to parameters for other shapes. The center of the OBB is $c_i = \frac{1}{2} (u_i + l_i)$, the volume is $8\Pi_{i=1}^3 h_i$, with a factor of 8 since $h_i$ are half-extents. OBBs are fit first, as other primitives initialize their position to the center of the OBB."
-  translation="Oriented Bounding Boxes：OBB 是所有其他 primitives 的基础，因为它们不需要初始位置，且其位置可用于其他 primitives。OBB 的边界（$u_x,u_y,u_z,l_x,l_y,l_z\in\mathbb{R}$）按轴计算为 $u_i = \max_{p\in P}(v_i^\top p)$ 和 $l_i =\min_{p\in P}(v_i^\top p), i\in \{x , y, z\}$。沿每个轴的 half-extent 为 $h_i = \max(\frac{1}{2}(u_i - l_i), 1e-3)$，其中包含 $1e-3$ 是为了防止退化体积。我们对其他形状的参数应用相同的 clamp。OBB 的中心为 $c_i = \frac{1}{2} (u_i + l_i)$，体积为 $8\Pi_{i=1}^3 h_i$；因 $h_i$ 是 half-extents，所以有因子 8。OBB 会首先拟合，因为其他 primitives 会将其位置初始化为 OBB 的中心。"
+  original="Oriented Bounding Boxes: Oriented bounding boxes are the foundation of all other primitives since they do not require an initial position and their position can be used for other primitives. The bounds ($u_x,u_y,u_z,l_x,l_y,l_z\in\mathbb{R}$) of OBBs are computed per axis as $u_i = \max_{\vect{p}\in P}(\vect{v}_i^\top \vect{p})$ and $l_i =\min_{\vect{p}\in P}(\vect{v}_i^\top\vect{p}), i\in \{x , y, z\}$. The half-extent along each axis is $h_i = \max(\frac{1}{2}(u_i - l_i), \text{1e-3})$, where $\text{1e-3}$ is included to prevent degenerate volumes. We apply the same clamping to parameters for other shapes. The center of the OBB is $c_i = \frac{1}{2} (u_i + l_i)$, the volume is $8\Pi_{i=1}^3 h_i$, with a factor of 8 since $h_i$ are half-extents. OBBs are fit first, as other primitives initialize their position to the center of the OBB."
+  translation="Oriented Bounding Boxes：OBB 是所有其他 primitives 的基础，因为它们不需要初始位置，且其位置可用于其他 primitives。OBB 的边界（$u_x,u_y,u_z,l_x,l_y,l_z\in\mathbb{R}$）按轴计算为 $u_i = \max_{p\in P}(v_i^\top p)$ 和 $l_i =\min_{p\in P}(v_i^\top p), i\in \{x , y, z\}$。沿每个轴的 half-extent 为 $h_i = \max(\frac{1}{2}(u_i - l_i), \text{1e-3})$，其中包含 $\text{1e-3}$ 是为了防止退化体积。我们对其他形状的参数应用相同的 clamp。OBB 的中心为 $c_i = \frac{1}{2} (u_i + l_i)$，体积为 $8\Pi_{i=1}^3 h_i$；因 $h_i$ 是 half-extents，所以有因子 8。OBB 会首先拟合，因为其他 primitives 会将其位置初始化为 OBB 的中心。"
   translationStatus="draft_ai_assisted"
   explanationStatus="paragraph"
   reproductionStatus="not_started"
@@ -234,16 +235,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l005" label="Method / align / method-l005">
-
-```latex
-\begin{align}
-\text{r} &= \max\limits_{\vect{p}\in P}(\lVert(\mathrm{I} - \vect{a}\vect{a}^\top) (\vect{p} - \vect{p}_\text{cyl}) \rVert_2) \nonumber\\
-\text{h} &= \max\limits_{\vect{p}\in P}(\vect{a}^\top (\vect{p} - \vect{p}_\text{cyl})) - \min\limits_{\vect{p}\in P}(\vect{a}^\top (\vect{p} - \vect{p}_\text{cyl}))
-\end{align}
-```
-
-</LatexBlock>
+<EquationBlock id="method-l005"
+  label="Method / align / method-l005"
+  latex={"\\begin{align}\n\\text{r} &= \\max\\limits_{\\vect{p}\\in P}(\\lVert(\\mathrm{I} - \\vect{a}\\vect{a}^\\top) (\\vect{p} - \\vect{p}_\\text{cyl}) \\rVert_2) \\nonumber\\\\\n\\text{h} &= \\max\\limits_{\\vect{p}\\in P}(\\vect{a}^\\top (\\vect{p} - \\vect{p}_\\text{cyl})) - \\min\\limits_{\\vect{p}\\in P}(\\vect{a}^\\top (\\vect{p} - \\vect{p}_\\text{cyl}))\n\\end{align}"}
+/>
 
 <PaperBlock
   id="method-p015"
@@ -269,17 +264,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l006" label="Method / align / method-l006">
-
-```latex
-\begin{align}
-    r(\vect{p}) &= \lVert(\mathrm{I} - \vect{a}\vect{a}^\top)(\vect{p} - \vect{p}_\text{cap}) \rVert_2 \\\nonumber
-    \text{h}(\vect{p}) &= \vect{a}^\top (\vect{p} - \vect{p}_\text{cap}) - \sqrt{r^2 - r(\vect{p})^2} \\\nonumber
-    \text{height} &= \max\limits_{\vect{p}\in P}(\text{h}(\vect{p})) - \min\limits_{\vect{p}\in P}(\text{h}(\vect{p})) \\\nonumber
-\end{align}
-```
-
-</LatexBlock>
+<EquationBlock id="method-l006"
+  label="Method / align / method-l006"
+  latex={"\\begin{align}\n    r(\\vect{p}) &= \\lVert(\\mathrm{I} - \\vect{a}\\vect{a}^\\top)(\\vect{p} - \\vect{p}_\\text{cap}) \\rVert_2 \\\\\\nonumber\n    \\text{h}(\\vect{p}) &= \\vect{a}^\\top (\\vect{p} - \\vect{p}_\\text{cap}) - \\sqrt{r^2 - r(\\vect{p})^2} \\\\\\nonumber\n    \\text{height} &= \\max\\limits_{\\vect{p}\\in P}(\\text{h}(\\vect{p})) - \\min\\limits_{\\vect{p}\\in P}(\\text{h}(\\vect{p})) \\\\\\nonumber\n\\end{align}"}
+/>
 
 <PaperBlock
   id="method-p017"
@@ -403,15 +391,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l007" label="Method / equation / method-l007">
-
-```latex
-\begin{equation}\label{eq:exact_cost}
-    C(p_0, p_1) = V(\text{merge}(p_0, p_1)) - (V(p_0) + V(p_1))
-\end{equation}
-```
-
-</LatexBlock>
+<EquationBlock id="method-l007"
+  label="Method / equation / method-l007"
+  latex={"\\begin{equation}\\label{eq:exact_cost}\n    C(p_0, p_1) = V(\\text{merge}(p_0, p_1)) - (V(p_0) + V(p_1))\n\\end{equation}"}
+/>
 
 <PaperBlock
   id="method-p027"
@@ -437,15 +420,10 @@ import LatexBlock from "../../components/LatexBlock.astro";
   translationProvenance="codex_draft_2026-05-15"
 />
 
-<LatexBlock id="method-l008" label="Method / equation / method-l008">
-
-```latex
-\begin{equation}\label{eq:cost_with_isect}
-    C(p_0, p_1) = V(\text{merge}(p_0, p_1)) - (V(p_0) + V(p_1) - V(p_0 \cap p_1))
-\end{equation}
-```
-
-</LatexBlock>
+<EquationBlock id="method-l008"
+  label="Method / equation / method-l008"
+  latex={"\\begin{equation}\\label{eq:cost_with_isect}\n    C(p_0, p_1) = V(\\text{merge}(p_0, p_1)) - (V(p_0) + V(p_1) - V(p_0 \\cap p_1))\n\\end{equation}"}
+/>
 
 <PaperBlock
   id="method-p029"

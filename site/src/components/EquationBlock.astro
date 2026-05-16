@@ -1,0 +1,19 @@
+---
+import { renderDisplayMath } from "../lib/richText";
+
+interface Props {
+  id: string;
+  label: string;
+  latex: string;
+}
+
+const { id, label, latex } = Astro.props;
+const equationHtml = renderDisplayMath(latex);
+---
+
+<figure class="equation-block" id={id}>
+  <figcaption class="equation-block__header">
+    <a href={`#${id}`}>{label}</a>
+  </figcaption>
+  <div class="equation-block__math" set:html={equationHtml} />
+</figure>

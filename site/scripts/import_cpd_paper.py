@@ -18,8 +18,10 @@ IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".pdf")
 WEB_IMAGE_EXTENSION = ".webp"
 WEB_IMAGE_MAX_DIMENSION = 1600
 WEB_IMAGE_QUALITY = 78
+PDF_RASTER_DPI = 240
 P_SEQUENCE_TYPES = {"paragraph", "caption"}
 GRAPHICS_RE = re.compile(r"\\includegraphics(?:\[[^\]]*\])?\{([^}]+)\}")
+DISPLAY_MATH_ENVIRONMENTS = {"equation", "equation*", "align", "align*"}
 
 SECTION_TITLES = {
     "abstract": "Abstract",
@@ -228,8 +230,17 @@ def _clean_inline_math_latex(value: str) -> str:
     value = re.sub(r"\\top(?=[A-Za-z])", r"\\top ", value)
     value = re.sub(r"\\textbf\{([A-Za-z]+)_([A-Za-z0-9]+)\}", r"\\mathbf{\1}_{\2}", value)
     value = _clean_text_macros_inside_math(value)
+    value = _wrap_scientific_notation_literals(value)
     value = re.sub(r"\s+", " ", value)
     return value.strip()
+
+
+def _wrap_scientific_notation_literals(value: str) -> str:
+    return re.sub(
+        r"((?:\\(?!text\b)[A-Za-z]+)|^|[^A-Za-z0-9{.])(\d+(?:\.\d+)?e[+-]\d+)",
+        r"\1\\text{\2}",
+        value,
+    )
 
 
 def _clean_text_macros_inside_math(value: str) -> str:
@@ -467,6 +478,7 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
         'import PaperBlock from "../../components/PaperBlock.astro";',
         'import FigurePanel from "../../components/FigurePanel.astro";',
         'import LatexBlock from "../../components/LatexBlock.astro";',
+        'import EquationBlock from "../../components/EquationBlock.astro";',
         "",
         f"# {section['title']}",
         "",
@@ -506,6 +518,16 @@ def render_section_mdx(section: dict[str, object], translations: dict[str, str])
                         f'  title="{label}"',
                         f'  caption="{escape_attr(caption)}"',
                         f"  images={{{format_mdx_string_array([str(image) for image in images])}}}",
+                        "/>",
+                        "",
+                    ]
+                )
+            elif block.get("environment") in DISPLAY_MATH_ENVIRONMENTS:
+                lines.extend(
+                    [
+                        f'<EquationBlock id="{latex_id}"',
+                        f'  label="{label}"',
+                        f"  latex={{{json.dumps(str(block['text']), ensure_ascii=False)}}}",
                         "/>",
                         "",
                     ]
@@ -684,7 +706,15 @@ def materialize_paper_asset(source_root: Path, asset_path: Path, asset_output: P
         with tempfile.TemporaryDirectory() as tmp_dir:
             prefix = Path(tmp_dir) / "page"
             subprocess.run(
-                ["pdftoppm", "-singlefile", "-png", "-r", "120", str(asset_path), str(prefix)],
+                [
+                    "pdftoppm",
+                    "-singlefile",
+                    "-png",
+                    "-r",
+                    str(PDF_RASTER_DPI),
+                    str(asset_path),
+                    str(prefix),
+                ],
                 check=True,
             )
             optimize_raster_asset(prefix.with_suffix(".png"), target)

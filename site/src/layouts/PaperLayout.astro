@@ -47,5 +47,66 @@ const withBase = (path: string) => {
         <slot />
       </main>
     </div>
+    <script is:inline>
+      const markScrollableMath = () => {
+        document.querySelectorAll(".paper-block math, .figure-panel math, .equation-block math").forEach((math) => {
+          math.classList.remove("math-scroll");
+          math.classList.remove("math-fraction");
+          const parentWidth = math.parentElement?.clientWidth || document.documentElement.clientWidth;
+          if (math.querySelector("mfrac")) {
+            math.classList.add("math-fraction");
+          }
+          if (math.scrollWidth > Math.min(parentWidth, window.innerWidth) + 1) {
+            math.classList.add("math-scroll");
+          }
+        });
+      };
+      const markSourceSizedImages = () => {
+        document.querySelectorAll(".figure-panel__image").forEach((image) => {
+          if (!(image instanceof HTMLImageElement) || !image.naturalWidth) {
+            return;
+          }
+          image.classList.remove("figure-panel__image--source-sized");
+          image.classList.remove("figure-panel__image--wide-plot");
+          image.style.removeProperty("--source-image-width");
+          const imageRatio = image.naturalWidth / image.naturalHeight;
+          const panelWidth = image.parentElement?.clientWidth || image.clientWidth;
+          if (
+            image.classList.contains("figure-panel__image--plot") &&
+            imageRatio > 4 &&
+            panelWidth < 700
+          ) {
+            image.style.setProperty(
+              "--source-image-width",
+              `${Math.min(image.naturalWidth, 900)}px`,
+            );
+            image.classList.add("figure-panel__image--wide-plot");
+            return;
+          }
+          if (image.clientWidth > image.naturalWidth * 1.15) {
+            image.style.setProperty("--source-image-width", `${image.naturalWidth}px`);
+            image.classList.add("figure-panel__image--source-sized");
+          }
+        });
+      };
+      let pendingMathMeasure = 0;
+      const scheduleMathMeasure = () => {
+        cancelAnimationFrame(pendingMathMeasure);
+        pendingMathMeasure = requestAnimationFrame(() => {
+          markScrollableMath();
+          markSourceSizedImages();
+        });
+      };
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", scheduleMathMeasure, { once: true });
+      } else {
+        scheduleMathMeasure();
+      }
+      document.querySelectorAll(".figure-panel__image").forEach((image) => {
+        image.addEventListener("load", scheduleMathMeasure);
+      });
+      window.addEventListener("load", scheduleMathMeasure, { once: true });
+      window.addEventListener("resize", scheduleMathMeasure);
+    </script>
   </body>
 </html>

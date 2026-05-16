@@ -23,6 +23,10 @@ const withBase = (path: string) => {
   return `${base}${path.replace(/^\/+/, "")}`;
 };
 const resolvedImages = images.map(withBase);
+const imageItems = resolvedImages.map((image) => ({
+  src: image,
+  isPlot: image.includes("/plots/"),
+}));
 const resolvedSource = source ? withBase(source) : "";
 const captionHtml = renderRichText(caption);
 ---
@@ -34,7 +38,14 @@ const captionHtml = renderRichText(caption);
   </figcaption>
   {resolvedImages.length > 0 ? (
     <div class="figure-panel__grid">
-      {resolvedImages.map((image) => <img src={image} alt={`${title} image`} loading="lazy" />)}
+      {imageItems.map((image) => (
+        <img
+          class={`figure-panel__image${image.isPlot ? " figure-panel__image--plot" : ""}`}
+          src={image.src}
+          alt={`${title} image`}
+          loading="lazy"
+        />
+      ))}
     </div>
   ) : resolvedSource ? (
     <a class="figure-panel__source" href={resolvedSource}>View source figure</a>
