@@ -1,5 +1,5 @@
 import json
-from math import pi
+from math import pi, sqrt
 
 from primitive_collision_compiler.baselines.cpd_like.primitives import SUPPORTED_PRIMITIVES
 from primitive_collision_compiler.baselines.cpd_paper.offline import (
@@ -23,12 +23,11 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert set(report["failure_labels"]) == {
         "polygon_and_quad_face_policy_missing",
-        "paper_capsule_axis_policy_missing",
         "full_priority_queue_trace_missing",
         "component_pair_edge_insertion_missing",
         "postprocess_enclosed_primitive_culling_missing",
     }
-    assert report["next_required_gate"] == "paper_capsule_axis_policy_audit"
+    assert report["next_required_gate"] == "paper_priority_queue_trace_audit"
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
@@ -66,6 +65,68 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert box["implementation_status"] == "current_surrogate_not_paper_faithful"
     assert box["fit_model"] == "current_cpd_like_surrogate_fit"
     assert box["primitive_parameter_lower_clamp"] == 1e-6
+    capsule = [
+        row
+        for row in single_box["primitive_fit_audit"]["candidates"]
+        if row["paper_primitive"] == "capsule"
+    ][0]
+    assert capsule["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert capsule["fit_model"] == "paper_capsule_min_volume_over_axes_with_spherical_cap_height"
+    assert capsule["axis_selection_policy"] == "min_volume_capsule_axis"
+    assert capsule["newton_runtime_kind"] == "capsule"
+    assert capsule["contains_assigned_points"] is True
+    assert capsule["fit_failure_reason"] is None
+    capsule_dims = capsule["dimensions"]
+    assert capsule_dims["axis_selection_policy"] == "min_volume_capsule_axis"
+    assert capsule_dims["volume_formula"] == "pi*r^2*h + 4/3*pi*r^3"
+    assert len(capsule_dims["paper_capsule_axis_candidates"]) == 3
+    capsule_axis_volumes = [
+        row["capsule_volume"]
+        for row in capsule_dims["paper_capsule_axis_candidates"]
+    ]
+    capsule_selected_axis = capsule_dims["selected_axis_index"]
+    capsule_selected_axis_row = [
+        row
+        for row in capsule_dims["paper_capsule_axis_candidates"]
+        if row["axis_index"] == capsule_selected_axis
+    ][0]
+    assert capsule_selected_axis_row["capsule_volume"] == min(capsule_axis_volumes)
+    assert capsule_selected_axis_row["capsule_volume"] == capsule["volume"]
+    assert capsule_selected_axis_row["contains_assigned_points"] is True
+    single_box_points = [
+        [0.0, 0.0, 0.0],
+        [2.0, 0.0, 0.0],
+        [2.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 0.5],
+        [2.0, 0.0, 0.5],
+        [2.0, 1.0, 0.5],
+        [0.0, 1.0, 0.5],
+    ]
+    axis_point = box["center"]
+    for candidate in capsule_dims["paper_capsule_axis_candidates"]:
+        axis = capsule["axes"][candidate["axis_index"]]
+        paper_heights = []
+        for point in single_box_points:
+            relative = [point[index] - axis_point[index] for index in range(3)]
+            projected = sum(relative[index] * axis[index] for index in range(3))
+            radial = [
+                relative[index] - projected * axis[index]
+                for index in range(3)
+            ]
+            radial_distance_squared = sum(value * value for value in radial)
+            cap_allowance = sqrt(
+                max(candidate["radius"] ** 2 - radial_distance_squared, 0.0)
+            )
+            paper_heights.append(projected - cap_allowance)
+        assert abs(candidate["paper_height_min"] - min(paper_heights)) < 1e-7
+        assert abs(candidate["paper_height_max"] - max(paper_heights)) < 1e-7
+    expected_capsule_volume = (
+        pi * capsule_dims["radius"] ** 2 * capsule_dims["height"]
+        + (4.0 / 3.0) * pi * capsule_dims["radius"] ** 3
+    )
+    assert abs(capsule["volume"] - expected_capsule_volume) < 1e-9
+    assert abs(capsule["weighted_volume"] - capsule["volume"]) < 1e-9
     capped = [
         row
         for row in single_box["primitive_fit_audit"]["candidates"]

@@ -28,7 +28,7 @@ PAPER_PRIMITIVE_WEIGHTS = {
     "frustum": 2.1,
     "trapezoidal_prism": 1.4,
 }
-_CURRENT_PRIMITIVE_SUBSET = ("box", "sphere", "capsule")
+_CURRENT_PRIMITIVE_SUBSET = ("box", "sphere")
 _AUDITED_PAPER_PRIMITIVES = (
     "oriented_bounding_box",
     "sphere",
@@ -40,12 +40,10 @@ _AUDITED_PAPER_PRIMITIVES = (
 _PAPER_PRIMITIVE_NAMES = {
     "box": "oriented_bounding_box",
     "sphere": "sphere",
-    "capsule": "capsule",
 }
 _NEWTON_RUNTIME_KIND = {
     "box": "box",
     "sphere": "sphere",
-    "capsule": "capsule",
 }
 
 
@@ -64,7 +62,6 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
         "polygon_and_quad_face_policy",
-        "paper_capsule_axis_policy",
         "full_priority_queue_trace",
         "component_pair_edge_insertion",
         "postprocess_enclosed_primitive_culling",
@@ -85,7 +82,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_capsule_axis_policy_audit",
+        "next_required_gate": "paper_priority_queue_trace_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -188,6 +185,7 @@ def _primitive_fit_audit_payload(
 ) -> dict[str, object]:
     candidates = fit_primitive_candidates(mesh, face_group, _CURRENT_PRIMITIVE_SUBSET)
     rows = [_candidate_payload(candidate) for candidate in candidates]
+    rows.append(_paper_capsule_candidate_payload(mesh, face_group))
     rows.append(_flat_capped_cylinder_candidate_payload(mesh, face_group))
     rows.append(_frustum_candidate_payload(mesh, face_group))
     rows.append(_trapezoidal_prism_candidate_payload(mesh, face_group))
@@ -235,6 +233,7 @@ def _offline_paper_candidate_payload(
     dimensions: dict[str, object],
     volume: float,
     contains_assigned_points: bool,
+    newton_runtime_kind: str = "offline_only_unmapped",
 ) -> dict[str, object]:
     weight = PAPER_PRIMITIVE_WEIGHTS[paper_primitive]
     return {
@@ -248,7 +247,7 @@ def _offline_paper_candidate_payload(
         "primitive_parameter_lower_clamp": MIN_DIMENSION,
         "containment_tolerance": 1e-8,
         "fit_failure_reason": None if contains_assigned_points else "assigned_points_not_contained",
-        "newton_runtime_kind": "offline_only_unmapped",
+        "newton_runtime_kind": newton_runtime_kind,
         "center": _vector(center),
         "axes": _matrix(axes.T),
         "dimensions": dimensions,
@@ -315,6 +314,51 @@ def _frustum_candidate_payload(
         },
         volume=volume,
         contains_assigned_points=contains,
+    )
+
+
+def _paper_capsule_candidate_payload(
+    mesh: TriangleMesh,
+    face_group: frozenset[int],
+) -> dict[str, object]:
+    points = _assigned_points(mesh, face_group)
+    axes = _candidate_axes(mesh, face_group)
+    obb_center, _ = _obb_center_and_local(points, axes)
+    axis_candidates = _paper_capsule_axis_candidates(points, obb_center, axes)
+    selected = min(
+        axis_candidates,
+        key=lambda row: (float(row["capsule_volume"]), int(row["axis_index"])),
+    )
+    axis_index = int(selected["axis_index"])
+    axis = axes[:, axis_index]
+    radius = float(selected["radius"])
+    half_height = float(selected["half_height"])
+    height = float(selected["height"])
+    capsule_center = np.asarray(selected["center"], dtype=np.float64)
+    volume = float(selected["capsule_volume"])
+    contains = _capsule_contains(points, axis, capsule_center, half_height, radius)
+    return _offline_paper_candidate_payload(
+        paper_primitive="capsule",
+        current_implementation_kind="offline_paper_capsule_fit_audit",
+        fit_model="paper_capsule_min_volume_over_axes_with_spherical_cap_height",
+        axis_selection_policy="min_volume_capsule_axis",
+        center=capsule_center,
+        axes=axes,
+        dimensions={
+            "axis_index": axis_index,
+            "selected_axis_index": axis_index,
+            "axis_selection_policy": "min_volume_capsule_axis",
+            "radius": radius,
+            "height": height,
+            "half_height": half_height,
+            "segment_start": _vector(capsule_center - axis * half_height),
+            "segment_end": _vector(capsule_center + axis * half_height),
+            "volume_formula": "pi*r^2*h + 4/3*pi*r^3",
+            "paper_capsule_axis_candidates": axis_candidates,
+        },
+        volume=volume,
+        contains_assigned_points=contains,
+        newton_runtime_kind="capsule",
     )
 
 
@@ -587,6 +631,65 @@ def _flat_cylinder_axis_candidates(
             }
         )
     return candidates
+
+
+def _paper_capsule_axis_candidates(
+    points: NDArray[np.float64],
+    center: NDArray[np.float64],
+    axes: NDArray[np.float64],
+) -> list[dict[str, object]]:
+    relative = points - center
+    candidates: list[dict[str, object]] = []
+    for axis_index in range(3):
+        axis = axes[:, axis_index]
+        projected = relative @ axis
+        axial_offsets = np.outer(projected, axis)
+        radial_vectors = relative - axial_offsets
+        radial_distances = np.linalg.norm(radial_vectors, axis=1)
+        radius = max(float(radial_distances.max(initial=0.0)), MIN_DIMENSION)
+        cap_allowance = np.sqrt(np.maximum(radius**2 - radial_distances**2, 0.0))
+        cap_adjusted = projected - cap_allowance
+        segment_min = float(cap_adjusted.min())
+        segment_max = float(cap_adjusted.max())
+        height = max(segment_max - segment_min, MIN_DIMENSION * 2.0)
+        half_height = height * 0.5
+        capsule_center = center + axis * ((segment_min + segment_max) * 0.5)
+        volume = float(pi * radius**2 * height + (4.0 / 3.0) * pi * radius**3)
+        candidates.append(
+            {
+                "axis_index": axis_index,
+                "center": _vector(capsule_center),
+                "radius": radius,
+                "height": height,
+                "half_height": half_height,
+                "paper_height_min": segment_min,
+                "paper_height_max": segment_max,
+                "capsule_volume": volume,
+                "contains_assigned_points": _capsule_contains(
+                    points,
+                    axis,
+                    capsule_center,
+                    half_height,
+                    radius,
+                ),
+            }
+        )
+    return candidates
+
+
+def _capsule_contains(
+    points: NDArray[np.float64],
+    axis: NDArray[np.float64],
+    center: NDArray[np.float64],
+    half_height: float,
+    radius: float,
+) -> bool:
+    relative = points - center
+    projected = relative @ axis
+    clamped = np.clip(projected, -half_height, half_height)
+    closest = center + np.outer(clamped, axis)
+    distances = np.linalg.norm(points - closest, axis=1)
+    return bool(np.all(distances <= radius + 1e-8))
 
 
 def _frustum_contains(

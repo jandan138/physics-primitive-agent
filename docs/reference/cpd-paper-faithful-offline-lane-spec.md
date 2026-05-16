@@ -335,9 +335,7 @@ paper_frustum_like + paper_trapezoid_prism_like
 ```
 
 At that point, this slice removed the "missing paper primitive row" gap for `frustum` and
-`trapezoidal_prism` inside the fixture-scoped audit report only. After the third slice, the
-remaining paper-faithful gaps are full paper capsule axis policy, polygon/quad intake,
-priority-queue trace, component-pair insertion, and enclosed-primitive postprocessing.
+`trapezoidal_prism` inside the fixture-scoped audit report only.
 
 ## Third Implementation Slice
 
@@ -353,22 +351,38 @@ paper_single_box + paper_two_face_merge + paper_frustum_like + paper_trapezoid_p
 
 This slice replaces the paper-lane `capped_cylinder` row with a flat-cap audit row. The older
 CPD-like `capped_cylinder` package proxy remains a separate hemisphere-cap diagnostic outside this
-paper lane. The report is still not `paper_faithful_offline` because the capsule row still uses the
-current surrogate axis policy, and the full priority-queue, component-pair, polygon/quad, and
-postprocess mechanics are not implemented.
+paper lane.
+
+## Fourth Implementation Slice
+
+The fourth implementation slice is now:
+
+```text
+paper_single_box + paper_two_face_merge + paper_frustum_like + paper_trapezoid_prism_like
+-> offline paper-shaped capsule candidate fit audit row
+-> three capsule axis candidates from the operator basis
+-> spherical-cap-adjusted height equation, radius, formula, paper weight, and containment checks
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This slice replaces the paper-lane capsule row with an offline axis-policy audit row. Capsule is a
+Newton-native primitive, so the row can record `newton_runtime_kind: capsule`, but the command still
+does not generate a package or call Newton. The report is still not `paper_faithful_offline`
+because polygon/quad intake, full priority-queue search, component-pair insertion, and
+enclosed-primitive postprocessing are not implemented.
 
 ## Next Implementation Slice
 
 The next paper-lane gate is:
 
 ```text
-paper capsule axis-policy audit
--> candidate axes and selected axis for the capsule row
--> containment, paper weight, and volume inputs
--> comparison against the current surrogate capsule row
+paper priority-queue trace audit
+-> initialize topology-adjacent merge candidates with paper-lane costs
+-> pop the minimum-cost candidate with stale-entry pruning
+-> record accepted and blocked merges, updated neighbor candidates, and stop reason
 -> no package generation, Newton, real USD, or benchmarks
 ```
 
-This is the narrowest remaining primitive-fit gate after the flat capped-cylinder, frustum, and
-trapezoidal-prism audit rows. It should not be broadened into the priority-queue search or a
-bed/Franka rerun until the offline report records a changed paper-lane package boundary.
+This is the narrowest next algorithmic gate after the primitive-fit audit rows. It should not be
+broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun until
+the offline report records a changed paper-lane package boundary.

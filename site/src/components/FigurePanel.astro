@@ -26,7 +26,11 @@ const resolvedImages = images.map(withBase);
 const imageItems = resolvedImages.map((image) => ({
   src: image,
   isPlot: image.includes("/plots/"),
+  isInset: /(?:^|[_/-])inset(?:[_./-]|$)/.test(image),
 }));
+const visualImages = imageItems.filter((image) => !image.isPlot && !image.isInset);
+const insetImages = imageItems.filter((image) => image.isInset && !image.isPlot);
+const plotImages = imageItems.filter((image) => image.isPlot);
 const resolvedSource = source ? withBase(source) : "";
 const captionHtml = renderRichText(caption);
 ---
@@ -37,16 +41,44 @@ const captionHtml = renderRichText(caption);
     {caption ? <span><Fragment set:html={captionHtml} /></span> : null}
   </figcaption>
   {resolvedImages.length > 0 ? (
-    <div class="figure-panel__grid">
-      {imageItems.map((image) => (
-        <img
-          class={`figure-panel__image${image.isPlot ? " figure-panel__image--plot" : ""}`}
-          src={image.src}
-          alt={`${title} image`}
-          loading="lazy"
-        />
-      ))}
-    </div>
+    <>
+      {visualImages.length > 0 ? (
+        <div class="figure-panel__media">
+          {visualImages.map((image) => (
+            <img
+              class="figure-panel__image"
+              src={image.src}
+              alt={`${title} image`}
+              loading="lazy"
+            />
+          ))}
+        </div>
+      ) : null}
+      {insetImages.length > 0 ? (
+        <div class="figure-panel__insets">
+          {insetImages.map((image) => (
+            <img
+              class="figure-panel__image figure-panel__image--inset"
+              src={image.src}
+              alt={`${title} inset`}
+              loading="lazy"
+            />
+          ))}
+        </div>
+      ) : null}
+      {plotImages.length > 0 ? (
+        <div class="figure-panel__plots">
+          {plotImages.map((image) => (
+            <img
+              class="figure-panel__image figure-panel__image--plot"
+              src={image.src}
+              alt={`${title} plot`}
+              loading="lazy"
+            />
+          ))}
+        </div>
+      ) : null}
+    </>
   ) : resolvedSource ? (
     <a class="figure-panel__source" href={resolvedSource}>View source figure</a>
   ) : (

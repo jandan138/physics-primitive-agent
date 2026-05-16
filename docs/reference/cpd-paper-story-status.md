@@ -55,7 +55,11 @@ The repository has not reached that full result. It has reached the workbench st
 21. A command-only four-block slice report can link the recorded lookahead evidence across
     primitive fitting/selection, merge/search, offline diagnostics, and recorded Newton task-smoke
     status without rerunning source reports, USD loading, real assets, or Newton tasks.
-22. Records and configs can preserve exactly what was run.
+22. A command-only partial `cpd_paper_offline_report` can audit the first paper-lane toy fixtures
+    with paper-side operator fields, current surrogate OBB/sphere rows, a paper-shaped capsule
+    axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, and collapse-cost
+    fields.
+23. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -65,8 +69,8 @@ from 3 to 2 in a named report. The runtime roadmap now stays Newton-native first
 primitive is considered for Newton tasks.
 
 This means the reproduction infrastructure is in place, and the first native primitive fitting
-hook exists for synthetic toy meshes. The paper-faithful decomposition and evaluation story still
-needs to be implemented.
+hook exists for synthetic toy meshes. The paper-lane primitive-fit audit has also started, but the
+paper-faithful decomposition and evaluation story still needs to be implemented.
 
 The 2026-05-16 four-block status audit summarized this position as an internal diagnostic
 workbench that was mostly missing integration/report ergonomics rather than Newton plumbing. The
@@ -93,7 +97,7 @@ The CPD paper story can be read as eight layers.
 | 3. Objective and cost | Can the system expose diagnostic accounting terms for a decomposition? | Narrowly in place as an offline paper-aligned surrogate objective report with structured Eq.4 alignment metadata. It summarizes primitive budget, volume proxy, raw and AABB-normalized merge excess, containment proxy, and unsupported paper primitive gaps, but it is not the paper collapse-cost rule plus primitive weighting. |
 | 4. Search or optimization | Can the system find good primitive sets under a budget? | Not implemented at paper scope. A restricted opt-in cost-guided merge-search smoke now exists for one deterministic synthetic fixture only. |
 | 5. Expected limitations | Can known CPD-paper gaps stay visible before algorithmic changes? | Narrowly in place as a deterministic expected-failure synthetic workbench over three in-memory fixtures. This is diagnostic limitation accounting, not validation or benchmark evidence. |
-| 6. Primitive vocabulary | Can one missing paper primitive category enter a restricted proposal lane? | Narrowly in place as an opt-in offline `capped_cylinder` proxy. This reduces the unsupported paper primitive count from 3 to 2 in one named report, but it is not paper-faithful primitive fitting. |
+| 6. Primitive vocabulary | Can paper primitive categories enter a restricted proposal lane? | Narrowly in place in two different lanes: the older CPD-like objective report has an opt-in offline `capped_cylinder` proxy, and the partial paper offline report now has current surrogate OBB/sphere rows, a paper-shaped capsule axis row, and offline-only flat capped-cylinder/frustum/trapezoidal-prism audit rows. This is still not paper-faithful primitive fitting. |
 | 7. Collision integration | Can generated primitives be consumed by a physics or collision path? | Narrowly in place through Newton contact, drop/settle, and sphere-rain smokes on recorded mapped primitives. The synthetic native bundle also covers `cylinder`, `cone`, and `ellipsoid`; `capped_cylinder` is not Newton-mapped in this slice. |
 | 8. Evaluation | Do the results improve collision detection under benchmark settings? | Not started. No benchmark superiority or collision-quality claim is supported. |
 
@@ -309,6 +313,26 @@ surface-distance quality, collision quality, or benchmark performance.
 Newton integration is intentionally unchanged. `capped_cylinder` remains a Newton mapping gap until
 a separate Newton mapping and task-level diagnostic record exists.
 
+## What The Paper Offline Primitive Audit Adds
+
+The newer `cpd_paper_offline_report` is a different lane from the older CPD-like
+`capped_cylinder` proxy report. It is command-only and synthetic-fixture-only. Its current role is
+to audit paper-side mechanics before any package generation or Newton runtime work.
+
+That partial report now records:
+
+- paper-side operator fields on named toy fixtures;
+- current surrogate OBB and sphere rows;
+- a paper-shaped capsule row with one candidate per operator axis;
+- offline-only flat capped-cylinder, frustum, and trapezoidal-prism rows;
+- paper base collapse cost and separate weighted-priority cost fields for the first merge-cost
+  fixture.
+
+This closes the narrow capsule axis-policy audit gap inside the report, but it does not make the
+lane `paper_faithful_offline`. The next paper-lane gate is the deterministic priority-queue trace:
+initial adjacency candidates, minimum-cost pops, stale-entry pruning, accepted/blocked merge
+records, and stop reason.
+
 ## What The Newton-Native Policy Changes
 
 The capped-cylinder proxy exposed a useful distinction:
@@ -462,6 +486,8 @@ USD assets
 -> synthetic lookahead package-path probe plus Newton shape-mapping summary only
 -> synthetic lookahead Newton contact/drop/sphere-rain task smokes
 -> command-only four-block slice report linking the recorded lookahead evidence
+-> partial cpd_paper_offline_report over toy fixtures
+-> paper-shaped capsule axis audit row, offline-only paper primitive rows, and collapse-cost fields
 -> dated records
 ```
 
@@ -486,6 +512,8 @@ local USD mirrors or synthetic fixtures
 -> synthetic Newton task probe for the two-step lookahead package pair
 -> four-block status audit that identifies the missing workbench integration/report slice
 -> command-only four-block slice report for the recorded cost-guided lookahead synthetic slice
+-> command-only partial paper offline report for toy paper mechanics
+-> next: deterministic paper priority-queue trace audit, still without package/Newton/real-USD
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -526,6 +554,9 @@ Use:
 - "real-USD native probe diagnostic smoke";
 - "capped bed and capped Franka first-mesh scope";
 - "paper-alignment offline lane";
+- "partial `cpd_paper_offline_report`";
+- "paper-shaped capsule axis audit row";
+- "offline paper priority-queue trace audit";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 

@@ -191,6 +191,17 @@ experiments:
       - partial fixture-scoped offline primitive-fit audit only
       - records offline-only flat capped-cylinder candidate fields, formula, containment checks, axis candidates, and paper weight on deterministic toy fixtures
       - no paper_faithful_offline claim, full CPD reproduction claim, Newton runtime support, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-capsule-axis-audit
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-capsule-axis-audit.md
+    purpose: >
+      Extend the command-only partial offline CPD paper-lane audit with a paper-shaped capsule
+      axis-policy fit-audit row.
+    claims_supported:
+      - partial fixture-scoped offline primitive-fit audit only
+      - records three capsule axis candidates, spherical-cap-adjusted height inputs, selected axis, containment checks, formula, and paper weight on deterministic toy fixtures
+      - no paper_faithful_offline claim, full CPD reproduction claim, Newton runtime execution, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

@@ -21,6 +21,11 @@ STALE_PUBLICATION_GATING_COPY = (
     "Public full-text expansion should wait for the private permission record"
 )
 PERMISSION_RECORD_GLOB = "docs/records/*cpd-paper-permission*.md"
+PERMISSION_EVIDENCE_MARKERS = (
+    "permission has been granted",
+    "permission_status: user_confirmed_private_permission",
+    "permission_status: user_asserted_permission_record_pending",
+)
 READER_VISIBLE_INTERNAL_PAPER_LABEL_RE = re.compile(
     r'\b(?:label|title)="[^"]+ / '
     r'(?:figure\*?|wrapfigure|SCfigure|table\*?|algorithm\*?|align|equation) / '
@@ -82,9 +87,17 @@ def validate_site_text(path: str, text: str, has_permission_record: bool = False
     return issues
 
 
+def has_paper_asset_permission_evidence(root: Path) -> bool:
+    for record_path in root.glob(PERMISSION_RECORD_GLOB):
+        text = record_path.read_text(encoding="utf-8")
+        if any(marker in text for marker in PERMISSION_EVIDENCE_MARKERS):
+            return True
+    return False
+
+
 def validate_site(root: Path) -> list[str]:
     issues: list[str] = []
-    has_permission_record = any(root.glob(PERMISSION_RECORD_GLOB))
+    has_permission_record = has_paper_asset_permission_evidence(root)
     layout_path = root / "site/src/layouts/PaperLayout.astro"
     if layout_path.exists() and REQUIRED_BANNER not in layout_path.read_text(encoding="utf-8"):
         issues.append("site/src/layouts/PaperLayout.astro: missing source namespace banner")

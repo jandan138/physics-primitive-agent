@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.validate_site_claims import validate_site_text
+from scripts.validate_site_claims import validate_site, validate_site_text
 
 
 def test_site_validator_requires_source_namespace_banner():
@@ -68,6 +68,42 @@ def test_site_validator_rejects_published_paper_assets_without_permission_record
     )
 
     assert any("paper asset publication requires attached permission evidence" in issue for issue in issues)
+
+
+def test_site_validator_ignores_placeholder_permission_record_for_paper_assets(tmp_path):
+    content_root = tmp_path / "site/src/content/paper"
+    content_root.mkdir(parents=True)
+    (content_root / "introduction.mdx").write_text(
+        'images={["paper-assets/example.jpg"]}',
+        encoding="utf-8",
+    )
+    record_root = tmp_path / "docs/records"
+    record_root.mkdir(parents=True)
+    (record_root / "2026-05-15-cpd-paper-permission-placeholder.md").write_text(
+        "This record is not the formal authorization artifact.",
+        encoding="utf-8",
+    )
+
+    issues = validate_site(tmp_path)
+
+    assert any("paper asset publication requires attached permission evidence" in issue for issue in issues)
+
+
+def test_site_validator_accepts_user_asserted_permission_record_for_paper_assets(tmp_path):
+    content_root = tmp_path / "site/src/content/paper"
+    content_root.mkdir(parents=True)
+    (content_root / "introduction.mdx").write_text(
+        'images={["paper-assets/example.jpg"]}',
+        encoding="utf-8",
+    )
+    record_root = tmp_path / "docs/records"
+    record_root.mkdir(parents=True)
+    (record_root / "2026-05-15-cpd-paper-permission-assertion.md").write_text(
+        "source-paper figures based on the user's assertion that permission has been granted",
+        encoding="utf-8",
+    )
+
+    assert validate_site(tmp_path) == []
 
 
 def test_site_validator_rejects_empty_generated_translation():
@@ -184,6 +220,39 @@ def test_paper_block_keeps_internal_review_metadata_out_of_reader_chrome():
     component = Path(__file__).resolve().parents[1] / "site/src/components/PaperBlock.astro"
     text = component.read_text(encoding="utf-8")
 
+    assert "section?: string" not in text
     assert "paper-block__badges" not in text
     assert "{section ? `${section} / ` : \"\"}{id}" not in text
     assert "Draft translation provenance" not in text
+
+
+def test_paper_reader_css_drops_internal_review_chrome_styles():
+    css = Path(__file__).resolve().parents[1] / "site/src/styles/paper.css"
+    text = css.read_text(encoding="utf-8")
+
+    assert ".paper-block__meta" not in text
+    assert ".paper-block__anchor" not in text
+    assert ".paper-block__badges" not in text
+    assert ".paper-block__status" not in text
+    assert ".status-badge" not in text
+
+
+def test_figure_panel_separates_plots_from_thumbnail_grid():
+    component = Path(__file__).resolve().parents[1] / "site/src/components/FigurePanel.astro"
+    text = component.read_text(encoding="utf-8")
+
+    assert "visualImages" in text
+    assert "insetImages" in text
+    assert "plotImages" in text
+    assert "figure-panel__media" in text
+    assert "figure-panel__insets" in text
+    assert "figure-panel__plots" in text
+
+
+def test_figure_panel_grid_has_breathing_room_without_page_scroll():
+    stylesheet = Path(__file__).resolve().parents[1] / "site/src/styles/paper.css"
+    text = stylesheet.read_text(encoding="utf-8")
+
+    assert "minmax(220px, 1fr)" in text
+    assert "gap: 18px" in text
+    assert "overflow-x: visible" in text

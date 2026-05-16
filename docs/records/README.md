@@ -214,6 +214,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Flat Capped-Cylinder Audit](2026-05-16-cpd-paper-flat-capped-cylinder-audit.md):
   partial command-only offline primitive-fit audit row expansion for paper flat capped-cylinder
   candidates on deterministic toy fixtures.
+- [2026-05-16 CPD Paper Capsule Axis Audit](2026-05-16-cpd-paper-capsule-axis-audit.md):
+  partial command-only offline primitive-fit audit row expansion for paper-shaped capsule axis
+  candidates on deterministic toy fixtures.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
@@ -232,6 +235,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 Paper Reference Numbering Fix](2026-05-16-paper-reference-numbering-fix.md):
   reader-facing paper companion reference-numbering fix that hides internal source labels and
   resolves figure, table, algorithm, equation, and section references to paper numbers.
+- [2026-05-16 Paper Reader Chrome And Permission Validator](2026-05-16-paper-reader-chrome-and-permission-validator.md):
+  reader-facing paper companion cleanup that removes internal review chrome and tightens paper
+  asset permission-evidence validation.
 - [2026-05-15 CPD Objective Alignment And Next Steps](2026-05-15-cpd-objective-alignment-and-next-steps.md):
   documentation clarification for objective-report paper alignment and the next algorithmic
   sequence.

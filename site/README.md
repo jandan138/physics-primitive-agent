@@ -16,8 +16,8 @@ runtime code.
 
 - `src/pages/paper/`: route entry points for the paper reader.
 - `src/layouts/`: page-level shells and source-namespace banners.
-- `src/components/`: reusable reader components such as paper blocks, status badges, and LaTeX
-  blocks.
+- `src/components/`: reusable reader components such as paper blocks, figure panels, equations,
+  algorithms, tables, and LaTeX blocks.
 - `src/content/paper/`: generated MDX pages for the imported paper sections.
 - `src/data/paper-manifest.json`: generated navigation/order metadata for paper sections.
 - `src/data/translations/`: editable translation source shards keyed by stable paper block IDs.
@@ -35,9 +35,9 @@ Do not commit these directories:
 - `scripts/__pycache__/`
 
 The raw paper intake under `docs/tmp/papers/` is local source material and is not part of the
-site's tracked tree. The generated MDX pages may contain source-paper text, but copied paper images
-or other paper assets must not be published from `site/public/` until a dated permission record is
-attached.
+site's tracked tree. The generated MDX pages may contain source-paper text. Copied paper images or
+other paper assets must be backed by a dated permission-evidence record; a filename-only
+placeholder record is not enough.
 
 ## Claim And Permission Boundaries
 
@@ -48,6 +48,9 @@ attached.
 - Reproduction status must stay `reproductionStatus="not_started"` unless a dated reproduction
   record exists.
 - Public permission wording must stay record-pending until the authorization record is committed.
+- Paper asset publication requires a dated record that explicitly states user-confirmed or formal
+  permission evidence. The validator intentionally rejects placeholder permission records that do
+  not contain such evidence.
 
 The site validator enforces these boundaries:
 
