@@ -1,5 +1,4 @@
 ---
-import StatusBadge from "./StatusBadge.astro";
 import { renderRichText } from "../lib/richText";
 
 interface Props {
@@ -16,7 +15,6 @@ interface Props {
 
 const {
   id,
-  section = "",
   original,
   translation,
   translationStatus = "draft_ai_assisted",
@@ -26,36 +24,19 @@ const {
   translationProvenance = "not_recorded",
 } = Astro.props;
 
-const translationStatusLabel =
-  translationStatus === "draft_ai_assisted" ? "AI 初译，待人工校对" : translationStatus;
-const explanationStatusLabel =
-  explanationStatus === "caption" ? "图注解释: 待补" : "解释: 待补";
-const reproductionStatusLabel =
-  reproductionStatus === "not_started" ? "复现: 未开始" : `复现: ${reproductionStatus}`;
-const provenanceLabel =
-  translationProvenance === "codex_draft_2026-05-15"
-    ? "Codex draft, 2026-05-15"
-    : translationProvenance;
-const sourceNamespaceLabel =
-  sourceNamespace === "cpd_paper_source_text" ? "CPD paper source text" : sourceNamespace;
 const originalHtml = renderRichText(original);
 const translationHtml = renderRichText(translation);
 ---
 
-<article class="paper-block" id={id} data-source-namespace={sourceNamespace}>
-  <header class="paper-block__meta">
-    <a href={`#${id}`} class="paper-block__anchor">{section ? `${section} / ` : ""}{id}</a>
-    <div class="paper-block__badges" aria-label="Paragraph status">
-      <StatusBadge label={translationStatusLabel} tone="draft" />
-      <StatusBadge label="论文原文，不是项目证据" tone="partial" />
-      <StatusBadge label={explanationStatusLabel} />
-      <StatusBadge label={reproductionStatusLabel} />
-    </div>
-  </header>
+<article
+  class="paper-block"
+  id={id}
+  data-source-namespace={sourceNamespace}
+  data-translation-status={translationStatus}
+  data-explanation-status={explanationStatus}
+  data-reproduction-status={reproductionStatus}
+  data-translation-provenance={translationProvenance}
+>
   <div class="paper-block__original" lang="en"><Fragment set:html={originalHtml} /></div>
   <div class="paper-block__translation" lang="zh-Hans"><Fragment set:html={translationHtml} /></div>
-  <footer class="paper-block__status">
-    <span>Draft translation provenance: {provenanceLabel}</span>
-    <span> / Source namespace: {sourceNamespaceLabel}</span>
-  </footer>
 </article>

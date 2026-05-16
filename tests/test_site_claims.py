@@ -176,3 +176,14 @@ def test_fraction_math_stays_inline_on_mobile():
 
     assert "math-display" not in text
     assert "math-fraction" in text
+    assert ".algorithm-block math" in text
+    assert "paper-block__original" in text
+
+
+def test_paper_block_keeps_internal_review_metadata_out_of_reader_chrome():
+    component = Path(__file__).resolve().parents[1] / "site/src/components/PaperBlock.astro"
+    text = component.read_text(encoding="utf-8")
+
+    assert "paper-block__badges" not in text
+    assert "{section ? `${section} / ` : \"\"}{id}" not in text
+    assert "Draft translation provenance" not in text

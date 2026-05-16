@@ -49,10 +49,16 @@ const withBase = (path: string) => {
     </div>
     <script is:inline>
       const markScrollableMath = () => {
-        document.querySelectorAll(".paper-block math, .figure-panel math, .equation-block math").forEach((math) => {
+        document.querySelectorAll(
+          ".paper-block math, .figure-panel math, .equation-block math, .algorithm-block math, .table-block math",
+        ).forEach((math) => {
           math.classList.remove("math-scroll");
           math.classList.remove("math-fraction");
-          const parentWidth = math.parentElement?.clientWidth || document.documentElement.clientWidth;
+          const container = math.closest(
+            ".paper-block__original, .paper-block__translation, .figure-panel__caption, .equation-block__math, .algorithm-block__text, .table-block",
+          );
+          const parentWidth =
+            container?.clientWidth || math.parentElement?.clientWidth || document.documentElement.clientWidth;
           if (math.querySelector("mfrac")) {
             math.classList.add("math-fraction");
           }

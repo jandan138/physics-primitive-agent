@@ -144,13 +144,16 @@ body {
   color: var(--paper-muted);
 }
 
-.paper-block,
 .figure-panel {
   background: var(--paper-surface);
   border: 1px solid var(--paper-border);
   border-radius: 8px;
   padding: 20px;
   margin: 20px 0;
+}
+
+.paper-block {
+  margin: 18px 0;
 }
 
 .paper-block__meta {
@@ -221,13 +224,14 @@ body {
 }
 
 .paper-block__translation {
+  background: #f4f8f8;
   border-left: 3px solid var(--paper-accent);
   color: #263744;
   font-size: 17px;
   line-height: 1.85;
-  margin-top: 14px;
+  margin-top: 8px;
   overflow-wrap: anywhere;
-  padding-left: 14px;
+  padding: 10px 12px;
 }
 
 .paper-block__status {
@@ -527,7 +531,6 @@ body {
     padding: 24px 16px 56px;
   }
 
-  .paper-block,
   .figure-panel,
   .algorithm-block,
   .table-block {
