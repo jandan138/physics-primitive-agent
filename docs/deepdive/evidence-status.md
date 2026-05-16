@@ -145,12 +145,18 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run the command-only CPD paper offline generalization-plan
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
-  `paper_faithful_offline_supported: false`, and advances the next gate to
-  `paper_generalization_batch_a_source_policy`. That source-policy gate should broaden source
-  mesh, preprocessing, source-face intake, and operator policy beyond named toy fixtures. This
-  planning table is not `paper_faithful_offline`, full CPD reproduction, package generation,
-  Newton runtime support, real-USD evidence, benchmark evidence, collision-quality validation,
-  deployment readiness, or safety certification.
+  `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
+  `paper_generalization_batch_b_primitive_fit_engine` after the source-policy matrix.
+- The current executable surface can also run
+  `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
+  that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
+  meshes. The matrix records exact-coordinate dedup policy, source-face intake/remap policy,
+  concave-polygon rejection, and source-face `Q` aggregation accounting. The report remains
+  partial, keeps `paper_faithful_offline_supported: false`, and advances the next required gate to
+  `paper_generalization_batch_b_primitive_fit_engine`. This is not robust mesh cleanup, general
+  polygon intake, `paper_faithful_offline`, full CPD reproduction, package generation, Newton
+  runtime support, real-USD evidence, benchmark evidence, collision-quality validation, deployment
+  readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

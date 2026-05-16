@@ -66,8 +66,12 @@ the planning-only `paper_faithful_offline_generalization_plan` as the follow-up 
 closed review. The report now also includes a command-only planning table for offline CPD
 paper-lane generalization beyond named toy fixtures. That table closes only the planning gate,
 keeps the report partial, keeps
-`paper_faithful_offline_supported: false`, and advances the next required gate to
-`paper_generalization_batch_a_source_policy`. This review and planning table are not
+`paper_faithful_offline_supported: false`, and recorded
+`paper_generalization_batch_a_source_policy` as the immediate follow-up when the planning gate was
+introduced. The report now also closes only that source-policy gate with an offline source-policy
+matrix for deterministic synthetic meshes, then advances the current next gate to
+`paper_generalization_batch_b_primitive_fit_engine`. This review, planning
+table, and source-policy matrix are not
 `paper_faithful_offline` support, and they are not a capped bed/Franka rerun unless a separate real
 package change is introduced and passes full mapping, contact-canary, task-gate, and dated-record
 gates. The
@@ -89,7 +93,11 @@ records exist.
   the completion review is now implemented.
 - [CPD paper faithful offline generalization plan](reference/cpd-paper-faithful-offline-lane-spec.md):
   command-only planning table for offline generalization beyond named toy fixtures. The next gate
-  is `paper_generalization_batch_a_source_policy`.
+  after the now-implemented source-policy matrix is
+  `paper_generalization_batch_b_primitive_fit_engine`.
+- [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
+  dated implementation record for the offline report-only source-policy matrix. It keeps the report
+  partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -487,9 +495,10 @@ records exist.
   accounting, plus Batch E postprocess breadth cases for rotated nested OBB containment and
   explicit cross-type unsupported no-cull accounting, plus a fixture-breadth completion review
   that closes only the planned synthetic Batch A-E breadth gate, plus a command-only
-  generalization planning table that closes only the planning gate. It also records a scope-audit
-  table with `decision: remain_partial`, reports
-  `next_required_gate: paper_generalization_batch_a_source_policy`, keeps
+  generalization planning table that closes only the planning gate, plus an offline source-policy
+  matrix that closes only `paper_generalization_batch_a_source_policy`. It also records a
+  scope-audit table with `decision: remain_partial`, reports
+  `next_required_gate: paper_generalization_batch_b_primitive_fit_engine`, keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD, package
   generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic

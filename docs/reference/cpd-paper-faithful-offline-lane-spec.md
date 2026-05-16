@@ -298,8 +298,11 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the fixture-breadth completion review:
-  `paper_faithful_offline_generalization_missing`.
+- the current top-level failure labels after the source-policy generalization matrix:
+  `paper_generalization_batch_b_primitive_fit_engine_missing`,
+  `paper_generalization_batch_c_search_engine_missing`,
+  `paper_generalization_batch_d_postprocess_policy_missing`, and
+  `paper_generalization_batch_e_package_boundary_readiness_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -591,7 +594,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> next: paper_generalization_batch_a_source_policy
+-> next after the source-policy matrix: paper_generalization_batch_b_primitive_fit_engine
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -601,12 +604,15 @@ tie/eager-stale-prune behavior, and positive nonzero threshold blocking without 
 runtime support. Batch D broadens disconnected component-pair ordering and capped skipped-pair
 accounting without adding Newton runtime support. Batch E broadens rotated nested OBB postprocess
 accounting and cross-type unsupported no-cull accounting without adding Newton runtime support. The
-completion review closes only the planned Batch A-E breadth gate. The next step is a
-source-policy generalization slice, not `paper_faithful_offline` support, package generation,
-Newton runtime execution, real USD, or benchmarking.
+completion review closes only the planned Batch A-E breadth gate. The source-policy
+generalization slice is now implemented as an offline report-only matrix, not as
+`paper_faithful_offline` support, package generation, Newton runtime execution, real USD, or
+benchmarking.
 
-`paper_generalization_batch_a_source_policy` is the first offline implementation gate after the
-planning table. It should broaden source mesh, preprocessing, source-face intake, and operator
-policy beyond named toy fixtures. It is not package generation, Newton runtime execution, real USD,
-benchmark evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality
-evidence, deployment readiness, or safety certification.
+`paper_generalization_batch_a_source_policy` closes only the source-policy gate. It records
+bounded source mesh, exact-coordinate preprocessing, source-face intake/remap, concave rejection,
+and source-face `Q` aggregation accounting for deterministic synthetic meshes. It is not robust
+mesh cleanup, general polygon intake, package generation, Newton runtime execution, real-USD
+evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
+collision-quality evidence, deployment readiness, or safety certification. The next current gate
+is `paper_generalization_batch_b_primitive_fit_engine`.

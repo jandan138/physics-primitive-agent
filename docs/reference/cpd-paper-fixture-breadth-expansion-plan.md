@@ -157,23 +157,25 @@ paper_faithful_offline_generalization_plan
 ```
 
 This planning gate is implemented as a command-only table inside `cpd_paper_offline_report`. The
-report remains partial, keeps `paper_faithful_offline_supported: false`, and now points to
-`paper_generalization_batch_a_source_policy`.
+report remains partial, keeps `paper_faithful_offline_supported: false`, and now also includes the
+offline source-policy matrix for `paper_generalization_batch_a_source_policy`.
 
-The first implementation gate after this plan should:
+The first implementation gate after this plan is now implemented:
 
 ```text
 paper_generalization_batch_a_source_policy
--> broaden source mesh and preprocessing policy beyond named toy fixtures
--> broaden source-face intake and operator policy beyond named toy fixtures
+-> implemented as an offline source-policy matrix over deterministic synthetic meshes
+-> record exact-coordinate dedup, source-face remap, concave rejection, and Q aggregation
 -> stay offline report-only
 -> not generate packages, run Newton, use real USD, or claim benchmark/collision quality
 ```
 
-Batch A stays important because it improves the source mesh, source-face intake, and operator
-criteria that every later primitive-fit and search fixture depends on. Batch B stays important
-because it broadens primitive-fit evidence before cost/search fixtures start comparing candidate
-choices. Batch C stays important because it checks weighted-priority ordering, deterministic queue
+Batch A stays important because it broadens source mesh, source-face intake, and operator audit
+coverage that every later primitive-fit and search fixture depends on. Batch B stays important
+because it broadens primitive-fit evidence before cost/search fixtures start comparing
+candidate-engine behavior. The current next gate is
+`paper_generalization_batch_b_primitive_fit_engine`. Batch C stays important because it checks
+weighted-priority ordering, deterministic queue
 ties/eager-stale-prune events, and one positive finite threshold block before broader component-pair
 cases. Batch D stays important because it checks multiple component-pair candidates and capped
 skipped-pair accounting before postprocess breadth. Batch E stays important because it checks

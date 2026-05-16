@@ -40,11 +40,15 @@ fixture-breadth Batch A source/preprocess, Batch B primitive-fit, Batch C cost/s
 Batch D component-pair, Batch E postprocess accounting, and a command-only synthetic
 fixture-breadth completion review for planned Batches A-E. It now also includes a command-only
 planning table for offline generalization beyond named toy fixtures. The report remains partial,
-`paper_faithful_offline_supported` remains false, and the next paper-lane gate is
-`paper_generalization_batch_a_source_policy`, not `paper_faithful_offline` support. This planning
-table does not support full CPD reproduction, package generation, Newton runtime execution,
-real-USD evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
-certification. See
+`paper_faithful_offline_supported` remains false. The report now also includes
+`paper_generalization_batch_a_source_policy`, a command-only offline source-policy matrix for
+deterministic synthetic meshes. That matrix records exact-coordinate dedup policy, source-face
+intake/remap policy, concave-polygon rejection, and source-face `Q` aggregation accounting without
+claiming robust mesh cleanup or general polygon intake. The next paper-lane gate is now
+`paper_generalization_batch_b_primitive_fit_engine`, not `paper_faithful_offline` support. This
+source-policy slice does not support full CPD reproduction, package generation, Newton runtime
+execution, real-USD evidence, collision-quality evidence, benchmark evidence, deployment
+readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

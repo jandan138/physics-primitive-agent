@@ -56,9 +56,13 @@ _SCOPE_AUDIT_ALLOWED_ALIGNMENT_LABELS = {
     "not_paper_faithful",
     "out_of_offline_scope",
 }
-_PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION = (
-    "Proceed to paper_generalization_batch_a_source_policy as the first offline "
-    "generalization slice before stronger wording."
+_PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY = "paper_generalization_batch_a_source_policy"
+_PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT = (
+    "paper_generalization_batch_b_primitive_fit_engine"
+)
+_PAPER_GENERALIZATION_NEXT_ACTION = (
+    "Proceed to paper_generalization_batch_b_primitive_fit_engine after the "
+    "source-policy generalization matrix; keep stronger wording blocked."
 )
 
 
@@ -138,7 +142,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Exact-overlap toy preprocessing only; no robust arbitrary mesh cleanup."
             ),
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "source_face_intake_policy",
@@ -155,7 +159,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Source-face intake is toy-scoped, not a general polygon mesh implementation."
             ),
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "operator_q_audit",
@@ -172,7 +176,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Operator evidence is named-fixture audit data, not full paper decomposition."
             ),
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "primitive_vocabulary_and_fit",
@@ -192,7 +196,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "Primitive rows are audit rows, not Newton runtime support or "
                 "collision-quality evidence."
             ),
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "paper_collapse_cost_and_weighting",
@@ -209,7 +213,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
             "blocking_for_paper_faithful_offline": True,
             "claim_boundary": "Cost rows are toy accounting, not optimizer or benchmark evidence.",
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "greedy_priority_queue_trace",
@@ -228,7 +232,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Search traces are toy-scoped and do not prove merge-policy superiority."
             ),
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "target_count_and_threshold_stop",
@@ -244,7 +248,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
             "blocking_for_paper_faithful_offline": True,
             "claim_boundary": "Threshold evidence is narrow toy accounting.",
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "component_pair_edge_handling",
@@ -263,7 +267,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Component merging evidence is diagnostic accounting, not broad asset evidence."
             ),
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "enclosed_primitive_postprocess",
@@ -278,7 +282,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Postprocess cull evidence is one offline canary, not a general containment library."
             ),
-            "next_action": _PAPER_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
+            "next_action": _PAPER_GENERALIZATION_NEXT_ACTION,
         },
         {
             "criterion_id": "report_schema_tests_and_records",
@@ -504,7 +508,7 @@ def _paper_fixture_breadth_completion_review_payload() -> dict[str, object]:
 def _paper_faithful_offline_generalization_batches() -> list[dict[str, object]]:
     return [
         {
-            "batch_id": "paper_generalization_batch_a_source_policy",
+            "batch_id": _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
             "purpose": "generalize_source_mesh_preprocess_intake_operator_policy",
             "primary_criteria": [
                 "source_mesh_and_preprocessing_policy",
@@ -515,7 +519,7 @@ def _paper_faithful_offline_generalization_batches() -> list[dict[str, object]]:
             "required_output": "source_policy_generalization_report",
         },
         {
-            "batch_id": "paper_generalization_batch_b_primitive_fit_engine",
+            "batch_id": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
             "purpose": "generalize_paper_primitive_fit_engine_beyond_named_cases",
             "primary_criteria": [
                 "primitive_vocabulary_and_fit",
@@ -559,21 +563,30 @@ def _paper_faithful_offline_generalization_batches() -> list[dict[str, object]]:
     ]
 
 
+def _paper_remaining_generalization_gates_after_source_policy() -> list[str]:
+    return [
+        str(batch["batch_id"])
+        for batch in _paper_faithful_offline_generalization_batches()
+        if batch["batch_id"] != _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY
+    ]
+
+
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
     planned_batches = _paper_faithful_offline_generalization_batches()
+    remaining_generalization_gates = _paper_remaining_generalization_gates_after_source_policy()
     return {
         "plan_scope": "offline_algorithm_generalization_beyond_named_toy_fixtures",
         "closed_gate": "paper_faithful_offline_generalization_plan",
         "decision": "remain_partial",
-        "decision_reason": "generalization_plan_complete_first_source_policy_slice_missing",
+        "decision_reason": (
+            "source_policy_generalization_complete_primitive_fit_engine_missing"
+        ),
         "generalization_plan_complete": True,
         "paper_faithful_offline_allowed": False,
-        "next_required_gate": "paper_generalization_batch_a_source_policy",
-        "first_unresolved_gate": "paper_generalization_batch_a_source_policy",
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
         "planned_batches": planned_batches,
-        "remaining_generalization_gates": [
-            str(batch["batch_id"]) for batch in planned_batches
-        ],
+        "remaining_generalization_gates": remaining_generalization_gates,
         "blocked_runtime_gates": [
             "package_generation_boundary",
             "newton_runtime_boundary",
@@ -587,17 +600,152 @@ def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
     }
 
 
+def _paper_source_policy_generalization_payload(
+    cases: list[dict[str, object]],
+) -> dict[str, object]:
+    cases_by_id = {str(case["case_id"]): case for case in cases}
+    mixed = cases_by_id["paper_mixed_face_preprocess_operator"]
+    degenerate = cases_by_id["paper_degenerate_preprocess_face_drop"]
+    concave = cases_by_id["paper_concave_polygon_rejected"]
+    remaining_generalization_gates = _paper_remaining_generalization_gates_after_source_policy()
+    policy_matrix = [
+        {
+            "policy_row_id": "accepted_mixed_triangle_quad_polygon_exact_dedup",
+            "evidence_case_id": mixed["case_id"],
+            "row_status": "accepted_offline_policy_fixture",
+            "source_face_arities": mixed["source_mesh"]["source_face_arities"],
+            "source_face_count": mixed["source_mesh"]["source_face_count"],
+            "triangulated_face_count": mixed["source_mesh"][
+                "triangulated_face_count"
+            ],
+            "duplicate_vertex_preprocessing": mixed["source_mesh"][
+                "duplicate_vertex_preprocessing"
+            ],
+            "source_face_remap_count": len(mixed["source_mesh"]["source_face_remap"]),
+            "operator_aggregate_count": len(
+                mixed["operator_audit"]["source_face_operator_aggregates"]
+            ),
+            "operator_aggregate_source_face_ids": [
+                int(aggregate["source_face_id"])
+                for aggregate in mixed["operator_audit"][
+                    "source_face_operator_aggregates"
+                ]
+            ],
+            "operator_aggregate_generated_triangle_face_ids": [
+                [
+                    int(face_id)
+                    for face_id in aggregate["generated_triangle_face_ids"]
+                ]
+                for aggregate in mixed["operator_audit"][
+                    "source_face_operator_aggregates"
+                ]
+            ],
+            "operator_q_aggregation_policy": (
+                "aggregate_q_matrix_equals_sum_generated_triangle_q_rows"
+            ),
+        },
+        {
+            "policy_row_id": "accepted_degenerate_after_exact_dedup_drop",
+            "evidence_case_id": degenerate["case_id"],
+            "row_status": "accepted_after_dropping_degenerate_source_face",
+            "dropped_source_face_ids": degenerate["preprocessing_audit"][
+                "dropped_source_face_ids"
+            ],
+            "retained_source_face_ids": degenerate["preprocessing_audit"][
+                "retained_source_face_ids"
+            ],
+            "executable_source_face_ids": degenerate["source_mesh"][
+                "executable_source_face_ids"
+            ],
+            "operator_source_faces": degenerate["operator_audit"]["merged_group"][
+                "source_faces"
+            ],
+            "primitive_fit_source_faces": degenerate["primitive_fit_audit"][
+                "source_faces"
+            ],
+        },
+        {
+            "policy_row_id": "rejected_concave_polygon",
+            "evidence_case_id": concave["case_id"],
+            "row_status": "unsupported_offline_policy_fixture",
+            "case_status": concave["case_status"],
+            "failure_label": concave["mesh_intake_policy_audit"]["failure_label"],
+            "top_level_failure_label": concave["mesh_intake_policy_audit"][
+                "top_level_failure_label"
+            ],
+            "source_face_arities": concave["source_mesh"]["source_face_arities"],
+            "triangulated_face_count": concave["source_mesh"][
+                "triangulated_face_count"
+            ],
+            "operator_row_count": 0,
+            "primitive_fit_row_count": 0,
+        },
+    ]
+    return {
+        "gate_id": _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+        "gate_status": "implemented_offline_report_only_partial",
+        "closed_gate": _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "source_policy_generalization_complete_primitive_fit_engine_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "source_scope": "synthetic_in_memory_source_mesh_policy_matrix",
+        "implementation_boundary": "offline_report_only_no_package_or_newton",
+        "source_mesh_contract": {
+            "accepted_source_representation": (
+                "vertices_plus_variable_arity_source_faces"
+            ),
+            "source_face_id_policy": (
+                "preserve_source_face_ids_distinct_from_generated_triangle_ids"
+            ),
+            "general_mesh_cleanup_supported": False,
+        },
+        "preprocessing_policy": {
+            "deduplication_policy": "exact_coordinate_first_occurrence_only",
+            "distance_tolerance": 0.0,
+            "degenerate_face_policy": (
+                "drop_after_exact_deduplication_from_executable_rows"
+            ),
+            "nonzero_distance_cleanup_supported": False,
+        },
+        "source_face_intake_policy": {
+            "accepted_preconditions": _source_face_preconditions(),
+            "triangulation_policy": "fan_from_first_vertex",
+            "unsupported_policy": (
+                "reject_concave_polygon_without_top_level_failure_label"
+            ),
+            "general_polygon_mesh_intake_supported": False,
+        },
+        "operator_policy": {
+            "triangle_operator_policy": "compute_q_on_executable_triangles",
+            "source_face_aggregate_policy": (
+                "sum_generated_triangle_q_rows_to_source_face"
+            ),
+            "aggregate_eigen_fields_required": True,
+        },
+        "policy_matrix": policy_matrix,
+        "coverage_summary": {
+            "evidence_case_count": len(policy_matrix),
+            "accepted_policy_row_count": 2,
+            "unsupported_policy_row_count": 1,
+            "closed_gate_count": 1,
+            "remaining_generalization_gate_count": len(remaining_generalization_gates),
+        },
+        "remaining_gaps": remaining_generalization_gates,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def build_cpd_paper_offline_report() -> dict[str, object]:
     """Build the first fixture-scoped offline CPD paper mechanics audit."""
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
-    missing_before_paper_faithful = [
-        "paper_generalization_batch_a_source_policy",
-        "paper_generalization_batch_b_primitive_fit_engine",
-        "paper_generalization_batch_c_search_engine",
-        "paper_generalization_batch_d_postprocess_policy",
-        "paper_generalization_batch_e_package_boundary_readiness",
-    ]
+    missing_before_paper_faithful = _paper_remaining_generalization_gates_after_source_policy()
     return {
         "stage": "cpd_paper_offline_report",
         "status": "partial",
@@ -615,7 +763,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_generalization_batch_a_source_policy",
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -641,6 +789,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             "implemented_planning_scope": [
                 "paper_faithful_offline_generalization_plan",
             ],
+            "implemented_generalization_scope": [
+                _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+            ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
         "paper_faithful_offline_scope_audit": (
@@ -651,6 +802,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_faithful_offline_generalization_plan": (
             _paper_faithful_offline_generalization_plan_payload()
+        ),
+        "paper_generalization_batch_a_source_policy": (
+            _paper_source_policy_generalization_payload(cases)
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,
