@@ -270,6 +270,9 @@ Proposed | In progress | Complete | Failed | Superseded
   `cpd_paper_offline_report`.
 - [2026-05-17 CPD Paper Generalization Batch C Search Engine](2026-05-17-cpd-paper-generalization-batch-c-search-engine.md):
   partial command-only search-engine generalization matrix inside `cpd_paper_offline_report`.
+- [2026-05-17 CPD Paper Generalization Batch D Postprocess Policy](2026-05-17-cpd-paper-generalization-batch-d-postprocess-policy.md):
+  partial command-only postprocess-policy generalization matrix inside
+  `cpd_paper_offline_report`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

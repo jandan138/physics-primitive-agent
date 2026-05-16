@@ -146,8 +146,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_generalization_batch_d_postprocess_policy` after the source-policy, primitive-fit
-  engine, and search-engine matrices.
+  `paper_generalization_batch_e_package_boundary_readiness` after the source-policy,
+  primitive-fit engine, search-engine, and postprocess-policy matrices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -173,11 +173,23 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_generalization_batch_c_search_engine` inside `cpd_paper_offline_report`. It closes only
   that search-engine gate by adding an offline matrix over existing deterministic topology queue,
   weighted-priority, equal-cost tie, threshold-stop, and component-pair traces. The report remains
-  partial, keeps `paper_faithful_offline_supported: false`, and advances the next required gate to
-  `paper_generalization_batch_d_postprocess_policy`. This is not a generalized optimizer,
+  partial, keeps `paper_faithful_offline_supported: false`, and at that stage advanced the next
+  required gate to `paper_generalization_batch_d_postprocess_policy`. This is not a generalized
+  optimizer,
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
   safety certification.
+- The current executable surface can also run
+  `paper_generalization_batch_d_postprocess_policy` inside `cpd_paper_offline_report`. It closes
+  only that postprocess-policy gate by adding an offline matrix over existing deterministic
+  postprocess audit fixtures. The matrix records identity-axis OBB culling, rotated OBB culling,
+  conservative unsupported cross-type no-cull accounting, before/after primitive counts, cull or
+  unsupported reasons, and false package, Newton, real-USD, and benchmark triggers. The report
+  remains partial, keeps `paper_faithful_offline_supported: false`, and advances the next required
+  gate to `paper_generalization_batch_e_package_boundary_readiness`. This is not a general
+  primitive containment library, `paper_faithful_offline`, full CPD reproduction, package
+  generation, Newton runtime support, real-USD evidence, benchmark evidence, collision-quality
+  validation, deployment readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

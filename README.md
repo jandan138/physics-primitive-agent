@@ -52,9 +52,15 @@ and the offline-only boundary for paper-only primitives without adding package g
 Newton runtime execution. It now also includes
 `paper_generalization_batch_c_search_engine`, a command-only offline search-trace matrix that
 summarizes existing topology queue, weighted-priority, equal-cost tie, threshold-stop, and
-component-pair traces without adding a new optimizer. The next paper-lane gate is now
-`paper_generalization_batch_d_postprocess_policy`, not `paper_faithful_offline` support. These
-source-policy, primitive-fit-engine, and search-engine slices do not support full CPD
+component-pair traces without adding a new optimizer. It now also includes
+`paper_generalization_batch_d_postprocess_policy`, a command-only offline postprocess-policy
+matrix over existing deterministic postprocess audit fixtures. That matrix records identity-axis
+OBB culling, rotated OBB culling, conservative unsupported cross-type no-cull accounting,
+before/after primitive counts, cull or unsupported reasons, and false package, Newton, real-USD,
+and benchmark triggers. The next paper-lane gate is now
+`paper_generalization_batch_e_package_boundary_readiness`, not `paper_faithful_offline` support.
+These source-policy, primitive-fit-engine, search-engine, and postprocess-policy slices do not
+support full CPD
 reproduction, package generation, Newton runtime execution, real-USD evidence, collision-quality
 evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

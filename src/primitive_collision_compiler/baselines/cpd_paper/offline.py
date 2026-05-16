@@ -62,9 +62,12 @@ _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT = (
 )
 _PAPER_GENERALIZATION_BATCH_C_SEARCH = "paper_generalization_batch_c_search_engine"
 _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS = "paper_generalization_batch_d_postprocess_policy"
+_PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY = (
+    "paper_generalization_batch_e_package_boundary_readiness"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
-    "Proceed to paper_generalization_batch_d_postprocess_policy after the "
-    "search-engine generalization matrix; keep stronger wording blocked."
+    "Proceed to paper_generalization_batch_e_package_boundary_readiness after the "
+    "postprocess-policy generalization matrix; keep package/Newton wording blocked."
 )
 
 
@@ -559,7 +562,7 @@ def _paper_faithful_offline_generalization_batches() -> list[dict[str, object]]:
             "required_output": "postprocess_policy_generalization_report",
         },
         {
-            "batch_id": "paper_generalization_batch_e_package_boundary_readiness",
+            "batch_id": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
             "purpose": "review_offline_package_boundary_readiness_after_changed_decomposition",
             "primary_criteria": [
                 "package_generation_boundary",
@@ -606,22 +609,33 @@ def _paper_remaining_generalization_gates_after_search() -> list[str]:
     )
 
 
+def _paper_remaining_generalization_gates_after_postprocess() -> list[str]:
+    return _paper_remaining_generalization_gates_after(
+        {
+            _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+            _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+            _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+            _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+        }
+    )
+
+
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
     planned_batches = _paper_faithful_offline_generalization_batches()
     remaining_generalization_gates = (
-        _paper_remaining_generalization_gates_after_search()
+        _paper_remaining_generalization_gates_after_postprocess()
     )
     return {
         "plan_scope": "offline_algorithm_generalization_beyond_named_toy_fixtures",
         "closed_gate": "paper_faithful_offline_generalization_plan",
         "decision": "remain_partial",
         "decision_reason": (
-            "search_engine_generalization_complete_postprocess_policy_missing"
+            "postprocess_policy_generalization_complete_package_boundary_readiness_missing"
         ),
         "generalization_plan_complete": True,
         "paper_faithful_offline_allowed": False,
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
-        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
+        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
         "planned_batches": planned_batches,
         "remaining_generalization_gates": remaining_generalization_gates,
         "blocked_runtime_gates": [
@@ -944,6 +958,133 @@ def _paper_search_engine_generalization_payload(
     }
 
 
+def _paper_postprocess_policy_generalization_row_specs() -> list[tuple[str, str]]:
+    return [
+        ("identity_nested_obb_cull", "paper_nested_primitive"),
+        ("rotated_nested_obb_cull", "paper_rotated_nested_primitive"),
+        (
+            "cross_type_enclosure_no_silent_cull_boundary",
+            "paper_cross_type_enclosure_boundary",
+        ),
+    ]
+
+
+def _postprocess_policy_summary_row(
+    row_id: str,
+    case_payload: dict[str, object],
+) -> dict[str, object]:
+    audit = case_payload["postprocess_audit"]
+    return {
+        "row_id": row_id,
+        "evidence_case_id": case_payload["case_id"],
+        "row_status": "implemented_offline_postprocess_fixture",
+        "audit_scope": audit["audit_scope"],
+        "fixture_variant": audit["fixture_variant"],
+        "postprocess_input_source": audit["postprocess_input_source"],
+        "postprocess_policy": audit["postprocess_policy"],
+        "containment_test_type": audit["containment_test_type"],
+        "axis_policy": audit.get("axis_policy"),
+        "rotation_degrees_about_z": audit.get("rotation_degrees_about_z"),
+        "rotated_axes_non_identity": audit.get("rotated_axes_non_identity"),
+        "cross_type_culling_supported": audit.get("cross_type_culling_supported"),
+        "unsupported_containment_label": audit.get("unsupported_containment_label"),
+        "input_primitive_count": audit["input_primitive_count"],
+        "output_primitive_count": audit["output_primitive_count"],
+        "culled_primitive_ids": audit["culled_primitive_ids"],
+        "kept_primitive_ids": audit["kept_primitive_ids"],
+        "enclosed_primitive_ids": audit["enclosed_primitive_ids"],
+        "enclosing_primitive_ids": audit["enclosing_primitive_ids"],
+        "cull_record_count": len(audit["cull_records"]),
+        "unsupported_record_count": len(audit.get("unsupported_records", [])),
+        "top_level_failure_label": bool(audit.get("top_level_failure_label", False)),
+        "claim_boundary": (
+            "summarizes_named_postprocess_audits_not_general_containment_library"
+        ),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _paper_postprocess_policy_generalization_payload(
+    cases: list[dict[str, object]],
+) -> dict[str, object]:
+    remaining_generalization_gates = (
+        _paper_remaining_generalization_gates_after_postprocess()
+    )
+    cases_by_id = {str(case["case_id"]): case for case in cases}
+    matrix = [
+        _postprocess_policy_summary_row(row_id, cases_by_id[case_id])
+        for row_id, case_id in _paper_postprocess_policy_generalization_row_specs()
+    ]
+    return {
+        "gate_id": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+        "gate_status": "implemented_offline_report_only_partial",
+        "closed_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "postprocess_policy_generalization_complete_package_boundary_readiness_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "source_scope": "deterministic_in_memory_postprocess_audit_fixtures",
+        "implementation_boundary": "offline_report_only_no_package_or_newton",
+        "postprocess_policy_contract": {
+            "input_contract": (
+                "explicit_offline_postprocess_audit_primitives_not_search_output"
+            ),
+            "supported_containment_tests": ["obb_corners_inside_obb"],
+            "supported_axis_policies": [
+                "shared_identity_axes",
+                "shared_rotated_axes",
+            ],
+            "unsupported_boundary_policy": (
+                "record_cross_type_unsupported_without_silent_cull"
+            ),
+            "unsupported_boundary_label": (
+                "cross_type_enclosure_boundary_not_supported"
+            ),
+            "output_accounting_fields": [
+                "input_primitive_count",
+                "output_primitive_count",
+                "kept_primitive_ids",
+                "culled_primitive_ids",
+                "cull_records",
+                "unsupported_records",
+            ],
+            "package_generation_triggered": False,
+            "newton_runtime_triggered": False,
+        },
+        "postprocess_policy_matrix": matrix,
+        "coverage_summary": {
+            "postprocess_row_count": len(matrix),
+            "obb_cull_row_count": sum(
+                row["containment_test_type"] == "obb_corners_inside_obb"
+                and int(row["cull_record_count"]) > 0
+                for row in matrix
+            ),
+            "rotated_obb_row_count": sum(
+                row["rotated_axes_non_identity"] is True for row in matrix
+            ),
+            "unsupported_cross_type_row_count": sum(
+                row["cross_type_culling_supported"] is False for row in matrix
+            ),
+            "cull_record_count": sum(int(row["cull_record_count"]) for row in matrix),
+            "unsupported_record_count": sum(
+                int(row["unsupported_record_count"]) for row in matrix
+            ),
+            "closed_gate_count": 4,
+            "remaining_generalization_gate_count": len(remaining_generalization_gates),
+        },
+        "remaining_gaps": remaining_generalization_gates,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -1090,7 +1231,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = (
-        _paper_remaining_generalization_gates_after_search()
+        _paper_remaining_generalization_gates_after_postprocess()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -1109,7 +1250,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_E_PACKAGE_BOUNDARY,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -1139,6 +1280,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
                 _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
                 _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+                _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -1159,6 +1301,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_generalization_batch_c_search_engine": (
             _paper_search_engine_generalization_payload(cases)
+        ),
+        "paper_generalization_batch_d_postprocess_policy": (
+            _paper_postprocess_policy_generalization_payload(cases)
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,
