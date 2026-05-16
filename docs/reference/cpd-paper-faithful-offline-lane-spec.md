@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the changed-decomposition output contract:
-  `paper_package_adapter_contract_missing`.
+- the current top-level failure label after the package-adapter contract:
+  `paper_package_adapter_unsupported_primitive_policy_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -591,7 +591,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> next after the changed-decomposition output contract: paper_package_adapter_contract
+-> next after the package-adapter contract: paper_package_adapter_unsupported_primitive_policy
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -658,5 +658,16 @@ primitive ids, source-face/group ids, selected paper primitive audit fields, exp
 state rows, unsupported runtime boundaries, and package/Newton/real-USD/benchmark false triggers.
 It is not package readiness, Newton readiness, package generation, Newton runtime execution,
 real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
-collision-quality evidence, deployment readiness, or safety certification. The next current gate
-is `paper_package_adapter_contract`.
+collision-quality evidence, deployment readiness, or safety certification. At that stage the
+follow-up gate was `paper_package_adapter_contract`.
+
+`paper_package_adapter_contract` closes only the offline adapter-contract gate. It records a
+command-only package-adapter contract, not a `CollisionPackage`, over the changed-decomposition
+primitive records. The payload carries an input-contract summary, an adapter decision contract, and
+16 primitive adapter decision rows. All current `trapezoidal_prism` /
+`offline_only_unmapped` rows are classified as `later_policy_required`, so no package generation,
+Newton mapping, runtime admissibility, real-USD, or benchmark work is unlocked. It is not package
+readiness, Newton readiness, package generation, Newton runtime execution, real-USD evidence,
+benchmark evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality
+evidence, deployment readiness, or safety certification. The next current gate is
+`paper_package_adapter_unsupported_primitive_policy`.

@@ -278,6 +278,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-17 CPD Paper Changed-Decomposition Output Contract](2026-05-17-cpd-paper-changed-decomposition-output-contract.md):
   partial offline changed-decomposition output contract inside `cpd_paper_offline_report`, not a
   `CollisionPackage`.
+- [2026-05-17 CPD Paper Package-Adapter Contract](2026-05-17-cpd-paper-package-adapter-contract.md):
+  partial command-only offline package-adapter contract inside `cpd_paper_offline_report`, not a
+  `CollisionPackage`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

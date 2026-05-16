@@ -67,11 +67,15 @@ package generation and Newton runtime blocked. It now also includes
 contract, not a `CollisionPackage`. That contract records synthetic toy fixture decomposition
 rows, stable offline primitive ids, source-face/group ids, selected paper primitive audit fields,
 explicit postprocess state rows, and package/Newton/real-USD/benchmark false triggers, then
-advances the next paper-lane gate to `paper_package_adapter_contract`. These source-policy,
+the report now also includes `paper_package_adapter_contract`, a command-only offline
+package-adapter contract, not a `CollisionPackage`. The adapter contract consumes those 16 offline
+primitive records as adapter input rows and classifies all current `trapezoidal_prism`
+`offline_only_unmapped` rows as `later_policy_required`, then advances the next paper-lane gate to
+`paper_package_adapter_unsupported_primitive_policy`. These source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
-changed-decomposition-contract slices do not support full CPD reproduction, package generation,
-Newton runtime execution, real-USD evidence, collision-quality evidence, benchmark evidence,
-deployment readiness, or safety certification. See
+changed-decomposition-contract and adapter-contract slices do not support full CPD reproduction,
+package generation, Newton runtime execution, real-USD evidence, collision-quality evidence,
+benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

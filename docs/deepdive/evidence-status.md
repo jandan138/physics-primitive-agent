@@ -146,9 +146,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_package_adapter_contract` after the source-policy, primitive-fit engine, search-engine,
-  postprocess-policy, package-boundary readiness, and offline changed-decomposition output
-  contract slices.
+  `paper_package_adapter_unsupported_primitive_policy` after the source-policy, primitive-fit
+  engine, search-engine, postprocess-policy, package-boundary readiness, offline
+  changed-decomposition output contract, and offline package-adapter contract slices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -213,6 +213,16 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton
   runtime support, real-USD evidence, benchmark evidence, collision-quality validation, deployment
   readiness, or safety certification.
+- The current executable surface can also run `paper_package_adapter_contract` inside
+  `cpd_paper_offline_report`. It closes only that adapter-contract gate by adding a command-only
+  offline package-adapter contract, not a `CollisionPackage`. The contract consumes the offline
+  changed-decomposition primitive records, emits 16 adapter decision rows, classifies all current
+  `trapezoidal_prism` / `offline_only_unmapped` rows as `later_policy_required`, keeps package
+  generation and Newton runtime execution blocked, and advances the next required gate to
+  `paper_package_adapter_unsupported_primitive_policy`. This is not package readiness, Newton
+  readiness, runtime admissibility, `paper_faithful_offline`, full CPD reproduction, package
+  generation, Newton runtime support, real-USD evidence, benchmark evidence, collision-quality
+  validation, deployment readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

@@ -70,6 +70,9 @@ _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT = (
 )
 _PAPER_PACKAGE_GENERATION_CONTRACT = "paper_package_generation_contract"
 _PAPER_PACKAGE_ADAPTER_CONTRACT = "paper_package_adapter_contract"
+_PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY = (
+    "paper_package_adapter_unsupported_primitive_policy"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -646,6 +649,10 @@ def _paper_remaining_gaps_after_package_boundary() -> list[str]:
 
 def _paper_remaining_gaps_after_changed_decomposition_contract() -> list[str]:
     return [_PAPER_PACKAGE_ADAPTER_CONTRACT]
+
+
+def _paper_remaining_gaps_after_package_adapter_contract() -> list[str]:
+    return [_PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -1558,6 +1565,263 @@ def _paper_changed_decomposition_output_contract_payload(
     }
 
 
+def _paper_adapter_required_fields_present(
+    primitive_record: dict[str, object],
+) -> bool:
+    required_fields = (
+        "offline_primitive_id",
+        "source_face_ids",
+        "generated_triangle_face_ids",
+        "paper_primitive",
+        "center",
+        "axes",
+        "dimensions",
+        "volume",
+        "paper_weight",
+        "weighted_volume",
+        "contains_assigned_points",
+        "newton_runtime_kind",
+    )
+    return all(field in primitive_record for field in required_fields)
+
+
+def _paper_adapter_numeric_fields_finite(value: object) -> bool:
+    if isinstance(value, bool):
+        return True
+    if isinstance(value, int | float):
+        return bool(np.isfinite(value))
+    if isinstance(value, list | tuple):
+        return all(_paper_adapter_numeric_fields_finite(item) for item in value)
+    return True
+
+
+def _paper_adapter_forbidden_trigger_present(output_row: dict[str, object]) -> bool:
+    return any(
+        bool(output_row.get(flag))
+        for flag in (
+            "package_generation_triggered",
+            "newton_runtime_triggered",
+            "real_usd_triggered",
+            "benchmark_triggered",
+        )
+    )
+
+
+def _paper_adapter_decision_for_primitive(
+    output_row: dict[str, object],
+    primitive_record: dict[str, object],
+    *,
+    duplicate_offline_primitive_id: bool = False,
+) -> tuple[str, str, str, str]:
+    if _paper_adapter_forbidden_trigger_present(output_row):
+        return (
+            "blocked",
+            "forbidden_runtime_or_package_trigger_present",
+            "paper_package_adapter_contract",
+            "blocked_forbidden_trigger",
+        )
+    if not _paper_adapter_required_fields_present(primitive_record):
+        return (
+            "blocked",
+            "adapter_required_fields_missing",
+            "paper_package_adapter_contract",
+            "missing_required_fields",
+        )
+    if not primitive_record["source_face_ids"] or not primitive_record[
+        "generated_triangle_face_ids"
+    ]:
+        return (
+            "blocked",
+            "missing_source_face_mapping_blocks_adapter_contract",
+            "paper_package_adapter_contract",
+            "missing_source_face_mapping",
+        )
+    if duplicate_offline_primitive_id:
+        return (
+            "blocked",
+            "duplicate_offline_primitive_id_blocks_adapter_contract",
+            "paper_package_adapter_contract",
+            "duplicate_offline_primitive_id",
+        )
+    if not all(
+        _paper_adapter_numeric_fields_finite(primitive_record[field])
+        for field in (
+            "center",
+            "axes",
+            "dimensions",
+            "volume",
+            "paper_weight",
+            "weighted_volume",
+        )
+    ):
+        return (
+            "blocked",
+            "nonfinite_adapter_record_fields",
+            "paper_package_adapter_contract",
+            "invalid_numeric_fields",
+        )
+    if primitive_record["contains_assigned_points"] is not True:
+        return (
+            "blocked",
+            "containment_false_blocks_adapter_contract",
+            "paper_package_adapter_contract",
+            "containment_false",
+        )
+    if primitive_record["newton_runtime_kind"] == "offline_only_unmapped":
+        return (
+            "later_policy_required",
+            "unsupported_paper_primitive_requires_adapter_policy",
+            _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
+            "complete",
+        )
+    return (
+        "adapter_eligible",
+        "direct_runtime_kind_has_complete_contract_fields",
+        "none",
+        "complete",
+    )
+
+
+def _paper_adapter_primitive_decision_row(
+    output_row: dict[str, object],
+    primitive_record: dict[str, object],
+    row_index: int,
+    duplicate_offline_primitive_id: bool = False,
+) -> dict[str, object]:
+    decision, reason, later_gate, field_status = _paper_adapter_decision_for_primitive(
+        output_row,
+        primitive_record,
+        duplicate_offline_primitive_id=duplicate_offline_primitive_id,
+    )
+    offline_primitive_id = primitive_record.get(
+        "offline_primitive_id",
+        f"__missing_offline_primitive_id__:{output_row['output_id']}:{row_index}",
+    )
+    adapter_decision_id = f"{offline_primitive_id}:adapter_decision"
+    if duplicate_offline_primitive_id:
+        adapter_decision_id = (
+            f"{offline_primitive_id}:duplicate:{row_index}:adapter_decision"
+        )
+    return {
+        "adapter_decision_id": adapter_decision_id,
+        "source_output_id": output_row["output_id"],
+        "evidence_case_id": output_row["evidence_case_id"],
+        "offline_primitive_id": offline_primitive_id,
+        "paper_primitive": primitive_record.get("paper_primitive"),
+        "offline_runtime_kind_label": primitive_record.get("newton_runtime_kind"),
+        "record_field_status": field_status,
+        "postprocess_state": output_row["postprocess_state"],
+        "adapter_decision": decision,
+        "adapter_decision_reason": reason,
+        "required_later_gate": later_gate,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _paper_package_adapter_contract_payload(
+    changed_payload: dict[str, object],
+) -> dict[str, object]:
+    flat_records = [
+        (output_row, primitive_record)
+        for output_row in changed_payload["decomposition_output_rows"]
+        for primitive_record in output_row["primitive_records"]
+    ]
+    offline_id_counts: dict[object, int] = {}
+    for _, primitive_record in flat_records:
+        offline_primitive_id = primitive_record.get("offline_primitive_id")
+        if offline_primitive_id is not None:
+            offline_id_counts[offline_primitive_id] = (
+                offline_id_counts.get(offline_primitive_id, 0) + 1
+            )
+    duplicate_offline_ids = {
+        offline_primitive_id
+        for offline_primitive_id, count in offline_id_counts.items()
+        if count > 1
+    }
+    rows = [
+        _paper_adapter_primitive_decision_row(
+            output_row,
+            primitive_record,
+            row_index,
+            primitive_record.get("offline_primitive_id") in duplicate_offline_ids,
+        )
+        for row_index, (output_row, primitive_record) in enumerate(flat_records)
+    ]
+    adapter_eligible_count = sum(
+        row["adapter_decision"] == "adapter_eligible" for row in rows
+    )
+    blocked_count = sum(row["adapter_decision"] == "blocked" for row in rows)
+    later_policy_count = sum(
+        row["adapter_decision"] == "later_policy_required" for row in rows
+    )
+    offline_only_count = sum(
+        row["offline_runtime_kind_label"] == "offline_only_unmapped" for row in rows
+    )
+    return {
+        "gate_id": _PAPER_PACKAGE_ADAPTER_CONTRACT,
+        "gate_status": "implemented_offline_adapter_contract_only_partial",
+        "closed_gate": _PAPER_PACKAGE_ADAPTER_CONTRACT,
+        "input_gate_id": _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+        "next_required_gate": _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "package_adapter_contract_complete_unsupported_primitive_policy_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": "offline_package_adapter_contract_not_collision_package",
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_adapter_contract_no_collision_package_no_newton"
+        ),
+        "input_contract_summary": {
+            "input_gate_id": changed_payload["gate_id"],
+            "input_artifact_kind": changed_payload["artifact_kind"],
+            "decomposition_output_row_count": changed_payload["coverage_summary"][
+                "decomposition_output_row_count"
+            ],
+            "primitive_record_count": changed_payload["coverage_summary"][
+                "primitive_record_count"
+            ],
+            "postprocess_state_row_count": changed_payload["coverage_summary"][
+                "postprocess_state_row_count"
+            ],
+        },
+        "adapter_decision_contract": {
+            "decision_values": [
+                "adapter_eligible",
+                "blocked",
+                "later_policy_required",
+            ],
+            "current_direct_adapter_policy": (
+                "none_for_current_changed_decomposition_rows"
+            ),
+            "unsupported_primitive_policy_required": True,
+            "package_generation_allowed": False,
+        },
+        "primitive_adapter_decision_rows": rows,
+        "coverage_summary": {
+            "decomposition_output_row_count": changed_payload["coverage_summary"][
+                "decomposition_output_row_count"
+            ],
+            "primitive_decision_row_count": len(rows),
+            "adapter_eligible_record_count": adapter_eligible_count,
+            "blocked_record_count": blocked_count,
+            "later_policy_required_record_count": later_policy_count,
+            "offline_only_unmapped_record_count": offline_only_count,
+        },
+        "remaining_gaps": _paper_remaining_gaps_after_package_adapter_contract(),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -1703,8 +1967,11 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     """Build the first fixture-scoped offline CPD paper mechanics audit."""
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
+    changed_decomposition_output_contract = (
+        _paper_changed_decomposition_output_contract_payload(cases)
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_changed_decomposition_contract()
+        _paper_remaining_gaps_after_package_adapter_contract()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -1723,7 +1990,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_PACKAGE_ADAPTER_CONTRACT,
+        "next_required_gate": _PAPER_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -1758,6 +2025,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             ],
             "implemented_output_contract_scope": [
                 _PAPER_CHANGED_DECOMPOSITION_OUTPUT_CONTRACT,
+                _PAPER_PACKAGE_ADAPTER_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -1786,7 +2054,12 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             _paper_package_boundary_readiness_payload()
         ),
         "paper_offline_changed_decomposition_output_contract": (
-            _paper_changed_decomposition_output_contract_payload(cases)
+            changed_decomposition_output_contract
+        ),
+        "paper_package_adapter_contract": (
+            _paper_package_adapter_contract_payload(
+                changed_decomposition_output_contract
+            )
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

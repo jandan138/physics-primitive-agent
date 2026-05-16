@@ -79,10 +79,15 @@ matrix over existing identity-axis OBB, rotated OBB, and unsupported cross-type 
 postprocess audit fixtures. It now also closes only the package-boundary readiness gate with an
 offline package-boundary readiness matrix before package conversion. It now also closes only
 `paper_offline_changed_decomposition_output_contract` with an offline changed-decomposition output
-contract, not a `CollisionPackage`, and advances the current next gate to
-`paper_package_adapter_contract`. This review, planning table, source-policy matrix, primitive-fit
-engine matrix, search-engine matrix, postprocess-policy matrix, package-boundary readiness matrix,
-and changed-decomposition output contract are not
+contract, not a `CollisionPackage`; at that stage the follow-up gate was
+`paper_package_adapter_contract`. The report now also closes only that adapter-contract gate with
+a command-only offline package-adapter contract, not a `CollisionPackage`; all 16 current
+`trapezoidal_prism` / `offline_only_unmapped` primitive records are classified as
+`later_policy_required`, and the next gate is
+`paper_package_adapter_unsupported_primitive_policy`. This review, planning table, source-policy
+matrix, primitive-fit engine matrix, search-engine matrix, postprocess-policy matrix,
+package-boundary readiness matrix, changed-decomposition output contract, and package-adapter
+contract are not
 `paper_faithful_offline` support, and they are not a capped bed/Franka rerun unless a separate real
 package change is introduced and passes full mapping, contact-canary, task-gate, and dated-record
 gates. The
@@ -105,8 +110,9 @@ records exist.
 - [CPD paper faithful offline generalization plan](reference/cpd-paper-faithful-offline-lane-spec.md):
   command-only planning table for offline generalization beyond named toy fixtures. The planned
   source-policy, primitive-fit engine, search-engine, postprocess-policy, and package-boundary
-  readiness matrices are now implemented, and the offline changed-decomposition output contract is
-  now implemented, while the next gate is `paper_package_adapter_contract`.
+  readiness matrices are now implemented, the offline changed-decomposition output contract is now
+  implemented, and the offline package-adapter contract is now implemented, while the next gate is
+  `paper_package_adapter_unsupported_primitive_policy`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -131,6 +137,11 @@ records exist.
   `CollisionPackage`. It keeps the report partial and advances the next gate to
   `paper_package_adapter_contract` without package generation, Newton runtime, real-USD, or
   benchmark evidence.
+- [CPD paper package-adapter contract record](records/2026-05-17-cpd-paper-package-adapter-contract.md):
+  dated implementation record for the command-only offline package-adapter contract, not a
+  `CollisionPackage`. It keeps the report partial and advances the next gate to
+  `paper_package_adapter_unsupported_primitive_policy` without package generation, Newton runtime,
+  real-USD, or benchmark evidence.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -537,9 +548,10 @@ records exist.
   package-boundary readiness matrix that closes only
   `paper_generalization_batch_e_package_boundary_readiness`, plus an offline
   changed-decomposition output contract that closes only
-  `paper_offline_changed_decomposition_output_contract`. It also records a scope-audit table
+  `paper_offline_changed_decomposition_output_contract`, plus an offline package-adapter contract
+  that closes only `paper_package_adapter_contract`. It also records a scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_package_adapter_contract`, keeps
+  `next_required_gate: paper_package_adapter_unsupported_primitive_policy`, keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD, package
   generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic

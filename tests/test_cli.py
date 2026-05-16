@@ -1528,9 +1528,12 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_package_adapter_contract_missing",
+        "paper_package_adapter_unsupported_primitive_policy_missing",
     ]
-    assert payload["next_required_gate"] == "paper_package_adapter_contract"
+    assert (
+        payload["next_required_gate"]
+        == "paper_package_adapter_unsupported_primitive_policy"
+    )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
         "paper_generalization_batch_b_primitive_fit_engine",
@@ -1539,10 +1542,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_package_adapter_contract",
+        "paper_package_adapter_unsupported_primitive_policy",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
+        "paper_package_adapter_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -1698,6 +1702,45 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert len(changed_contract["postprocess_state_rows"]) == 3
     assert changed_contract["package_generation_triggered"] is False
     assert changed_contract["newton_runtime_triggered"] is False
+    adapter_contract = payload["paper_package_adapter_contract"]
+    assert adapter_contract["gate_id"] == "paper_package_adapter_contract"
+    assert (
+        adapter_contract["gate_status"]
+        == "implemented_offline_adapter_contract_only_partial"
+    )
+    assert (
+        adapter_contract["input_gate_id"]
+        == "paper_offline_changed_decomposition_output_contract"
+    )
+    assert (
+        adapter_contract["next_required_gate"]
+        == "paper_package_adapter_unsupported_primitive_policy"
+    )
+    assert (
+        adapter_contract["artifact_kind"]
+        == "offline_package_adapter_contract_not_collision_package"
+    )
+    assert adapter_contract["package_generation_allowed"] is False
+    assert (
+        adapter_contract["coverage_summary"]["primitive_decision_row_count"]
+        == changed_contract["coverage_summary"]["primitive_record_count"]
+        == 16
+    )
+    assert adapter_contract["coverage_summary"]["adapter_eligible_record_count"] == 0
+    assert adapter_contract["coverage_summary"]["blocked_record_count"] == 0
+    assert (
+        adapter_contract["coverage_summary"]["later_policy_required_record_count"]
+        == 16
+    )
+    assert (
+        adapter_contract["coverage_summary"]["offline_only_unmapped_record_count"]
+        == 16
+    )
+    assert len(adapter_contract["primitive_adapter_decision_rows"]) == 16
+    assert adapter_contract["package_generation_triggered"] is False
+    assert adapter_contract["newton_runtime_triggered"] is False
+    assert adapter_contract["real_usd_triggered"] is False
+    assert adapter_contract["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

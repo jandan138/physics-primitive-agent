@@ -180,7 +180,9 @@ threshold, and component-pair traces. The postprocess-policy generalization gate
 as an offline report-only matrix, and the package-boundary readiness gate is now implemented as an
 offline matrix before package conversion. The changed-decomposition output contract is now
 implemented as an offline changed-decomposition output contract, not a `CollisionPackage`. The
-current next gate is `paper_package_adapter_contract`. Batch C stays important because it checks
+package-adapter contract is now implemented as a command-only offline adapter decision table, not a
+`CollisionPackage`. The current next gate is
+`paper_package_adapter_unsupported_primitive_policy`. Batch C stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it
 checks multiple component-pair candidates and capped
