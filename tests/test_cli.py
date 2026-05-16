@@ -1528,7 +1528,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_e"
+    assert payload["next_required_gate"] == "paper_fixture_breadth_completion_review"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1580,6 +1580,8 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_nonzero_threshold_block",
         "paper_component_pair_multi_candidate_order",
         "paper_component_pair_cap_skipped",
+        "paper_rotated_nested_primitive",
+        "paper_cross_type_enclosure_boundary",
     }.issubset(set(case_ids))
     assert case_ids[:15] == [
         "paper_single_box",
@@ -1780,6 +1782,32 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
             "component_pair_candidate_count"
         ]
         assert trace["component_pair_candidates"]
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
+
+    batch_e_cases = {
+        case["case_id"]: case
+        for case in payload["cases"]
+        if case["case_id"]
+        in {
+            "paper_rotated_nested_primitive",
+            "paper_cross_type_enclosure_boundary",
+        }
+    }
+    assert set(batch_e_cases) == {
+        "paper_rotated_nested_primitive",
+        "paper_cross_type_enclosure_boundary",
+    }
+    assert batch_e_cases["paper_rotated_nested_primitive"]["postprocess_audit"][
+        "output_primitive_count"
+    ] == 1
+    assert batch_e_cases["paper_cross_type_enclosure_boundary"]["postprocess_audit"][
+        "cross_type_culling_supported"
+    ] is False
+    for case in batch_e_cases.values():
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_e"
         assert case["package_generation_triggered"] is False
         assert case["newton_runtime_triggered"] is False
         assert case["real_usd_triggered"] is False

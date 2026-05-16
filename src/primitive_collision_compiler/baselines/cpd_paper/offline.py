@@ -108,6 +108,7 @@ class _PaperToyCase:
     component_pair_excess_volume_threshold: float | None = None
     component_pair_candidate_cap: int | None = None
     postprocess_fixture: bool = False
+    postprocess_audit_variant: str | None = None
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None
     duplicate_vertex_preprocessing_audit: _DuplicateVertexPreprocessingAudit | None = None
     unsupported_source_face_intake_audit: _UnsupportedSourceFaceIntakeAudit | None = None
@@ -266,8 +267,8 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "criterion_id": "enclosed_primitive_postprocess",
             "paper_requirement": "Remove primitives enclosed by other primitives.",
             "current_evidence": (
-                "One explicit identity-axis nested OBB cull fixture exists; generated-search "
-                "postprocess breadth is absent."
+                "Identity-axis and rotated nested OBB cull fixtures exist, and Batch E records "
+                "a conservative cross-type unsupported boundary with no silent cull."
             ),
             "status": "partial_fixture_scope",
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -275,7 +276,7 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Postprocess cull evidence is one offline canary, not a general containment library."
             ),
-            "next_action": "Expand postprocess fixtures if required by scope audit follow-up.",
+            "next_action": "Run fixture-breadth completion review before stronger wording.",
         },
         {
             "criterion_id": "report_schema_tests_and_records",
@@ -417,7 +418,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_fixture_breadth_batch_e",
+        "next_required_gate": "paper_fixture_breadth_completion_review",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -437,6 +438,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "paper_fixture_breadth_batch_b_primitive_fit",
                 "paper_fixture_breadth_batch_c_cost_search_stop",
                 "paper_fixture_breadth_batch_d_component_pair",
+                "paper_fixture_breadth_batch_e_postprocess",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -507,7 +509,9 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             preprocessing_boundary=preprocessing_boundary,
         )
     if case.postprocess_fixture:
-        payload["postprocess_audit"] = _postprocess_audit_payload()
+        payload["postprocess_audit"] = _postprocess_audit_payload(
+            case.postprocess_audit_variant or "identity_nested_obb"
+        )
     if case.source_face_intake_audit is not None:
         payload["mesh_intake_policy_audit"] = _source_face_intake_audit_payload(
             case.source_face_intake_audit
@@ -1495,8 +1499,42 @@ def _trapezoidal_prism_contains(
     )
 
 
-def _postprocess_audit_payload() -> dict[str, object]:
-    axes = np.eye(3, dtype=np.float64)
+def _postprocess_audit_payload(variant: str = "identity_nested_obb") -> dict[str, object]:
+    if variant == "identity_nested_obb":
+        return _nested_obb_postprocess_audit_payload(
+            axes=np.eye(3, dtype=np.float64),
+            axis_policy="shared_identity_axes",
+            fixture_variant="identity_nested_obb",
+            rotation_degrees_about_z=0.0,
+        )
+    if variant == "rotated_nested_obb":
+        angle = np.deg2rad(30.0)
+        axes = np.array(
+            [
+                [np.cos(angle), -np.sin(angle), 0.0],
+                [np.sin(angle), np.cos(angle), 0.0],
+                [0.0, 0.0, 1.0],
+            ],
+            dtype=np.float64,
+        )
+        return _nested_obb_postprocess_audit_payload(
+            axes=axes,
+            axis_policy="shared_rotated_axes",
+            fixture_variant="rotated_nested_obb",
+            rotation_degrees_about_z=30.0,
+        )
+    if variant == "cross_type_unsupported_boundary":
+        return _cross_type_unsupported_postprocess_audit_payload()
+    raise ValueError(f"unsupported postprocess audit variant: {variant}")
+
+
+def _nested_obb_postprocess_audit_payload(
+    *,
+    axes: NDArray[np.float64],
+    axis_policy: str,
+    fixture_variant: str,
+    rotation_degrees_about_z: float,
+) -> dict[str, object]:
     outer = _postprocess_obb_row(
         primitive_id=0,
         center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
@@ -1531,18 +1569,80 @@ def _postprocess_audit_payload() -> dict[str, object]:
     ]
     return {
         "audit_scope": "enclosed_primitive_culling_fixture",
+        "fixture_variant": fixture_variant,
         "postprocess_input_source": "explicit_audit_primitives_not_search_trace",
         "input_primitive_count": 2,
         "output_primitive_count": 1,
         "postprocess_policy": "remove_primitives_enclosed_by_another_primitive",
         "containment_test_type": "obb_corners_inside_obb",
-        "axis_policy": "shared_identity_axes",
+        "axis_policy": axis_policy,
+        "rotation_degrees_about_z": float(rotation_degrees_about_z),
+        "rotated_axes_non_identity": bool(not np.allclose(axes, np.eye(3))),
         "input_primitives": [outer, inner],
         "cull_records": cull_records,
         "enclosed_primitive_ids": [1],
         "enclosing_primitive_ids": [0],
         "kept_primitive_ids": [0],
         "culled_primitive_ids": [1],
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _postprocess_sphere_row(
+    *,
+    primitive_id: int,
+    center: NDArray[np.float64],
+    radius: float,
+) -> dict[str, object]:
+    return {
+        "primitive_id": primitive_id,
+        "kind": "sphere",
+        "center": _vector(center),
+        "radius": float(radius),
+    }
+
+
+def _cross_type_unsupported_postprocess_audit_payload() -> dict[str, object]:
+    outer = _postprocess_obb_row(
+        primitive_id=0,
+        center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+        half_extents=np.array([1.0, 1.0, 1.0], dtype=np.float64),
+        axes=np.eye(3, dtype=np.float64),
+    )
+    inner = _postprocess_sphere_row(
+        primitive_id=1,
+        center=np.array([0.0, 0.0, 0.0], dtype=np.float64),
+        radius=0.25,
+    )
+    return {
+        "audit_scope": "enclosed_primitive_cross_type_boundary_fixture",
+        "fixture_variant": "cross_type_unsupported_boundary",
+        "postprocess_input_source": "explicit_audit_primitives_not_search_trace",
+        "input_primitive_count": 2,
+        "output_primitive_count": 2,
+        "postprocess_policy": "do_not_silently_cull_unsupported_cross_type_boundary",
+        "containment_test_type": "cross_type_containment_unsupported",
+        "cross_type_culling_supported": False,
+        "unsupported_containment_label": "cross_type_enclosure_boundary_not_supported",
+        "top_level_failure_label": False,
+        "input_primitives": [outer, inner],
+        "cull_records": [],
+        "unsupported_records": [
+            {
+                "candidate_primitive_id": 1,
+                "enclosing_primitive_id": 0,
+                "candidate_kind": "sphere",
+                "enclosing_kind": "oriented_bounding_box",
+                "unsupported_reason": "cross_type_containment_not_implemented_for_fixture",
+            }
+        ],
+        "enclosed_primitive_ids": [],
+        "enclosing_primitive_ids": [],
+        "kept_primitive_ids": [0, 1],
+        "culled_primitive_ids": [],
         "package_generation_triggered": False,
         "newton_runtime_triggered": False,
         "real_usd_triggered": False,
@@ -2430,6 +2530,24 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             component_pair_edge_insertion=True,
             component_pair_candidate_cap=2,
             fixture_breadth_batch="paper_fixture_breadth_batch_d",
+        ),
+        _PaperToyCase(
+            case_id="paper_rotated_nested_primitive",
+            description="Batch E rotated nested OBB fixture for enclosed-primitive postprocess breadth",
+            mesh=_nested_primitive_mesh(),
+            face_groups=(frozenset(range(12)),),
+            postprocess_fixture=True,
+            postprocess_audit_variant="rotated_nested_obb",
+            fixture_breadth_batch="paper_fixture_breadth_batch_e",
+        ),
+        _PaperToyCase(
+            case_id="paper_cross_type_enclosure_boundary",
+            description="Batch E cross-type postprocess boundary fixture with explicit unsupported no-cull accounting",
+            mesh=_nested_primitive_mesh(),
+            face_groups=(frozenset(range(12)),),
+            postprocess_fixture=True,
+            postprocess_audit_variant="cross_type_unsupported_boundary",
+            fixture_breadth_batch="paper_fixture_breadth_batch_e",
         ),
     )
 

@@ -157,8 +157,8 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "criterion_id": "enclosed_primitive_postprocess",
         "paper_requirement": "Remove primitives enclosed by other primitives.",
         "current_evidence": (
-            "One explicit identity-axis nested OBB cull fixture exists; generated-search "
-            "postprocess breadth is absent."
+            "Identity-axis and rotated nested OBB cull fixtures exist, and Batch E records "
+            "a conservative cross-type unsupported boundary with no silent cull."
         ),
         "status": "partial_fixture_scope",
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -166,7 +166,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Postprocess cull evidence is one offline canary, not a general containment library."
         ),
-        "next_action": "Expand postprocess fixtures if required by scope audit follow-up.",
+        "next_action": "Run fixture-breadth completion review before stronger wording.",
     },
     {
         "criterion_id": "report_schema_tests_and_records",
@@ -264,10 +264,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_fixture_breadth_gap():
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
 
 
-def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_e():
+def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_completion_review():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_e"
+    assert report["next_required_gate"] == "paper_fixture_breadth_completion_review"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1001,6 +1001,80 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_d():
     assert len(capped["final_active_groups"]) == 3
 
 
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_e():
+    report = build_cpd_paper_offline_report()
+    cases = {case["case_id"]: case for case in report["cases"]}
+
+    expected_case_ids = {
+        "paper_rotated_nested_primitive",
+        "paper_cross_type_enclosure_boundary",
+    }
+    assert expected_case_ids.issubset(cases)
+    for case_id in expected_case_ids:
+        case = cases[case_id]
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_e"
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
+        postprocess = case["postprocess_audit"]
+        assert postprocess["package_generation_triggered"] is False
+        assert postprocess["newton_runtime_triggered"] is False
+        assert postprocess["real_usd_triggered"] is False
+        assert postprocess["benchmark_triggered"] is False
+
+    rotated = cases["paper_rotated_nested_primitive"]["postprocess_audit"]
+    assert rotated["audit_scope"] == "enclosed_primitive_culling_fixture"
+    assert rotated["fixture_variant"] == "rotated_nested_obb"
+    assert rotated["containment_test_type"] == "obb_corners_inside_obb"
+    assert rotated["axis_policy"] == "shared_rotated_axes"
+    assert rotated["input_primitive_count"] == 2
+    assert rotated["output_primitive_count"] == 1
+    assert rotated["culled_primitive_ids"] == [1]
+    assert rotated["kept_primitive_ids"] == [0]
+    assert rotated["rotation_degrees_about_z"] == 30.0
+    assert rotated["rotated_axes_non_identity"] is True
+    assert rotated["input_primitives"][0]["axes"] == rotated["input_primitives"][1]["axes"]
+    assert rotated["input_primitives"][0]["axes"] != [
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 0.0, 1.0],
+    ]
+    assert rotated["cull_records"] == [
+        {
+            "culled_primitive_id": 1,
+            "enclosing_primitive_id": 0,
+            "cull_reason": "primitive_enclosed_by_larger_primitive",
+            "containment_passed": True,
+            "tested_corner_count": 8,
+        }
+    ]
+
+    cross_type = cases["paper_cross_type_enclosure_boundary"]["postprocess_audit"]
+    assert cross_type["audit_scope"] == "enclosed_primitive_cross_type_boundary_fixture"
+    assert cross_type["fixture_variant"] == "cross_type_unsupported_boundary"
+    assert cross_type["containment_test_type"] == "cross_type_containment_unsupported"
+    assert cross_type["cross_type_culling_supported"] is False
+    assert cross_type["unsupported_containment_label"] == (
+        "cross_type_enclosure_boundary_not_supported"
+    )
+    assert cross_type["top_level_failure_label"] is False
+    assert cross_type["input_primitive_count"] == 2
+    assert cross_type["output_primitive_count"] == 2
+    assert cross_type["culled_primitive_ids"] == []
+    assert cross_type["kept_primitive_ids"] == [0, 1]
+    assert cross_type["cull_records"] == []
+    assert cross_type["unsupported_records"] == [
+        {
+            "candidate_primitive_id": 1,
+            "enclosing_primitive_id": 0,
+            "candidate_kind": "sphere",
+            "enclosing_kind": "oriented_bounding_box",
+            "unsupported_reason": "cross_type_containment_not_implemented_for_fixture",
+        }
+    ]
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -1016,7 +1090,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_e"
+    assert report["next_required_gate"] == "paper_fixture_breadth_completion_review"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
         "paper_fixture_breadth_expansion"
     ]
@@ -1054,6 +1128,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
     assert "paper_fixture_breadth_batch_d_component_pair" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_fixture_breadth_batch_e_postprocess" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
 
@@ -1125,6 +1202,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_nonzero_threshold_block",
         "paper_component_pair_multi_candidate_order",
         "paper_component_pair_cap_skipped",
+        "paper_rotated_nested_primitive",
+        "paper_cross_type_enclosure_boundary",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
     for case in cases.values():

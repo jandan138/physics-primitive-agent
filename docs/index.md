@@ -58,10 +58,11 @@ and trapezoidal prism. Batch B previously advanced the next required gate to
 offline fixtures for weighted-priority ordering, deterministic queue tie/eager-stale-prune
 behavior, and one positive finite component-pair threshold block. Batch D component-pair breadth is
 now implemented with multi-candidate component-pair ordering and deterministic capped skipped-pair
-accounting, while keeping the report partial and advancing the next required gate to
-`paper_fixture_breadth_batch_e`. The next code slice is postprocess breadth, not a capped
-bed/Franka rerun unless a separate real package change is introduced and passes full mapping,
-contact-canary, task-gate, and dated-record gates. The
+accounting. Batch E postprocess breadth is now implemented with rotated nested OBB containment and
+explicit cross-type unsupported no-cull accounting, while keeping the report partial and advancing
+the next required gate to `paper_fixture_breadth_completion_review`. The next code slice is a
+fixture-breadth completion review, not a capped bed/Franka rerun unless a separate real package
+change is introduced and passes full mapping, contact-canary, task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
 collision-quality evidence. Keep `capped_cylinder`, `frustum`, and
 `trapezoidal_prism` in the offline paper-alignment lane until separate mapping and diagnostic
@@ -76,7 +77,8 @@ records exist.
   expansion.
 - [CPD paper fixture-breadth expansion plan](reference/cpd-paper-fixture-breadth-expansion-plan.md):
   documentation-only plan that maps the nine blocking scope-audit rows to future synthetic
-  fixture batches; Batch A, Batch B, Batch C, and Batch D are now implemented and Batch E is next.
+  fixture batches; Batch A, Batch B, Batch C, Batch D, and Batch E are now implemented and
+  completion review is next.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -127,6 +129,8 @@ records exist.
   dated implementation record for the cost/search/stop fixture-breadth slice.
 - [CPD paper fixture-breadth Batch D record](records/2026-05-16-cpd-paper-fixture-breadth-batch-d.md):
   dated implementation record for the component-pair fixture-breadth slice.
+- [CPD paper fixture-breadth Batch E record](records/2026-05-16-cpd-paper-fixture-breadth-batch-e.md):
+  dated implementation record for the postprocess fixture-breadth slice.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
   asset permission-evidence validation without changing reproduction or benchmark evidence.
@@ -464,9 +468,11 @@ records exist.
   cost/search/stop breadth cases for weighted-priority ordering, equal-cost queue
   tie/eager-stale-prune behavior, and one positive finite component-pair threshold block, plus
   Batch D component-pair breadth cases for multi-candidate ordering and capped skipped-pair
-  accounting. It also records a scope-audit table with `decision: remain_partial`, reports
-  `next_required_gate: paper_fixture_breadth_batch_e`, and does not run Newton, real USD, package
-  generation, or benchmarks.
+  accounting, plus Batch E postprocess breadth cases for rotated nested OBB containment and
+  explicit cross-type unsupported no-cull accounting. It also records a scope-audit table with
+  `decision: remain_partial`, reports
+  `next_required_gate: paper_fixture_breadth_completion_review`, and does not run Newton, real
+  USD, package generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.

@@ -37,11 +37,11 @@ The scope audit keeps these nine criteria blocking before stronger offline wordi
 | `source_face_intake_policy` | Current non-triangle source-face evidence is one quad and one convex five-vertex polygon. |
 | `operator_q_audit` | Operator evidence exists for named fixtures, but not enough degeneracy or source-policy breadth. |
 | `primitive_vocabulary_and_fit` | All six paper primitive names have audit rows, but fitting breadth is limited. |
-| `paper_collapse_cost_and_weighting` | Cost evidence is still toy-scoped after Batch D, even though weighted ordering, positive finite threshold, and component-pair candidate accounting now exist. |
-| `greedy_priority_queue_trace` | Queue traces remain toy-scoped after Batch D and still need broader postprocess breadth. |
-| `target_count_and_threshold_stop` | Target and threshold stops remain toy-scoped after Batch D, including one positive finite component-pair threshold fixture and one capped skipped-pair fixture. |
+| `paper_collapse_cost_and_weighting` | Cost evidence is still toy-scoped after Batch E, even though weighted ordering, positive finite threshold, and component-pair candidate accounting now exist. |
+| `greedy_priority_queue_trace` | Queue traces remain toy-scoped after Batch E and still need completion review before stronger wording. |
+| `target_count_and_threshold_stop` | Target and threshold stops remain toy-scoped after Batch E, including one positive finite component-pair threshold fixture and one capped skipped-pair fixture. |
 | `component_pair_edge_handling` | Component-pair evidence now includes accepted, blocked, multi-candidate, and capped skipped-pair toy cases only. |
-| `enclosed_primitive_postprocess` | Postprocess evidence is one explicit identity-axis OBB canary. |
+| `enclosed_primitive_postprocess` | Postprocess evidence now includes identity-axis and rotated OBB cull canaries plus an explicit unsupported cross-type no-cull boundary. |
 
 ## Fixture Batches
 
@@ -127,12 +127,22 @@ paper_fixture_breadth_batch_d
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
-The next code slice should be:
+Batch E is now implemented in `cpd_paper_offline_report`:
 
 ```text
 paper_fixture_breadth_batch_e
--> postprocess breadth fixtures
+-> `paper_rotated_nested_primitive`
+-> `paper_cross_type_enclosure_boundary`
 -> report remains partial
+-> no package generation, Newton, real USD, or benchmark work
+```
+
+The next code slice should be:
+
+```text
+paper_fixture_breadth_completion_review
+-> review fixture-breadth evidence against the scope-audit blockers
+-> report remains partial unless a narrower claim is explicitly justified
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
@@ -142,7 +152,9 @@ because it broadens primitive-fit evidence before cost/search fixtures start com
 choices. Batch C stays important because it checks weighted-priority ordering, deterministic queue
 ties/eager-stale-prune events, and one positive finite threshold block before broader component-pair
 cases. Batch D stays important because it checks multiple component-pair candidates and capped
-skipped-pair accounting before postprocess breadth.
+skipped-pair accounting before postprocess breadth. Batch E stays important because it checks
+rotated OBB containment and explicitly records the unsupported cross-type boundary without silently
+culling.
 
 ## Claim Boundary
 
@@ -151,13 +163,13 @@ This plan supports only this statement:
 ```text
 The repository has an offline-only fixture-breadth expansion plan and a Batch A synthetic
 source/preprocess/intake/operator implementation plus a Batch B primitive-fit implementation
-plus a Batch C cost/search/stop implementation plus a Batch D component-pair implementation inside
-the partial paper report.
+plus a Batch C cost/search/stop implementation plus a Batch D component-pair implementation plus a
+Batch E postprocess implementation inside the partial paper report.
 ```
 
 It does not support:
 
-- implemented Batch E fixture breadth;
+- `paper_faithful_offline` or a fixture-breadth completion review decision;
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
 - package generation;

@@ -254,6 +254,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Fixture Breadth Batch D](2026-05-16-cpd-paper-fixture-breadth-batch-d.md):
   partial command-only component-pair fixture-breadth audit inside
   `cpd_paper_offline_report`.
+- [2026-05-16 CPD Paper Fixture Breadth Batch E](2026-05-16-cpd-paper-fixture-breadth-batch-e.md):
+  partial command-only postprocess fixture-breadth audit inside
+  `cpd_paper_offline_report`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
