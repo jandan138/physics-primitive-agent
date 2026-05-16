@@ -67,8 +67,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   source-policy stage the follow-up gate was
   `paper_generalization_batch_b_primitive_fit_engine`. The report now also closes only that
   primitive-fit engine gate with an offline matrix over deterministic in-memory
-  probes for all six paper primitive names and advances the current next gate to
-  `paper_generalization_batch_c_search_engine`. The report
+  probes for all six paper primitive names. The report now also closes only the search-engine gate
+  with an offline search-trace matrix and advances the current next gate to
+  `paper_generalization_batch_d_postprocess_policy`. The report
   remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
@@ -126,8 +127,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_generalization_batch_c_search_engine` after the source-policy and primitive-fit engine
-  matrices.
+  `paper_generalization_batch_d_postprocess_policy` after the source-policy, primitive-fit
+  engine, and search-engine matrices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -141,8 +142,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `paper_generalization_batch_b_primitive_fit_engine`, an offline report-only primitive-fit engine
   matrix over deterministic in-memory probes for all six paper primitive names. It records
   candidate generation, selected-candidate accounting, containment checks, finite numeric fields,
-  and the offline-only boundary for paper-only primitives, then advances the next gate to
-  `paper_generalization_batch_c_search_engine`. It is not robust primitive fitting, package
+  and the offline-only boundary for paper-only primitives. It is not robust primitive fitting,
+  package generation, Newton runtime execution, real-USD asset evidence, benchmark evidence,
+  `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
+  readiness, or safety certification.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_generalization_batch_c_search_engine`, an offline report-only search-trace matrix over
+  existing deterministic topology queue, weighted-priority, equal-cost tie, threshold-stop, and
+  component-pair traces. It closes only that search-engine gate and advances the next gate to
+  `paper_generalization_batch_d_postprocess_policy`. It is not a generalized optimizer, package
   generation, Newton runtime execution, real-USD asset evidence, benchmark evidence,
   `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
   readiness, or safety certification.

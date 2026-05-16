@@ -387,8 +387,19 @@ experiments:
       generalization implementation gate.
     claims_supported:
       - partial offline primitive-fit engine generalization matrix for deterministic synthetic probes only
-      - records a closed paper_generalization_batch_b_primitive_fit_engine gate while keeping paper_generalization_batch_c_search_engine and later offline generalization batches missing
+      - records a closed paper_generalization_batch_b_primitive_fit_engine gate; at that stage paper_generalization_batch_c_search_engine and later offline generalization batches were still missing
       - no robust primitive-fitting claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-generalization-batch-c-search-engine
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-generalization-batch-c-search-engine.md
+    purpose: >
+      Add an offline report-only search-engine matrix for the third CPD paper
+      generalization implementation gate.
+    claims_supported:
+      - partial offline search-engine generalization matrix for deterministic synthetic traces only
+      - records a closed paper_generalization_batch_c_search_engine gate while keeping paper_generalization_batch_d_postprocess_policy and later offline generalization batches missing
+      - no generalized optimizer claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

@@ -61,9 +61,10 @@ _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT = (
     "paper_generalization_batch_b_primitive_fit_engine"
 )
 _PAPER_GENERALIZATION_BATCH_C_SEARCH = "paper_generalization_batch_c_search_engine"
+_PAPER_GENERALIZATION_BATCH_D_POSTPROCESS = "paper_generalization_batch_d_postprocess_policy"
 _PAPER_GENERALIZATION_NEXT_ACTION = (
-    "Proceed to paper_generalization_batch_c_search_engine after the "
-    "primitive-fit engine generalization matrix; keep stronger wording blocked."
+    "Proceed to paper_generalization_batch_d_postprocess_policy after the "
+    "search-engine generalization matrix; keep stronger wording blocked."
 )
 
 
@@ -537,7 +538,7 @@ def _paper_faithful_offline_generalization_batches() -> list[dict[str, object]]:
             "required_output": "primitive_fit_engine_generalization_report",
         },
         {
-            "batch_id": "paper_generalization_batch_c_search_engine",
+            "batch_id": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
             "purpose": "generalize_cost_queue_threshold_and_component_pair_search",
             "primary_criteria": [
                 "paper_collapse_cost_and_weighting",
@@ -549,7 +550,7 @@ def _paper_faithful_offline_generalization_batches() -> list[dict[str, object]]:
             "required_output": "search_engine_generalization_report",
         },
         {
-            "batch_id": "paper_generalization_batch_d_postprocess_policy",
+            "batch_id": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
             "purpose": "generalize_enclosed_primitive_postprocess_policy",
             "primary_criteria": [
                 "enclosed_primitive_postprocess",
@@ -595,22 +596,32 @@ def _paper_remaining_generalization_gates_after_primitive_fit() -> list[str]:
     )
 
 
+def _paper_remaining_generalization_gates_after_search() -> list[str]:
+    return _paper_remaining_generalization_gates_after(
+        {
+            _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
+            _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+            _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+        }
+    )
+
+
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
     planned_batches = _paper_faithful_offline_generalization_batches()
     remaining_generalization_gates = (
-        _paper_remaining_generalization_gates_after_primitive_fit()
+        _paper_remaining_generalization_gates_after_search()
     )
     return {
         "plan_scope": "offline_algorithm_generalization_beyond_named_toy_fixtures",
         "closed_gate": "paper_faithful_offline_generalization_plan",
         "decision": "remain_partial",
         "decision_reason": (
-            "primitive_fit_engine_generalization_complete_search_engine_missing"
+            "search_engine_generalization_complete_postprocess_policy_missing"
         ),
         "generalization_plan_complete": True,
         "paper_faithful_offline_allowed": False,
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
-        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+        "first_unresolved_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
         "planned_batches": planned_batches,
         "remaining_generalization_gates": remaining_generalization_gates,
         "blocked_runtime_gates": [
@@ -786,6 +797,153 @@ def _paper_primitive_fit_engine_generalization_payload() -> dict[str, object]:
     }
 
 
+def _paper_search_engine_generalization_row_specs() -> list[tuple[str, str]]:
+    return [
+        ("topology_chain_target_count", "paper_three_face_chain"),
+        ("weighted_priority_over_base_cost", "paper_branching_cost_order"),
+        ("equal_cost_queue_tie", "paper_equal_cost_queue_tie"),
+        ("component_pair_threshold_disabled_accept", "paper_disconnected_components"),
+        ("component_pair_zero_threshold_block", "paper_component_pair_threshold_blocked"),
+        ("component_pair_positive_threshold_block", "paper_nonzero_threshold_block"),
+        (
+            "component_pair_multi_candidate_order",
+            "paper_component_pair_multi_candidate_order",
+        ),
+        ("component_pair_candidate_cap_skipped", "paper_component_pair_cap_skipped"),
+    ]
+
+
+def _first_accepted_queue_key(trace: dict[str, object]) -> list[object] | None:
+    for event in trace["events"]:
+        if bool(event["accepted"]):
+            return list(event["queue_key"])
+    return None
+
+
+def _threshold_metric_from_trace(trace: dict[str, object]) -> str | None:
+    for event in trace["events"]:
+        if event.get("event_kind") == "blocked_by_threshold":
+            return str(event["threshold_metric"])
+    return None
+
+
+def _search_trace_summary_row(
+    row_id: str,
+    case_payload: dict[str, object],
+) -> dict[str, object]:
+    trace = case_payload["collapse_trace"]
+    return {
+        "row_id": row_id,
+        "evidence_case_id": case_payload["case_id"],
+        "row_status": "implemented_offline_search_trace_fixture",
+        "trace_scope": trace["trace_scope"],
+        "priority_queue_policy": trace["priority_queue_policy"],
+        "target_primitive_count": trace["target_primitive_count"],
+        "initial_edge_count": trace["initial_edge_count"],
+        "initial_candidate_count": len(trace["initial_candidates"]),
+        "component_pair_edge_insertion_triggered": trace[
+            "component_pair_edge_insertion_triggered"
+        ],
+        "topology_queue_exhausted_before_component_pair_insertion": trace[
+            "topology_queue_exhausted_before_component_pair_insertion"
+        ],
+        "component_pair_candidate_count": trace["component_pair_candidate_count"],
+        "component_pair_available_pair_count": trace[
+            "component_pair_available_pair_count"
+        ],
+        "component_pair_candidate_cap": trace["component_pair_candidate_cap"],
+        "skipped_component_pair_count": trace["skipped_component_pair_count"],
+        "threshold_policy": trace["threshold_policy"],
+        "excess_volume_threshold": trace["excess_volume_threshold"],
+        "threshold_metric": _threshold_metric_from_trace(trace),
+        "accepted_merge_count": trace["accepted_merge_count"],
+        "blocked_merge_count": trace["blocked_merge_count"],
+        "stale_entry_skipped_count": trace["stale_entry_skipped_count"],
+        "event_count": len(trace["events"]),
+        "event_kinds": [event["event_kind"] for event in trace["events"]],
+        "first_accepted_queue_key": _first_accepted_queue_key(trace),
+        "stop_reason": trace["stop_reason"],
+        "final_active_groups": trace["final_active_groups"],
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
+def _paper_search_engine_generalization_payload(
+    cases: list[dict[str, object]],
+) -> dict[str, object]:
+    remaining_generalization_gates = _paper_remaining_generalization_gates_after_search()
+    cases_by_id = {str(case["case_id"]): case for case in cases}
+    matrix = [
+        _search_trace_summary_row(row_id, cases_by_id[case_id])
+        for row_id, case_id in _paper_search_engine_generalization_row_specs()
+    ]
+    return {
+        "gate_id": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+        "gate_status": "implemented_offline_report_only_partial",
+        "closed_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "search_engine_generalization_complete_postprocess_policy_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "source_scope": "deterministic_in_memory_search_trace_probes",
+        "implementation_boundary": "offline_report_only_no_package_or_newton",
+        "search_engine_contract": {
+            "input_contract": (
+                "TriangleMesh_plus_initial_face_groups_target_count_and_search_policy"
+            ),
+            "primary_policy": "paper_greedy_min_weighted_priority_cost_no_lookahead",
+            "cost_fields": ["paper_base_cost", "weighted_priority_cost"],
+            "queue_key_fields": [
+                "weighted_priority_cost",
+                "paper_base_cost",
+                "source_faces_left",
+                "source_faces_right",
+                "insertion_order",
+            ],
+            "candidate_sources": ["topology", "component_pair"],
+            "component_pair_insertion_policy": (
+                "insert_when_topology_queue_exhausted_before_target"
+            ),
+            "threshold_metric": "paper_base_cost",
+            "stop_reasons": [
+                "target_count_reached",
+                "all_remaining_edges_blocked_by_threshold",
+                "queue_exhausted_before_target_count",
+            ],
+            "lookahead_used": False,
+            "package_generation_triggered": False,
+            "newton_runtime_triggered": False,
+        },
+        "search_trace_matrix": matrix,
+        "coverage_summary": {
+            "search_trace_row_count": len(matrix),
+            "topology_trace_row_count": sum(
+                row["trace_scope"] == "topology_priority_queue_trace_fixture"
+                for row in matrix
+            ),
+            "component_pair_trace_row_count": sum(
+                row["trace_scope"] == "component_pair_priority_queue_trace_fixture"
+                for row in matrix
+            ),
+            "threshold_blocked_row_count": sum(
+                row["threshold_metric"] == "paper_base_cost" for row in matrix
+            ),
+            "closed_gate_count": 3,
+            "remaining_generalization_gate_count": len(remaining_generalization_gates),
+        },
+        "remaining_gaps": remaining_generalization_gates,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -932,7 +1090,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = (
-        _paper_remaining_generalization_gates_after_primitive_fit()
+        _paper_remaining_generalization_gates_after_search()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -951,7 +1109,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": _PAPER_GENERALIZATION_BATCH_C_SEARCH,
+        "next_required_gate": _PAPER_GENERALIZATION_BATCH_D_POSTPROCESS,
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -980,6 +1138,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             "implemented_generalization_scope": [
                 _PAPER_GENERALIZATION_BATCH_A_SOURCE_POLICY,
                 _PAPER_GENERALIZATION_BATCH_B_PRIMITIVE_FIT,
+                _PAPER_GENERALIZATION_BATCH_C_SEARCH,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -997,6 +1156,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_generalization_batch_b_primitive_fit_engine": (
             _paper_primitive_fit_engine_generalization_payload()
+        ),
+        "paper_generalization_batch_c_search_engine": (
+            _paper_search_engine_generalization_payload(cases)
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

@@ -49,11 +49,14 @@ claiming robust mesh cleanup or general polygon intake. It now also includes
 matrix over deterministic in-memory probes for all six paper primitive names. That matrix records
 candidate generation, selected-candidate accounting, containment checks, finite numeric fields,
 and the offline-only boundary for paper-only primitives without adding package generation or
-Newton runtime execution. The next paper-lane gate is now
-`paper_generalization_batch_c_search_engine`, not `paper_faithful_offline` support. These
-source-policy and primitive-fit-engine slices do not support full CPD reproduction, package
-generation, Newton runtime execution, real-USD evidence, collision-quality evidence, benchmark
-evidence, deployment readiness, or safety certification. See
+Newton runtime execution. It now also includes
+`paper_generalization_batch_c_search_engine`, a command-only offline search-trace matrix that
+summarizes existing topology queue, weighted-priority, equal-cost tie, threshold-stop, and
+component-pair traces without adding a new optimizer. The next paper-lane gate is now
+`paper_generalization_batch_d_postprocess_policy`, not `paper_faithful_offline` support. These
+source-policy, primitive-fit-engine, and search-engine slices do not support full CPD
+reproduction, package generation, Newton runtime execution, real-USD evidence, collision-quality
+evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

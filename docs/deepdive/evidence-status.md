@@ -146,8 +146,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_generalization_batch_c_search_engine` after the source-policy and primitive-fit engine
-  matrices.
+  `paper_generalization_batch_d_postprocess_policy` after the source-policy, primitive-fit
+  engine, and search-engine matrices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -164,8 +164,17 @@ This file separates current evidence from future claims. See [message-map.md](me
   probes for all six paper primitive names. The matrix records candidate generation,
   selected-candidate accounting, containment checks, finite numeric fields, and the offline-only
   boundary for paper-only primitives. The report remains partial, keeps
-  `paper_faithful_offline_supported: false`, and advances the next required gate to
+  `paper_faithful_offline_supported: false`, and previously advanced the next required gate to
   `paper_generalization_batch_c_search_engine`. This is not robust primitive fitting,
+  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
+  real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
+  safety certification.
+- The current executable surface can also run
+  `paper_generalization_batch_c_search_engine` inside `cpd_paper_offline_report`. It closes only
+  that search-engine gate by adding an offline matrix over existing deterministic topology queue,
+  weighted-priority, equal-cost tie, threshold-stop, and component-pair traces. The report remains
+  partial, keeps `paper_faithful_offline_supported: false`, and advances the next required gate to
+  `paper_generalization_batch_d_postprocess_policy`. This is not a generalized optimizer,
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
   safety certification.

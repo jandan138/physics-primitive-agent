@@ -1528,11 +1528,19 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_generalization_batch_c_search_engine_missing",
         "paper_generalization_batch_d_postprocess_policy_missing",
         "paper_generalization_batch_e_package_boundary_readiness_missing",
     ]
-    assert payload["next_required_gate"] == "paper_generalization_batch_c_search_engine"
+    assert payload["next_required_gate"] == "paper_generalization_batch_d_postprocess_policy"
+    assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
+        "paper_generalization_batch_a_source_policy",
+        "paper_generalization_batch_b_primitive_fit_engine",
+        "paper_generalization_batch_c_search_engine",
+    ]
+    assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
+        "paper_generalization_batch_d_postprocess_policy",
+        "paper_generalization_batch_e_package_boundary_readiness",
+    ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1541,7 +1549,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert plan["closed_gate"] == "paper_faithful_offline_generalization_plan"
     assert plan["generalization_plan_complete"] is True
     assert plan["paper_faithful_offline_allowed"] is False
-    assert plan["next_required_gate"] == "paper_generalization_batch_c_search_engine"
+    assert plan["next_required_gate"] == "paper_generalization_batch_d_postprocess_policy"
     assert [batch["batch_id"] for batch in plan["planned_batches"]] == [
         "paper_generalization_batch_a_source_policy",
         "paper_generalization_batch_b_primitive_fit_engine",
@@ -1598,6 +1606,30 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert primitive_fit["newton_runtime_triggered"] is False
     assert primitive_fit["real_usd_triggered"] is False
     assert primitive_fit["benchmark_triggered"] is False
+    search_engine = payload["paper_generalization_batch_c_search_engine"]
+    assert search_engine["gate_id"] == "paper_generalization_batch_c_search_engine"
+    assert search_engine["gate_status"] == "implemented_offline_report_only_partial"
+    assert search_engine["closed_gate"] == "paper_generalization_batch_c_search_engine"
+    assert (
+        search_engine["next_required_gate"]
+        == "paper_generalization_batch_d_postprocess_policy"
+    )
+    assert search_engine["decision"] == "remain_partial"
+    assert search_engine["paper_faithful_offline_allowed"] is False
+    assert (
+        search_engine["implementation_boundary"]
+        == "offline_report_only_no_package_or_newton"
+    )
+    assert search_engine["coverage_summary"]["search_trace_row_count"] == 8
+    assert search_engine["coverage_summary"]["closed_gate_count"] == 3
+    assert search_engine["coverage_summary"]["remaining_generalization_gate_count"] == 2
+    assert len(search_engine["search_trace_matrix"]) == 8
+    assert search_engine["package_generation_triggered"] is False
+    assert search_engine["newton_runtime_triggered"] is False
+    assert search_engine["real_usd_triggered"] is False
+    assert search_engine["benchmark_triggered"] is False
+    assert "paper_generalization_batch_d_postprocess_policy" not in payload
+    assert "paper_generalization_batch_e_package_boundary_readiness" not in payload
     review = payload["paper_fixture_breadth_completion_review"]
     assert review["closed_gate"] == "paper_fixture_breadth_expansion"
     assert review["fixture_breadth_plan_complete"] is True

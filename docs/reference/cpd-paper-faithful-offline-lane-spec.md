@@ -298,8 +298,7 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure labels after the primitive-fit engine generalization matrix:
-  `paper_generalization_batch_c_search_engine_missing`,
+- the current top-level failure labels after the search-engine generalization matrix:
   `paper_generalization_batch_d_postprocess_policy_missing`, and
   `paper_generalization_batch_e_package_boundary_readiness_missing`.
 
@@ -593,7 +592,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> next after the primitive-fit engine matrix: paper_generalization_batch_c_search_engine
+-> next after the search-engine matrix: paper_generalization_batch_d_postprocess_policy
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -622,5 +621,13 @@ paper primitive names, including candidate generation, selected-candidate accoun
 checks, finite numeric fields, and offline-only boundaries for paper-only primitives. It is not
 robust primitive fitting, package generation, Newton runtime execution, real-USD evidence,
 benchmark evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality
-evidence, deployment readiness, or safety certification. The next current gate is
-`paper_generalization_batch_c_search_engine`.
+evidence, deployment readiness, or safety certification. It led to the now-implemented
+search-engine generalization matrix.
+
+`paper_generalization_batch_c_search_engine` closes only the search-engine generalization gate. It
+records an offline matrix over existing deterministic topology queue, weighted-priority,
+equal-cost tie, threshold-stop, and component-pair traces. It is not a generalized optimizer,
+package generation, Newton runtime execution, real-USD evidence, benchmark evidence,
+`paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
+readiness, or safety certification. The next current gate is
+`paper_generalization_batch_d_postprocess_policy`.
