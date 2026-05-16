@@ -345,6 +345,17 @@ experiments:
       - partial fixture-scoped offline postprocess Batch E audit only
       - records rotated nested OBB culling, explicit unsupported cross-type no-cull accounting, and the next gate paper_fixture_breadth_completion_review
       - no paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, safety-certification claim, or general containment-library claim
+  - id: cpd-paper-fixture-breadth-completion-review
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-fixture-breadth-completion-review.md
+    purpose: >
+      Add a command-only completion review for planned CPD paper fixture-breadth
+      Batches A-E.
+    claims_supported:
+      - partial fixture-scoped completion review for planned synthetic Batch A-E breadth only
+      - records the closed paper_fixture_breadth_expansion gate and the next gate paper_faithful_offline_generalization_plan
+      - no paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

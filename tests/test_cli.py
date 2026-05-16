@@ -1527,12 +1527,30 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["status"] == "partial"
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
-    assert payload["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert payload["next_required_gate"] == "paper_fixture_breadth_completion_review"
+    assert payload["failure_labels"] == [
+        "paper_faithful_offline_generalization_missing"
+    ]
+    assert payload["next_required_gate"] == "paper_faithful_offline_generalization_plan"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
     assert payload["benchmark_triggered"] is False
+    review = payload["paper_fixture_breadth_completion_review"]
+    assert review["closed_gate"] == "paper_fixture_breadth_expansion"
+    assert review["fixture_breadth_plan_complete"] is True
+    assert review["paper_faithful_offline_allowed"] is False
+    assert review["next_required_gate"] == "paper_faithful_offline_generalization_plan"
+    assert [batch["batch_id"] for batch in review["completed_batches"]] == [
+        "paper_fixture_breadth_batch_a",
+        "paper_fixture_breadth_batch_b",
+        "paper_fixture_breadth_batch_c",
+        "paper_fixture_breadth_batch_d",
+        "paper_fixture_breadth_batch_e",
+    ]
+    assert review["package_generation_triggered"] is False
+    assert review["newton_runtime_triggered"] is False
+    assert review["real_usd_triggered"] is False
+    assert review["benchmark_triggered"] is False
     scope_audit = payload["paper_faithful_offline_scope_audit"]
     assert scope_audit["decision"] == "remain_partial"
     assert scope_audit["paper_faithful_offline_allowed"] is False

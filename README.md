@@ -37,8 +37,11 @@ comparison now also emits candidate weighted-volume audit tables that explain wh
 `cone`, and `ellipsoid` win on the named toy fixtures; this is toy diagnostic accounting, not a
 real-USD or collision-quality claim. The partial offline CPD paper report now also includes
 fixture-breadth Batch A source/preprocess, Batch B primitive-fit, Batch C cost/search/stop,
-Batch D component-pair, and Batch E postprocess accounting, advancing the next paper-lane gate to
-fixture-breadth completion review while keeping the report partial and offline-only. See
+Batch D component-pair, Batch E postprocess accounting, and a command-only synthetic
+fixture-breadth completion review for planned Batches A-E. The report remains partial,
+`paper_faithful_offline_supported` remains false, and the next paper-lane gate is the
+planning-only `paper_faithful_offline_generalization_plan`, not `paper_faithful_offline`
+support. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

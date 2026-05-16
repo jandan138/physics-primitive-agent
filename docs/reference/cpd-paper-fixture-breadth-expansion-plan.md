@@ -38,7 +38,7 @@ The scope audit keeps these nine criteria blocking before stronger offline wordi
 | `operator_q_audit` | Operator evidence exists for named fixtures, but not enough degeneracy or source-policy breadth. |
 | `primitive_vocabulary_and_fit` | All six paper primitive names have audit rows, but fitting breadth is limited. |
 | `paper_collapse_cost_and_weighting` | Cost evidence is still toy-scoped after Batch E, even though weighted ordering, positive finite threshold, and component-pair candidate accounting now exist. |
-| `greedy_priority_queue_trace` | Queue traces remain toy-scoped after Batch E and still need completion review before stronger wording. |
+| `greedy_priority_queue_trace` | Queue traces remain toy-scoped after Batch E and completion review; they still need generalization beyond named synthetic fixtures before stronger wording. |
 | `target_count_and_threshold_stop` | Target and threshold stops remain toy-scoped after Batch E, including one positive finite component-pair threshold fixture and one capped skipped-pair fixture. |
 | `component_pair_edge_handling` | Component-pair evidence now includes accepted, blocked, multi-candidate, and capped skipped-pair toy cases only. |
 | `enclosed_primitive_postprocess` | Postprocess evidence now includes identity-axis and rotated OBB cull canaries plus an explicit unsupported cross-type no-cull boundary. |
@@ -137,12 +137,22 @@ paper_fixture_breadth_batch_e
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
-The next code slice should be:
+The fixture-breadth completion review is now implemented:
 
 ```text
 paper_fixture_breadth_completion_review
 -> review fixture-breadth evidence against the scope-audit blockers
--> report remains partial unless a narrower claim is explicitly justified
+-> report remains partial
+-> paper_faithful_offline_supported remains false
+-> no package generation, Newton, real USD, or benchmark work
+```
+
+The next code slice should be:
+
+```text
+paper_faithful_offline_generalization_plan
+-> planning-only gate for broadening the offline algorithm beyond named toy fixtures
+-> not paper_faithful_offline support
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
@@ -164,12 +174,12 @@ This plan supports only this statement:
 The repository has an offline-only fixture-breadth expansion plan and a Batch A synthetic
 source/preprocess/intake/operator implementation plus a Batch B primitive-fit implementation
 plus a Batch C cost/search/stop implementation plus a Batch D component-pair implementation plus a
-Batch E postprocess implementation inside the partial paper report.
+Batch E postprocess implementation plus a command-only synthetic fixture-breadth completion review
+inside the partial paper report.
 ```
 
 It does not support:
 
-- `paper_faithful_offline` or a fixture-breadth completion review decision;
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
 - package generation;

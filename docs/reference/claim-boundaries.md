@@ -61,8 +61,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   report now also includes a `paper_faithful_offline_scope_audit` criteria table with
   `decision: remain_partial`, non-blocking package/Newton/real-USD/benchmark boundary rows, and
   prior scope-audit gate `paper_fixture_breadth_expansion_plan`; later fixture-breadth slices below
-  advance the current report gate to `paper_fixture_breadth_completion_review`. The report remains
-  `status: partial` with
+  close only the planned Batch A-E breadth gate and advance the current report gate to the
+  planning-only `paper_faithful_offline_generalization_plan`. The report remains `status: partial`
+  with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
@@ -102,9 +103,17 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   support, real-USD evidence, benchmark evidence, collision-quality validation, deployment
   readiness, or safety certification.
 - The partial `cpd_paper_offline_report` includes the Batch E postprocess fixture-breadth cases:
-  `paper_rotated_nested_primitive` and `paper_cross_type_enclosure_boundary`. The report advances
-  its next required gate to `paper_fixture_breadth_completion_review`. This is synthetic offline
-  rotated OBB containment and unsupported cross-type no-cull accounting only. It does not support
+  `paper_rotated_nested_primitive` and `paper_cross_type_enclosure_boundary`. This is synthetic
+  offline rotated OBB containment and unsupported cross-type no-cull accounting only. It does not
+  support `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime
+  support, real-USD evidence, benchmark evidence, collision-quality validation, deployment
+  readiness, or safety certification.
+- The partial `cpd_paper_offline_report` includes a command-only synthetic fixture-breadth
+  completion review for planned Batches A-E. It closes only `paper_fixture_breadth_expansion`,
+  keeps `paper_faithful_offline_supported: false`, and advances the next gate to
+  `paper_faithful_offline_generalization_plan`. That next gate is planning-only for broadening the
+  offline algorithm beyond named toy fixtures; it is not `paper_faithful_offline` support. This
+  review does not support
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
   safety certification.

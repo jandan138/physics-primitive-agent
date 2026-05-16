@@ -130,10 +130,16 @@ This file separates current evidence from future claims. See [message-map.md](me
   benchmark evidence, or collision-quality validation.
 - The current executable surface can run the Batch E fixture-breadth postprocess slice inside
   `cpd_paper_offline_report`, adding `paper_rotated_nested_primitive` and
-  `paper_cross_type_enclosure_boundary` as synthetic offline cases. The report remains partial and
-  points the next gate to `paper_fixture_breadth_completion_review`; this is
+  `paper_cross_type_enclosure_boundary` as synthetic offline cases. This is
   not `paper_faithful_offline`, package generation, Newton runtime support, real-USD evidence,
   benchmark evidence, or collision-quality validation.
+- The current executable surface can run the command-only synthetic fixture-breadth completion
+  review inside `cpd_paper_offline_report`. It closes only the planned Batch A-E fixture-breadth
+  gate, keeps the report partial, keeps `paper_faithful_offline_supported: false`, and advances
+  the next gate to the planning-only `paper_faithful_offline_generalization_plan`. This is not
+  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
+  real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
+  safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

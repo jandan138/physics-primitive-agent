@@ -135,7 +135,8 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "Exact-overlap toy preprocessing only; no robust arbitrary mesh cleanup."
             ),
             "next_action": (
-                "Expand preprocessing/source-mesh fixture breadth before stronger wording."
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
             ),
         },
         {
@@ -153,7 +154,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Source-face intake is toy-scoped, not a general polygon mesh implementation."
             ),
-            "next_action": "Add broader source-face cases only after a fixture-breadth plan.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "operator_q_audit",
@@ -170,7 +174,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Operator evidence is named-fixture audit data, not full paper decomposition."
             ),
-            "next_action": "Expand operator degeneracy and fixture coverage.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "primitive_vocabulary_and_fit",
@@ -190,7 +197,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "Primitive rows are audit rows, not Newton runtime support or "
                 "collision-quality evidence."
             ),
-            "next_action": "Expand fitting fixtures and paper-specific invariants.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "paper_collapse_cost_and_weighting",
@@ -207,7 +217,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
             "blocking_for_paper_faithful_offline": True,
             "claim_boundary": "Cost rows are toy accounting, not optimizer or benchmark evidence.",
-            "next_action": "Broaden merge-cost fixtures and threshold cases.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "greedy_priority_queue_trace",
@@ -226,7 +239,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Search traces are toy-scoped and do not prove merge-policy superiority."
             ),
-            "next_action": "Expand priority-queue fixtures before stronger wording.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "target_count_and_threshold_stop",
@@ -242,7 +258,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
             "blocking_for_paper_faithful_offline": True,
             "claim_boundary": "Threshold evidence is narrow toy accounting.",
-            "next_action": "Add fixture-breadth plan for target/threshold combinations.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "component_pair_edge_handling",
@@ -261,7 +280,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Component merging evidence is diagnostic accounting, not broad asset evidence."
             ),
-            "next_action": "Continue with postprocess fixture breadth before stronger wording.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "enclosed_primitive_postprocess",
@@ -276,7 +298,10 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
             "claim_boundary": (
                 "Postprocess cull evidence is one offline canary, not a general containment library."
             ),
-            "next_action": "Run fixture-breadth completion review before stronger wording.",
+            "next_action": (
+                "Use paper_faithful_offline_generalization_plan to broaden beyond "
+                "named synthetic fixtures before stronger wording."
+            ),
         },
         {
             "criterion_id": "report_schema_tests_and_records",
@@ -394,12 +419,117 @@ def _paper_faithful_offline_scope_audit_payload() -> dict[str, object]:
     }
 
 
+def _paper_fixture_breadth_completed_batches() -> list[dict[str, object]]:
+    return [
+        {
+            "batch_id": "paper_fixture_breadth_batch_a",
+            "purpose": "source_preprocess_intake_operator_breadth",
+            "case_ids": [
+                "paper_mixed_face_preprocess_operator",
+                "paper_degenerate_preprocess_face_drop",
+                "paper_concave_polygon_rejected",
+            ],
+            "primary_criteria": [
+                "source_mesh_and_preprocessing_policy",
+                "source_face_intake_policy",
+                "operator_q_audit",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_b",
+            "purpose": "primitive_fit_breadth",
+            "case_ids": [
+                "paper_rotated_box_fit",
+                "paper_offset_sphere_fit",
+                "paper_off_axis_capsule_fit",
+                "paper_flat_capped_cylinder_axis_fit",
+                "paper_tapered_frustum_fit",
+                "paper_asymmetric_trapezoid_fit",
+            ],
+            "primary_criteria": [
+                "primitive_vocabulary_and_fit",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_c",
+            "purpose": "cost_search_stop_breadth",
+            "case_ids": [
+                "paper_branching_cost_order",
+                "paper_equal_cost_queue_tie",
+                "paper_nonzero_threshold_block",
+            ],
+            "primary_criteria": [
+                "paper_collapse_cost_and_weighting",
+                "greedy_priority_queue_trace",
+                "target_count_and_threshold_stop",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_d",
+            "purpose": "component_pair_breadth",
+            "case_ids": [
+                "paper_component_pair_multi_candidate_order",
+                "paper_component_pair_cap_skipped",
+            ],
+            "primary_criteria": [
+                "component_pair_edge_handling",
+                "target_count_and_threshold_stop",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_e",
+            "purpose": "postprocess_breadth",
+            "case_ids": [
+                "paper_rotated_nested_primitive",
+                "paper_cross_type_enclosure_boundary",
+            ],
+            "primary_criteria": [
+                "enclosed_primitive_postprocess",
+            ],
+        },
+    ]
+
+
+def _paper_fixture_breadth_completion_review_payload() -> dict[str, object]:
+    criteria = [
+        row
+        for row in _paper_faithful_offline_scope_criteria()
+        if row["blocking_for_paper_faithful_offline"]
+    ]
+    remaining_blockers = [str(row["criterion_id"]) for row in criteria]
+    return {
+        "review_scope": "synthetic_fixture_breadth_batches_a_to_e",
+        "closed_gate": "paper_fixture_breadth_expansion",
+        "decision": "remain_partial",
+        "decision_reason": "fixture_breadth_complete_but_generalization_missing",
+        "fixture_breadth_plan_complete": True,
+        "paper_faithful_offline_allowed": False,
+        "next_required_gate": "paper_faithful_offline_generalization_plan",
+        "completed_batches": _paper_fixture_breadth_completed_batches(),
+        "criteria_after_completion": [
+            {
+                "criterion_id": str(row["criterion_id"]),
+                "fixture_breadth_status": "covered_by_named_synthetic_fixtures",
+                "status_after_completion": "partial_fixture_scope",
+                "remaining_gap": "paper_faithful_offline_generalization",
+                "claim_boundary": str(row["claim_boundary"]),
+            }
+            for row in criteria
+        ],
+        "remaining_blocking_criteria_ids": remaining_blockers,
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def build_cpd_paper_offline_report() -> dict[str, object]:
     """Build the first fixture-scoped offline CPD paper mechanics audit."""
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
-        "paper_fixture_breadth_expansion",
+        "paper_faithful_offline_generalization",
     ]
     return {
         "stage": "cpd_paper_offline_report",
@@ -418,7 +548,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_fixture_breadth_completion_review",
+        "next_required_gate": "paper_faithful_offline_generalization_plan",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -439,11 +569,15 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "paper_fixture_breadth_batch_c_cost_search_stop",
                 "paper_fixture_breadth_batch_d_component_pair",
                 "paper_fixture_breadth_batch_e_postprocess",
+                "paper_fixture_breadth_completion_review",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
         "paper_faithful_offline_scope_audit": (
             _paper_faithful_offline_scope_audit_payload()
+        ),
+        "paper_fixture_breadth_completion_review": (
+            _paper_fixture_breadth_completion_review_payload()
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

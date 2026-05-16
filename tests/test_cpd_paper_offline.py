@@ -25,7 +25,8 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "Exact-overlap toy preprocessing only; no robust arbitrary mesh cleanup."
         ),
         "next_action": (
-            "Expand preprocessing/source-mesh fixture breadth before stronger wording."
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
         ),
     },
     {
@@ -43,7 +44,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Source-face intake is toy-scoped, not a general polygon mesh implementation."
         ),
-        "next_action": "Add broader source-face cases only after a fixture-breadth plan.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "operator_q_audit",
@@ -60,7 +64,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Operator evidence is named-fixture audit data, not full paper decomposition."
         ),
-        "next_action": "Expand operator degeneracy and fixture coverage.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "primitive_vocabulary_and_fit",
@@ -80,7 +87,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "Primitive rows are audit rows, not Newton runtime support or "
             "collision-quality evidence."
         ),
-        "next_action": "Expand fitting fixtures and paper-specific invariants.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "paper_collapse_cost_and_weighting",
@@ -97,7 +107,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
         "blocking_for_paper_faithful_offline": True,
         "claim_boundary": "Cost rows are toy accounting, not optimizer or benchmark evidence.",
-        "next_action": "Broaden merge-cost fixtures and threshold cases.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "greedy_priority_queue_trace",
@@ -116,7 +129,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Search traces are toy-scoped and do not prove merge-policy superiority."
         ),
-        "next_action": "Expand priority-queue fixtures before stronger wording.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "target_count_and_threshold_stop",
@@ -132,7 +148,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
         "blocking_for_paper_faithful_offline": True,
         "claim_boundary": "Threshold evidence is narrow toy accounting.",
-        "next_action": "Add fixture-breadth plan for target/threshold combinations.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "component_pair_edge_handling",
@@ -151,7 +170,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Component merging evidence is diagnostic accounting, not broad asset evidence."
         ),
-        "next_action": "Continue with postprocess fixture breadth before stronger wording.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "enclosed_primitive_postprocess",
@@ -166,7 +188,10 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Postprocess cull evidence is one offline canary, not a general containment library."
         ),
-        "next_action": "Run fixture-breadth completion review before stronger wording.",
+        "next_action": (
+            "Use paper_faithful_offline_generalization_plan to broaden beyond "
+            "named synthetic fixtures before stronger wording."
+        ),
     },
     {
         "criterion_id": "report_schema_tests_and_records",
@@ -258,16 +283,18 @@ EXPECTED_SCOPE_AUDIT_BLOCKERS = [
 ]
 
 
-def test_cpd_paper_offline_report_failure_labels_point_to_fixture_breadth_gap():
+def test_cpd_paper_offline_report_failure_labels_point_to_generalization_gap():
     report = build_cpd_paper_offline_report()
 
-    assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
+    assert report["failure_labels"] == [
+        "paper_faithful_offline_generalization_missing"
+    ]
 
 
-def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_completion_review():
+def test_cpd_paper_offline_report_next_gate_is_generalization_plan():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_fixture_breadth_completion_review"
+    assert report["next_required_gate"] == "paper_faithful_offline_generalization_plan"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1075,6 +1102,124 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_e():
     ]
 
 
+def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
+    report = build_cpd_paper_offline_report()
+
+    assert report["failure_labels"] == [
+        "paper_faithful_offline_generalization_missing"
+    ]
+    assert report["next_required_gate"] == "paper_faithful_offline_generalization_plan"
+    assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
+        "paper_faithful_offline_generalization"
+    ]
+    assert "paper_fixture_breadth_completion_review" in report["paper_faithfulness"][
+        "implemented_fixture_scope"
+    ]
+
+    review = report["paper_fixture_breadth_completion_review"]
+    assert review["review_scope"] == "synthetic_fixture_breadth_batches_a_to_e"
+    assert review["closed_gate"] == "paper_fixture_breadth_expansion"
+    assert review["decision"] == "remain_partial"
+    assert review["decision_reason"] == "fixture_breadth_complete_but_generalization_missing"
+    assert review["fixture_breadth_plan_complete"] is True
+    assert review["paper_faithful_offline_allowed"] is False
+    assert review["next_required_gate"] == "paper_faithful_offline_generalization_plan"
+    assert review["package_generation_triggered"] is False
+    assert review["newton_runtime_triggered"] is False
+    assert review["real_usd_triggered"] is False
+    assert review["benchmark_triggered"] is False
+
+    expected_batches = [
+        {
+            "batch_id": "paper_fixture_breadth_batch_a",
+            "purpose": "source_preprocess_intake_operator_breadth",
+            "case_ids": [
+                "paper_mixed_face_preprocess_operator",
+                "paper_degenerate_preprocess_face_drop",
+                "paper_concave_polygon_rejected",
+            ],
+            "primary_criteria": [
+                "source_mesh_and_preprocessing_policy",
+                "source_face_intake_policy",
+                "operator_q_audit",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_b",
+            "purpose": "primitive_fit_breadth",
+            "case_ids": [
+                "paper_rotated_box_fit",
+                "paper_offset_sphere_fit",
+                "paper_off_axis_capsule_fit",
+                "paper_flat_capped_cylinder_axis_fit",
+                "paper_tapered_frustum_fit",
+                "paper_asymmetric_trapezoid_fit",
+            ],
+            "primary_criteria": [
+                "primitive_vocabulary_and_fit",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_c",
+            "purpose": "cost_search_stop_breadth",
+            "case_ids": [
+                "paper_branching_cost_order",
+                "paper_equal_cost_queue_tie",
+                "paper_nonzero_threshold_block",
+            ],
+            "primary_criteria": [
+                "paper_collapse_cost_and_weighting",
+                "greedy_priority_queue_trace",
+                "target_count_and_threshold_stop",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_d",
+            "purpose": "component_pair_breadth",
+            "case_ids": [
+                "paper_component_pair_multi_candidate_order",
+                "paper_component_pair_cap_skipped",
+            ],
+            "primary_criteria": [
+                "component_pair_edge_handling",
+                "target_count_and_threshold_stop",
+            ],
+        },
+        {
+            "batch_id": "paper_fixture_breadth_batch_e",
+            "purpose": "postprocess_breadth",
+            "case_ids": [
+                "paper_rotated_nested_primitive",
+                "paper_cross_type_enclosure_boundary",
+            ],
+            "primary_criteria": [
+                "enclosed_primitive_postprocess",
+            ],
+        },
+    ]
+    assert review["completed_batches"] == expected_batches
+    cases_by_batch = {}
+    for case in report["cases"]:
+        batch = case.get("fixture_breadth_batch")
+        if batch is not None:
+            cases_by_batch.setdefault(batch, []).append(case["case_id"])
+    assert cases_by_batch == {
+        batch["batch_id"]: batch["case_ids"] for batch in expected_batches
+    }
+    assert review["remaining_blocking_criteria_ids"] == EXPECTED_SCOPE_AUDIT_BLOCKERS
+    assert [row["criterion_id"] for row in review["criteria_after_completion"]] == (
+        EXPECTED_SCOPE_AUDIT_BLOCKERS
+    )
+    assert all(
+        row["status_after_completion"] == "partial_fixture_scope"
+        for row in review["criteria_after_completion"]
+    )
+    assert all(
+        row["remaining_gap"] == "paper_faithful_offline_generalization"
+        for row in review["criteria_after_completion"]
+    )
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -1089,10 +1234,12 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithful_offline_supported"] is False
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
-    assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert report["next_required_gate"] == "paper_fixture_breadth_completion_review"
+    assert report["failure_labels"] == [
+        "paper_faithful_offline_generalization_missing"
+    ]
+    assert report["next_required_gate"] == "paper_faithful_offline_generalization_plan"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_fixture_breadth_expansion"
+        "paper_faithful_offline_generalization"
     ]
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
@@ -1131,6 +1278,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
     assert "paper_fixture_breadth_batch_e_postprocess" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_fixture_breadth_completion_review" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
 

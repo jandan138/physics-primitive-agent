@@ -63,7 +63,7 @@ multi-slice `partial` report rather than `paper_faithful_offline`.
 | `paper_polygon_quad_intake_policy_audit` | Explicit triangle, quad, and polygon intake policy before stronger paper-lane wording. |
 | `paper_obb_sphere_fit_faithfulness_audit` | Offline fixture-scoped paper-shaped OBB and sphere fit audit rows. |
 | `paper_duplicate_vertex_preprocessing_audit` | Offline duplicate/overlapped vertex preprocessing policy and remap audit. |
-| `paper_faithful_offline_scope_audit` | Offline criteria table that compares current fixture-scoped evidence against the gap matrix, keeps the lane partial, and advances the next gate to fixture-breadth expansion. |
+| `paper_faithful_offline_scope_audit` | Offline criteria table that compares fixture-scoped evidence against the gap matrix, keeps the lane partial, and now points follow-on work to planning-only offline generalization. |
 | `paper_faithful_offline` | Report status allowed only after the required tests and dated records exist. |
 
 ## Canonical Paper Mechanics Checklist
@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the completed scope audit:
-  `paper_fixture_breadth_expansion_missing`.
+- the current top-level failure label after the fixture-breadth completion review:
+  `paper_faithful_offline_generalization_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -582,12 +582,13 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 
 ## Current Fixture-Breadth Position
 
-The paper-lane gate after Batch E is:
+The paper-lane gate after the fixture-breadth completion review is:
 
 ```text
-paper_fixture_breadth_completion_review
--> review fixture-breadth evidence against the scope-audit blockers
+paper_faithful_offline_generalization_plan
+-> planning-only gate for broadening the offline algorithm beyond named toy fixtures
 -> keep report status partial
+-> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
 ```
 
@@ -597,5 +598,7 @@ without adding Newton runtime support. Batch C broadens weighted-priority orderi
 tie/eager-stale-prune behavior, and positive nonzero threshold blocking without adding Newton
 runtime support. Batch D broadens disconnected component-pair ordering and capped skipped-pair
 accounting without adding Newton runtime support. Batch E broadens rotated nested OBB postprocess
-accounting and cross-type unsupported no-cull accounting without adding Newton runtime support.
-The next step is a fixture-breadth completion review, not package generation or benchmarking.
+accounting and cross-type unsupported no-cull accounting without adding Newton runtime support. The
+completion review closes only the planned Batch A-E breadth gate. The next step is a
+paper-faithful offline generalization plan, not `paper_faithful_offline` support, package
+generation, Newton runtime execution, real USD, or benchmarking.
