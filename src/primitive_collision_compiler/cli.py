@@ -52,6 +52,9 @@ from primitive_collision_compiler.baselines.cpd_like.synthetic import (
     build_newton_native_fitting_comparison_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError, load_first_mesh
+from primitive_collision_compiler.baselines.cpd_paper.offline import (
+    build_cpd_paper_offline_report,
+)
 from primitive_collision_compiler.config import load_compile_config
 from primitive_collision_compiler.contracts import CompileReport
 from primitive_collision_compiler.newton.diagnostics import run_newton_contact_smoke
@@ -171,6 +174,11 @@ def build_parser():
         "--run-cpd-like-four-block-slice-report",
         action="store_true",
         help="emit a command-only four-block report for a recorded synthetic slice",
+    )
+    parser.add_argument(
+        "--run-cpd-paper-offline-report",
+        action="store_true",
+        help="run fixture-scoped offline CPD paper mechanics audit",
     )
     parser.add_argument(
         "--run-newton-native-fitting-comparison",
@@ -473,6 +481,19 @@ def main(argv=None):
             )
             return 2
         return 0 if report["status"] == "smoke_passed" else 2
+
+    if args.run_cpd_paper_offline_report:
+        report = build_cpd_paper_offline_report()
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                "npc-compile: cpd_paper_offline_report contains "
+                f"non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0 if report["report_generation_status"] == "smoke_passed" else 2
 
     if args.run_cpd_like_expected_failure_workbench:
         report = build_cpd_like_expected_failure_synthetic_workbench_report()

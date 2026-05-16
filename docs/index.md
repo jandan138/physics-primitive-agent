@@ -27,10 +27,13 @@ shape-mapping accounting. The controlled merge-search Newton probe then runs nam
 drop/settle, and sphere-rain task smokes over that changed synthetic package pair only. The
 bounded synthetic `two_step_lookahead` diagnostic, follow-on package/mapping probe, follow-on
 synthetic Newton task-smoke probe, and command-only four-block slice report for the
-lookahead-changed package pair are now complete under recorded settings. The CPD paper gap matrix
-and planned fixture-scoped offline lane spec now make the next step explicit: implement an
-offline-only toy fixture slice for paper operator, primitive-fit, and collapse-cost audit fields
-before bed/Franka, Newton package probes, or benchmark work. A capped bed/Franka rerun should wait
+lookahead-changed package pair are now complete under recorded settings. The first
+fixture-scoped `cpd_paper_offline_report` slice is now implemented as a command-only partial
+offline paper-lane audit over `paper_single_box` and `paper_two_face_merge`. It records paper
+operator, primitive-fit subset, left/right/merged merge-cost inputs, and base-collapse-cost versus
+weighted-priority-cost fields while keeping Newton, bed/Franka, and benchmark work out of scope.
+The audited primitive rows are explicitly current surrogate/proxy rows, not paper-faithful fitting.
+The next paper-lane gate is frustum and trapezoidal-prism fit audit, not a capped bed/Franka rerun
 unless a separate real package change is introduced and passes full mapping, contact-canary,
 task-gate, and dated-record gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
@@ -49,6 +52,9 @@ records exist.
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
   dated record for this planning update and review status.
+- [CPD paper offline first fixture slice record](records/2026-05-16-cpd-paper-offline-first-fixture-slice.md):
+  dated implementation record for the partial `cpd_paper_offline_report` over two synthetic toy
+  fixtures, with no Newton, real-USD, benchmark, or collision-quality claim.
 
 ## DeepDive Package
 
@@ -263,6 +269,9 @@ records exist.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
   documentation update that turns the paper reproduction gap into an offline-first paper-lane
   spec, without adding benchmark, Newton runtime, real-USD, or collision-quality evidence.
+- [CPD paper offline first fixture slice record](records/2026-05-16-cpd-paper-offline-first-fixture-slice.md):
+  partial command-only offline paper-lane audit over `paper_single_box` and `paper_two_face_merge`,
+  without Newton, real-USD, package, benchmark, or collision-quality claims.
 - [CPD latest diagnostic loop explainer docs record](records/2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
@@ -343,6 +352,9 @@ records exist.
 - `npc-compile --run-cpd-like-four-block-slice-report`: command-only evidence map for the
   recorded lookahead slice. It links existing dated records and does not rerun source reports,
   USD loading, real assets, or Newton tasks.
+- `npc-compile --run-cpd-paper-offline-report`: command-only partial offline paper-lane audit over
+  `paper_single_box` and `paper_two_face_merge`; exits successfully when the JSON report is emitted,
+  returns `status: partial`, and does not run Newton, real USD, package generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.

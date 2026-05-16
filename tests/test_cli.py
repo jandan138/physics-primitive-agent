@@ -1516,6 +1516,44 @@ def test_cli_run_cpd_like_cost_guided_lookahead_merge_report_rejects_nonfinite_j
     assert "contains non-finite JSON values" in stderr
 
 
+def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
+    assert cli.main(["--run-cpd-paper-offline-report"]) == 0
+
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    payload = json.loads(captured.out)
+
+    assert payload["stage"] == "cpd_paper_offline_report"
+    assert payload["status"] == "partial"
+    assert payload["report_generation_status"] == "smoke_passed"
+    assert payload["paper_faithfulness"]["status"] == "partial"
+    assert payload["newton_runtime_triggered"] is False
+    assert [case["case_id"] for case in payload["cases"]] == [
+        "paper_single_box",
+        "paper_two_face_merge",
+    ]
+
+
+def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):
+    monkeypatch.setattr(
+        cli,
+        "build_cpd_paper_offline_report",
+        lambda: {
+            "stage": "cpd_paper_offline_report",
+            "status": "smoke_passed",
+            "nonfinite": float("nan"),
+        },
+    )
+
+    assert cli.main(["--run-cpd-paper-offline-report"]) == 2
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    stderr = captured.err
+    assert "cpd_paper_offline_report" in stderr
+    assert "contains non-finite JSON values" in stderr
+
+
 def test_cli_run_cpd_like_cost_guided_lookahead_package_probe_emits_json(capsys):
     assert cli.main(["--run-cpd-like-cost-guided-lookahead-package-probe"]) == 0
 

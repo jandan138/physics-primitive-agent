@@ -13,7 +13,8 @@ For claim limits on the planned `paper_faithful_offline` status, see
 Build an offline report path that can answer:
 
 ```text
-For a tiny deterministic mesh, did we execute the paper-side decomposition mechanics faithfully?
+For a tiny deterministic mesh, did the implemented subset produce reviewable paper-side audit
+fields?
 ```
 
 The first version should not answer:
@@ -47,13 +48,14 @@ sphere-rain, or read large real USD assets.
 
 ## Planned Artifacts
 
-These names are planned interfaces for the lane. They are not current implementation claims.
+These names are lane interfaces. Only the first `cpd_paper_offline_report` slice is currently
+implemented, and it is still a `partial` report rather than `paper_faithful_offline`.
 
 | Artifact | Purpose |
 | --- | --- |
-| `cpd_paper_offline_report` | Command/report name for the future offline paper lane. |
+| `cpd_paper_offline_report` | Current command/report name for the first partial offline paper-lane slice and the future fuller offline paper lane. |
 | `paper_cpd_operator_audit` | Per-face and per-group `Q` operator fields. |
-| `paper_cpd_primitive_fit_audit` | All six paper primitive candidates and containment checks. |
+| `paper_cpd_primitive_fit_audit` | All six paper primitive candidates and containment checks in the future full lane; the first slice may audit a subset only if missing paper primitives are explicitly labeled. |
 | `paper_cpd_collapse_trace` | Priority-queue merge steps, costs, stale entries, and stop reason. |
 | `paper_cpd_postprocess_audit` | Enclosed-primitive culling and before/after primitive counts. |
 | `paper_faithful_offline` | Report status allowed only after the required tests and dated records exist. |
@@ -100,7 +102,8 @@ being run.
 
 ## Report Schema
 
-The future report should include these top-level fields:
+The current first slice emits these fields inside `cases[]` where appropriate. The future fuller
+report should converge on these top-level or per-case fields:
 
 ```text
 stage
@@ -302,9 +305,9 @@ This lane does not:
 - claim runtime speedup;
 - replace the Newton-native diagnostic lane.
 
-## Next Implementation Slice
+## First Implementation Slice
 
-The first implementation slice should be:
+The first implementation slice is now:
 
 ```text
 paper_single_box + paper_two_face_merge
@@ -314,6 +317,7 @@ paper_single_box + paper_two_face_merge
 -> no Newton
 ```
 
-This gives the smallest useful proof that the offline lane can compute paper-side operator,
+This gives the smallest useful evidence slice that the offline lane can compute paper-side operator,
 primitive-fit, and cost fields before implementing frustum, trapezoidal prism, full priority-queue
-search, real USD, or benchmark tasks.
+search, real USD, or benchmark tasks. The audited primitive rows are explicitly labeled as current
+surrogates/proxies; they are not paper-faithful primitive fitting.

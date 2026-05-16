@@ -43,6 +43,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   it may only describe the declared offline fixture scope and must remain separate from full CPD
   paper reproduction, Newton runtime support, benchmark evidence, collision-quality validation,
   deployment readiness, or safety certification.
+- The current code can run a command-only partial `cpd_paper_offline_report` over the
+  `paper_single_box` and `paper_two_face_merge` synthetic fixtures. It reports triangle-only mesh
+  intake, per-face and merged-group operator audit fields, a four-primitive subset fit audit, and
+  separate paper base collapse-cost versus weighted-priority-cost fields. The audited primitive
+  rows are current surrogate/proxy fit rows with explicit missing-primitive and missing-mechanic
+  labels. This is a fixture-scoped offline paper-lane audit slice, not `paper_faithful_offline`,
+  not full CPD paper reproduction, not Newton runtime support, not benchmark evidence, and not
+  collision-quality validation.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper

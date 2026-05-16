@@ -157,6 +157,18 @@ experiments:
       - command-only evidence map across primitive fitting/selection, merge/search, offline diagnostics, and recorded Newton task-smoke evidence
       - links blocks to dated records without rerunning source reports, USD loading, real assets, or Newton runtime tasks
       - no new Newton task result, real-asset claim, bed or Franka claim, collision geometry quality claim, policy ranking claim, benchmark-suite claim, deployment or certification claim, or paper-reproduction claim
+  - id: cpd-paper-offline-first-fixture-slice
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-offline-first-fixture-slice.md
+    purpose: >
+      Emit a command-only partial offline CPD paper-lane audit over `paper_single_box` and
+      `paper_two_face_merge`, covering paper-side operator, primitive-fit subset, and
+      collapse-cost audit fields.
+    claims_supported:
+      - partial fixture-scoped offline paper-lane audit only
+      - records triangle-only operator audit, four-primitive fit-audit subset, and base-cost versus weighted-priority-cost fields on two deterministic toy fixtures
+      - no paper_faithful_offline claim, full CPD reproduction claim, Newton runtime support, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench
