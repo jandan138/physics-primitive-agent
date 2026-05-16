@@ -295,8 +295,25 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- failure label `paper_duplicate_vertex_preprocessing_missing` after this policy has tests and a
-  dated record.
+- failure label `paper_faithful_offline_scope_missing` after duplicate-vertex preprocessing has
+  tests and a dated record.
+
+### Duplicate Vertex Preprocessing Audit
+
+Before `paper_faithful_offline` wording, record:
+
+- an exact-coordinate duplicate/overlapped vertex fixture;
+- first-occurrence vertex deduplication ordering;
+- before/after vertex counts and duplicate clusters;
+- source-face remap rows from input vertex ids to deduplicated vertex ids;
+- before/after connected-component counts;
+- whether any face became degenerate and was dropped;
+- evidence that the executable mesh used by operator, primitive-fit, and topology rows is the
+  deduplicated mesh.
+
+The current lane records only exact coordinate overlaps with `distance_tolerance: 0.0`. It does
+not record nonzero-threshold deduplication, approximate spatial hashing, or broad unclean-mesh
+cleanup.
 
 ## Minimal Synthetic Fixture Set
 
@@ -313,6 +330,7 @@ The first paper lane should use small synthetic fixtures before any real USD:
 | `paper_disconnected_components` | Two disconnected components above target primitive count, with topology unable to reduce them. | Threshold-disabled component-pair edge insertion first, then threshold behavior in a separate gate. |
 | `paper_nested_primitive` | A smaller primitive fully enclosed by a larger one. | Postprocessing cull audit. |
 | `paper_tiny_sphere_clamp` | One tiny triangle with radius below the primitive parameter clamp. | OBB/sphere `1e-3` parameter clamp accounting. |
+| `paper_duplicate_vertex_preprocessing` | Two triangles with distinct vertex ids but exactly overlapping edge coordinates. | Exact-coordinate deduplication, source-face remap, before/after topology, and deduplicated topology trace. |
 | `paper_quad_face_intake` | One quad source face fan-triangulated into two triangles. | Source-face remap and operator ownership policy. |
 | `paper_polygon_face_intake` | One five-vertex source face fan-triangulated into three triangles. | Source-face remap and operator ownership policy. |
 
@@ -519,17 +537,33 @@ This slice records the OBB/sphere paper construction for named toy fixtures only
 the report `paper_faithful_offline` because duplicate-vertex preprocessing and broader offline lane
 coverage remain unresolved.
 
+## Eleventh Implementation Slice
+
+The eleventh implementation slice is now:
+
+```text
+paper_duplicate_vertex_preprocessing_audit
+-> exact-coordinate duplicate/overlapped vertex preprocessing audit
+-> first-occurrence vertex remap, duplicate clusters, retained/dropped face ids, and source-face
+   remap rows
+-> before/after connected-component counts
+-> topology trace over the deduplicated executable mesh
+-> status remains partial and paper_faithful_offline_supported remains false
+-> no package generation, Newton, real USD, or benchmarks
+```
+
+This closes only the named exact-overlap fixture audit. It should not be broadened into package
+generation, Newton diagnostics, benchmark work, broad mesh cleanup, or a bed/Franka rerun.
+
 ## Next Implementation Slice
 
 The next paper-lane gate is:
 
 ```text
-paper_duplicate_vertex_preprocessing_audit
--> audit duplicate/overlapped vertex preprocessing and source-face remap behavior
--> keep status partial until tests and dated records exist
--> no package generation, Newton, real USD, or benchmarks
+paper_faithful_offline_scope_audit
+-> check every gap-matrix row and every offline-lane criterion
+-> decide which fixture-scoped mechanics are still partial
+-> decide whether any bounded `paper_faithful_offline` wording is allowed
+-> keep package generation, Newton, real USD, and benchmarks blocked unless a later slice creates
+   an explicit package boundary with dated mapping and diagnostic records
 ```
-
-This is the narrowest next algorithmic gate after OBB/sphere fit-faithfulness. It should not be
-broadened into package generation, Newton diagnostics, benchmark work, or a bed/Franka rerun until
-the offline report records a changed paper-lane package boundary.

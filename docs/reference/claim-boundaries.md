@@ -46,8 +46,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The current code can run a command-only partial `cpd_paper_offline_report` over
   `paper_single_box`, `paper_two_face_merge`, `paper_three_face_chain`,
   `paper_disconnected_components`, `paper_component_pair_threshold_blocked`,
-  `paper_tiny_sphere_clamp`, `paper_frustum_like`, `paper_trapezoid_prism_like`,
-  `paper_nested_primitive`, `paper_quad_face_intake`, and
+  `paper_tiny_sphere_clamp`, `paper_duplicate_vertex_preprocessing`, `paper_frustum_like`,
+  `paper_trapezoid_prism_like`, `paper_nested_primitive`, `paper_quad_face_intake`, and
   `paper_polygon_face_intake` synthetic fixtures. It reports triangle-only mesh intake,
   fan-triangulated quad/polygon source-face intake policy, paper-side operator audit fields,
   offline paper-shaped OBB/sphere fit-audit rows, an offline paper-shaped capsule axis fit-audit
@@ -55,9 +55,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   separate paper base collapse-cost versus weighted-priority-cost fields, a topology-only
   priority-queue trace with eager stale-pruning records, a threshold-disabled component-pair
   insertion trace, a finite-threshold component-pair blocked trace, and one explicit identity-axis
-  OBB enclosed-primitive postprocess cull audit. The report remains `status: partial` with
-  `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data, not
-  `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
+  OBB enclosed-primitive postprocess cull audit. It also reports one exact-coordinate
+  duplicate-vertex preprocessing fixture with before/after vertex counts, source-face remap,
+  topology-change accounting, and a topology trace over the deduplicated executable mesh. The
+  report remains `status: partial` with `paper_faithful_offline_supported: false`. This is
+  fixture-scoped offline audit data for exact overlaps only, not nonzero-threshold mesh cleanup,
+  not `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
   package generation, not real-USD evidence, not benchmark evidence, and not collision-quality
   validation.
 - The current code can run a command-only deterministic synthetic objective comparison over

@@ -268,6 +268,17 @@ experiments:
       - partial fixture-scoped offline OBB/sphere fit audit only
       - records paper operator-eigenbasis OBB projected bounds, OBB world center, 1e-3 clamp, sphere radius from the OBB center, tiny-radius clamp coverage, axis matrix layout metadata, containment checks, formulas, and candidate uniqueness on deterministic toy fixtures
       - no paper_faithful_offline claim, full CPD reproduction claim, Newton runtime execution, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-duplicate-vertex-preprocessing
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-duplicate-vertex-preprocessing.md
+    purpose: >
+      Extend the command-only partial offline CPD paper-lane audit with one exact-coordinate
+      duplicate-vertex preprocessing fixture.
+    claims_supported:
+      - partial fixture-scoped exact-coordinate duplicate-vertex preprocessing audit only
+      - records first-occurrence vertex remap, duplicate clusters, source-face remap, before/after topology accounting, retained/dropped source-face ids, and deduplicated topology trace on one deterministic toy fixture
+      - no nonzero-threshold deduplication claim, broad mesh-cleanup claim, paper_faithful_offline claim, full CPD reproduction claim, Newton runtime execution, package-generation claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

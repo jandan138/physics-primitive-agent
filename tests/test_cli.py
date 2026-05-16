@@ -1527,8 +1527,8 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["status"] == "partial"
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
-    assert payload["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
-    assert payload["next_required_gate"] == "paper_duplicate_vertex_preprocessing_audit"
+    assert payload["failure_labels"] == ["paper_faithful_offline_scope_missing"]
+    assert payload["next_required_gate"] == "paper_faithful_offline_scope_audit"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1540,6 +1540,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_disconnected_components",
         "paper_component_pair_threshold_blocked",
         "paper_tiny_sphere_clamp",
+        "paper_duplicate_vertex_preprocessing",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
         "paper_nested_primitive",
@@ -1577,6 +1578,37 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert sphere_dims["center_source"] == "paper_obb_center"
     assert sphere_dims["radius_source"] == "max_distance_from_obb_center_clamped"
     assert sphere_dims["volume_formula"] == "4/3*pi*r^3"
+
+    duplicate_case = [
+        case
+        for case in payload["cases"]
+        if case["case_id"] == "paper_duplicate_vertex_preprocessing"
+    ][0]
+    duplicate_audit = duplicate_case["preprocessing_audit"]
+    assert duplicate_audit["preprocessing_policy"] == (
+        "exact_coordinate_deduplication_for_fixture"
+    )
+    assert duplicate_audit["input_vertex_count"] == 6
+    assert duplicate_audit["deduplicated_vertex_count"] == 4
+    assert duplicate_audit["duplicate_clusters"] == [[0, 3], [1, 4]]
+    assert duplicate_audit["original_to_deduplicated_vertex_ids"] == [
+        0,
+        1,
+        2,
+        0,
+        1,
+        3,
+    ]
+    assert duplicate_audit["connected_component_count_before"] == 2
+    assert duplicate_audit["connected_component_count_after"] == 1
+    assert duplicate_audit["topology_changed"] is True
+    assert duplicate_case["source_mesh"]["source_face_remap"] == (
+        "duplicate_vertex_preprocessing_face_id_preserving"
+    )
+    assert duplicate_case["collapse_trace"]["preprocessing_boundary"] == (
+        "exact_coordinate_duplicate_vertex_fixture"
+    )
+    assert duplicate_case["collapse_trace"]["initial_edge_count"] == 1
 
 
 def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):

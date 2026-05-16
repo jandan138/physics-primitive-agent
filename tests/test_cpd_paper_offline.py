@@ -11,13 +11,13 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
 def test_cpd_paper_offline_report_failure_labels_point_to_duplicate_vertex_gap():
     report = build_cpd_paper_offline_report()
 
-    assert report["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
+    assert report["failure_labels"] == ["paper_faithful_offline_scope_missing"]
 
 
 def test_cpd_paper_offline_report_next_gate_is_duplicate_vertex_audit():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_duplicate_vertex_preprocessing_audit"
+    assert report["next_required_gate"] == "paper_faithful_offline_scope_audit"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -26,6 +26,86 @@ def _candidate_by_paper_primitive(audit, paper_primitive):
     ]
     assert len(rows) == 1
     return rows[0]
+
+
+def _expected_duplicate_vertex_source_face_remap():
+    return [
+        {
+            "source_face_id": 0,
+            "input_vertex_ids": [0, 1, 2],
+            "deduplicated_vertex_ids": [0, 1, 2],
+            "face_preserved": True,
+            "drop_reason": None,
+        },
+        {
+            "source_face_id": 1,
+            "input_vertex_ids": [3, 4, 5],
+            "deduplicated_vertex_ids": [0, 1, 3],
+            "face_preserved": True,
+            "drop_reason": None,
+        },
+    ]
+
+
+def _assert_duplicate_vertex_preprocessing_case(case):
+    audit = case["preprocessing_audit"]
+    assert audit["audit_scope"] == "duplicate_vertex_preprocessing_fixture"
+    assert audit["preprocessing_policy"] == "exact_coordinate_deduplication_for_fixture"
+    assert audit["distance_tolerance"] == 0.0
+    assert audit["input_vertex_count"] == 6
+    assert audit["deduplicated_vertex_count"] == 4
+    assert audit["duplicate_cluster_count"] == 2
+    assert audit["duplicate_clusters"] == [[0, 3], [1, 4]]
+    assert audit["original_to_deduplicated_vertex_ids"] == [0, 1, 2, 0, 1, 3]
+    assert audit["input_faces"] == [[0, 1, 2], [3, 4, 5]]
+    assert audit["deduplicated_faces"] == [[0, 1, 2], [0, 1, 3]]
+    assert audit["connected_component_count_before"] == 2
+    assert audit["connected_component_count_after"] == 1
+    assert audit["topology_changed"] is True
+    assert audit["degenerate_face_dropped_count"] == 0
+    assert audit["retained_source_face_ids"] == [0, 1]
+    assert audit["dropped_source_face_ids"] == []
+    assert audit["preprocessing_source_face_remap"] == (
+        _expected_duplicate_vertex_source_face_remap()
+    )
+    assert audit["package_generation_triggered"] is False
+    assert audit["newton_runtime_triggered"] is False
+    assert audit["real_usd_triggered"] is False
+    assert audit["benchmark_triggered"] is False
+
+    source_mesh = case["source_mesh"]
+    assert source_mesh["duplicate_vertex_preprocessing"] == (
+        "exact_coordinate_deduplication_for_fixture"
+    )
+    assert source_mesh["preprocessed_input_vertex_count"] == 6
+    assert source_mesh["deduplicated_vertex_count"] == 4
+    assert source_mesh["vertex_count"] == 4
+    assert source_mesh["source_face_remap"] == (
+        "duplicate_vertex_preprocessing_face_id_preserving"
+    )
+    assert source_mesh["preprocessing_source_face_remap"] == (
+        _expected_duplicate_vertex_source_face_remap()
+    )
+
+    trace = case["collapse_trace"]
+    assert trace["preprocessing_boundary"] == "exact_coordinate_duplicate_vertex_fixture"
+    assert trace["initial_edge_count"] == 1
+    assert trace["accepted_merge_count"] == 1
+    assert trace["final_active_groups"] == [[0, 1]]
+    assert trace["events"][0]["source_faces_left"] == [0]
+    assert trace["events"][0]["source_faces_right"] == [1]
+    assert trace["events"][0]["resulting_source_faces"] == [0, 1]
+
+    assert case["operator_audit"]["preprocessing_boundary"] == (
+        "exact_coordinate_duplicate_vertex_fixture"
+    )
+    assert case["primitive_fit_audit"]["preprocessing_boundary"] == (
+        "exact_coordinate_duplicate_vertex_fixture"
+    )
+    assert case["package_generation_triggered"] is False
+    assert case["newton_runtime_triggered"] is False
+    assert case["real_usd_triggered"] is False
+    assert case["benchmark_triggered"] is False
 
 
 def _assert_paper_obb_sphere_rows(case, points):
@@ -234,8 +314,8 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithful_offline_supported"] is False
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
-    assert report["failure_labels"] == ["paper_duplicate_vertex_preprocessing_missing"]
-    assert report["next_required_gate"] == "paper_duplicate_vertex_preprocessing_audit"
+    assert report["failure_labels"] == ["paper_faithful_offline_scope_missing"]
+    assert report["next_required_gate"] == "paper_faithful_offline_scope_audit"
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]
@@ -254,6 +334,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert "paper_obb_sphere_fit_faithfulness_audit" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
+    assert "paper_duplicate_vertex_preprocessing_audit" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
@@ -263,6 +346,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_disconnected_components",
         "paper_component_pair_threshold_blocked",
         "paper_tiny_sphere_clamp",
+        "paper_duplicate_vertex_preprocessing",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
         "paper_nested_primitive",
@@ -320,6 +404,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     )
     assert tiny_sphere["dimensions"]["unclamped_radius"] < 1e-3
     assert tiny_sphere["dimensions"]["radius"] == 1e-3
+    _assert_duplicate_vertex_preprocessing_case(
+        cases["paper_duplicate_vertex_preprocessing"]
+    )
 
     primitive_types = {
         row["paper_primitive"] for row in single_box["primitive_fit_audit"]["candidates"]

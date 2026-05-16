@@ -64,6 +64,17 @@ class _SourceFaceIntakeAudit:
 
 
 @dataclass(frozen=True)
+class _DuplicateVertexPreprocessingAudit:
+    input_points: tuple[tuple[float, float, float], ...]
+    input_faces: tuple[tuple[int, int, int], ...]
+    deduplicated_points: tuple[tuple[float, float, float], ...]
+    deduplicated_faces: tuple[tuple[int, int, int], ...]
+    original_to_deduplicated_vertex_ids: tuple[int, ...]
+    duplicate_clusters: tuple[tuple[int, ...], ...]
+    distance_tolerance: float = 0.0
+
+
+@dataclass(frozen=True)
 class _PaperToyCase:
     case_id: str
     description: str
@@ -75,6 +86,7 @@ class _PaperToyCase:
     component_pair_excess_volume_threshold: float | None = None
     postprocess_fixture: bool = False
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None
+    duplicate_vertex_preprocessing_audit: _DuplicateVertexPreprocessingAudit | None = None
 
 
 def build_cpd_paper_offline_report() -> dict[str, object]:
@@ -82,7 +94,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
 
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
-        "paper_duplicate_vertex_preprocessing",
+        "paper_faithful_offline_scope",
     ]
     return {
         "stage": "cpd_paper_offline_report",
@@ -101,7 +113,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_duplicate_vertex_preprocessing_audit",
+        "next_required_gate": "paper_faithful_offline_scope_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -115,6 +127,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "postprocess_enclosed_primitive_culling_audit",
                 "paper_polygon_quad_intake_policy_audit",
                 "paper_obb_sphere_fit_faithfulness_audit",
+                "paper_duplicate_vertex_preprocessing_audit",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -124,22 +137,33 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
 
 
 def _case_payload(case: _PaperToyCase) -> dict[str, object]:
+    preprocessing_boundary = (
+        "exact_coordinate_duplicate_vertex_fixture"
+        if case.duplicate_vertex_preprocessing_audit is not None
+        else None
+    )
     primitive_fit_audits = [
         _primitive_fit_audit_payload(
             case.mesh,
             face_group,
             case.source_face_intake_audit,
+            preprocessing_boundary,
         )
         for face_group in case.face_groups
     ]
     payload: dict[str, object] = {
         "case_id": case.case_id,
         "description": case.description,
-        "source_mesh": _source_mesh_payload(case.mesh, case.source_face_intake_audit),
+        "source_mesh": _source_mesh_payload(
+            case.mesh,
+            case.source_face_intake_audit,
+            case.duplicate_vertex_preprocessing_audit,
+        ),
         "operator_audit": _operator_audit_payload(
             case.mesh,
             case.face_groups,
             case.source_face_intake_audit,
+            preprocessing_boundary,
         ),
         "primitive_fit_audit": primitive_fit_audits[-1],
         "primitive_fit_audits": primitive_fit_audits,
@@ -159,6 +183,7 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             case.priority_queue_target_count,
             allow_component_pair_edges=case.component_pair_edge_insertion,
             component_pair_excess_volume_threshold=case.component_pair_excess_volume_threshold,
+            preprocessing_boundary=preprocessing_boundary,
         )
     if case.postprocess_fixture:
         payload["postprocess_audit"] = _postprocess_audit_payload()
@@ -166,12 +191,17 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
         payload["mesh_intake_policy_audit"] = _source_face_intake_audit_payload(
             case.source_face_intake_audit
         )
+    if case.duplicate_vertex_preprocessing_audit is not None:
+        payload["preprocessing_audit"] = _preprocessing_audit_payload(
+            case.duplicate_vertex_preprocessing_audit
+        )
     return payload
 
 
 def _source_mesh_payload(
     mesh: TriangleMesh,
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
+    duplicate_vertex_preprocessing_audit: _DuplicateVertexPreprocessingAudit | None = None,
 ) -> dict[str, object]:
     payload: dict[str, object] = {
         "fixture_scope": "synthetic_toy_mesh",
@@ -182,6 +212,23 @@ def _source_mesh_payload(
         "connected_component_count": _connected_component_count(mesh),
         "duplicate_vertex_preprocessing": "not_applied_fixture_has_unique_vertices",
     }
+    if duplicate_vertex_preprocessing_audit is not None:
+        audit = duplicate_vertex_preprocessing_audit
+        payload.update(
+            {
+                "duplicate_vertex_preprocessing": (
+                    "exact_coordinate_deduplication_for_fixture"
+                ),
+                "preprocessed_input_vertex_count": len(audit.input_points),
+                "deduplicated_vertex_count": len(audit.deduplicated_points),
+                "source_face_remap": (
+                    "duplicate_vertex_preprocessing_face_id_preserving"
+                ),
+                "preprocessing_source_face_remap": (
+                    _duplicate_vertex_source_face_remap(audit)
+                ),
+            }
+        )
     if source_face_intake_audit is None:
         return payload
 
@@ -208,10 +255,87 @@ def _source_mesh_payload(
     return payload
 
 
+def _duplicate_vertex_source_face_remap(
+    audit: _DuplicateVertexPreprocessingAudit,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for source_face_id, input_face in enumerate(audit.input_faces):
+        deduplicated_face = tuple(
+            audit.original_to_deduplicated_vertex_ids[vertex_id]
+            for vertex_id in input_face
+        )
+        face_preserved = len(set(deduplicated_face)) == len(deduplicated_face)
+        rows.append(
+            {
+                "source_face_id": int(source_face_id),
+                "input_vertex_ids": [int(vertex_id) for vertex_id in input_face],
+                "deduplicated_vertex_ids": [
+                    int(vertex_id) for vertex_id in deduplicated_face
+                ],
+                "face_preserved": face_preserved,
+                "drop_reason": None if face_preserved else "degenerate_after_deduplication",
+            }
+        )
+    return rows
+
+
+def _preprocessing_audit_payload(
+    audit: _DuplicateVertexPreprocessingAudit,
+) -> dict[str, object]:
+    source_face_remap = _duplicate_vertex_source_face_remap(audit)
+    retained_source_face_ids = [
+        int(row["source_face_id"]) for row in source_face_remap if row["face_preserved"]
+    ]
+    dropped_source_face_ids = [
+        int(row["source_face_id"]) for row in source_face_remap if not row["face_preserved"]
+    ]
+    input_mesh = TriangleMesh(
+        points=np.asarray(audit.input_points, dtype=np.float64),
+        faces=np.asarray(audit.input_faces, dtype=np.int64),
+    )
+    deduplicated_mesh = TriangleMesh(
+        points=np.asarray(audit.deduplicated_points, dtype=np.float64),
+        faces=np.asarray(audit.deduplicated_faces, dtype=np.int64),
+    )
+    return {
+        "audit_scope": "duplicate_vertex_preprocessing_fixture",
+        "preprocessing_policy": "exact_coordinate_deduplication_for_fixture",
+        "distance_tolerance": float(audit.distance_tolerance),
+        "input_vertex_count": len(audit.input_points),
+        "deduplicated_vertex_count": len(audit.deduplicated_points),
+        "duplicate_cluster_count": len(audit.duplicate_clusters),
+        "duplicate_clusters": [
+            [int(vertex_id) for vertex_id in cluster]
+            for cluster in audit.duplicate_clusters
+        ],
+        "original_to_deduplicated_vertex_ids": [
+            int(vertex_id) for vertex_id in audit.original_to_deduplicated_vertex_ids
+        ],
+        "input_faces": [
+            [int(vertex_id) for vertex_id in face] for face in audit.input_faces
+        ],
+        "deduplicated_faces": [
+            [int(vertex_id) for vertex_id in face] for face in audit.deduplicated_faces
+        ],
+        "preprocessing_source_face_remap": source_face_remap,
+        "retained_source_face_ids": retained_source_face_ids,
+        "dropped_source_face_ids": dropped_source_face_ids,
+        "connected_component_count_before": _connected_component_count(input_mesh),
+        "connected_component_count_after": _connected_component_count(deduplicated_mesh),
+        "topology_changed": True,
+        "degenerate_face_dropped_count": len(dropped_source_face_ids),
+        "package_generation_triggered": False,
+        "newton_runtime_triggered": False,
+        "real_usd_triggered": False,
+        "benchmark_triggered": False,
+    }
+
+
 def _operator_audit_payload(
     mesh: TriangleMesh,
     face_groups: tuple[frozenset[int], ...],
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
+    preprocessing_boundary: str | None = None,
 ) -> dict[str, object]:
     merged_group = face_groups[-1]
     merged_operator = _group_operator(mesh, merged_group)
@@ -232,6 +356,8 @@ def _operator_audit_payload(
             mesh,
             source_face_intake_audit,
         )
+    if preprocessing_boundary is not None:
+        payload["preprocessing_boundary"] = preprocessing_boundary
     return payload
 
 
@@ -295,6 +421,7 @@ def _primitive_fit_audit_payload(
     mesh: TriangleMesh,
     face_group: frozenset[int],
     source_face_intake_audit: _SourceFaceIntakeAudit | None = None,
+    preprocessing_boundary: str | None = None,
 ) -> dict[str, object]:
     obb_row = _paper_obb_candidate_payload(mesh, face_group)
     rows = [
@@ -323,6 +450,8 @@ def _primitive_fit_audit_payload(
     if source_face_intake_audit is not None:
         payload["generated_triangle_face_ids"] = generated_triangle_face_ids
         payload["source_face_ids"] = source_face_ids
+    if preprocessing_boundary is not None:
+        payload["preprocessing_boundary"] = preprocessing_boundary
     return payload
 
 
@@ -1220,6 +1349,7 @@ def _priority_queue_trace_payload(
     *,
     allow_component_pair_edges: bool = False,
     component_pair_excess_volume_threshold: float | None = None,
+    preprocessing_boundary: str | None = None,
 ) -> dict[str, object]:
     if component_pair_excess_volume_threshold is not None and not np.isfinite(
         component_pair_excess_volume_threshold
@@ -1383,7 +1513,7 @@ def _priority_queue_trace_payload(
     else:
         excess_volume_threshold = float(component_pair_excess_volume_threshold)
         threshold_policy = "component_pair_paper_base_cost_lte_threshold"
-    return {
+    payload: dict[str, object] = {
         "trace_scope": (
             "component_pair_priority_queue_trace_fixture"
             if allow_component_pair_edges
@@ -1416,6 +1546,9 @@ def _priority_queue_trace_payload(
         "real_usd_triggered": False,
         "benchmark_triggered": False,
     }
+    if preprocessing_boundary is not None:
+        payload["preprocessing_boundary"] = preprocessing_boundary
+    return payload
 
 
 def _queue_candidate_payload(
@@ -1631,6 +1764,14 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             face_groups=(frozenset({0}),),
         ),
         _PaperToyCase(
+            case_id="paper_duplicate_vertex_preprocessing",
+            description="two triangles with exact-coordinate duplicate vertices for preprocessing audit",
+            mesh=_duplicate_vertex_preprocessing_mesh(),
+            face_groups=(frozenset({0}), frozenset({1})),
+            priority_queue_target_count=1,
+            duplicate_vertex_preprocessing_audit=_duplicate_vertex_preprocessing_audit(),
+        ),
+        _PaperToyCase(
             case_id="paper_frustum_like",
             description="tapered triangle mesh for first offline frustum fit audit",
             mesh=_frustum_like_mesh(),
@@ -1769,6 +1910,58 @@ def _tiny_sphere_clamp_mesh() -> TriangleMesh:
     )
     faces = np.array([[0, 1, 2]], dtype=np.int64)
     return TriangleMesh(points=points, faces=faces)
+
+
+def _duplicate_vertex_preprocessing_audit() -> _DuplicateVertexPreprocessingAudit:
+    input_points = (
+        (0.0, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+        (0.0, 1.0, 0.0),
+        (0.0, 0.0, 0.0),
+        (1.0, 0.0, 0.0),
+        (0.0, -1.0, 0.0),
+    )
+    input_faces = ((0, 1, 2), (3, 4, 5))
+    deduplicated_points: list[tuple[float, float, float]] = []
+    coordinate_to_deduplicated_id: dict[tuple[float, float, float], int] = {}
+    original_to_deduplicated_vertex_ids: list[int] = []
+    duplicate_clusters_by_deduplicated_id: dict[int, list[int]] = {}
+    for input_vertex_id, point in enumerate(input_points):
+        if point not in coordinate_to_deduplicated_id:
+            coordinate_to_deduplicated_id[point] = len(deduplicated_points)
+            deduplicated_points.append(point)
+        deduplicated_id = coordinate_to_deduplicated_id[point]
+        original_to_deduplicated_vertex_ids.append(deduplicated_id)
+        duplicate_clusters_by_deduplicated_id.setdefault(deduplicated_id, []).append(
+            input_vertex_id
+        )
+    deduplicated_faces = tuple(
+        tuple(original_to_deduplicated_vertex_ids[vertex_id] for vertex_id in face)
+        for face in input_faces
+    )
+    duplicate_clusters = tuple(
+        tuple(vertex_ids)
+        for vertex_ids in duplicate_clusters_by_deduplicated_id.values()
+        if len(vertex_ids) > 1
+    )
+    return _DuplicateVertexPreprocessingAudit(
+        input_points=input_points,
+        input_faces=input_faces,
+        deduplicated_points=tuple(deduplicated_points),
+        deduplicated_faces=deduplicated_faces,
+        original_to_deduplicated_vertex_ids=tuple(
+            original_to_deduplicated_vertex_ids
+        ),
+        duplicate_clusters=duplicate_clusters,
+    )
+
+
+def _duplicate_vertex_preprocessing_mesh() -> TriangleMesh:
+    audit = _duplicate_vertex_preprocessing_audit()
+    return TriangleMesh(
+        points=np.asarray(audit.deduplicated_points, dtype=np.float64),
+        faces=np.asarray(audit.deduplicated_faces, dtype=np.int64),
+    )
 
 
 def _frustum_like_mesh() -> TriangleMesh:

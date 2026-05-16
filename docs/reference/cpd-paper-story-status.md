@@ -59,7 +59,9 @@ The repository has not reached that full result. It has reached the workbench st
     with paper-side operator fields, offline paper-shaped OBB/sphere rows, a paper-shaped capsule
     axis row, offline-only flat capped-cylinder/frustum/trapezoidal-prism rows, collapse-cost
     fields, a topology-only priority-queue trace, threshold-disabled and finite-threshold
-    component-pair traces, and one explicit enclosed-primitive postprocess cull audit.
+    component-pair traces, one explicit enclosed-primitive postprocess cull audit,
+    fan-triangulated quad/polygon source-face intake policy fixtures, and one exact-coordinate
+    duplicate-vertex preprocessing audit.
 23. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
@@ -344,12 +346,17 @@ That partial report now records:
 - a fan-triangulated quad/polygon source-face intake policy audit over `paper_quad_face_intake` and
   `paper_polygon_face_intake`, including source vertex ids, generated triangle vertex triples,
   source-face remap, and source-face aggregate operator matrices.
+- an exact-coordinate duplicate-vertex preprocessing audit over
+  `paper_duplicate_vertex_preprocessing`, including first-occurrence vertex remap, duplicate
+  clusters, source-face remap, before/after component counts, retained/dropped source-face ids,
+  and a topology trace over the deduplicated executable mesh.
 
 This closes the narrow capsule axis-policy audit gap and adds the first topology-only
 priority-queue trace plus component-pair accepted/blocked toy events, postprocess culling,
-source-face intake policy fixtures, and OBB/sphere fit-faithfulness rows inside the report, but it
-does not make the lane `paper_faithful_offline`. The next paper-lane gate is
-`paper_duplicate_vertex_preprocessing_audit`.
+source-face intake policy fixtures, OBB/sphere fit-faithfulness rows, and exact-overlap
+duplicate-vertex preprocessing inside the report, but it does not make the lane
+`paper_faithful_offline`. The next paper-lane gate is
+`paper_faithful_offline_scope_audit`.
 
 ## What The Newton-Native Policy Changes
 
@@ -542,7 +549,8 @@ local USD mirrors or synthetic fixtures
 -> enclosed-primitive postprocess cull audit, still without package/Newton/real-USD
 -> polygon/quad source-face intake policy audit, still without package/Newton/real-USD
 -> OBB/sphere fit-faithfulness audit, still without package/Newton/real-USD
--> next: paper_duplicate_vertex_preprocessing_audit
+-> exact-coordinate duplicate-vertex preprocessing audit, still without package/Newton/real-USD
+-> next: paper_faithful_offline_scope_audit
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -615,13 +623,12 @@ Avoid:
 
 ## Recommended Next Slices
 
-The immediate next slice should now make the algorithm itself more paper-aligned without adding
-stronger evaluation claims:
+The immediate next slice should now decide whether the offline paper lane is ready for any bounded
+paper-faithfulness wording, without adding stronger evaluation claims:
 
-1. Add `paper_duplicate_vertex_preprocessing_audit` for overlapped or duplicate vertices.
-2. Build it first on synthetic toy meshes with explicit before/after vertex and source-face remap
-   accounting.
-3. Keep the lane `partial` until duplicate-vertex preprocessing has tests and a dated record.
+1. Run `paper_faithful_offline_scope_audit` against the gap matrix and offline lane spec.
+2. Mark which mechanics are fixture-scoped paper-shaped audits and which still need expansion.
+3. Keep the lane `partial` unless the scope audit justifies narrower bounded wording with records.
 4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 5. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality
