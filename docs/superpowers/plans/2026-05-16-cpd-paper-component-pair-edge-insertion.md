@@ -22,21 +22,21 @@ primitive count. Keep this command-only, fixture-scoped, and claim-bounded.
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `tests/test_cli.py`
 
-- [ ] Add assertions that `component_pair_edge_insertion_missing` is no longer in
+- [x] Add assertions that `component_pair_edge_insertion_missing` is no longer in
   `failure_labels`, while `component_pair_threshold_blocking_missing`,
   `polygon_and_quad_face_policy_missing`, and `postprocess_enclosed_primitive_culling_missing`
   remain.
-- [ ] Assert `next_required_gate == "paper_component_pair_threshold_blocking_audit"`.
-- [ ] Assert `component_pair_edge_insertion_audit_threshold_disabled` is present in
+- [x] Assert `next_required_gate == "paper_component_pair_threshold_blocking_audit"`.
+- [x] Assert `component_pair_edge_insertion_audit_threshold_disabled` is present in
   `paper_faithfulness.implemented_fixture_scope`.
-- [ ] Assert report cases include `paper_disconnected_components`.
-- [ ] Assert the existing `paper_three_face_chain` trace remains topology-only:
+- [x] Assert report cases include `paper_disconnected_components`.
+- [x] Assert the existing `paper_three_face_chain` trace remains topology-only:
   - `component_pair_edge_policy == "disabled"`;
   - `component_pair_edge_insertion_triggered is False`;
   - `component_pair_candidate_count == 0`;
   - `component_pair_candidate_cap == "disabled"`;
   - all event `edge_source` values stay `topology`.
-- [ ] Assert the new `paper_disconnected_components` trace records:
+- [x] Assert the new `paper_disconnected_components` trace records:
   - `trace_scope == "component_pair_priority_queue_trace_fixture"`;
   - `priority_queue_policy == "paper_greedy_min_weighted_priority_cost"`;
   - `target_primitive_count == 1`;
@@ -52,7 +52,7 @@ primitive count. Keep this command-only, fixture-scoped, and claim-bounded.
   - `stop_reason == "target_count_reached"`;
   - `final_active_groups == [[0, 1]]`;
   - no package, Newton, real USD, or benchmark trigger.
-- [ ] Assert the component-pair event sequence is exactly one accepted merge with:
+- [x] Assert the component-pair event sequence is exactly one accepted merge with:
   - `event_kind == "accepted_merge"`;
   - `edge_source == "component_pair"`;
   - `source_faces_left == [0]`;
@@ -68,8 +68,8 @@ primitive count. Keep this command-only, fixture-scoped, and claim-bounded.
   - `active_primitive_count_after == 1`;
   - `updated_neighbor_insertion_count == 0`;
   - `resulting_source_faces == [0, 1]`.
-- [ ] Update the CLI JSON test expected case list to include `paper_disconnected_components`.
-- [ ] Run:
+- [x] Update the CLI JSON test expected case list to include `paper_disconnected_components`.
+- [x] Run:
   `python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_offline_report_covers_first_toy_slice tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json -q`
   and confirm it fails for the missing component-pair behavior.
 
@@ -79,32 +79,32 @@ primitive count. Keep this command-only, fixture-scoped, and claim-bounded.
 
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] Extend `_PaperToyCase` with a boolean `component_pair_edge_insertion`.
-- [ ] Add `_disconnected_components_mesh()` with two separated triangles.
-- [ ] Add `paper_disconnected_components` with face groups `{0}`, `{1}`, target count `1`, and
+- [x] Extend `_PaperToyCase` with a boolean `component_pair_edge_insertion`.
+- [x] Add `_disconnected_components_mesh()` with two separated triangles.
+- [x] Add `paper_disconnected_components` with face groups `{0}`, `{1}`, target count `1`, and
   component-pair insertion enabled.
-- [ ] Extend `_priority_queue_trace_payload()` with an `allow_component_pair_edges` argument.
-- [ ] Replace the current `while len(active_groups) > target_primitive_count and queue` loop with a
+- [x] Extend `_priority_queue_trace_payload()` with an `allow_component_pair_edges` argument.
+- [x] Replace the current `while len(active_groups) > target_primitive_count and queue` loop with a
   loop that can insert component-pair candidates after topology queue exhaustion before returning
   `queue_exhausted_before_target_count`.
-- [ ] Add `_component_pair_group_pairs(groups)` that returns deterministic all-pairs over active
+- [x] Add `_component_pair_group_pairs(groups)` that returns deterministic all-pairs over active
   groups using `_ordered_group_pair`.
-- [ ] Extend `_queue_candidate_payload()` with an `edge_source` argument defaulting to `topology`.
-- [ ] When the queue is empty but active group count is above target and component-pair insertion is
+- [x] Extend `_queue_candidate_payload()` with an `edge_source` argument defaulting to `topology`.
+- [x] When the queue is empty but active group count is above target and component-pair insertion is
   enabled, insert all deterministic component-pair candidates with `edge_source: component_pair`.
-- [ ] Record component-pair metadata fields on every queue trace:
+- [x] Record component-pair metadata fields on every queue trace:
   - `component_pair_edge_policy`;
   - `component_pair_edge_insertion_triggered`;
   - `topology_queue_exhausted_before_component_pair_insertion`;
   - `component_pair_candidate_count`, defined as the cumulative number of component-pair candidates
     inserted across the trace;
   - `component_pair_candidate_cap`.
-- [ ] Keep threshold fields disabled and `blocked_merge_count: 0`.
-- [ ] Remove `component_pair_edge_insertion` from `missing_before_paper_faithful`.
-- [ ] Add `component_pair_threshold_blocking` to `missing_before_paper_faithful`.
-- [ ] Set `next_required_gate` to `paper_component_pair_threshold_blocking_audit`.
-- [ ] Add `component_pair_edge_insertion_audit_threshold_disabled` to implemented fixture scope.
-- [ ] Run the RED test and confirm it passes.
+- [x] Keep threshold fields disabled and `blocked_merge_count: 0`.
+- [x] Remove `component_pair_edge_insertion` from `missing_before_paper_faithful`.
+- [x] Add `component_pair_threshold_blocking` to `missing_before_paper_faithful`.
+- [x] Set `next_required_gate` to `paper_component_pair_threshold_blocking_audit`.
+- [x] Add `component_pair_edge_insertion_audit_threshold_disabled` to implemented fixture scope.
+- [x] Run the RED test and confirm it passes.
 
 ### Task 3: Docs, Registry, And Record
 
@@ -119,28 +119,28 @@ primitive count. Keep this command-only, fixture-scoped, and claim-bounded.
 - Modify: `experiments/registry.yaml`
 - Create: `docs/records/2026-05-16-cpd-paper-component-pair-edge-insertion.md`
 
-- [ ] Update current paper-lane wording to say component-pair insertion exists for one disconnected
+- [x] Update current paper-lane wording to say component-pair insertion exists for one disconnected
   toy fixture only.
-- [ ] Keep `status: partial` and `paper_faithful_offline_supported: false`.
-- [ ] Make component-pair threshold blocking the next gate.
-- [ ] Update the `paper_disconnected_components` fixture description in the lane spec so it says
+- [x] Keep `status: partial` and `paper_faithful_offline_supported: false`.
+- [x] Make component-pair threshold blocking the next gate.
+- [x] Update the `paper_disconnected_components` fixture description in the lane spec so it says
   active groups are above target and topology cannot reduce them.
-- [ ] Keep package generation, Newton, real USD, benchmark, and collision-quality claims out of
+- [x] Keep package generation, Newton, real USD, benchmark, and collision-quality claims out of
   scope.
-- [ ] Add dated verification and multi-agent review notes.
+- [x] Add dated verification and multi-agent review notes.
 
 ### Task 4: Verification And Review
 
-- [ ] Run focused pytest for CPD paper offline and CLI report tests.
-- [ ] Run CLI smoke:
+- [x] Run focused pytest for CPD paper offline and CLI report tests.
+- [x] Run CLI smoke:
   `python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report`.
-- [ ] Run `python -m pytest -q`.
-- [ ] Run `python scripts/validate_docs.py`.
-- [ ] Run `python scripts/validate_site_claims.py`.
-- [ ] Run `git diff --check`.
-- [ ] Request multi-agent review for component-pair algorithm, docs/claim boundaries, and report
+- [x] Run `python -m pytest -q`.
+- [x] Run `python scripts/validate_docs.py`.
+- [x] Run `python scripts/validate_site_claims.py`.
+- [x] Run `git diff --check`.
+- [x] Request multi-agent review for component-pair algorithm, docs/claim boundaries, and report
   schema.
-- [ ] Fix Critical/Important review findings before commit.
+- [x] Fix Critical/Important review findings before commit.
 
 ### Task 5: Commit
 

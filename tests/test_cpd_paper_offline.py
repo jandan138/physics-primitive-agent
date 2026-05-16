@@ -1,5 +1,5 @@
 import json
-from math import pi, sqrt
+from math import isfinite, pi, sqrt
 
 from primitive_collision_compiler.baselines.cpd_like.primitives import SUPPORTED_PRIMITIVES
 from primitive_collision_compiler.baselines.cpd_paper.offline import (
@@ -24,19 +24,23 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert set(report["failure_labels"]) == {
         "polygon_and_quad_face_policy_missing",
-        "component_pair_edge_insertion_missing",
+        "component_pair_threshold_blocking_missing",
         "postprocess_enclosed_primitive_culling_missing",
     }
-    assert report["next_required_gate"] == "paper_component_pair_edge_insertion_audit"
+    assert report["next_required_gate"] == "paper_component_pair_threshold_blocking_audit"
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]
+    assert "component_pair_edge_insertion_audit_threshold_disabled" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
 
     cases = {case["case_id"]: case for case in report["cases"]}
     assert set(cases) == {
         "paper_single_box",
         "paper_two_face_merge",
         "paper_three_face_chain",
+        "paper_disconnected_components",
         "paper_frustum_like",
         "paper_trapezoid_prism_like",
     }
@@ -201,6 +205,11 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert trace["target_primitive_count"] == 1
     assert trace["excess_volume_threshold"] == "default_inf"
     assert trace["threshold_policy"] == "disabled"
+    assert trace["component_pair_edge_policy"] == "disabled"
+    assert trace["component_pair_edge_insertion_triggered"] is False
+    assert trace["topology_queue_exhausted_before_component_pair_insertion"] is False
+    assert trace["component_pair_candidate_count"] == 0
+    assert trace["component_pair_candidate_cap"] == "disabled"
     assert trace["initial_active_groups"] == [[0], [1], [2]]
     assert trace["initial_edge_count"] == 2
     assert trace["accepted_merge_count"] == 2
@@ -249,6 +258,60 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         if event["accepted"]:
             assert "resulting_source_faces" in event
     assert accepted_events[-1]["resulting_source_faces"] == [0, 1, 2]
+    assert {event["edge_source"] for event in events} == {"topology"}
+
+    disconnected_case = cases["paper_disconnected_components"]
+    disconnected_trace = disconnected_case["collapse_trace"]
+    assert disconnected_trace["trace_scope"] == "component_pair_priority_queue_trace_fixture"
+    assert disconnected_trace["priority_queue_policy"] == "paper_greedy_min_weighted_priority_cost"
+    assert disconnected_trace["target_primitive_count"] == 1
+    assert disconnected_trace["excess_volume_threshold"] == "default_inf"
+    assert disconnected_trace["threshold_policy"] == "disabled"
+    assert disconnected_trace["initial_active_groups"] == [[0], [1]]
+    assert disconnected_trace["initial_edge_count"] == 0
+    assert disconnected_trace["initial_candidates"] == []
+    assert disconnected_trace["component_pair_edge_policy"] == (
+        "insert_when_topology_queue_exhausted_before_target"
+    )
+    assert disconnected_trace["topology_queue_exhausted_before_component_pair_insertion"] is True
+    assert disconnected_trace["component_pair_edge_insertion_triggered"] is True
+    assert disconnected_trace["component_pair_candidate_count"] == 1
+    assert disconnected_trace["component_pair_candidate_cap"] == "all_pairs_for_fixture"
+    assert disconnected_trace["accepted_merge_count"] == 1
+    assert disconnected_trace["stale_entry_skipped_count"] == 0
+    assert disconnected_trace["blocked_merge_count"] == 0
+    assert disconnected_trace["stop_reason"] == "target_count_reached"
+    assert disconnected_trace["final_active_groups"] == [[0, 1]]
+    assert disconnected_trace["package_generation_triggered"] is False
+    assert disconnected_trace["newton_runtime_triggered"] is False
+    assert disconnected_trace["real_usd_triggered"] is False
+    assert disconnected_trace["benchmark_triggered"] is False
+    assert len(disconnected_trace["events"]) == 1
+    component_event = disconnected_trace["events"][0]
+    assert component_event["event_kind"] == "accepted_merge"
+    assert component_event["edge_source"] == "component_pair"
+    assert component_event["source_faces_left"] == [0]
+    assert component_event["source_faces_right"] == [1]
+    assert component_event["source_faces_merged"] == [0, 1]
+    assert isfinite(component_event["paper_base_cost"])
+    assert isfinite(component_event["weighted_priority_cost"])
+    assert component_event["queue_key"] == [
+        component_event["weighted_priority_cost"],
+        component_event["paper_base_cost"],
+        [0],
+        [1],
+        component_event["insertion_order"],
+    ]
+    assert component_event["left_primitive"]
+    assert component_event["right_primitive"]
+    assert component_event["merged_primitive"]
+    assert component_event["accepted"] is True
+    assert component_event["blocked"] is False
+    assert component_event["stale_entry"] is False
+    assert component_event["active_primitive_count_before"] == 2
+    assert component_event["active_primitive_count_after"] == 1
+    assert component_event["updated_neighbor_insertion_count"] == 0
+    assert component_event["resulting_source_faces"] == [0, 1]
 
 
 def test_cpd_paper_offline_report_is_strict_json_serializable():

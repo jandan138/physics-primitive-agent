@@ -55,6 +55,7 @@ class _PaperToyCase:
     face_groups: tuple[frozenset[int], ...]
     collapse_pair: tuple[frozenset[int], frozenset[int]] | None = None
     priority_queue_target_count: int | None = None
+    component_pair_edge_insertion: bool = False
 
 
 def build_cpd_paper_offline_report() -> dict[str, object]:
@@ -63,7 +64,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
     cases = [_case_payload(case) for case in _paper_toy_cases()]
     missing_before_paper_faithful = [
         "polygon_and_quad_face_policy",
-        "component_pair_edge_insertion",
+        "component_pair_threshold_blocking",
         "postprocess_enclosed_primitive_culling",
     ]
     return {
@@ -83,7 +84,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_component_pair_edge_insertion_audit",
+        "next_required_gate": "paper_component_pair_threshold_blocking_audit",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -92,6 +93,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "primitive_fit_audit_all_paper_names_with_surrogate_rows",
                 "single_pop_collapse_cost_audit",
                 "priority_queue_trace_audit_topology_only",
+                "component_pair_edge_insertion_audit_threshold_disabled",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -126,6 +128,7 @@ def _case_payload(case: _PaperToyCase) -> dict[str, object]:
             case.mesh,
             case.face_groups,
             case.priority_queue_target_count,
+            allow_component_pair_edges=case.component_pair_edge_insertion,
         )
     return payload
 
@@ -847,6 +850,8 @@ def _priority_queue_trace_payload(
     mesh: TriangleMesh,
     initial_groups: tuple[frozenset[int], ...],
     target_primitive_count: int,
+    *,
+    allow_component_pair_edges: bool = False,
 ) -> dict[str, object]:
     active_groups = set(initial_groups)
     insertion_order = 0
@@ -860,8 +865,33 @@ def _priority_queue_trace_payload(
     accepted_merge_count = 0
     stale_entry_skipped_count = 0
     blocked_merge_count = 0
+    component_pair_edge_insertion_triggered = False
+    topology_queue_exhausted_before_component_pair_insertion = False
+    component_pair_candidate_count = 0
 
-    while len(active_groups) > target_primitive_count and queue:
+    while len(active_groups) > target_primitive_count:
+        if not queue:
+            if not allow_component_pair_edges:
+                break
+            component_pairs = _component_pair_group_pairs(active_groups)
+            if not component_pairs:
+                break
+            topology_queue_exhausted_before_component_pair_insertion = True
+            component_pair_edge_insertion_triggered = True
+            for left, right in component_pairs:
+                queue.append(
+                    _queue_candidate_payload(
+                        mesh,
+                        left,
+                        right,
+                        insertion_order,
+                        edge_source="component_pair",
+                    )
+                )
+                insertion_order += 1
+                component_pair_candidate_count += 1
+            continue
+
         queue.sort(key=lambda entry: entry["_sort_key"])
         entry = queue.pop(0)
         active_before = len(active_groups)
@@ -936,12 +966,31 @@ def _priority_queue_trace_payload(
         if len(active_groups) <= target_primitive_count
         else "queue_exhausted_before_target_count"
     )
+    component_pair_edge_policy = (
+        "insert_when_topology_queue_exhausted_before_target"
+        if allow_component_pair_edges
+        else "disabled"
+    )
+    component_pair_candidate_cap = (
+        "all_pairs_for_fixture" if allow_component_pair_edges else "disabled"
+    )
     return {
-        "trace_scope": "topology_priority_queue_trace_fixture",
+        "trace_scope": (
+            "component_pair_priority_queue_trace_fixture"
+            if allow_component_pair_edges
+            else "topology_priority_queue_trace_fixture"
+        ),
         "priority_queue_policy": "paper_greedy_min_weighted_priority_cost",
         "target_primitive_count": int(target_primitive_count),
         "excess_volume_threshold": "default_inf",
         "threshold_policy": "disabled",
+        "component_pair_edge_policy": component_pair_edge_policy,
+        "component_pair_edge_insertion_triggered": component_pair_edge_insertion_triggered,
+        "topology_queue_exhausted_before_component_pair_insertion": (
+            topology_queue_exhausted_before_component_pair_insertion
+        ),
+        "component_pair_candidate_count": component_pair_candidate_count,
+        "component_pair_candidate_cap": component_pair_candidate_cap,
         "initial_active_groups": _sorted_group_payload(initial_groups),
         "initial_edge_count": len(initial_candidates),
         "initial_candidates": initial_candidates,
@@ -963,6 +1012,8 @@ def _queue_candidate_payload(
     left: frozenset[int],
     right: frozenset[int],
     insertion_order: int,
+    *,
+    edge_source: str = "topology",
 ) -> dict[str, object]:
     left, right = _ordered_group_pair(left, right)
     cost = _paper_merge_cost_payload(mesh, left, right)
@@ -992,7 +1043,7 @@ def _queue_candidate_payload(
         "paper_base_cost": cost["paper_base_cost"],
         "weighted_priority_cost": cost["weighted_priority_cost"],
         "queue_key": queue_key,
-        "edge_source": "topology",
+        "edge_source": edge_source,
         "insertion_order": int(insertion_order),
     }
 
@@ -1051,6 +1102,17 @@ def _topology_adjacent_group_pairs(
         for right in sorted_groups[left_index + 1 :]:
             if _groups_share_mesh_edge(mesh, left, right):
                 pairs.append(_ordered_group_pair(left, right))
+    return pairs
+
+
+def _component_pair_group_pairs(
+    groups: set[frozenset[int]],
+) -> list[tuple[frozenset[int], frozenset[int]]]:
+    pairs: list[tuple[frozenset[int], frozenset[int]]] = []
+    sorted_groups = sorted(groups, key=_group_sort_key)
+    for left_index, left in enumerate(sorted_groups):
+        for right in sorted_groups[left_index + 1 :]:
+            pairs.append(_ordered_group_pair(left, right))
     return pairs
 
 
@@ -1115,6 +1177,14 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             mesh=_three_face_chain_mesh(),
             face_groups=(frozenset({0}), frozenset({1}), frozenset({2})),
             priority_queue_target_count=1,
+        ),
+        _PaperToyCase(
+            case_id="paper_disconnected_components",
+            description="two disconnected triangles for threshold-disabled component-pair edge insertion audit",
+            mesh=_disconnected_components_mesh(),
+            face_groups=(frozenset({0}), frozenset({1})),
+            priority_queue_target_count=1,
+            component_pair_edge_insertion=True,
         ),
         _PaperToyCase(
             case_id="paper_frustum_like",
@@ -1195,6 +1265,28 @@ def _three_face_chain_mesh() -> TriangleMesh:
             [0, 1, 2],
             [1, 3, 2],
             [1, 4, 3],
+        ],
+        dtype=np.int64,
+    )
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _disconnected_components_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [3.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0],
+            [3.0, 1.0, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array(
+        [
+            [0, 1, 2],
+            [3, 4, 5],
         ],
         dtype=np.int64,
     )
