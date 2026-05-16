@@ -35,8 +35,10 @@ recorded settings. This is native selection/accounting evidence, not native prim
 evidence, whole-robot collider quality, or benchmark evidence. The synthetic native fitting
 comparison now also emits candidate weighted-volume audit tables that explain why `cylinder`,
 `cone`, and `ellipsoid` win on the named toy fixtures; this is toy diagnostic accounting, not a
-real-USD or collision-quality claim.
-See
+real-USD or collision-quality claim. The partial offline CPD paper report now also includes
+fixture-breadth Batch A source/preprocess, Batch B primitive-fit, and Batch C cost/search/stop
+accounting, advancing the next paper-lane gate to Batch D component-pair breadth while keeping the
+report partial and offline-only. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

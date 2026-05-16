@@ -197,8 +197,9 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "intersection-volume primary cost."
             ),
             "current_evidence": (
-                "One two-face cost fixture plus priority-queue event fields record base "
-                "and weighted costs."
+                "One two-face cost fixture plus Batch C cost/search/stop fixtures record "
+                "base and weighted costs, weighted priority ordering, and one positive "
+                "finite threshold block."
             ),
             "status": "partial_fixture_scope",
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -213,8 +214,9 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "handle stale entries, and merge greedily."
             ),
             "current_evidence": (
-                "Topology, deduplicated-topology, and component-pair toy traces exist "
-                "with deterministic queue keys."
+                "Topology, deduplicated-topology, component-pair, and Batch C toy traces "
+                "exist with deterministic queue keys, weighted-priority ordering, and "
+                "equal-cost stale-prune behavior."
             ),
             "status": "partial_fixture_scope",
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -231,7 +233,8 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "remaining candidates."
             ),
             "current_evidence": (
-                "Target-count traces and one zero finite-threshold component-pair block exist."
+                "Target-count traces, one zero finite-threshold component-pair block, and "
+                "one Batch C positive nonzero finite-threshold component-pair block exist."
             ),
             "status": "partial_fixture_scope",
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -412,7 +415,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_fixture_breadth_batch_c",
+        "next_required_gate": "paper_fixture_breadth_batch_d",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -430,6 +433,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "paper_faithful_offline_scope_audit",
                 "paper_fixture_breadth_batch_a_source_preprocess_intake_operator",
                 "paper_fixture_breadth_batch_b_primitive_fit",
+                "paper_fixture_breadth_batch_c_cost_search_stop",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -2336,6 +2340,37 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             face_groups=(frozenset(range(12)),),
             fixture_breadth_batch="paper_fixture_breadth_batch_b",
         ),
+        _PaperToyCase(
+            case_id="paper_branching_cost_order",
+            description="Batch C branching topology fixture for weighted priority cost ordering",
+            mesh=_paper_branching_cost_order_mesh(),
+            face_groups=(
+                frozenset({0}),
+                frozenset({1}),
+                frozenset({2}),
+                frozenset({3}),
+            ),
+            priority_queue_target_count=3,
+            fixture_breadth_batch="paper_fixture_breadth_batch_c",
+        ),
+        _PaperToyCase(
+            case_id="paper_equal_cost_queue_tie",
+            description="Batch C symmetric topology fixture for deterministic equal-cost queue ties",
+            mesh=_paper_equal_cost_queue_tie_mesh(),
+            face_groups=(frozenset({0}), frozenset({1}), frozenset({2})),
+            priority_queue_target_count=1,
+            fixture_breadth_batch="paper_fixture_breadth_batch_c",
+        ),
+        _PaperToyCase(
+            case_id="paper_nonzero_threshold_block",
+            description="Batch C positive finite component-pair threshold block fixture",
+            mesh=_disconnected_components_mesh(),
+            face_groups=(frozenset({0}), frozenset({1})),
+            priority_queue_target_count=1,
+            component_pair_edge_insertion=True,
+            component_pair_excess_volume_threshold=1e-6,
+            fixture_breadth_batch="paper_fixture_breadth_batch_c",
+        ),
     )
 
 
@@ -2403,6 +2438,54 @@ def _three_face_chain_mesh() -> TriangleMesh:
             [0, 1, 2],
             [1, 3, 2],
             [1, 4, 3],
+        ],
+        dtype=np.int64,
+    )
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _paper_branching_cost_order_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [0.732172, 0.0, -0.095874],
+            [0.151284, 2.644561, -0.089303],
+            [-0.431305, -1.498606, -1.144457],
+            [2.581183, 2.350038, -1.790004],
+            [10.0, 0.0, 0.0],
+            [11.0, 0.0, 0.0],
+            [10.0, 1.0, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array(
+        [
+            [0, 1, 2],
+            [1, 0, 3],
+            [2, 1, 4],
+            [5, 6, 7],
+        ],
+        dtype=np.int64,
+    )
+    return TriangleMesh(points=points, faces=faces)
+
+
+def _paper_equal_cost_queue_tie_mesh() -> TriangleMesh:
+    points = np.array(
+        [
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, -1.0, 0.0],
+            [-1.0, 0.0, 0.0],
+        ],
+        dtype=np.float64,
+    )
+    faces = np.array(
+        [
+            [0, 1, 2],
+            [0, 3, 1],
+            [0, 2, 4],
         ],
         dtype=np.int64,
     )

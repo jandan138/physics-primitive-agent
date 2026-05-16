@@ -37,9 +37,9 @@ The scope audit keeps these nine criteria blocking before stronger offline wordi
 | `source_face_intake_policy` | Current non-triangle source-face evidence is one quad and one convex five-vertex polygon. |
 | `operator_q_audit` | Operator evidence exists for named fixtures, but not enough degeneracy or source-policy breadth. |
 | `primitive_vocabulary_and_fit` | All six paper primitive names have audit rows, but fitting breadth is limited. |
-| `paper_collapse_cost_and_weighting` | Cost evidence is narrow and uses one zero-threshold blocked fixture. |
-| `greedy_priority_queue_trace` | Queue traces are toy-scoped and do not cover enough ordering and stale-entry behavior. |
-| `target_count_and_threshold_stop` | Target and threshold stops are narrow, with no positive nonzero threshold fixture. |
+| `paper_collapse_cost_and_weighting` | Cost evidence is still toy-scoped after Batch C, even though weighted ordering and positive finite threshold accounting now exist. |
+| `greedy_priority_queue_trace` | Queue traces remain toy-scoped after Batch C and still need broader component-pair and postprocess breadth. |
+| `target_count_and_threshold_stop` | Target and threshold stops remain toy-scoped after Batch C, including one positive finite component-pair threshold fixture. |
 | `component_pair_edge_handling` | Component-pair evidence has one accepted and one blocked all-pairs case only. |
 | `enclosed_primitive_postprocess` | Postprocess evidence is one explicit identity-axis OBB canary. |
 
@@ -51,7 +51,7 @@ The next implementation work should use small batches rather than one broad algo
 | --- | --- | --- | --- |
 | A. Source/preprocess/intake/operator breadth | `paper_mixed_face_preprocess_operator`, `paper_degenerate_preprocess_face_drop`, `paper_concave_polygon_rejected` | source mesh/preprocessing, source-face intake, operator `Q` | Broaden mesh policy beyond current exact-overlap and simple convex source-face fixtures. |
 | B. Primitive fit breadth | `paper_rotated_box_fit`, `paper_offset_sphere_fit`, `paper_off_axis_capsule_fit`, `paper_flat_capped_cylinder_axis_fit`, `paper_tapered_frustum_fit`, `paper_asymmetric_trapezoid_fit` | primitive vocabulary and fit | Broaden all six paper primitive names beyond current named minimal cases without changing Newton runtime support. |
-| C. Cost/search/stop breadth | `paper_branching_cost_order`, `paper_equal_cost_queue_tie`, `paper_nonzero_threshold_block` | collapse cost, priority queue, target/threshold stop | Test cost ordering, queue tie/stale behavior, and nonzero finite threshold blocking. |
+| C. Cost/search/stop breadth | `paper_branching_cost_order`, `paper_equal_cost_queue_tie`, `paper_nonzero_threshold_block` | collapse cost, priority queue, target/threshold stop | Test weighted-priority ordering, queue tie/eager-stale-prune behavior, and nonzero finite threshold blocking. |
 | D. Component-pair breadth | `paper_component_pair_multi_candidate_order`, `paper_component_pair_cap_skipped` | component-pair edge handling, target/threshold stop | Broaden disconnected-component pair insertion beyond one accepted and one blocked all-pairs case. |
 | E. Postprocess breadth | `paper_rotated_nested_primitive`, `paper_cross_type_enclosure_boundary` | enclosed primitive postprocess | Broaden postprocess from one explicit identity-axis OBB canary to additional containment boundaries. |
 
@@ -106,11 +106,22 @@ paper_fixture_breadth_batch_b
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
-The next code slice should be:
+Batch C is now implemented in `cpd_paper_offline_report`:
 
 ```text
 paper_fixture_breadth_batch_c
--> cost/search/stop breadth fixtures
+-> `paper_branching_cost_order`
+-> `paper_equal_cost_queue_tie`
+-> `paper_nonzero_threshold_block`
+-> report remains partial
+-> no package generation, Newton, real USD, or benchmark work
+```
+
+The next code slice should be:
+
+```text
+paper_fixture_breadth_batch_d
+-> component-pair breadth fixtures
 -> report remains partial
 -> no package generation, Newton, real USD, or benchmark work
 ```
@@ -118,7 +129,9 @@ paper_fixture_breadth_batch_c
 Batch A stays important because it improves the source mesh, source-face intake, and operator
 criteria that every later primitive-fit and search fixture depends on. Batch B stays important
 because it broadens primitive-fit evidence before cost/search fixtures start comparing candidate
-choices.
+choices. Batch C stays important because it checks weighted-priority ordering, deterministic queue
+ties/eager-stale-prune events, and one positive finite threshold block before broader component-pair
+cases.
 
 ## Claim Boundary
 
@@ -127,12 +140,12 @@ This plan supports only this statement:
 ```text
 The repository has an offline-only fixture-breadth expansion plan and a Batch A synthetic
 source/preprocess/intake/operator implementation plus a Batch B primitive-fit implementation
-inside the partial paper report.
+plus a Batch C cost/search/stop implementation inside the partial paper report.
 ```
 
 It does not support:
 
-- implemented Batch C-E fixture breadth;
+- implemented Batch D-E fixture breadth;
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
 - package generation;

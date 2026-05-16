@@ -8,10 +8,11 @@
 `cpd_paper_offline_report`.
 
 **Architecture:** Keep the implementation fixture-only, command-only, and offline-only. Add three
-synthetic toy cases under `cpd_paper.offline`: two topology priority-queue traces for weighted-cost
-ordering and equal-cost deterministic tie/stale behavior, plus one positive finite threshold block
-using the existing component-pair threshold path. Do not add Newton, package generation, real USD,
-benchmark, runtime primitive mapping, or broad optimizer behavior.
+synthetic toy cases under `cpd_paper.offline`: two topology priority-queue traces for
+weighted-priority ordering and equal-cost deterministic tie/eager-stale-prune behavior, plus one
+positive finite threshold block using the existing component-pair threshold path. Do not add
+Newton, package generation, real USD, benchmark, runtime primitive mapping, or broad optimizer
+behavior.
 
 **Tech Stack:** Python, NumPy, pytest, Markdown docs, YAML registry.
 
@@ -105,6 +106,23 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_c():
     assert first_accepted["queue_key"] == min(
         candidate["queue_key"] for candidate in branching["initial_candidates"]
     )
+    min_base_candidate = min(
+        branching["initial_candidates"],
+        key=lambda candidate: candidate["paper_base_cost"],
+    )
+    min_weighted_candidate = min(
+        branching["initial_candidates"],
+        key=lambda candidate: candidate["weighted_priority_cost"],
+    )
+    assert min_base_candidate["source_faces_merged"] != min_weighted_candidate[
+        "source_faces_merged"
+    ]
+    assert first_accepted["source_faces_merged"] == min_weighted_candidate[
+        "source_faces_merged"
+    ]
+    assert first_accepted["source_faces_merged"] != min_base_candidate[
+        "source_faces_merged"
+    ]
     assert first_accepted["queue_key"][0] == first_accepted["weighted_priority_cost"]
     assert first_accepted["queue_key"][1] == first_accepted["paper_base_cost"]
     assert first_accepted["updated_neighbor_insertion_count"] == 1
@@ -211,11 +229,11 @@ assert "paper_fixture_breadth_batch_c_cost_search_stop" in report[
 }
 {
     "criterion_id": "greedy_priority_queue_trace",
-    "current_evidence": (
-        "Topology, deduplicated-topology, component-pair, and Batch C toy traces "
-        "exist with deterministic queue keys, weighted-cost ordering, and "
-        "equal-cost stale-prune behavior."
-    ),
+        "current_evidence": (
+            "Topology, deduplicated-topology, component-pair, and Batch C toy traces "
+            "exist with deterministic queue keys, weighted-priority ordering, and "
+            "equal-cost stale-prune behavior."
+        ),
 }
 {
     "criterion_id": "target_count_and_threshold_stop",
@@ -291,10 +309,10 @@ def _paper_branching_cost_order_mesh() -> TriangleMesh:
     points = np.array(
         [
             [0.0, 0.0, 0.0],
-            [1.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0],
-            [0.2, -0.2, 0.0],
-            [1.8, 1.2, 0.0],
+            [0.732172, 0.0, -0.095874],
+            [0.151284, 2.644561, -0.089303],
+            [-0.431305, -1.498606, -1.144457],
+            [2.581183, 2.350038, -1.790004],
             [10.0, 0.0, 0.0],
             [11.0, 0.0, 0.0],
             [10.0, 1.0, 0.0],
@@ -497,7 +515,7 @@ readiness, or safety certification.
       search, and threshold-stop fixture breadth.
     claims_supported:
       - partial fixture-scoped offline cost/search/stop Batch C audit only
-      - records branching weighted-cost ordering, equal-cost deterministic queue tie and stale-prune behavior, one positive finite component-pair threshold block, and the next gate paper_fixture_breadth_batch_d
+      - records branching weighted-priority ordering where base-cost and weighted-priority choices differ, equal-cost deterministic queue tie and eager-stale-prune behavior, one positive finite component-pair threshold block, and the next gate paper_fixture_breadth_batch_d
       - no paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
 ```
 

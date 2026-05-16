@@ -89,8 +89,9 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "intersection-volume primary cost."
         ),
         "current_evidence": (
-            "One two-face cost fixture plus priority-queue event fields record base "
-            "and weighted costs."
+            "One two-face cost fixture plus Batch C cost/search/stop fixtures record "
+            "base and weighted costs, weighted priority ordering, and one positive "
+            "finite threshold block."
         ),
         "status": "partial_fixture_scope",
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -105,8 +106,9 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "handle stale entries, and merge greedily."
         ),
         "current_evidence": (
-            "Topology, deduplicated-topology, and component-pair toy traces exist "
-            "with deterministic queue keys."
+            "Topology, deduplicated-topology, component-pair, and Batch C toy traces "
+            "exist with deterministic queue keys, weighted-priority ordering, and "
+            "equal-cost stale-prune behavior."
         ),
         "status": "partial_fixture_scope",
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -123,7 +125,8 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "remaining candidates."
         ),
         "current_evidence": (
-            "Target-count traces and one zero finite-threshold component-pair block exist."
+            "Target-count traces, one zero finite-threshold component-pair block, and "
+            "one Batch C positive nonzero finite-threshold component-pair block exist."
         ),
         "status": "partial_fixture_scope",
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -260,10 +263,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_fixture_breadth_gap():
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
 
 
-def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_c():
+def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_d():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_c"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_d"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -272,6 +275,20 @@ def _candidate_by_paper_primitive(audit, paper_primitive):
     ]
     assert len(rows) == 1
     return rows[0]
+
+
+def _event_signature(trace):
+    return [
+        (
+            event["event_kind"],
+            event["source_faces_left"],
+            event["source_faces_right"],
+            event["accepted"],
+            event["stale_entry"],
+            event["blocked"],
+        )
+        for event in trace["events"]
+    ]
 
 
 def _candidate_has_common_fit_fields(row):
@@ -766,6 +783,146 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_b():
     assert prism["dimensions"]["volume_formula"] == "4*h_x*h_y*(h_zt + h_zb)"
 
 
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_c():
+    report = build_cpd_paper_offline_report()
+    report_again = build_cpd_paper_offline_report()
+    cases = {case["case_id"]: case for case in report["cases"]}
+    cases_again = {case["case_id"]: case for case in report_again["cases"]}
+
+    expected_case_ids = {
+        "paper_branching_cost_order",
+        "paper_equal_cost_queue_tie",
+        "paper_nonzero_threshold_block",
+    }
+    assert expected_case_ids.issubset(cases)
+    for case_id in expected_case_ids:
+        case = cases[case_id]
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_c"
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
+        assert case["collapse_trace"]["package_generation_triggered"] is False
+        assert case["collapse_trace"]["newton_runtime_triggered"] is False
+        assert case["collapse_trace"]["real_usd_triggered"] is False
+        assert case["collapse_trace"]["benchmark_triggered"] is False
+        for candidate in case["collapse_trace"]["initial_candidates"]:
+            assert isfinite(candidate["paper_base_cost"])
+            assert isfinite(candidate["weighted_priority_cost"])
+            assert isfinite(candidate["queue_key"][0])
+            assert isfinite(candidate["queue_key"][1])
+        for event in case["collapse_trace"]["events"]:
+            assert isfinite(event["paper_base_cost"])
+            assert isfinite(event["weighted_priority_cost"])
+            assert isfinite(event["queue_key"][0])
+            assert isfinite(event["queue_key"][1])
+
+    branching = cases["paper_branching_cost_order"]["collapse_trace"]
+    assert branching["trace_scope"] == "topology_priority_queue_trace_fixture"
+    assert branching["initial_edge_count"] == 2
+    assert branching["target_primitive_count"] == 3
+    assert branching["threshold_policy"] == "disabled"
+    assert len(branching["initial_candidates"]) == 2
+    assert all(
+        candidate["edge_source"] == "topology"
+        for candidate in branching["initial_candidates"]
+    )
+    assert all(
+        "paper_base_cost" in candidate for candidate in branching["initial_candidates"]
+    )
+    assert all(
+        "weighted_priority_cost" in candidate
+        for candidate in branching["initial_candidates"]
+    )
+    first_accepted = [event for event in branching["events"] if event["accepted"]][0]
+    assert first_accepted["weighted_priority_cost"] == min(
+        candidate["weighted_priority_cost"]
+        for candidate in branching["initial_candidates"]
+    )
+    assert first_accepted["queue_key"] == min(
+        candidate["queue_key"] for candidate in branching["initial_candidates"]
+    )
+    min_base_candidate = min(
+        branching["initial_candidates"],
+        key=lambda candidate: candidate["paper_base_cost"],
+    )
+    min_weighted_candidate = min(
+        branching["initial_candidates"],
+        key=lambda candidate: candidate["weighted_priority_cost"],
+    )
+    assert min_base_candidate["source_faces_merged"] != min_weighted_candidate[
+        "source_faces_merged"
+    ]
+    assert first_accepted["source_faces_merged"] == min_weighted_candidate[
+        "source_faces_merged"
+    ]
+    assert first_accepted["source_faces_merged"] != min_base_candidate[
+        "source_faces_merged"
+    ]
+    assert first_accepted["queue_key"][0] == first_accepted["weighted_priority_cost"]
+    assert first_accepted["queue_key"][1] == first_accepted["paper_base_cost"]
+    assert first_accepted["updated_neighbor_insertion_count"] == 1
+    assert branching["accepted_merge_count"] == 1
+    assert branching["stop_reason"] == "target_count_reached"
+
+    tie = cases["paper_equal_cost_queue_tie"]["collapse_trace"]
+    tie_again = cases_again["paper_equal_cost_queue_tie"]["collapse_trace"]
+    assert tie["trace_scope"] == "topology_priority_queue_trace_fixture"
+    assert tie["initial_edge_count"] == 2
+    assert tie["target_primitive_count"] == 1
+    first_candidate, second_candidate = tie["initial_candidates"]
+    assert first_candidate["weighted_priority_cost"] == second_candidate[
+        "weighted_priority_cost"
+    ]
+    assert first_candidate["paper_base_cost"] == second_candidate["paper_base_cost"]
+    assert first_candidate["queue_key"][2:] < second_candidate["queue_key"][2:]
+    assert first_candidate["left_primitive"] == second_candidate["left_primitive"]
+    assert first_candidate["right_primitive"] == second_candidate["right_primitive"]
+    assert first_candidate["merged_primitive"] == second_candidate["merged_primitive"]
+    assert tie["events"][0]["event_kind"] == "accepted_merge"
+    assert tie["events"][0]["source_faces_left"] == [0]
+    assert tie["events"][0]["source_faces_right"] == [1]
+    assert tie["events"][1]["event_kind"] == "eager_stale_prune"
+    assert tie["events"][1]["stale_entry"] is True
+    assert tie["events"][1]["source_faces_left"] == [0]
+    assert tie["events"][1]["source_faces_right"] == [2]
+    assert tie["events"][2]["event_kind"] == "accepted_merge"
+    assert tie["events"][2]["source_faces_left"] == [0, 1]
+    assert tie["events"][2]["source_faces_right"] == [2]
+    assert len(tie["events"]) == 3
+    assert tie["accepted_merge_count"] == 2
+    assert tie["stale_entry_skipped_count"] == 1
+    assert tie["final_active_groups"] == [[0, 1, 2]]
+    assert _event_signature(tie) == [
+        ("accepted_merge", [0], [1], True, False, False),
+        ("eager_stale_prune", [0], [2], False, True, False),
+        ("accepted_merge", [0, 1], [2], True, False, False),
+    ]
+    assert _event_signature(tie) == _event_signature(tie_again)
+
+    blocked = cases["paper_nonzero_threshold_block"]["collapse_trace"]
+    assert blocked["trace_scope"] == "component_pair_priority_queue_trace_fixture"
+    assert blocked["component_pair_edge_insertion_triggered"] is True
+    assert blocked["topology_queue_exhausted_before_component_pair_insertion"] is True
+    assert blocked["threshold_policy"] == "component_pair_paper_base_cost_lte_threshold"
+    assert blocked["excess_volume_threshold"] == 1e-6
+    assert blocked["accepted_merge_count"] == 0
+    assert blocked["blocked_merge_count"] == 1
+    assert blocked["stop_reason"] == "all_remaining_edges_blocked_by_threshold"
+    blocked_events = [
+        event
+        for event in blocked["events"]
+        if event["event_kind"] == "blocked_by_threshold"
+    ]
+    assert len(blocked_events) == 1
+    blocked_event = blocked_events[0]
+    assert blocked_event["edge_source"] == "component_pair"
+    assert blocked_event["threshold_metric"] == "paper_base_cost"
+    assert blocked_event["threshold_value"] == 1e-6
+    assert blocked_event["paper_base_cost"] > blocked_event["threshold_value"] > 0.0
+    assert blocked_event["blocked_reason"] == "component_pair_threshold_exceeded"
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -781,7 +938,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_c"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_d"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
         "paper_fixture_breadth_expansion"
     ]
@@ -813,6 +970,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
     assert "paper_fixture_breadth_batch_b_primitive_fit" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_fixture_breadth_batch_c_cost_search_stop" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
 
@@ -879,6 +1039,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_flat_capped_cylinder_axis_fit",
         "paper_tapered_frustum_fit",
         "paper_asymmetric_trapezoid_fit",
+        "paper_branching_cost_order",
+        "paper_equal_cost_queue_tie",
+        "paper_nonzero_threshold_block",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
     for case in cases.values():

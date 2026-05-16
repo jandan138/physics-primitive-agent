@@ -580,18 +580,19 @@ This slice is a decision table, not a new decomposition algorithm. It records
 `decision: remain_partial`, `paper_faithful_offline_allowed: false`, and the nine blocking
 fixture-scope criteria that need a fixture-breadth plan before any stronger offline wording.
 
-## Next Implementation Slice
+## Current Fixture-Breadth Position
 
-The next paper-lane gate after Batch B is:
+The paper-lane gate after Batch C is:
 
 ```text
-paper_fixture_breadth_batch_c
--> add cost/search/stop breadth fixtures
+paper_fixture_breadth_batch_d
+-> add component-pair breadth fixtures
 -> keep report status partial
 -> keep package generation, Newton, real USD, and benchmarks out of scope
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
 primitive-fit evidence for OBB, sphere, capsule, capped cylinder, frustum, and trapezoidal prism
-without adding Newton runtime support. Batch C should broaden cost ordering, queue tie/stale
-behavior, and nonzero threshold blocking without adding Newton runtime support.
+without adding Newton runtime support. Batch C broadens weighted-priority ordering, queue
+tie/eager-stale-prune behavior, and positive nonzero threshold blocking without adding Newton
+runtime support. Batch D should broaden disconnected component-pair accounting next.

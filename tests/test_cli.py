@@ -1528,7 +1528,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_c"
+    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_d"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1575,6 +1575,9 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_flat_capped_cylinder_axis_fit",
         "paper_tapered_frustum_fit",
         "paper_asymmetric_trapezoid_fit",
+        "paper_branching_cost_order",
+        "paper_equal_cost_queue_tie",
+        "paper_nonzero_threshold_block",
     }.issubset(set(case_ids))
     assert case_ids[:15] == [
         "paper_single_box",
@@ -1720,6 +1723,38 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         assert case["real_usd_triggered"] is False
         assert case["benchmark_triggered"] is False
         assert case["primitive_fit_audit"]["missing_paper_primitives"] == []
+
+    batch_c_cases = {
+        case["case_id"]: case
+        for case in payload["cases"]
+        if case["case_id"]
+        in {
+            "paper_branching_cost_order",
+            "paper_equal_cost_queue_tie",
+            "paper_nonzero_threshold_block",
+        }
+    }
+    assert set(batch_c_cases) == {
+        "paper_branching_cost_order",
+        "paper_equal_cost_queue_tie",
+        "paper_nonzero_threshold_block",
+    }
+    for case in batch_c_cases.values():
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_c"
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
+
+    assert batch_c_cases["paper_branching_cost_order"]["collapse_trace"][
+        "accepted_merge_count"
+    ] == 1
+    assert batch_c_cases["paper_equal_cost_queue_tie"]["collapse_trace"][
+        "stale_entry_skipped_count"
+    ] >= 1
+    assert batch_c_cases["paper_nonzero_threshold_block"]["collapse_trace"][
+        "excess_volume_threshold"
+    ] == 1e-6
 
 
 def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):
