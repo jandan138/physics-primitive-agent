@@ -1528,7 +1528,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_b"
+    assert payload["next_required_gate"] == "paper_fixture_breadth_batch_c"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -1552,7 +1552,31 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "real_usd_boundary",
         "benchmark_evaluation_boundary",
     ]
-    assert [case["case_id"] for case in payload["cases"]] == [
+    case_ids = [case["case_id"] for case in payload["cases"]]
+    assert {
+        "paper_single_box",
+        "paper_two_face_merge",
+        "paper_three_face_chain",
+        "paper_disconnected_components",
+        "paper_component_pair_threshold_blocked",
+        "paper_tiny_sphere_clamp",
+        "paper_duplicate_vertex_preprocessing",
+        "paper_frustum_like",
+        "paper_trapezoid_prism_like",
+        "paper_nested_primitive",
+        "paper_quad_face_intake",
+        "paper_polygon_face_intake",
+        "paper_mixed_face_preprocess_operator",
+        "paper_degenerate_preprocess_face_drop",
+        "paper_concave_polygon_rejected",
+        "paper_rotated_box_fit",
+        "paper_offset_sphere_fit",
+        "paper_off_axis_capsule_fit",
+        "paper_flat_capped_cylinder_axis_fit",
+        "paper_tapered_frustum_fit",
+        "paper_asymmetric_trapezoid_fit",
+    }.issubset(set(case_ids))
+    assert case_ids[:15] == [
         "paper_single_box",
         "paper_two_face_merge",
         "paper_three_face_chain",
@@ -1667,6 +1691,35 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "source_face_intake_unsupported_concave_polygon"
     )
     assert "primitive_fit_audits" not in concave_case
+
+    batch_b_cases = {
+        case["case_id"]: case
+        for case in payload["cases"]
+        if case["case_id"]
+        in {
+            "paper_rotated_box_fit",
+            "paper_offset_sphere_fit",
+            "paper_off_axis_capsule_fit",
+            "paper_flat_capped_cylinder_axis_fit",
+            "paper_tapered_frustum_fit",
+            "paper_asymmetric_trapezoid_fit",
+        }
+    }
+    assert set(batch_b_cases) == {
+        "paper_rotated_box_fit",
+        "paper_offset_sphere_fit",
+        "paper_off_axis_capsule_fit",
+        "paper_flat_capped_cylinder_axis_fit",
+        "paper_tapered_frustum_fit",
+        "paper_asymmetric_trapezoid_fit",
+    }
+    for case in batch_b_cases.values():
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_b"
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
+        assert case["primitive_fit_audit"]["missing_paper_primitives"] == []
 
 
 def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):

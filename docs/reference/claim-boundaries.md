@@ -72,14 +72,22 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   still come from code, tests, and dated records. The plan alone does not support
   `paper_faithful_offline`, package generation, Newton runtime, real-USD, benchmark,
   collision-quality, deployment, or safety evidence.
-- The current code can add the Batch A source/preprocess/intake/operator fixture-breadth cases to
-  the partial `cpd_paper_offline_report`: `paper_mixed_face_preprocess_operator`,
-  `paper_degenerate_preprocess_face_drop`, and `paper_concave_polygon_rejected`. The report can
-  advance its next required gate to `paper_fixture_breadth_batch_b`. This is synthetic offline
-  fixture accounting only. It does not support broad mesh cleanup, general polygon intake,
-  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
-  real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
-  safety certification.
+- The partial `cpd_paper_offline_report` includes the Batch A source/preprocess/intake/operator
+  fixture-breadth cases: `paper_mixed_face_preprocess_operator`,
+  `paper_degenerate_preprocess_face_drop`, and `paper_concave_polygon_rejected`. This is an
+  intermediate synthetic offline fixture-accounting slice; Batch B below advances the current
+  report gate to `paper_fixture_breadth_batch_c`. It does not support broad mesh cleanup, general
+  polygon intake, `paper_faithful_offline`, full CPD reproduction, package generation, Newton
+  runtime support, real-USD evidence, benchmark evidence, collision-quality validation,
+  deployment readiness, or safety certification.
+- The current code can add the Batch B primitive-fit fixture-breadth cases to the partial
+  `cpd_paper_offline_report`: `paper_rotated_box_fit`, `paper_offset_sphere_fit`,
+  `paper_off_axis_capsule_fit`, `paper_flat_capped_cylinder_axis_fit`,
+  `paper_tapered_frustum_fit`, and `paper_asymmetric_trapezoid_fit`. The report can advance its
+  next required gate to `paper_fixture_breadth_batch_c`. This is synthetic offline primitive-fit
+  fixture accounting only. It does not support `paper_faithful_offline`, full CPD reproduction,
+  package generation, Newton runtime support, real-USD evidence, benchmark evidence,
+  collision-quality validation, deployment readiness, or safety certification.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper

@@ -582,15 +582,16 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 
 ## Next Implementation Slice
 
-The next paper-lane gate after Batch A is:
+The next paper-lane gate after Batch B is:
 
 ```text
-paper_fixture_breadth_batch_b
--> add primitive-fit breadth for all six paper primitive names
+paper_fixture_breadth_batch_c
+-> add cost/search/stop breadth fixtures
 -> keep report status partial
 -> keep package generation, Newton, real USD, and benchmarks out of scope
 ```
 
-Batch A now broadens mesh policy, source-face accounting, and operator evidence. Batch B should
-broaden primitive-fit evidence for OBB, sphere, capsule, capped cylinder, frustum, and trapezoidal
-prism without adding Newton runtime support.
+Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
+primitive-fit evidence for OBB, sphere, capsule, capped cylinder, frustum, and trapezoidal prism
+without adding Newton runtime support. Batch C should broaden cost ordering, queue tie/stale
+behavior, and nonzero threshold blocking without adding Newton runtime support.

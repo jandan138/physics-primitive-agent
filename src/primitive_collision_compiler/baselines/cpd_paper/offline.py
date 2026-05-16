@@ -177,9 +177,9 @@ def _paper_faithful_offline_scope_criteria() -> list[dict[str, object]]:
                 "policies, and primitive weights."
             ),
             "current_evidence": (
-                "All six paper primitive names have fixture-scoped audit rows, but capped "
-                "cylinder, frustum, and trapezoidal prism remain offline-only and fitting "
-                "breadth is limited."
+                "All six paper primitive names have fixture-scoped audit rows, including "
+                "Batch B primitive-fit breadth fixtures; capped cylinder, frustum, and "
+                "trapezoidal prism remain offline-only."
             ),
             "status": "partial_fixture_scope",
             "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -412,7 +412,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             f"{missing_item}_missing"
             for missing_item in missing_before_paper_faithful
         ],
-        "next_required_gate": "paper_fixture_breadth_batch_b",
+        "next_required_gate": "paper_fixture_breadth_batch_c",
         "paper_faithfulness": {
             "status": "partial",
             "implemented_fixture_scope": [
@@ -429,6 +429,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 "paper_duplicate_vertex_preprocessing_audit",
                 "paper_faithful_offline_scope_audit",
                 "paper_fixture_breadth_batch_a_source_preprocess_intake_operator",
+                "paper_fixture_breadth_batch_b_primitive_fit",
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -921,6 +922,8 @@ def _paper_sphere_candidate_payload(
     radius = max(unclamped_radius, PAPER_PRIMITIVE_MIN_DIMENSION)
     volume = float((4.0 / 3.0) * pi * radius**3)
     contains = bool(np.all(distances <= radius + 1e-8))
+    centroid = points.mean(axis=0)
+    center_centroid_distance = float(np.linalg.norm(center - centroid))
     return _offline_paper_candidate_payload(
         paper_primitive="sphere",
         current_implementation_kind="offline_paper_sphere_fit",
@@ -933,6 +936,13 @@ def _paper_sphere_candidate_payload(
             "center_source": "paper_obb_center",
             "radius_source": "max_distance_from_obb_center_clamped",
             "unclamped_radius": unclamped_radius,
+            "center_centroid_distance": center_centroid_distance,
+            "center_differs_from_point_centroid": center_centroid_distance > 1e-3,
+            "fixture_center_relation": (
+                "differs_from_point_centroid"
+                if center_centroid_distance > 1e-3
+                else "matches_point_centroid"
+            ),
             "volume_formula": "4/3*pi*r^3",
         },
         volume=volume,
@@ -2284,6 +2294,48 @@ def _paper_toy_cases() -> tuple[_PaperToyCase, ...]:
             unsupported_source_face_intake_audit=_concave_polygon_rejected_audit(),
             fixture_breadth_batch="paper_fixture_breadth_batch_a",
         ),
+        _PaperToyCase(
+            case_id="paper_rotated_box_fit",
+            description="Batch B rotated cuboid fixture for non-identity paper OBB axes",
+            mesh=_paper_rotated_box_fit_mesh(),
+            face_groups=(frozenset(range(12)),),
+            fixture_breadth_batch="paper_fixture_breadth_batch_b",
+        ),
+        _PaperToyCase(
+            case_id="paper_offset_sphere_fit",
+            description="Batch B offset cuboid fixture for OBB-centered sphere audit",
+            mesh=_paper_offset_sphere_fit_mesh(),
+            face_groups=(frozenset(range(13)),),
+            fixture_breadth_batch="paper_fixture_breadth_batch_b",
+        ),
+        _PaperToyCase(
+            case_id="paper_off_axis_capsule_fit",
+            description="Batch B elongated off-axis fixture for capsule axis audit",
+            mesh=_paper_off_axis_capsule_fit_mesh(),
+            face_groups=(frozenset(range(12)),),
+            fixture_breadth_batch="paper_fixture_breadth_batch_b",
+        ),
+        _PaperToyCase(
+            case_id="paper_flat_capped_cylinder_axis_fit",
+            description="Batch B off-axis flat-capped-cylinder primitive-fit audit",
+            mesh=_paper_flat_capped_cylinder_axis_fit_mesh(),
+            face_groups=(frozenset(range(12)),),
+            fixture_breadth_batch="paper_fixture_breadth_batch_b",
+        ),
+        _PaperToyCase(
+            case_id="paper_tapered_frustum_fit",
+            description="Batch B tapered fixture for unequal frustum radii audit",
+            mesh=_paper_tapered_frustum_fit_mesh(),
+            face_groups=(frozenset(range(12)),),
+            fixture_breadth_batch="paper_fixture_breadth_batch_b",
+        ),
+        _PaperToyCase(
+            case_id="paper_asymmetric_trapezoid_fit",
+            description="Batch B asymmetric wedge fixture for trapezoidal-prism axis-order audit",
+            mesh=_paper_asymmetric_trapezoid_fit_mesh(),
+            face_groups=(frozenset(range(12)),),
+            fixture_breadth_batch="paper_fixture_breadth_batch_b",
+        ),
     )
 
 
@@ -2390,6 +2442,155 @@ def _tiny_sphere_clamp_mesh() -> TriangleMesh:
     )
     faces = np.array([[0, 1, 2]], dtype=np.int64)
     return TriangleMesh(points=points, faces=faces)
+
+
+def _rotate_z_then_x(
+    point: tuple[float, float, float],
+    *,
+    z_radians: float,
+    x_radians: float,
+) -> tuple[float, float, float]:
+    x, y, z = point
+    cos_z = float(np.cos(z_radians))
+    sin_z = float(np.sin(z_radians))
+    z_rotated = (cos_z * x - sin_z * y, sin_z * x + cos_z * y, z)
+    cos_x = float(np.cos(x_radians))
+    sin_x = float(np.sin(x_radians))
+    return (
+        z_rotated[0],
+        cos_x * z_rotated[1] - sin_x * z_rotated[2],
+        sin_x * z_rotated[1] + cos_x * z_rotated[2],
+    )
+
+
+def _cuboid_points(
+    *,
+    center: tuple[float, float, float],
+    half_extents: tuple[float, float, float],
+) -> tuple[tuple[float, float, float], ...]:
+    cx, cy, cz = center
+    hx, hy, hz = half_extents
+    return (
+        (cx - hx, cy - hy, cz - hz),
+        (cx + hx, cy - hy, cz - hz),
+        (cx + hx, cy + hy, cz - hz),
+        (cx - hx, cy + hy, cz - hz),
+        (cx - hx, cy - hy, cz + hz),
+        (cx + hx, cy - hy, cz + hz),
+        (cx + hx, cy + hy, cz + hz),
+        (cx - hx, cy + hy, cz + hz),
+    )
+
+
+def _box_surface_mesh_from_points(
+    points: tuple[tuple[float, float, float], ...],
+) -> TriangleMesh:
+    return TriangleMesh(
+        points=np.asarray(points, dtype=np.float64),
+        faces=np.asarray(
+            [
+                (0, 1, 2),
+                (0, 2, 3),
+                (4, 6, 5),
+                (4, 7, 6),
+                (0, 4, 5),
+                (0, 5, 1),
+                (1, 5, 6),
+                (1, 6, 2),
+                (2, 6, 7),
+                (2, 7, 3),
+                (3, 7, 4),
+                (3, 4, 0),
+            ],
+            dtype=np.int64,
+        ),
+    )
+
+
+def _paper_rotated_box_fit_mesh() -> TriangleMesh:
+    base = _cuboid_points(center=(0.2, -0.3, 0.4), half_extents=(0.9, 0.35, 0.2))
+    rotated = [_rotate_z_then_x(point, z_radians=0.6, x_radians=0.35) for point in base]
+    return _box_surface_mesh_from_points(tuple(rotated))
+
+
+def _paper_offset_sphere_fit_mesh() -> TriangleMesh:
+    base = _cuboid_points(center=(1.1, -0.4, 0.3), half_extents=(0.75, 0.25, 0.18))
+    rotated = [
+        _rotate_z_then_x(point, z_radians=0.35, x_radians=-0.25)
+        for point in base
+    ]
+    interior = _rotate_z_then_x((1.45, -0.28, 0.34), z_radians=0.35, x_radians=-0.25)
+    return TriangleMesh(
+        points=np.asarray(tuple(rotated) + (interior,), dtype=np.float64),
+        faces=np.asarray(
+            [
+                (0, 1, 2),
+                (0, 2, 3),
+                (4, 6, 5),
+                (4, 7, 6),
+                (0, 4, 5),
+                (0, 5, 1),
+                (1, 5, 6),
+                (1, 6, 2),
+                (2, 6, 7),
+                (2, 7, 3),
+                (3, 7, 4),
+                (3, 4, 0),
+                (0, 1, 8),
+            ],
+            dtype=np.int64,
+        ),
+    )
+
+
+def _paper_off_axis_capsule_fit_mesh() -> TriangleMesh:
+    base = _cuboid_points(center=(0.0, 0.0, 0.0), half_extents=(1.6, 0.18, 0.18))
+    rotated = [_rotate_z_then_x(point, z_radians=0.7, x_radians=0.45) for point in base]
+    return _box_surface_mesh_from_points(tuple(rotated))
+
+
+def _paper_flat_capped_cylinder_axis_fit_mesh() -> TriangleMesh:
+    base = _cuboid_points(center=(-0.2, 0.1, 0.0), half_extents=(0.28, 0.28, 1.1))
+    rotated = [_rotate_z_then_x(point, z_radians=-0.55, x_radians=0.4) for point in base]
+    return _box_surface_mesh_from_points(tuple(rotated))
+
+
+def _paper_tapered_frustum_fit_mesh() -> TriangleMesh:
+    bottom = [
+        (-1.0, -0.65, -1.8),
+        (1.0, -0.65, -1.8),
+        (1.0, 0.65, -1.8),
+        (-1.0, 0.65, -1.8),
+    ]
+    top = [
+        (-0.22, -0.14, 1.8),
+        (0.22, -0.14, 1.8),
+        (0.22, 0.14, 1.8),
+        (-0.22, 0.14, 1.8),
+    ]
+    rotated = [
+        _rotate_z_then_x(point, z_radians=0.45, x_radians=0.25)
+        for point in bottom + top
+    ]
+    return _box_surface_mesh_from_points(tuple(rotated))
+
+
+def _paper_asymmetric_trapezoid_fit_mesh() -> TriangleMesh:
+    points = (
+        (-0.9, -0.5, -0.35),
+        (0.9, -0.5, -0.25),
+        (0.65, 0.5, -0.12),
+        (-0.55, 0.5, -0.28),
+        (-0.45, -0.5, 0.62),
+        (0.5, -0.5, 0.48),
+        (0.35, 0.5, 0.22),
+        (-0.25, 0.5, 0.52),
+    )
+    rotated = [
+        _rotate_z_then_x(point, z_radians=-0.25, x_radians=0.3)
+        for point in points
+    ]
+    return _box_surface_mesh_from_points(tuple(rotated))
 
 
 def _duplicate_vertex_preprocessing_audit() -> _DuplicateVertexPreprocessingAudit:

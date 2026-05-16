@@ -70,7 +70,10 @@ The repository has not reached that full result. It has reached the workbench st
 25. Batch A of that plan is now implemented as synthetic source/preprocess/intake/operator
     fixture breadth, while the report remains partial and points next to
     `paper_fixture_breadth_batch_b`.
-26. Records and configs can preserve exactly what was run.
+26. Batch B of that plan is now implemented as synthetic primitive-fit breadth for all six paper
+    primitive names, while the report remains partial and points next to
+    `paper_fixture_breadth_batch_c`.
+27. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -369,13 +372,17 @@ That partial report now records:
 - Batch A source/preprocess/intake/operator fixture-breadth cases:
   `paper_mixed_face_preprocess_operator`, `paper_degenerate_preprocess_face_drop`, and
   `paper_concave_polygon_rejected`.
+- Batch B primitive-fit fixture-breadth cases:
+  `paper_rotated_box_fit`, `paper_offset_sphere_fit`, `paper_off_axis_capsule_fit`,
+  `paper_flat_capped_cylinder_axis_fit`, `paper_tapered_frustum_fit`, and
+  `paper_asymmetric_trapezoid_fit`.
 
 This closes the narrow capsule axis-policy audit gap and adds the first topology-only
 priority-queue trace plus component-pair accepted/blocked toy events, postprocess culling,
 source-face intake policy fixtures, OBB/sphere fit-faithfulness rows, and exact-overlap
 duplicate-vertex preprocessing inside the report. The scope audit then records why these remain
 fixture-scoped and why the lane is still not `paper_faithful_offline`. The fixture-breadth plan
-has now started with Batch A, and the next code slice is `paper_fixture_breadth_batch_b`.
+has now completed Batch A and Batch B, and the next code slice is `paper_fixture_breadth_batch_c`.
 
 ## What The Newton-Native Policy Changes
 
@@ -572,7 +579,8 @@ local USD mirrors or synthetic fixtures
 -> scope-audit criteria table, still without package/Newton/real-USD
 -> fixture-breadth expansion plan, documentation-only
 -> fixture-breadth Batch A source/preprocess/intake/operator audit, still without package/Newton/real-USD
--> next: paper_fixture_breadth_batch_b
+-> fixture-breadth Batch B primitive-fit audit, still without package/Newton/real-USD
+-> next: paper_fixture_breadth_batch_c
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -648,11 +656,11 @@ Avoid:
 
 ## Recommended Next Slices
 
-Fixture-breadth Batch A now exists. The immediate next code slice should implement Batch B without
-adding stronger evaluation claims:
+Fixture-breadth Batch A and Batch B now exist. The immediate next code slice should implement
+Batch C without adding stronger evaluation claims:
 
-1. Implement `paper_fixture_breadth_batch_b`.
-2. Add only primitive-fit breadth fixtures for the six paper primitive names.
+1. Implement `paper_fixture_breadth_batch_c`.
+2. Add only cost/search/stop breadth fixtures from the fixture-breadth plan.
 3. Keep the lane `partial` unless a later fixture-breadth implementation and dated records justify
    narrower bounded wording.
 4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,

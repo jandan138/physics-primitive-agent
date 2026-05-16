@@ -69,9 +69,9 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "policies, and primitive weights."
         ),
         "current_evidence": (
-            "All six paper primitive names have fixture-scoped audit rows, but capped "
-            "cylinder, frustum, and trapezoidal prism remain offline-only and fitting "
-            "breadth is limited."
+            "All six paper primitive names have fixture-scoped audit rows, including "
+            "Batch B primitive-fit breadth fixtures; capped cylinder, frustum, and "
+            "trapezoidal prism remain offline-only."
         ),
         "status": "partial_fixture_scope",
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
@@ -260,10 +260,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_fixture_breadth_gap():
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
 
 
-def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_b():
+def test_cpd_paper_offline_report_next_gate_is_fixture_breadth_batch_c():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_b"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_c"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -272,6 +272,50 @@ def _candidate_by_paper_primitive(audit, paper_primitive):
     ]
     assert len(rows) == 1
     return rows[0]
+
+
+def _candidate_has_common_fit_fields(row):
+    assert row["paper_primitive"]
+    assert row["current_implementation_kind"]
+    assert row["implementation_status"] == "paper_shaped_offline_fit_audit"
+    assert row["fit_model"]
+    assert row["axis_selection_policy"]
+    assert row["center"]
+    assert row["axes"]
+    assert row["dimensions"]
+    assert row["volume"] > 0.0
+    assert row["paper_weight"] > 0.0
+    assert row["weighted_volume"] > 0.0
+    assert "contains_assigned_points" in row
+    assert "fit_failure_reason" in row
+    return True
+
+
+def _axes_are_orthonormal(axes):
+    for axis in axes:
+        length = sum(value * value for value in axis) ** 0.5
+        assert abs(length - 1.0) < 1e-9
+    for left_index in range(3):
+        for right_index in range(left_index + 1, 3):
+            dot = sum(
+                axes[left_index][coord] * axes[right_index][coord]
+                for coord in range(3)
+            )
+            assert abs(dot) < 1e-9
+    return True
+
+
+def _axes_are_world_aligned(axes):
+    return all(_axis_is_world_basis(axis) for axis in axes)
+
+
+def _axis_is_world_basis(axis):
+    abs_values = [abs(value) for value in axis]
+    max_index = max(range(3), key=lambda index: abs_values[index])
+    return (
+        abs(abs_values[max_index] - 1.0) < 1e-9
+        and all(abs_values[index] < 1e-9 for index in range(3) if index != max_index)
+    )
 
 
 def _expected_duplicate_vertex_source_face_remap():
@@ -604,6 +648,124 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_a():
     assert concave["benchmark_triggered"] is False
 
 
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_b():
+    report = build_cpd_paper_offline_report()
+    cases = {case["case_id"]: case for case in report["cases"]}
+
+    expected_case_ids = {
+        "paper_rotated_box_fit",
+        "paper_offset_sphere_fit",
+        "paper_off_axis_capsule_fit",
+        "paper_flat_capped_cylinder_axis_fit",
+        "paper_tapered_frustum_fit",
+        "paper_asymmetric_trapezoid_fit",
+    }
+    assert expected_case_ids.issubset(cases)
+    for case_id in expected_case_ids:
+        case = cases[case_id]
+        assert case["fixture_breadth_batch"] == "paper_fixture_breadth_batch_b"
+        assert case["package_generation_triggered"] is False
+        assert case["newton_runtime_triggered"] is False
+        assert case["real_usd_triggered"] is False
+        assert case["benchmark_triggered"] is False
+        assert case["primitive_fit_audit"]["missing_paper_primitives"] == []
+
+    rotated_box = cases["paper_rotated_box_fit"]
+    obb = _candidate_by_paper_primitive(
+        rotated_box["primitive_fit_audit"],
+        "oriented_bounding_box",
+    )
+    assert _candidate_has_common_fit_fields(obb)
+    assert obb["contains_assigned_points"] is True
+    assert obb["dimensions"]["volume_formula"] == "8*hx*hy*hz"
+    assert obb["dimensions"]["axis_order_policy"] == "descending_abs_q_eigenvalue"
+    assert obb["dimensions"]["lower_bounds"]
+    assert obb["dimensions"]["upper_bounds"]
+    assert obb["dimensions"]["paper_center_local"]
+    assert obb["dimensions"]["paper_center_world"] == obb["center"]
+    assert obb["dimensions"]["half_extents"]
+    assert obb["newton_runtime_kind"] == "box"
+    assert _axes_are_orthonormal(obb["axes"])
+    assert not _axes_are_world_aligned(obb["axes"])
+
+    offset_sphere = cases["paper_offset_sphere_fit"]
+    sphere = _candidate_by_paper_primitive(
+        offset_sphere["primitive_fit_audit"],
+        "sphere",
+    )
+    assert _candidate_has_common_fit_fields(sphere)
+    assert sphere["contains_assigned_points"] is True
+    assert sphere["dimensions"]["center_source"] == "paper_obb_center"
+    assert sphere["dimensions"]["radius"] >= 1e-3
+    assert sphere["dimensions"]["unclamped_radius"] > 0.0
+    assert sphere["dimensions"]["volume_formula"] == "4/3*pi*r^3"
+    assert sphere["dimensions"]["fixture_center_relation"] == "differs_from_point_centroid"
+    assert sphere["dimensions"]["center_differs_from_point_centroid"] is True
+    assert sphere["dimensions"]["center_centroid_distance"] > 1e-3
+    assert sphere["newton_runtime_kind"] == "sphere"
+
+    off_axis_capsule = cases["paper_off_axis_capsule_fit"]
+    capsule = _candidate_by_paper_primitive(
+        off_axis_capsule["primitive_fit_audit"],
+        "capsule",
+    )
+    assert _candidate_has_common_fit_fields(capsule)
+    assert capsule["contains_assigned_points"] is True
+    assert capsule["dimensions"]["axis_selection_policy"] == "min_volume_capsule_axis"
+    assert len(capsule["dimensions"]["paper_capsule_axis_candidates"]) == 3
+    assert capsule["dimensions"]["height"] > 0.0
+    assert capsule["dimensions"]["radius"] > 0.0
+    selected_capsule_axis = capsule["axes"][capsule["dimensions"]["selected_axis_index"]]
+    assert not _axis_is_world_basis(selected_capsule_axis)
+
+    flat_cylinder = cases["paper_flat_capped_cylinder_axis_fit"]
+    capped = _candidate_by_paper_primitive(
+        flat_cylinder["primitive_fit_audit"],
+        "capped_cylinder",
+    )
+    assert _candidate_has_common_fit_fields(capped)
+    assert capped["contains_assigned_points"] is True
+    assert capped["newton_runtime_kind"] == "offline_only_unmapped"
+    assert capped["dimensions"]["cap_model"] == "flat_caps"
+    assert capped["dimensions"]["volume_formula"] == "pi*r^2*h"
+    assert len(capped["dimensions"]["flat_cylinder_axis_candidates"]) == 3
+    assert capped["dimensions"]["radius"] > 0.0
+    assert capped["dimensions"]["height"] > 0.0
+    selected_capped_axis = capped["axes"][capped["dimensions"]["selected_axis_index"]]
+    assert not _axis_is_world_basis(selected_capped_axis)
+
+    tapered = cases["paper_tapered_frustum_fit"]
+    frustum = _candidate_by_paper_primitive(
+        tapered["primitive_fit_audit"],
+        "frustum",
+    )
+    assert _candidate_has_common_fit_fields(frustum)
+    assert frustum["contains_assigned_points"] is True
+    assert frustum["newton_runtime_kind"] == "offline_only_unmapped"
+    assert abs(frustum["dimensions"]["top_radius"] - frustum["dimensions"]["bottom_radius"]) > 0.05
+    assert frustum["dimensions"]["height"] > 0.0
+    assert frustum["dimensions"]["top_center"]
+    assert frustum["dimensions"]["bottom_center"]
+    assert frustum["dimensions"]["volume_formula"] == "pi*h/3*(rt^2 + rt*rb + rb^2)"
+
+    trapezoid = cases["paper_asymmetric_trapezoid_fit"]
+    prism = _candidate_by_paper_primitive(
+        trapezoid["primitive_fit_audit"],
+        "trapezoidal_prism",
+    )
+    assert _candidate_has_common_fit_fields(prism)
+    assert prism["contains_assigned_points"] is True
+    assert prism["newton_runtime_kind"] == "offline_only_unmapped"
+    assert prism["dimensions"]["axis_order_attempt_count"] == 6
+    assert len(prism["dimensions"]["axis_order_attempts"]) == 6
+    assert prism["dimensions"]["axis_order"]
+    assert prism["dimensions"]["h_x"] > 0.0
+    assert prism["dimensions"]["h_y"] > 0.0
+    assert prism["dimensions"]["h_zt"] > 0.0
+    assert prism["dimensions"]["h_zb"] > 0.0
+    assert prism["dimensions"]["volume_formula"] == "4*h_x*h_y*(h_zt + h_zb)"
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -619,7 +781,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == ["paper_fixture_breadth_expansion_missing"]
-    assert report["next_required_gate"] == "paper_fixture_breadth_batch_b"
+    assert report["next_required_gate"] == "paper_fixture_breadth_batch_c"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
         "paper_fixture_breadth_expansion"
     ]
@@ -648,6 +810,9 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
     assert "paper_fixture_breadth_batch_a_source_preprocess_intake_operator" in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_fixture_breadth_batch_b_primitive_fit" in report[
         "paper_faithfulness"
     ]["implemented_fixture_scope"]
 
@@ -708,6 +873,12 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
         "paper_mixed_face_preprocess_operator",
         "paper_degenerate_preprocess_face_drop",
         "paper_concave_polygon_rejected",
+        "paper_rotated_box_fit",
+        "paper_offset_sphere_fit",
+        "paper_off_axis_capsule_fit",
+        "paper_flat_capped_cylinder_axis_fit",
+        "paper_tapered_frustum_fit",
+        "paper_asymmetric_trapezoid_fit",
     }
     assert all(case["package_generation_triggered"] is False for case in cases.values())
     for case in cases.values():

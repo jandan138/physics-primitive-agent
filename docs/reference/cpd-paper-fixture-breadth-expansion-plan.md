@@ -55,12 +55,12 @@ The next implementation work should use small batches rather than one broad algo
 | D. Component-pair breadth | `paper_component_pair_multi_candidate_order`, `paper_component_pair_cap_skipped` | component-pair edge handling, target/threshold stop | Broaden disconnected-component pair insertion beyond one accepted and one blocked all-pairs case. |
 | E. Postprocess breadth | `paper_rotated_nested_primitive`, `paper_cross_type_enclosure_boundary` | enclosed primitive postprocess | Broaden postprocess from one explicit identity-axis OBB canary to additional containment boundaries. |
 
-Batch A is the recommended first implementation batch. It broadens source mesh policy,
-source-face intake, and operator accounting at the same time, while still staying offline-only.
+Batch A was the first implementation batch. It broadens source mesh policy, source-face intake, and
+operator accounting at the same time, while still staying offline-only.
 
 ## Fixture Rows
 
-| Fixture id | Covers | Geometry idea | Future report additions | Future tests | Non-goals | Claim boundary |
+| Fixture id | Covers | Geometry idea | Report additions | Tests | Non-goals | Claim boundary |
 | --- | --- | --- | --- | --- | --- | --- |
 | `paper_mixed_face_preprocess_operator` | source mesh/preprocessing, source-face intake, operator `Q` | One small source mesh containing a triangle, a quad, and a convex five-vertex polygon, with one exact duplicate coordinate pair shared across source-face boundaries. | Source-face arities, original vertex ids, deduplicated vertex ids, generated triangle ids, per-generated-triangle `Q`, source-face aggregate `Q`, aggregate eigenvalues/eigenvectors, and before/after component accounting. | Assert source-face ids survive preprocessing and fan triangulation; assert aggregate `Q` equals the sum of generated triangle `Q` rows; assert aggregate eigen fields exist and are finite. | No general polygon mesh support, no nonzero-distance cleanup, no Newton mapping. | Fixture-scoped operator/source-policy breadth only. |
 | `paper_degenerate_preprocess_face_drop` | source mesh/preprocessing, operator `Q` | Exact-coordinate deduplication collapses one source triangle into a degenerate face while another face remains valid. | Dropped source-face id, drop reason `degenerate_after_preprocessing`, retained source-face ids, before/after face count, no executable `Q` row for the dropped face, retained-face eigenvalues/eigenvectors, and degeneracy label. | Assert the degenerate face is dropped deterministically; assert it cannot contribute `Q`, primitive-fit, or queue rows; assert retained-face operator eigen fields remain finite. | No broad mesh repair, no topology healing, no runtime package generation. | Deterministic dropped-face accounting only. |
@@ -92,17 +92,33 @@ paper_fixture_breadth_batch_a
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
-The next code slice should be:
+Batch B is now implemented in `cpd_paper_offline_report`:
 
 ```text
 paper_fixture_breadth_batch_b
--> primitive-fit breadth for all six paper primitive names
+-> `paper_rotated_box_fit`
+-> `paper_offset_sphere_fit`
+-> `paper_off_axis_capsule_fit`
+-> `paper_flat_capped_cylinder_axis_fit`
+-> `paper_tapered_frustum_fit`
+-> `paper_asymmetric_trapezoid_fit`
+-> report remains partial
+-> no package generation, Newton, real USD, or benchmark work
+```
+
+The next code slice should be:
+
+```text
+paper_fixture_breadth_batch_c
+-> cost/search/stop breadth fixtures
 -> report remains partial
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
 Batch A stays important because it improves the source mesh, source-face intake, and operator
-criteria that every later primitive-fit and search fixture depends on.
+criteria that every later primitive-fit and search fixture depends on. Batch B stays important
+because it broadens primitive-fit evidence before cost/search fixtures start comparing candidate
+choices.
 
 ## Claim Boundary
 
@@ -110,12 +126,13 @@ This plan supports only this statement:
 
 ```text
 The repository has an offline-only fixture-breadth expansion plan and a Batch A synthetic
-source/preprocess/intake/operator implementation inside the partial paper report.
+source/preprocess/intake/operator implementation plus a Batch B primitive-fit implementation
+inside the partial paper report.
 ```
 
 It does not support:
 
-- implemented Batch B-E fixture breadth;
+- implemented Batch C-E fixture breadth;
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
 - package generation;
