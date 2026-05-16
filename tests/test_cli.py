@@ -1528,13 +1528,33 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_faithful_offline_generalization_missing"
+        "paper_generalization_batch_a_source_policy_missing",
+        "paper_generalization_batch_b_primitive_fit_engine_missing",
+        "paper_generalization_batch_c_search_engine_missing",
+        "paper_generalization_batch_d_postprocess_policy_missing",
+        "paper_generalization_batch_e_package_boundary_readiness_missing",
     ]
-    assert payload["next_required_gate"] == "paper_faithful_offline_generalization_plan"
+    assert payload["next_required_gate"] == "paper_generalization_batch_a_source_policy"
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
     assert payload["benchmark_triggered"] is False
+    plan = payload["paper_faithful_offline_generalization_plan"]
+    assert plan["closed_gate"] == "paper_faithful_offline_generalization_plan"
+    assert plan["generalization_plan_complete"] is True
+    assert plan["paper_faithful_offline_allowed"] is False
+    assert plan["next_required_gate"] == "paper_generalization_batch_a_source_policy"
+    assert [batch["batch_id"] for batch in plan["planned_batches"]] == [
+        "paper_generalization_batch_a_source_policy",
+        "paper_generalization_batch_b_primitive_fit_engine",
+        "paper_generalization_batch_c_search_engine",
+        "paper_generalization_batch_d_postprocess_policy",
+        "paper_generalization_batch_e_package_boundary_readiness",
+    ]
+    assert plan["package_generation_triggered"] is False
+    assert plan["newton_runtime_triggered"] is False
+    assert plan["real_usd_triggered"] is False
+    assert plan["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]
     assert review["closed_gate"] == "paper_fixture_breadth_expansion"
     assert review["fixture_breadth_plan_complete"] is True

@@ -96,7 +96,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   offline CPD paper-lane audit over deterministic toy fixtures. It now includes a
   `paper_faithful_offline_scope_audit` criteria table with `decision: remain_partial`,
   `paper_faithful_offline_supported: false`, and a prior scope-audit gate of
-  `paper_fixture_breadth_expansion_plan`. The current gate is now updated below by Batch E. This is
+  `paper_fixture_breadth_expansion_plan`. The current gate is now updated below by the
+  fixture-breadth completion review and generalization planning table. This is
   scope accounting for the offline paper lane, not `paper_faithful_offline`, full CPD
   reproduction, package generation, Newton runtime support, real-USD evidence, benchmark
   evidence, or collision-quality validation.
@@ -135,11 +136,21 @@ This file separates current evidence from future claims. See [message-map.md](me
   benchmark evidence, or collision-quality validation.
 - The current executable surface can run the command-only synthetic fixture-breadth completion
   review inside `cpd_paper_offline_report`. It closes only the planned Batch A-E fixture-breadth
-  gate, keeps the report partial, keeps `paper_faithful_offline_supported: false`, and advances
-  the next gate to the planning-only `paper_faithful_offline_generalization_plan`. This is not
+  gate and keeps the report partial with `paper_faithful_offline_supported: false`. Its nested
+  review payload records the planning-only `paper_faithful_offline_generalization_plan` as the
+  follow-up gate for that closed review. This is not
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
   safety certification.
+- The current executable surface can run the command-only CPD paper offline generalization-plan
+  table inside `cpd_paper_offline_report`. It closes only
+  `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
+  `paper_faithful_offline_supported: false`, and advances the next gate to
+  `paper_generalization_batch_a_source_policy`. That source-policy gate should broaden source
+  mesh, preprocessing, source-face intake, and operator policy beyond named toy fixtures. This
+  planning table is not `paper_faithful_offline`, full CPD reproduction, package generation,
+  Newton runtime support, real-USD evidence, benchmark evidence, collision-quality validation,
+  deployment readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

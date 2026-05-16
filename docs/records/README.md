@@ -260,6 +260,8 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-16 CPD Paper Fixture Breadth Completion Review](2026-05-16-cpd-paper-fixture-breadth-completion-review.md):
   command-only synthetic fixture-breadth completion review for planned Batches A-E inside the
   partial `cpd_paper_offline_report`.
+- [2026-05-16 CPD Paper Faithful Offline Generalization Plan](2026-05-16-cpd-paper-faithful-offline-generalization-plan.md):
+  command-only planning table for offline CPD paper-lane generalization beyond named toy fixtures.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

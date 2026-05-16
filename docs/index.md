@@ -61,9 +61,14 @@ now implemented with multi-candidate component-pair ordering and deterministic c
 accounting. Batch E postprocess breadth is now implemented with rotated nested OBB containment and
 explicit cross-type unsupported no-cull accounting. The command-only synthetic fixture-breadth
 completion review for planned Batches A-E is now also implemented, while keeping the report
-partial, keeping `paper_faithful_offline_supported: false`, and advancing the next required gate to
-the planning-only `paper_faithful_offline_generalization_plan`. This review is not
-`paper_faithful_offline` support, and it is not a capped bed/Franka rerun unless a separate real
+partial and keeping `paper_faithful_offline_supported: false`. Its nested review payload records
+the planning-only `paper_faithful_offline_generalization_plan` as the follow-up gate for that
+closed review. The report now also includes a command-only planning table for offline CPD
+paper-lane generalization beyond named toy fixtures. That table closes only the planning gate,
+keeps the report partial, keeps
+`paper_faithful_offline_supported: false`, and advances the next required gate to
+`paper_generalization_batch_a_source_policy`. This review and planning table are not
+`paper_faithful_offline` support, and they are not a capped bed/Franka rerun unless a separate real
 package change is introduced and passes full mapping, contact-canary, task-gate, and dated-record
 gates. The
 low-support branch is now guarded by support-aware admissibility, but that is still not
@@ -81,8 +86,10 @@ records exist.
 - [CPD paper fixture-breadth expansion plan](reference/cpd-paper-fixture-breadth-expansion-plan.md):
   documentation-only plan that maps the nine blocking scope-audit rows to future synthetic
   fixture batches; Batch A, Batch B, Batch C, Batch D, and Batch E are now implemented and
-  the completion review is now implemented. The next gate is the planning-only
-  `paper_faithful_offline_generalization_plan`.
+  the completion review is now implemented.
+- [CPD paper faithful offline generalization plan](reference/cpd-paper-faithful-offline-lane-spec.md):
+  command-only planning table for offline generalization beyond named toy fixtures. The next gate
+  is `paper_generalization_batch_a_source_policy`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -138,6 +145,8 @@ records exist.
 - [CPD paper fixture-breadth completion review record](records/2026-05-16-cpd-paper-fixture-breadth-completion-review.md):
   dated implementation record for the command-only synthetic completion review over planned
   Batches A-E.
+- [CPD paper faithful offline generalization plan record](records/2026-05-16-cpd-paper-faithful-offline-generalization-plan.md):
+  dated implementation record for the command-only planning table beyond named toy fixtures.
 - [Paper reader chrome and permission validator record](records/2026-05-16-paper-reader-chrome-and-permission-validator.md):
   reader-facing CPD paper companion cleanup that removes internal review chrome and tightens paper
   asset permission-evidence validation without changing reproduction or benchmark evidence.
@@ -477,9 +486,10 @@ records exist.
   Batch D component-pair breadth cases for multi-candidate ordering and capped skipped-pair
   accounting, plus Batch E postprocess breadth cases for rotated nested OBB containment and
   explicit cross-type unsupported no-cull accounting, plus a fixture-breadth completion review
-  that closes only the planned synthetic Batch A-E breadth gate. It also records a scope-audit
+  that closes only the planned synthetic Batch A-E breadth gate, plus a command-only
+  generalization planning table that closes only the planning gate. It also records a scope-audit
   table with `decision: remain_partial`, reports
-  `next_required_gate: paper_faithful_offline_generalization_plan`, keeps
+  `next_required_gate: paper_generalization_batch_a_source_policy`, keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD, package
   generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic

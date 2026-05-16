@@ -7,6 +7,21 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
     build_cpd_paper_offline_report,
 )
 
+EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION = (
+    "Proceed to paper_generalization_batch_a_source_policy as the first offline "
+    "generalization slice before stronger wording."
+)
+EXPECTED_GENERALIZATION_GATES = [
+    "paper_generalization_batch_a_source_policy",
+    "paper_generalization_batch_b_primitive_fit_engine",
+    "paper_generalization_batch_c_search_engine",
+    "paper_generalization_batch_d_postprocess_policy",
+    "paper_generalization_batch_e_package_boundary_readiness",
+]
+EXPECTED_GENERALIZATION_FAILURE_LABELS = [
+    f"{gate}_missing" for gate in EXPECTED_GENERALIZATION_GATES
+]
+
 EXPECTED_SCOPE_AUDIT_ROWS = [
     {
         "criterion_id": "source_mesh_and_preprocessing_policy",
@@ -24,10 +39,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Exact-overlap toy preprocessing only; no robust arbitrary mesh cleanup."
         ),
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "source_face_intake_policy",
@@ -44,10 +56,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Source-face intake is toy-scoped, not a general polygon mesh implementation."
         ),
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "operator_q_audit",
@@ -64,10 +73,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Operator evidence is named-fixture audit data, not full paper decomposition."
         ),
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "primitive_vocabulary_and_fit",
@@ -87,10 +93,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
             "Primitive rows are audit rows, not Newton runtime support or "
             "collision-quality evidence."
         ),
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "paper_collapse_cost_and_weighting",
@@ -107,10 +110,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
         "blocking_for_paper_faithful_offline": True,
         "claim_boundary": "Cost rows are toy accounting, not optimizer or benchmark evidence.",
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "greedy_priority_queue_trace",
@@ -129,10 +129,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Search traces are toy-scoped and do not prove merge-policy superiority."
         ),
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "target_count_and_threshold_stop",
@@ -148,10 +145,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "surrogate_or_paper_faithful": "fixture_scoped_paper_shaped",
         "blocking_for_paper_faithful_offline": True,
         "claim_boundary": "Threshold evidence is narrow toy accounting.",
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "component_pair_edge_handling",
@@ -170,10 +164,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Component merging evidence is diagnostic accounting, not broad asset evidence."
         ),
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "enclosed_primitive_postprocess",
@@ -188,10 +179,7 @@ EXPECTED_SCOPE_AUDIT_ROWS = [
         "claim_boundary": (
             "Postprocess cull evidence is one offline canary, not a general containment library."
         ),
-        "next_action": (
-            "Use paper_faithful_offline_generalization_plan to broaden beyond "
-            "named synthetic fixtures before stronger wording."
-        ),
+        "next_action": EXPECTED_GENERALIZATION_SOURCE_POLICY_NEXT_ACTION,
     },
     {
         "criterion_id": "report_schema_tests_and_records",
@@ -283,18 +271,16 @@ EXPECTED_SCOPE_AUDIT_BLOCKERS = [
 ]
 
 
-def test_cpd_paper_offline_report_failure_labels_point_to_generalization_gap():
+def test_cpd_paper_offline_report_failure_labels_point_to_source_policy_gap():
     report = build_cpd_paper_offline_report()
 
-    assert report["failure_labels"] == [
-        "paper_faithful_offline_generalization_missing"
-    ]
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_generalization_plan():
+def test_cpd_paper_offline_report_next_gate_is_source_policy_generalization():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == "paper_faithful_offline_generalization_plan"
+    assert report["next_required_gate"] == "paper_generalization_batch_a_source_policy"
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1105,12 +1091,10 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_e():
 def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     report = build_cpd_paper_offline_report()
 
-    assert report["failure_labels"] == [
-        "paper_faithful_offline_generalization_missing"
-    ]
-    assert report["next_required_gate"] == "paper_faithful_offline_generalization_plan"
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert report["next_required_gate"] == "paper_generalization_batch_a_source_policy"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_faithful_offline_generalization"
+        *EXPECTED_GENERALIZATION_GATES,
     ]
     assert "paper_fixture_breadth_completion_review" in report["paper_faithfulness"][
         "implemented_fixture_scope"
@@ -1220,6 +1204,107 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     )
 
 
+def test_cpd_paper_offline_report_records_generalization_plan_gate():
+    report = build_cpd_paper_offline_report()
+
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert report["next_required_gate"] == "paper_generalization_batch_a_source_policy"
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_GENERALIZATION_GATES
+    )
+    assert "paper_faithful_offline_generalization_plan" not in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_faithful_offline_generalization_plan" in report[
+        "paper_faithfulness"
+    ]["implemented_planning_scope"]
+
+    plan = report["paper_faithful_offline_generalization_plan"]
+    assert (
+        plan["plan_scope"]
+        == "offline_algorithm_generalization_beyond_named_toy_fixtures"
+    )
+    assert plan["closed_gate"] == "paper_faithful_offline_generalization_plan"
+    assert plan["decision"] == "remain_partial"
+    assert (
+        plan["decision_reason"]
+        == "generalization_plan_complete_first_source_policy_slice_missing"
+    )
+    assert plan["generalization_plan_complete"] is True
+    assert plan["paper_faithful_offline_allowed"] is False
+    assert plan["next_required_gate"] == "paper_generalization_batch_a_source_policy"
+    assert plan["package_generation_triggered"] is False
+    assert plan["newton_runtime_triggered"] is False
+    assert plan["real_usd_triggered"] is False
+    assert plan["benchmark_triggered"] is False
+
+    expected_batches = [
+        {
+            "batch_id": "paper_generalization_batch_a_source_policy",
+            "purpose": "generalize_source_mesh_preprocess_intake_operator_policy",
+            "primary_criteria": [
+                "source_mesh_and_preprocessing_policy",
+                "source_face_intake_policy",
+                "operator_q_audit",
+            ],
+            "implementation_boundary": "offline_report_only_no_package_or_newton",
+            "required_output": "source_policy_generalization_report",
+        },
+        {
+            "batch_id": "paper_generalization_batch_b_primitive_fit_engine",
+            "purpose": "generalize_paper_primitive_fit_engine_beyond_named_cases",
+            "primary_criteria": [
+                "primitive_vocabulary_and_fit",
+            ],
+            "implementation_boundary": "offline_report_only_no_package_or_newton",
+            "required_output": "primitive_fit_engine_generalization_report",
+        },
+        {
+            "batch_id": "paper_generalization_batch_c_search_engine",
+            "purpose": "generalize_cost_queue_threshold_and_component_pair_search",
+            "primary_criteria": [
+                "paper_collapse_cost_and_weighting",
+                "greedy_priority_queue_trace",
+                "target_count_and_threshold_stop",
+                "component_pair_edge_handling",
+            ],
+            "implementation_boundary": "offline_report_only_no_package_or_newton",
+            "required_output": "search_engine_generalization_report",
+        },
+        {
+            "batch_id": "paper_generalization_batch_d_postprocess_policy",
+            "purpose": "generalize_enclosed_primitive_postprocess_policy",
+            "primary_criteria": [
+                "enclosed_primitive_postprocess",
+            ],
+            "implementation_boundary": "offline_report_only_no_package_or_newton",
+            "required_output": "postprocess_policy_generalization_report",
+        },
+        {
+            "batch_id": "paper_generalization_batch_e_package_boundary_readiness",
+            "purpose": "review_offline_package_boundary_readiness_after_changed_decomposition",
+            "primary_criteria": [
+                "package_generation_boundary",
+                "newton_runtime_boundary",
+                "real_usd_boundary",
+                "benchmark_evaluation_boundary",
+            ],
+            "implementation_boundary": "planning_only_no_package_or_newton",
+            "required_output": "package_boundary_readiness_review",
+        },
+    ]
+    assert plan["planned_batches"] == expected_batches
+    assert plan["first_unresolved_gate"] == "paper_generalization_batch_a_source_policy"
+    assert plan["remaining_generalization_gates"] == EXPECTED_GENERALIZATION_GATES
+    assert plan["blocked_runtime_gates"] == [
+        "package_generation_boundary",
+        "newton_runtime_boundary",
+        "real_usd_boundary",
+        "benchmark_evaluation_boundary",
+    ]
+
+
 def test_cpd_paper_offline_report_covers_first_toy_slice():
     report = build_cpd_paper_offline_report()
 
@@ -1234,13 +1319,17 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithful_offline_supported"] is False
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
-    assert report["failure_labels"] == [
-        "paper_faithful_offline_generalization_missing"
-    ]
-    assert report["next_required_gate"] == "paper_faithful_offline_generalization_plan"
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert report["next_required_gate"] == "paper_generalization_batch_a_source_policy"
     assert report["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_faithful_offline_generalization"
+        *EXPECTED_GENERALIZATION_GATES,
     ]
+    assert "paper_faithful_offline_generalization_plan" not in report[
+        "paper_faithfulness"
+    ]["implemented_fixture_scope"]
+    assert "paper_faithful_offline_generalization_plan" in report[
+        "paper_faithfulness"
+    ]["implemented_planning_scope"]
     assert "priority_queue_trace_audit_topology_only" in report["paper_faithfulness"][
         "implemented_fixture_scope"
     ]

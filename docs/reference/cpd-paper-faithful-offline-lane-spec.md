@@ -582,7 +582,8 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 
 ## Current Fixture-Breadth Position
 
-The paper-lane gate after the fixture-breadth completion review is:
+The paper-lane gate after the fixture-breadth completion review is now closed by a command-only
+generalization planning table:
 
 ```text
 paper_faithful_offline_generalization_plan
@@ -590,6 +591,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
+-> next: paper_generalization_batch_a_source_policy
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -600,5 +602,11 @@ runtime support. Batch D broadens disconnected component-pair ordering and cappe
 accounting without adding Newton runtime support. Batch E broadens rotated nested OBB postprocess
 accounting and cross-type unsupported no-cull accounting without adding Newton runtime support. The
 completion review closes only the planned Batch A-E breadth gate. The next step is a
-paper-faithful offline generalization plan, not `paper_faithful_offline` support, package
-generation, Newton runtime execution, real USD, or benchmarking.
+source-policy generalization slice, not `paper_faithful_offline` support, package generation,
+Newton runtime execution, real USD, or benchmarking.
+
+`paper_generalization_batch_a_source_policy` is the first offline implementation gate after the
+planning table. It should broaden source mesh, preprocessing, source-face intake, and operator
+policy beyond named toy fixtures. It is not package generation, Newton runtime execution, real USD,
+benchmark evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality
+evidence, deployment readiness, or safety certification.

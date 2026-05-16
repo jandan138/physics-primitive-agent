@@ -147,13 +147,27 @@ paper_fixture_breadth_completion_review
 -> no package generation, Newton, real USD, or benchmark work
 ```
 
-The next code slice should be:
+The now-closed planning gate after fixture-breadth completion was:
 
 ```text
 paper_faithful_offline_generalization_plan
 -> planning-only gate for broadening the offline algorithm beyond named toy fixtures
 -> not paper_faithful_offline support
 -> no package generation, Newton, real USD, or benchmark work
+```
+
+This planning gate is implemented as a command-only table inside `cpd_paper_offline_report`. The
+report remains partial, keeps `paper_faithful_offline_supported: false`, and now points to
+`paper_generalization_batch_a_source_policy`.
+
+The first implementation gate after this plan should:
+
+```text
+paper_generalization_batch_a_source_policy
+-> broaden source mesh and preprocessing policy beyond named toy fixtures
+-> broaden source-face intake and operator policy beyond named toy fixtures
+-> stay offline report-only
+-> not generate packages, run Newton, use real USD, or claim benchmark/collision quality
 ```
 
 Batch A stays important because it improves the source mesh, source-face intake, and operator

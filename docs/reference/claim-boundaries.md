@@ -61,9 +61,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   report now also includes a `paper_faithful_offline_scope_audit` criteria table with
   `decision: remain_partial`, non-blocking package/Newton/real-USD/benchmark boundary rows, and
   prior scope-audit gate `paper_fixture_breadth_expansion_plan`; later fixture-breadth slices below
-  close only the planned Batch A-E breadth gate and advance the current report gate to the
-  planning-only `paper_faithful_offline_generalization_plan`. The report remains `status: partial`
-  with
+  close only the planned Batch A-E breadth gate, and the command-only generalization planning table
+  advances the current report gate to `paper_generalization_batch_a_source_policy`. The report
+  remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
   `paper_faithful_offline`, not full CPD paper reproduction, not Newton runtime support, not
@@ -110,13 +110,22 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   readiness, or safety certification.
 - The partial `cpd_paper_offline_report` includes a command-only synthetic fixture-breadth
   completion review for planned Batches A-E. It closes only `paper_fixture_breadth_expansion`,
-  keeps `paper_faithful_offline_supported: false`, and advances the next gate to
-  `paper_faithful_offline_generalization_plan`. That next gate is planning-only for broadening the
-  offline algorithm beyond named toy fixtures; it is not `paper_faithful_offline` support. This
-  review does not support
+  keeps `paper_faithful_offline_supported: false`, and records the planning-only
+  `paper_faithful_offline_generalization_plan` as the follow-up gate for that closed review. That
+  nested follow-up gate is planning-only for broadening the offline algorithm beyond named toy
+  fixtures; it is not `paper_faithful_offline` support. This review does not support
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
   safety certification.
+- The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
+  table. It closes only `paper_faithful_offline_generalization_plan`, keeps
+  `paper_faithful_offline_supported: false`, and advances the next gate to
+  `paper_generalization_batch_a_source_policy`. `paper_generalization_batch_a_source_policy` is
+  the first offline implementation gate after the planning table. It should broaden source mesh,
+  preprocessing, source-face intake, and operator policy beyond named toy fixtures. It is not
+  package generation, Newton runtime execution, real USD, benchmark evidence,
+  `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
+  readiness, or safety certification.
 - The current code can run a command-only deterministic synthetic objective comparison over
   in-memory toy meshes. This compares topology-only and component-merge diagnostic accounting for
   inspection only. This is not benchmark evidence, broad asset evidence, full CPD paper

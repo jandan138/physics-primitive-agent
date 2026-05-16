@@ -356,6 +356,17 @@ experiments:
       - partial fixture-scoped completion review for planned synthetic Batch A-E breadth only
       - records the closed paper_fixture_breadth_expansion gate and the next gate paper_faithful_offline_generalization_plan
       - no paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-faithful-offline-generalization-plan
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-16-cpd-paper-faithful-offline-generalization-plan.md
+    purpose: >
+      Add a command-only planning table for offline CPD paper-lane generalization beyond
+      named toy fixtures.
+    claims_supported:
+      - partial planning-only offline generalization roadmap for the synthetic CPD paper lane
+      - records a planning-only closed paper_faithful_offline_generalization_plan gate while keeping paper_generalization_batch_a_source_policy and later offline generalization batches missing
+      - no paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

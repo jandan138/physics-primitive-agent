@@ -38,10 +38,13 @@ comparison now also emits candidate weighted-volume audit tables that explain wh
 real-USD or collision-quality claim. The partial offline CPD paper report now also includes
 fixture-breadth Batch A source/preprocess, Batch B primitive-fit, Batch C cost/search/stop,
 Batch D component-pair, Batch E postprocess accounting, and a command-only synthetic
-fixture-breadth completion review for planned Batches A-E. The report remains partial,
-`paper_faithful_offline_supported` remains false, and the next paper-lane gate is the
-planning-only `paper_faithful_offline_generalization_plan`, not `paper_faithful_offline`
-support. See
+fixture-breadth completion review for planned Batches A-E. It now also includes a command-only
+planning table for offline generalization beyond named toy fixtures. The report remains partial,
+`paper_faithful_offline_supported` remains false, and the next paper-lane gate is
+`paper_generalization_batch_a_source_policy`, not `paper_faithful_offline` support. This planning
+table does not support full CPD reproduction, package generation, Newton runtime execution,
+real-USD evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
+certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

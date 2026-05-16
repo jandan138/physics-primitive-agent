@@ -76,9 +76,14 @@ The repository has not reached that full result. It has reached the workbench st
 28. Batch D of that plan is now implemented as synthetic component-pair breadth.
 29. Batch E of that plan is now implemented as synthetic postprocess breadth.
 30. A command-only synthetic fixture-breadth completion review is now implemented for planned
-    Batches A-E. The report remains partial, keeps `paper_faithful_offline_supported: false`, and
-    points next to the planning-only `paper_faithful_offline_generalization_plan`.
-31. Records and configs can preserve exactly what was run.
+    Batches A-E. The report remains partial and keeps
+    `paper_faithful_offline_supported: false`; the review payload records the planning-only
+    `paper_faithful_offline_generalization_plan` as its follow-up gate.
+31. A command-only generalization planning table is now implemented inside the same report. It
+    closes only `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
+    `paper_faithful_offline_supported: false`, and points next to
+    `paper_generalization_batch_a_source_policy`.
+32. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -395,8 +400,9 @@ source-face intake policy fixtures, OBB/sphere fit-faithfulness rows, and exact-
 duplicate-vertex preprocessing inside the report. The scope audit then records why these remain
 fixture-scoped and why the lane is still not `paper_faithful_offline`. The fixture-breadth plan
 has now completed Batch A, Batch B, Batch C, Batch D, Batch E, and the command-only synthetic
-fixture-breadth completion review. The next code slice is the planning-only
-`paper_faithful_offline_generalization_plan`.
+fixture-breadth completion review. The planning-only `paper_faithful_offline_generalization_plan`
+is now also recorded as a command-only table. The next code slice is
+`paper_generalization_batch_a_source_policy`.
 
 ## What The Newton-Native Policy Changes
 
@@ -598,7 +604,8 @@ local USD mirrors or synthetic fixtures
 -> fixture-breadth Batch D component-pair audit, still without package/Newton/real-USD
 -> fixture-breadth Batch E postprocess audit, still without package/Newton/real-USD
 -> fixture-breadth completion review, still partial and still without package/Newton/real-USD
--> next: paper_faithful_offline_generalization_plan
+-> generalization planning table, still partial and still without package/Newton/real-USD
+-> next: paper_generalization_batch_a_source_policy
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -677,19 +684,21 @@ Avoid:
 
 ## Recommended Next Slices
 
-Fixture-breadth Batch A, Batch B, Batch C, Batch D, Batch E, and the command-only synthetic
-fixture-breadth completion review now exist. The immediate next code slice should stay offline and
-define the generalization plan without adding stronger evaluation claims:
+Fixture-breadth Batch A, Batch B, Batch C, Batch D, Batch E, the command-only synthetic
+fixture-breadth completion review, and the command-only generalization planning table now exist.
+The immediate next code slice should stay offline and implement the first source-policy
+generalization slice without adding stronger evaluation claims:
 
-1. Define `paper_faithful_offline_generalization_plan` as a planning-only gate beyond named toy
-   fixtures.
-2. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
+1. Implement `paper_generalization_batch_a_source_policy` beyond named toy fixtures.
+2. Broaden source mesh, preprocessing, source-face intake, and operator policy in the offline
+   report only.
+3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
-3. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime
+4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime
    execution, real USD, benchmark, collision-quality, deployment, and safety claims unsupported.
-4. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
+5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
-5. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality
+6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality
    evidence.
 
 ## Claim Boundary
