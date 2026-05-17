@@ -255,7 +255,16 @@ The repository has not reached that full result. It has reached the workbench st
     keeps runtime-admissibility checks, Newton runtime, real-USD, benchmark, collision-quality,
     deployment, and certification triggers at zero or false, keeps the report partial, and points
     next to `paper_mapped_subset_runtime_admissibility_contract`.
-56. Records and configs can preserve exactly what was run.
+56. `paper_mapped_subset_runtime_admissibility_contract` is now implemented as a single-fixture
+    offline/static runtime-admissibility contract, not Newton shape mapping and not Newton
+    execution. It consumes the runtime-admissibility preflight row for the same synthetic
+    `paper_single_box` package, records exactly one finite center, right-handed orthonormal-axis,
+    positive-half-extent, target box-schema, source-face, containment, and volume check, records
+    `runtime_admissibility_check_count: 1` only as report-side static accounting, keeps Newton
+    mapping, Newton runtime, real-USD, benchmark, collision-quality, deployment, and certification
+    triggers at zero or false, keeps the report partial, and points next to
+    `paper_mapped_subset_newton_shape_mapping_preflight_contract`.
+57. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -612,8 +621,10 @@ CollisionPackages. The package-generation contract now also exists as a single-f
 contract that constructs one synthetic, report-scoped `CollisionPackage.to_dict()` artifact. The
 runtime-admissibility preflight contract now also exists as a single-fixture offline contract that
 records one later runtime-admissibility candidate row while running zero runtime-admissibility
-checks and zero Newton code. The next code slice is
-`paper_mapped_subset_runtime_admissibility_contract`.
+checks and zero Newton code. The runtime-admissibility contract now also exists as a
+single-fixture offline/static contract that records one finite-geometry and box-schema check while
+running zero Newton mapping and zero Newton code. The next code slice is
+`paper_mapped_subset_newton_shape_mapping_preflight_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -840,7 +851,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset CollisionPackage generation preflight contract, still partial and still without CollisionPackage/Newton/real-USD
 -> mapped-subset CollisionPackage generation contract, still partial and still without runtime admissibility/Newton/real-USD
 -> mapped-subset runtime-admissibility preflight contract, still partial and still without runtime admissibility/Newton/real-USD
--> next: paper_mapped_subset_runtime_admissibility_contract
+-> mapped-subset runtime-admissibility contract, still partial and still without Newton shape mapping/Newton/real-USD
+-> next: paper_mapped_subset_newton_shape_mapping_preflight_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -944,22 +956,25 @@ candidate-source contract, offline native-current fixture contract, offline nati
 PrimitiveSpec-like dict generation contract, native-fixture serialization contract,
 runtime-boundary preflight contract, and single-fixture runtime-construction contract now exist.
 The single-fixture package-generation preflight contract and single-fixture CollisionPackage
-generation contract now also exist. The single-fixture runtime-admissibility preflight contract now
-also exists. The immediate next code slice should keep the same boundary and implement the bounded
-single-package `paper_mapped_subset_runtime_admissibility_contract` without running Newton task
+generation contract now also exist. The single-fixture runtime-admissibility preflight contract
+and the single-fixture offline/static runtime-admissibility contract now also exist. The immediate
+next code slice should keep the same boundary and implement the bounded
+`paper_mapped_subset_newton_shape_mapping_preflight_contract` without running Newton task
 diagnostics:
 
-1. Implement `paper_mapped_subset_runtime_admissibility_contract` after the preflight row has
-   proved one package artifact is eligible for that bounded offline admissibility decision.
+1. Implement `paper_mapped_subset_newton_shape_mapping_preflight_contract` after the static
+   runtime-admissibility contract has proved one package-shaped artifact is eligible for a later
+   mapping review.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
-   `CollisionPackage.to_dict()` artifact, and runtime-admissibility preflight row for the
-   deterministic `paper_single_box` OBB/box source report-scoped until a later Newton gate exists.
+   `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, and static
+   runtime-admissibility row for the deterministic `paper_single_box` OBB/box source report-scoped
+   until a later Newton execution gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton support/execution, real USD,
    benchmark, collision-quality, deployment readiness, and safety certification claims
    unsupported; the next gate may only decide whether this one synthetic package-shaped artifact
-   passes the bounded report-scoped admissibility contract, not whether it is ready for Newton.
+   has a report-scoped shape-mapping handoff, not whether Newton has run it.
 5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality
@@ -979,10 +994,10 @@ lookahead-changed package-pair synthetic Newton task-smoke claim under recorded 
 command-only four-block evidence-map claim for the recorded lookahead slice. It also records the
 current offline CPD paper mapped-subset chain through one single-fixture runtime `PrimitiveSpec`,
 one synthetic report-scoped `CollisionPackage.to_dict()` artifact, and one
-runtime-admissibility preflight handoff row for `paper_single_box`. It does not add package
-readiness, runtime admissibility, Newton support or Newton execution for that CPD paper package,
-real-USD evidence for that package, benchmark evidence, collision-quality evidence, native
-primitive improvement, asset-wide or whole-robot claims, scoring-policy improvement,
-merge-policy superiority, `paper_faithful_offline` support, full CPD reproduction,
-deployment readiness, safety certification, general postprocess-quality evidence, or general
-polygon mesh support.
+runtime-admissibility preflight handoff row plus one report-only static runtime-admissibility row
+for `paper_single_box`. It does not add package readiness, Newton readiness, Newton support or
+Newton execution for that CPD paper package, real-USD evidence for that package, benchmark
+evidence, collision-quality evidence, native primitive improvement, asset-wide or whole-robot
+claims, scoring-policy improvement, merge-policy superiority, `paper_faithful_offline` support,
+full CPD reproduction, deployment readiness, safety certification, general postprocess-quality
+evidence, or general polygon mesh support.

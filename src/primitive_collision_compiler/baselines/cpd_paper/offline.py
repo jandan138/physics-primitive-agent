@@ -126,6 +126,9 @@ _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT = (
 _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT = (
     "paper_mapped_subset_runtime_admissibility_contract"
 )
+_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT = (
+    "paper_mapped_subset_newton_shape_mapping_preflight_contract"
+)
 _PAPER_COLLISION_PACKAGE_GENERATION_CLAIM_BOUNDARY = (
     "single_fixture_box_only_offline_collision_package_artifact_"
     "not_paper_vocabulary_runtime_admissibility_or_newton"
@@ -795,6 +798,10 @@ def _paper_remaining_gaps_after_mapped_subset_collision_package_generation() -> 
 
 def _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_preflight() -> list[str]:
     return [_PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT]
+
+
+def _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_contract() -> list[str]:
+    return [_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -9307,6 +9314,492 @@ def _paper_mapped_subset_runtime_admissibility_preflight_contract_payload(
     }
 
 
+_RUNTIME_ADMISSIBILITY_CONTRACT_PAYLOAD_FALSE_FLAGS = tuple(
+    flag
+    for flag in _RUNTIME_ADMISSIBILITY_PREFLIGHT_PAYLOAD_FALSE_FLAGS
+    if flag != "runtime_admissibility_checked"
+)
+
+
+def _paper_runtime_admissibility_false_flags() -> dict[str, bool]:
+    return {
+        flag: False
+        for flag in _RUNTIME_ADMISSIBILITY_CONTRACT_PAYLOAD_FALSE_FLAGS
+    }
+
+
+def _paper_runtime_admissibility_vector(
+    value: object,
+    *,
+    error_label: str,
+    length: int = 3,
+) -> list[float]:
+    if not isinstance(value, list | tuple) or len(value) != length:
+        raise ValueError(error_label)
+    result = [float(item) for item in value]
+    if not all(np.isfinite(result)):
+        raise ValueError(error_label)
+    return result
+
+
+def _paper_validate_runtime_admissibility_axes(
+    axes: object,
+) -> list[list[float]]:
+    if not isinstance(axes, list | tuple) or len(axes) != 3:
+        raise ValueError("runtime_admissibility_primitivespec_invalid_axes")
+    rows = [
+        _paper_runtime_admissibility_vector(
+            axis,
+            error_label="runtime_admissibility_primitivespec_invalid_axes",
+        )
+        for axis in axes
+    ]
+    matrix = np.asarray(rows, dtype=np.float64)
+    if not np.all(np.isfinite(matrix)):
+        raise ValueError("runtime_admissibility_primitivespec_invalid_axes")
+    norms = np.linalg.norm(matrix, axis=1)
+    if not np.allclose(norms, np.ones(3), atol=1e-9):
+        raise ValueError(
+            "runtime_admissibility_primitivespec_axes_not_orthonormal"
+        )
+    gram = matrix @ matrix.T
+    if not np.allclose(gram, np.eye(3), atol=1e-9):
+        raise ValueError(
+            "runtime_admissibility_primitivespec_axes_not_orthonormal"
+        )
+    handedness = float(np.dot(np.cross(matrix[0], matrix[1]), matrix[2]))
+    if handedness <= 1.0 - 1e-9:
+        raise ValueError(
+            "runtime_admissibility_primitivespec_axes_not_right_handed"
+        )
+    return rows
+
+
+def _paper_validate_runtime_admissibility_candidate(
+    candidate: dict[str, object],
+) -> dict[str, bool]:
+    expected_candidate = _paper_runtime_admissibility_preflight_expected_source_row()[
+        "candidate_primitivespec_dict"
+    ]
+    if not isinstance(expected_candidate, dict):
+        raise ValueError("runtime_admissibility_expected_primitivespec_missing")
+    expected_keys = set(_paper_primitivespec_like_required_schema_keys())
+    if set(candidate) != expected_keys:
+        raise ValueError("runtime_admissibility_primitivespec_schema_mismatch")
+    if candidate.get("kind") != "box":
+        raise ValueError("runtime_admissibility_primitivespec_mismatch:kind")
+    if (
+        candidate.get("primitive_id")
+        != "paper_single_box__oriented_bounding_box__box"
+    ):
+        raise ValueError(
+            "runtime_admissibility_primitivespec_mismatch:primitive_id"
+        )
+    if candidate.get("frame") != "asset":
+        raise ValueError("runtime_admissibility_primitivespec_mismatch:frame")
+    if candidate.get("conversion_status") != _RUNTIME_CONSTRUCTION_OUTPUT_STATUS:
+        raise ValueError(
+            "runtime_admissibility_primitivespec_mismatch:conversion_status"
+        )
+    _paper_runtime_admissibility_vector(
+        candidate.get("center"),
+        error_label="runtime_admissibility_primitivespec_invalid_center",
+    )
+    if candidate.get("center") != expected_candidate["center"]:
+        raise ValueError("runtime_admissibility_primitivespec_mismatch:center")
+    _paper_validate_runtime_admissibility_axes(candidate.get("axes"))
+    if candidate.get("axes") != expected_candidate["axes"]:
+        raise ValueError("runtime_admissibility_primitivespec_mismatch:axes")
+    dimensions = candidate.get("dimensions")
+    if not isinstance(dimensions, dict) or set(dimensions) != {"half_extents"}:
+        raise ValueError("runtime_admissibility_primitivespec_invalid_dimensions")
+    half_extents = _paper_runtime_admissibility_vector(
+        dimensions.get("half_extents"),
+        error_label="runtime_admissibility_primitivespec_invalid_dimensions",
+    )
+    if any(value <= 0.0 for value in half_extents):
+        raise ValueError("runtime_admissibility_primitivespec_invalid_dimensions")
+    if candidate.get("dimensions") != expected_candidate["dimensions"]:
+        raise ValueError("runtime_admissibility_primitivespec_mismatch:dimensions")
+    if candidate.get("source_faces") != list(range(12)):
+        raise ValueError(
+            "runtime_admissibility_primitivespec_mismatch:source_faces"
+        )
+    if candidate.get("contains_assigned_points") is not True:
+        raise ValueError(
+            "runtime_admissibility_primitivespec_mismatch:"
+            "contains_assigned_points"
+        )
+    try:
+        volume = float(candidate.get("volume"))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "runtime_admissibility_primitivespec_mismatch:volume"
+        ) from exc
+    try:
+        weighted_volume = float(candidate.get("weighted_volume"))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "runtime_admissibility_primitivespec_mismatch:weighted_volume"
+        ) from exc
+    expected_volume = float(
+        8.0 * np.prod(np.asarray(half_extents, dtype=np.float64))
+    )
+    if (
+        not np.isfinite(volume)
+        or volume <= 0.0
+        or not np.isclose(volume, expected_volume, rtol=0.0, atol=1e-9)
+    ):
+        raise ValueError("runtime_admissibility_primitivespec_mismatch:volume")
+    if (
+        not np.isfinite(weighted_volume)
+        or weighted_volume <= 0.0
+        or not np.isclose(weighted_volume, volume, rtol=0.0, atol=1e-9)
+    ):
+        raise ValueError(
+            "runtime_admissibility_primitivespec_mismatch:weighted_volume"
+        )
+    return {
+        "finite_center_check_passed": True,
+        "finite_axes_check_passed": True,
+        "orthonormal_axes_check_passed": True,
+        "right_handed_axes_check_passed": True,
+        "positive_dimensions_check_passed": True,
+        "target_shape_schema_check_passed": True,
+        "source_faces_check_passed": True,
+        "contains_assigned_points_check_passed": True,
+        "volume_check_passed": True,
+        "weighted_volume_check_passed": True,
+        "offline_static_runtime_admissibility_check_passed": True,
+        "offline_static_runtime_admissibility_checked": True,
+    }
+
+
+def _paper_runtime_admissibility_source_row(
+    preflight: dict[str, object],
+) -> dict[str, object]:
+    if (
+        preflight.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT
+    ):
+        raise ValueError("runtime_admissibility_input_gate_id_mismatch")
+    if (
+        preflight.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT
+    ):
+        raise ValueError("runtime_admissibility_input_next_gate_mismatch")
+    expected_metadata = {
+        "input_gate_id": _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT,
+        "closed_gate": _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT,
+        "runtime_admissibility_preflight_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT
+            ),
+            "preflight_gate_closed": (
+                _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT
+            ),
+            "next_runtime_admissibility_gate_required": (
+                _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT
+            ),
+            "runtime_admissibility_preflight_rows_required": 1,
+            "later_runtime_admissibility_candidates_required": 1,
+            "generated_collision_packages_required": 1,
+            "runtime_admissibility_checks_required": 0,
+        },
+    }
+    for field_name, expected_value in expected_metadata.items():
+        if preflight.get(field_name) != expected_value:
+            raise ValueError(
+                "runtime_admissibility_input_metadata_mismatch:"
+                f"{field_name}"
+            )
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        preflight,
+        error_prefix="runtime_admissibility_input_trigger_flag",
+        required_false_flags=_RUNTIME_ADMISSIBILITY_PREFLIGHT_PAYLOAD_FALSE_FLAGS,
+    )
+    expected_counts = {
+        "runtime_admissibility_preflight_row_count": 1,
+        "later_runtime_admissibility_candidate_count": 1,
+        "generated_collision_package_count": 1,
+        "runtime_admissibility_check_count": 0,
+    }
+    for field_name, expected_value in expected_counts.items():
+        if preflight.get(field_name) != expected_value:
+            raise ValueError(
+                "runtime_admissibility_input_count_mismatch:"
+                f"{field_name}"
+            )
+    rows = preflight.get("runtime_admissibility_preflight_rows")
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError("runtime_admissibility_preflight_row_count_mismatch")
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError("runtime_admissibility_preflight_row_count_mismatch")
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        row,
+        error_prefix="runtime_admissibility_input_trigger_flag",
+        required_false_flags=_RUNTIME_ADMISSIBILITY_PREFLIGHT_PAYLOAD_FALSE_FLAGS,
+    )
+    if (
+        row.get("runtime_admissibility_preflight_decision")
+        != "eligible_for_later_runtime_admissibility_contract"
+    ):
+        raise ValueError("runtime_admissibility_preflight_decision_mismatch")
+    if (
+        row.get("required_later_gate")
+        != _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT
+    ):
+        raise ValueError("runtime_admissibility_preflight_required_gate_mismatch")
+    expected_source = _paper_runtime_admissibility_preflight_row(
+        _paper_runtime_admissibility_preflight_expected_source_row()
+    )
+    for field_name, expected_value in expected_source.items():
+        if field_name == "candidate_primitivespec_dict":
+            continue
+        if row.get(field_name) != expected_value:
+            raise ValueError(
+                "runtime_admissibility_preflight_row_mismatch:"
+                f"{field_name}"
+            )
+    if list(_paper_runtime_admissibility_preflight_package_dicts(preflight)):
+        raise ValueError("runtime_admissibility_source_package_copy_forbidden")
+    return row
+
+
+def _paper_runtime_admissibility_row(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    candidate = source_row["candidate_primitivespec_dict"]
+    if not isinstance(candidate, dict):
+        raise ValueError("runtime_admissibility_primitivespec_schema_mismatch")
+    checks = _paper_validate_runtime_admissibility_candidate(candidate)
+    return {
+        "runtime_admissibility_row_id": (
+            "runtime_admissibility__paper_single_box__box"
+        ),
+        "source_runtime_admissibility_preflight_row_id": source_row[
+            "runtime_admissibility_preflight_row_id"
+        ],
+        "source_collision_package_generation_row_id": source_row[
+            "source_collision_package_generation_row_id"
+        ],
+        "source_package_generation_preflight_row_id": source_row[
+            "source_package_generation_preflight_row_id"
+        ],
+        "source_runtime_construction_row_id": source_row[
+            "source_runtime_construction_row_id"
+        ],
+        "source_runtime_boundary_preflight_row_id": source_row[
+            "source_runtime_boundary_preflight_row_id"
+        ],
+        "source_native_fixture_primitivespec_serialization_row_id": source_row[
+            "source_native_fixture_primitivespec_serialization_row_id"
+        ],
+        "source_native_fixture_primitivespec_generation_row_id": source_row[
+            "source_native_fixture_primitivespec_generation_row_id"
+        ],
+        "source_native_current_fixture_source_row_id": source_row[
+            "source_native_current_fixture_source_row_id"
+        ],
+        "source_candidate_source_audit_row_id": source_row[
+            "source_candidate_source_audit_row_id"
+        ],
+        "source_primitivespec_generation_row_id": source_row[
+            "source_primitivespec_generation_row_id"
+        ],
+        "source_primitivespec_generation_preflight_row_id": source_row[
+            "source_primitivespec_generation_preflight_row_id"
+        ],
+        "source_primitivespec_validation_row_id": source_row[
+            "source_primitivespec_validation_row_id"
+        ],
+        "source_primitivespec_dry_run_row_id": source_row[
+            "source_primitivespec_dry_run_row_id"
+        ],
+        "source_adapter_preflight_row_id": source_row[
+            "source_adapter_preflight_row_id"
+        ],
+        "source_candidate_matrix_row_id": source_row[
+            "source_candidate_matrix_row_id"
+        ],
+        "source_conversion_plan_row_id": source_row[
+            "source_conversion_plan_row_id"
+        ],
+        "fixture_id": source_row["fixture_id"],
+        "paper_primitive": source_row["paper_primitive"],
+        "primitive_spec_kind": source_row["primitive_spec_kind"],
+        "candidate_mapping_label": source_row["candidate_mapping_label"],
+        "newton_runtime_kind": source_row["newton_runtime_kind"],
+        "primitive_id": source_row["primitive_id"],
+        "kind": source_row["kind"],
+        "candidate_primitivespec_dict": candidate,
+        "source_package_id": source_row["source_package_id"],
+        "source_asset_id": source_row["source_asset_id"],
+        "source_package_stage": source_row["source_package_stage"],
+        "source_package_status": source_row["source_package_status"],
+        "source_package_method": source_row["source_package_method"],
+        "source_package_source_path": source_row["source_package_source_path"],
+        "source_package_source_sha256": source_row[
+            "source_package_source_sha256"
+        ],
+        "source_package_claim_boundary": source_row[
+            "source_package_claim_boundary"
+        ],
+        "source_package_primitive_count": source_row[
+            "source_package_primitive_count"
+        ],
+        "source_package_primitive_subset": source_row[
+            "source_package_primitive_subset"
+        ],
+        "source_package_unsupported_primitives": source_row[
+            "source_package_unsupported_primitives"
+        ],
+        "source_collision_package_available": True,
+        "runtime_admissibility_static_check_kind": (
+            "offline_static_primitivespec_box_schema_check"
+        ),
+        "runtime_admissibility_decision": (
+            "admissible_for_later_newton_shape_mapping_preflight"
+        ),
+        "runtime_admissibility_status": (
+            "offline_static_admissible_for_later_newton_shape_mapping_preflight"
+        ),
+        "required_later_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+        ),
+        **checks,
+        **_paper_runtime_admissibility_false_flags(),
+    }
+
+
+def _paper_runtime_admissibility_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "runtime_admissibility_row_count": len(rows),
+        "offline_static_runtime_admissibility_check_count": len(rows),
+        "passed_static_runtime_admissibility_check_count": sum(
+            bool(row["offline_static_runtime_admissibility_check_passed"])
+            for row in rows
+        ),
+        "runtime_execution_count": 0,
+        "newton_mapping_record_count": 0,
+        "fixture_id_distribution": _paper_policy_distribution(rows, "fixture_id"),
+        "primitive_subset_distribution": {"box": len(rows)},
+    }
+
+
+def _paper_mapped_subset_runtime_admissibility_contract_payload(
+    preflight: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_runtime_admissibility_source_row(preflight)
+    row = _paper_runtime_admissibility_row(source_row)
+    rows = [row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_contract()
+    )
+    return {
+        "gate_id": _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT,
+        "gate_status": (
+            "implemented_single_fixture_runtime_admissibility_contract_"
+            "static_only_partial"
+        ),
+        "closed_gate": _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT,
+        "input_gate_id": (
+            _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT
+        ),
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "runtime_admissibility_contract_complete_"
+            "newton_shape_mapping_preflight_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "paper_faithful_offline_supported": False,
+        "artifact_kind": (
+            "offline_static_runtime_admissibility_contract_not_newton_mapping"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "single_synthetic_box_package_static_admissibility_only_"
+            "no_newton_no_real_usd_no_benchmark_no_metrics"
+        ),
+        "runtime_admissibility_action": (
+            "run_one_offline_static_runtime_admissibility_check_for_"
+            "paper_single_box_box_package"
+        ),
+        "runtime_admissibility_requirements": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT
+            ),
+            "closed_gate": _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT,
+            "next_newton_shape_mapping_preflight_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+            ),
+            "source_fixture_required": "paper_single_box",
+            "source_primitive_spec_kind_required": "box",
+            "offline_static_runtime_admissibility_checks_required": 1,
+            "runtime_execution_allowed": False,
+            "newton_mapping_allowed": False,
+            "newton_runtime_allowed": False,
+            "real_usd_allowed": False,
+            "benchmark_allowed": False,
+            "silent_drop_allowed": False,
+        },
+        "runtime_admissibility_row_count": 1,
+        "offline_static_runtime_admissibility_check_count": 1,
+        "offline_static_runtime_admissibility_checked": True,
+        "runtime_admissibility_check_count": 1,
+        "runtime_execution_count": 0,
+        "newton_mapping_record_count": 0,
+        "newton_runtime_execution_count": 0,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 1,
+        "source_collision_package_available": True,
+        "runtime_admissibility_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT
+            ),
+            "closed_gate": _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT,
+            "next_newton_shape_mapping_preflight_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+            ),
+            "runtime_admissibility_rows_required": 1,
+            "offline_static_runtime_admissibility_checks_required": 1,
+            "runtime_execution_allowed": False,
+            "newton_mapping_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": preflight["gate_id"],
+            "input_next_required_gate": preflight["next_required_gate"],
+            "input_runtime_admissibility_preflight_row_count": preflight[
+                "runtime_admissibility_preflight_row_count"
+            ],
+            "input_generated_collision_package_count": preflight[
+                "generated_collision_package_count"
+            ],
+            "input_runtime_admissibility_check_count": preflight[
+                "runtime_admissibility_check_count"
+            ],
+            "source_row_id": source_row[
+                "runtime_admissibility_preflight_row_id"
+            ],
+            "source_package_id": source_row["source_package_id"],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_spec_kind": source_row["primitive_spec_kind"],
+        },
+        "runtime_admissibility_rows": rows,
+        "coverage_summary": _paper_runtime_admissibility_coverage_summary(rows),
+        "remaining_gaps": remaining_gaps,
+        **_paper_runtime_admissibility_false_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -9544,8 +10037,17 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             mapped_subset_collision_package_generation
         )
     )
-    missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_preflight()
+    mapped_subset_runtime_admissibility = (
+        _paper_mapped_subset_runtime_admissibility_contract_payload(
+            mapped_subset_runtime_admissibility_preflight
+        )
+    )
+    paper_faithful_scope_audit = _paper_faithful_offline_scope_audit_payload()
+    missing_before_paper_faithful = paper_faithful_scope_audit[
+        "blocking_criteria_ids"
+    ]
+    runtime_lane_remaining_gates = (
+        _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_contract()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -9563,13 +10065,13 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         "collision_quality_measured": False,
         "deployment_or_certification_claimed": False,
         "generated_collision_package_count": 1,
-        "runtime_admissibility_check_count": 0,
+        "runtime_admissibility_check_count": 1,
         "failure_labels": [
             f"{missing_item}_missing"
-            for missing_item in missing_before_paper_faithful
+            for missing_item in runtime_lane_remaining_gates
         ],
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
         ),
         "paper_faithfulness": {
             "status": "partial",
@@ -9623,12 +10125,12 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT,
                 _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT,
+                _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
+            "runtime_lane_remaining_gates": runtime_lane_remaining_gates,
         },
-        "paper_faithful_offline_scope_audit": (
-            _paper_faithful_offline_scope_audit_payload()
-        ),
+        "paper_faithful_offline_scope_audit": paper_faithful_scope_audit,
         "paper_fixture_breadth_completion_review": (
             _paper_fixture_breadth_completion_review_payload()
         ),
@@ -9704,6 +10206,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_runtime_admissibility_preflight_contract": (
             mapped_subset_runtime_admissibility_preflight
+        ),
+        "paper_mapped_subset_runtime_admissibility_contract": (
+            mapped_subset_runtime_admissibility
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

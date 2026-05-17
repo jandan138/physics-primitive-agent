@@ -353,6 +353,14 @@ Proposed | In progress | Complete | Failed | Superseded
   Newton support, not real-USD evidence, not benchmark evidence, not collision-quality evidence,
   not paper primitive vocabulary coverage, not `paper_faithful_offline`, not full CPD reproduction,
   not deployment readiness, and not safety certification.
+- [2026-05-18 CPD Paper Mapped-Subset Runtime-Admissibility Contract](2026-05-18-cpd-paper-mapped-subset-runtime-admissibility-contract.md):
+  partial single-fixture offline/static mapped-subset runtime-admissibility contract inside
+  `cpd_paper_offline_report`. It consumes the one synthetic `paper_single_box`
+  runtime-admissibility preflight row, records exactly one finite-geometry and box-schema static
+  check, keeps Newton shape mapping and Newton execution at zero or false, and remains not package
+  readiness, not Newton readiness, not real-USD evidence, not benchmark evidence, not
+  collision-quality evidence, not paper primitive vocabulary coverage, not `paper_faithful_offline`,
+  not full CPD reproduction, not deployment readiness, and not safety certification.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

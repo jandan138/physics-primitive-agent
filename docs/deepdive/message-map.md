@@ -66,8 +66,13 @@ Do not claim:
   dict, and still runs no runtime-admissibility check and no Newton code. It is not package
   readiness, not executable runtime-admissibility, not Newton support or execution, not real-USD
   evidence, not benchmark or collision-quality evidence, not full CPD reproduction, not
-  `paper_faithful_offline`, and not deployment, safety, or certification evidence. The next gate is
-  `paper_mapped_subset_runtime_admissibility_contract`.
+  `paper_faithful_offline`, and not deployment, safety, or certification evidence. The
+  runtime-admissibility contract then records one offline/static finite-geometry and box-schema
+  check for that same synthetic package. That check is report-only and does not run Newton shape
+  mapping, Newton runtime, real USD, benchmark, or collision-quality tasks. It is still not package
+  readiness, not Newton readiness, not Newton support or execution, not full CPD reproduction, and
+  not safety evidence. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_mapping_preflight_contract`.
 
 ## First 4-Week Proof Point
 

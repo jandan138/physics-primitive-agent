@@ -145,16 +145,17 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The current executable surface can run the command-only CPD paper offline generalization-plan
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
-  `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_runtime_admissibility_contract` after the source-policy,
+  `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
+  gate as `paper_mapped_subset_newton_shape_mapping_preflight_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
   PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight,
   PrimitiveSpec generation-contract, candidate-source-contract, native-current-fixture,
   native-fixture PrimitiveSpec-like dict generation, native-fixture serialization, and
-  runtime-boundary preflight, runtime-construction, collision-package generation preflight, and
-  collision-package generation, and runtime-admissibility preflight slices.
+  runtime-boundary preflight, runtime-construction, collision-package generation preflight,
+  collision-package generation, runtime-admissibility preflight, and offline/static
+  runtime-admissibility contract slices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -448,6 +449,21 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_faithful_offline`, not full CPD reproduction, not real-USD evidence, not benchmark
   evidence, not collision-quality validation, not deployment readiness, and not safety
   certification.
+- The current executable surface can also run
+  `paper_mapped_subset_runtime_admissibility_contract` inside `cpd_paper_offline_report`. It
+  closes only that single-fixture offline/static gate by consuming the preflight row for the same
+  synthetic `paper_single_box` `CollisionPackage.to_dict()` artifact and recording one finite
+  center, right-handed orthonormal-axis, positive-half-extent, target box-schema, source-face,
+  containment, and volume check. It records `runtime_admissibility_check_count: 1` as a
+  report-only static check, keeps runtime execution, Newton shape mapping, Newton runtime,
+  real-USD loading, benchmark runs, collision-quality measurement, deployment, and certification
+  triggers at zero or false, keeps `paper_faithful_offline` blockers separate from runtime-lane
+  gates, and advances the next required runtime-lane gate to
+  `paper_mapped_subset_newton_shape_mapping_preflight_contract`. This is not package readiness,
+  not Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
+  benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
+  not approximation support, not `paper_faithful_offline`, not full CPD reproduction, not
+  deployment readiness, and not safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

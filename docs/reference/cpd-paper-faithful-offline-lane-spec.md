@@ -300,8 +300,9 @@ Before `paper_faithful_offline` wording, record:
 - fixture scope for the comparison;
 - the current top-level failure label after the native-fixture PrimitiveSpec-like dict generation,
   serialization, runtime-boundary preflight, runtime-construction, collision-package generation
-  preflight, collision-package generation, and runtime-admissibility preflight contracts:
-  `paper_mapped_subset_runtime_admissibility_contract_missing`.
+  preflight, collision-package generation, runtime-admissibility preflight, and offline/static
+  runtime-admissibility contracts:
+  `paper_mapped_subset_newton_shape_mapping_preflight_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -599,7 +600,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_runtime_admissibility_contract
+-> current next gate after the later closed gates: paper_mapped_subset_newton_shape_mapping_preflight_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -746,10 +747,12 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_runtime_admissibility_contract` after the later single-fixture
+`paper_mapped_subset_newton_shape_mapping_preflight_contract` after the later single-fixture
 collision-package generation contract constructs one synthetic, report-scoped
-`CollisionPackage.to_dict()` artifact and the runtime-admissibility preflight contract records one
-later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row.
+`CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract records one
+later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row, and the
+offline/static runtime-admissibility contract records one finite-geometry and box-schema check.
+That check is still report-only; it is not Newton shape mapping or Newton execution.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -798,20 +801,30 @@ at that stage advanced the next gate to
 generation preflight contract now closes only the single-fixture offline preflight gate, records
 one later package-generation candidate from that `PrimitiveSpec.to_dict()` payload, keeps package
 generation disallowed in the current gate, keeps generated CollisionPackages and
-runtime-admissibility checks at zero, and advances the current next gate to
+runtime-admissibility checks at zero, and advances the next gate at that stage to
 `paper_mapped_subset_collision_package_generation_contract`. The collision-package generation
 contract now closes only the single-fixture offline generation gate, constructs exactly one
 synthetic, report-scoped `CollisionPackage.to_dict()` artifact for the same `paper_single_box`
 OBB/box row, records `generated_collision_package_count: 1`, keeps runtime-admissibility checks,
 Newton, real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
-false, and advances the current next gate to
+false, and advances the next gate at that stage to
 `paper_mapped_subset_runtime_admissibility_preflight_contract`.
 The runtime-admissibility preflight contract now closes only the single-fixture offline preflight
 gate, consumes that one synthetic package artifact, records one later runtime-admissibility
 candidate row without copying the full package dict, keeps runtime-admissibility checks, Newton,
 real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or false,
-and advances the current next gate to `paper_mapped_subset_runtime_admissibility_contract`. It is
+and advances the next gate at that stage to `paper_mapped_subset_runtime_admissibility_contract`. It is
 not package readiness, not executable runtime-admissibility, not Newton readiness, not Newton
 support or execution, not real-USD evidence, not benchmark or collision-quality evidence, not
 paper primitive vocabulary coverage, not approximation support, not full CPD reproduction, not
 `paper_faithful_offline`, and not deployment, safety, or certification evidence.
+The runtime-admissibility contract now closes only the single-fixture offline/static
+admissibility gate, consumes that preflight row, records one finite center, right-handed
+orthonormal-axis, positive-half-extent, target box-schema, source-face, containment, and volume
+check for the same synthetic package, and advances the current next gate to
+`paper_mapped_subset_newton_shape_mapping_preflight_contract`. It records
+`runtime_admissibility_check_count: 1` only as report-side static accounting. It is not package
+readiness, not Newton readiness, not Newton shape mapping, not Newton execution, not real-USD
+evidence, not benchmark or collision-quality evidence, not paper primitive vocabulary coverage,
+not approximation support, not full CPD reproduction, not `paper_faithful_offline`, and not
+deployment, safety, or certification evidence.
