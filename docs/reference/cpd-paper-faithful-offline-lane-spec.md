@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the PrimitiveSpec generation contract:
-  `paper_mapped_subset_primitivespec_candidate_source_contract_missing`.
+- the current top-level failure label after the PrimitiveSpec candidate-source contract:
+  `paper_mapped_subset_native_current_fixture_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -586,7 +586,8 @@ The paper-lane gate immediately after the fixture-breadth completion review was 
 command-only generalization planning table. Later source-policy, primitive-fit engine,
 search-engine, postprocess-policy, package-boundary readiness, changed-decomposition output,
 package-adapter, unsupported-primitive policy, mapped-subset plan, candidate-matrix, and
-adapter-preflight contract gates are also now closed:
+adapter-preflight, PrimitiveSpec dry-run, validation, generation-preflight, generation, and
+candidate-source contract gates are also now closed:
 
 ```text
 paper_faithful_offline_generalization_plan
@@ -594,7 +595,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_primitivespec_candidate_source_contract
+-> current next gate after the later closed gates: paper_mapped_subset_native_current_fixture_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -731,8 +732,8 @@ real-USD, and benchmark triggers false. It is not package readiness, Newton read
 admissibility, approximation support, `PrimitiveSpec` readiness, package generation, Newton
 runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full
 CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
-validation, generation-preflight, and generation contracts are now implemented; the current next
-gate is `paper_mapped_subset_primitivespec_candidate_source_contract`.
+validation, generation-preflight, generation, and candidate-source contracts are now implemented;
+the current next gate is `paper_mapped_subset_native_current_fixture_contract`.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -745,5 +746,9 @@ PrimitiveSpecs, zero generated CollisionPackages, and zero runtime-admissibility
 the lane partial. The generation contract now closes only the offline PrimitiveSpec generation
 contract, emits native-family template rows for box/sphere/capsule, records zero runtime
 PrimitiveSpecs, zero CollisionPackages, and zero runtime-admissibility checks, and keeps current
-unmapped rows offline/no-op. The next current gate is
-`paper_mapped_subset_primitivespec_candidate_source_contract`.
+unmapped rows offline/no-op. The candidate-source contract now closes only the offline
+PrimitiveSpec source-audit gate, keeps template rows future-only, records two blocked
+approximation-policy rows, one no-op trapezoidal-prism family row, 16 traceable but ineligible
+current unmapped trapezoidal-prism rows, zero eligible current PrimitiveSpec candidate sources,
+zero generated PrimitiveSpecs, zero CollisionPackages, and zero runtime-admissibility checks. The
+next current gate is `paper_mapped_subset_native_current_fixture_contract`.

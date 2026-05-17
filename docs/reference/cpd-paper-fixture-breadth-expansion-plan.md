@@ -203,7 +203,12 @@ CollisionPackages, and zero runtime-admissibility checks. The mapped-subset Prim
 generation contract is now also implemented as a command-only offline template contract, not
 runtime `PrimitiveSpec` generation and not a `CollisionPackage`; it emits native-family templates
 for box/sphere/capsule, keeps current unmapped rows offline/no-op, and keeps runtime/package checks
-at zero. The current next gate is `paper_mapped_subset_primitivespec_candidate_source_contract`.
+at zero. The mapped-subset PrimitiveSpec candidate-source contract is now implemented as a
+command-only offline source audit, not runtime `PrimitiveSpec` generation and not a
+`CollisionPackage`; it keeps the native templates future-only, classifies the current 16 unmapped
+trapezoidal-prism rows as traceable but ineligible, records zero eligible current PrimitiveSpec
+candidate sources, and keeps runtime/package checks at zero. The current next gate is
+`paper_mapped_subset_native_current_fixture_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -233,7 +238,9 @@ the partial paper report, plus an offline mapped-subset PrimitiveSpec validation
 validates the dry-run shape while still generating zero real PrimitiveSpec and zero
 CollisionPackage artifacts, plus an offline mapped-subset PrimitiveSpec generation-preflight
 contract that still generates zero real PrimitiveSpec, zero CollisionPackage artifacts, and zero
-runtime-admissibility checks.
+runtime-admissibility checks, plus an offline mapped-subset PrimitiveSpec candidate-source
+contract that records zero eligible current PrimitiveSpec candidate sources and still generates
+zero real PrimitiveSpec, zero CollisionPackage artifacts, and zero runtime-admissibility checks.
 ```
 
 It does not support:

@@ -554,6 +554,21 @@ experiments:
       - keeps current PrimitiveSpec generation candidates, generated runtime PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs, collision-quality measurement, and deployment/certification claims at zero or false
       - closes only paper_mapped_subset_primitivespec_generation_contract and advances the next gate to paper_mapped_subset_primitivespec_candidate_source_contract
       - no package-readiness claim, PrimitiveSpec-readiness claim, runtime PrimitiveSpec-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-mapped-subset-primitivespec-candidate-source-contract
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-mapped-subset-primitivespec-candidate-source-contract.md
+    purpose: >
+      Add a command-only offline mapped-subset PrimitiveSpec candidate-source audit before any
+      runtime PrimitiveSpec, CollisionPackage, runtime admissibility, package generation, or Newton
+      runtime work.
+    claims_supported:
+      - partial command-only offline PrimitiveSpec candidate-source audit for deterministic synthetic fixture records only
+      - separates three future-only native-family template source rows from current source rows
+      - records two blocked approximation-policy family rows, one no-op trapezoidal-prism family row, and 16 traceable but ineligible current unmapped trapezoidal-prism rows
+      - keeps eligible current PrimitiveSpec candidate sources, generated runtime PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs, collision-quality measurement, and deployment/certification claims at zero or false
+      - closes only paper_mapped_subset_primitivespec_candidate_source_contract and advances the next gate to paper_mapped_subset_native_current_fixture_contract
+      - no package-readiness claim, PrimitiveSpec-readiness claim, runtime PrimitiveSpec-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

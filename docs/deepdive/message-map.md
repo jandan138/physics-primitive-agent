@@ -34,6 +34,9 @@ Do not claim:
 - CPD paper-lane offline gates as real PrimitiveSpec generation, CollisionPackage generation,
   Newton runtime support, benchmark evidence, collision-quality evidence, deployment readiness, or
   safety certification.
+- CPD PrimitiveSpec candidate-source audits as evidence that current native PrimitiveSpec
+  candidates exist; the current candidate-source audit records zero eligible current candidates
+  until a separate native current-fixture gate is implemented.
 
 ## First 4-Week Proof Point
 

@@ -119,11 +119,18 @@ admissibility checks, then advances the next paper-lane gate to
 generation contract that emits template rows for future Newton-native box/sphere/capsule families
 only, keeps all current unmapped rows offline/no-op, records zero runtime PrimitiveSpecs, zero
 CollisionPackages, and zero runtime-admissibility checks, then advances the next paper-lane gate
-to `paper_mapped_subset_primitivespec_candidate_source_contract`. These
+to `paper_mapped_subset_primitivespec_candidate_source_contract`. The report now also includes
+`paper_mapped_subset_primitivespec_candidate_source_contract`, a command-only offline
+candidate-source audit, not runtime `PrimitiveSpec` generation and not a `CollisionPackage`.
+That audit keeps the three native-family template rows future-only, records two blocked
+approximation-policy family rows, records one no-op trapezoidal-prism family row, classifies all
+16 current `trapezoidal_prism` / `offline_only_unmapped` rows as traceable but ineligible, keeps
+eligible current PrimitiveSpec candidate sources at zero, and advances the next paper-lane gate to
+`paper_mapped_subset_native_current_fixture_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

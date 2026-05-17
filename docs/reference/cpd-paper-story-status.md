@@ -175,7 +175,16 @@ The repository has not reached that full result. It has reached the workbench st
     rows offline/no-op, keeps generated runtime PrimitiveSpecs, generated CollisionPackages, and
     runtime-admissibility checks at zero, keeps the report partial, and points next to
     `paper_mapped_subset_primitivespec_candidate_source_contract`.
-47. Records and configs can preserve exactly what was run.
+47. `paper_mapped_subset_primitivespec_candidate_source_contract` is now implemented as a
+    command-only offline PrimitiveSpec candidate-source audit, not runtime `PrimitiveSpec`
+    generation and not a `CollisionPackage`. It closes only that candidate-source gate, records
+    three future-only native template source rows, two blocked approximation-policy source rows,
+    one no-op trapezoidal-prism family source row, and 16 traceable but ineligible current
+    `trapezoidal_prism` / `offline_only_unmapped` rows. It keeps eligible current PrimitiveSpec
+    candidate sources, generated PrimitiveSpecs, generated CollisionPackages, and
+    runtime-admissibility checks at zero, keeps the report partial, and points next to
+    `paper_mapped_subset_native_current_fixture_contract`.
+48. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -514,8 +523,10 @@ not real `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-sub
 PrimitiveSpec generation-preflight contract now also exists as a command-only offline preflight
 contract, still not real `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-subset
 PrimitiveSpec generation contract now also exists as a command-only offline template contract,
+still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-subset
+PrimitiveSpec candidate-source contract now also exists as a command-only offline source audit,
 still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`; the next code slice is
-`paper_mapped_subset_primitivespec_candidate_source_contract`.
+`paper_mapped_subset_native_current_fixture_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -733,7 +744,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset PrimitiveSpec validation contract, still partial and still without real PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec generation preflight contract, still partial and still without real PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec generation contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
--> next: paper_mapped_subset_primitivespec_candidate_source_contract
+-> mapped-subset PrimitiveSpec candidate-source contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
+-> next: paper_mapped_subset_native_current_fixture_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -796,6 +808,7 @@ Use:
 - "offline changed-decomposition output contract";
 - "offline package-adapter contract";
 - "offline unsupported-primitive adapter policy";
+- "offline PrimitiveSpec candidate-source audit with zero eligible current candidates";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -828,15 +841,14 @@ offline package-adapter contract, offline unsupported-primitive policy, offline 
 conversion plan, offline candidate matrix, offline adapter-preflight contract, and offline
 PrimitiveSpec dry-run contract now also exist. The offline PrimitiveSpec validation contract now
 also exists. The offline PrimitiveSpec generation-preflight contract now also exists. The offline
-PrimitiveSpec generation contract now also exists. The immediate next code slice should stay
-offline and define a mapped current-candidate source contract without adding stronger evaluation
-claims:
+PrimitiveSpec generation contract now also exists. The offline PrimitiveSpec candidate-source
+contract now also exists. The immediate next code slice should stay offline and introduce a
+deterministic native current fixture contract without adding stronger evaluation claims:
 
-1. Implement `paper_mapped_subset_primitivespec_candidate_source_contract` after the PrimitiveSpec
-   generation-contract gate.
-2. Keep report-only PrimitiveSpec generation template requirements and zero-candidate behavior
-   intact while current unmapped rows remain offline unless a later mapping or approximation policy
-   exists.
+1. Implement `paper_mapped_subset_native_current_fixture_contract` after the candidate-source
+   contract gate.
+2. Add or select one deterministic synthetic current row in the Newton-native mapped subset before
+   any runtime PrimitiveSpec generation is allowed.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime
@@ -857,8 +869,10 @@ diagnostic-smoke claims. It also adds narrow explicitly opt-in synthetic Newton 
 for the changed near-miss package pair and the changed controlled merge/search package pair, plus
 a narrow offline synthetic two-step lookahead merge/search accounting claim, a narrow
 lookahead-changed package-pair synthetic Newton task-smoke claim under recorded settings, and a
-command-only four-block evidence-map claim for the recorded lookahead slice. It does not add
+command-only four-block evidence-map claim for the recorded lookahead slice. It also records the
+current offline PrimitiveSpec candidate-source audit as zero eligible current candidates. It does not add
 benchmark, collision-quality, native primitive improvement, asset-wide, whole-robot,
 scoring-policy improvement, merge-policy superiority, package-path evidence for the offline
-lookahead report, Newton contact/task evidence for package-probe-only records, general
-postprocess-quality evidence, general polygon mesh support, or paper-scope reproduction claims.
+lookahead report, runtime PrimitiveSpec generation, CollisionPackage generation, Newton
+contact/task evidence for package-probe-only records, general postprocess-quality evidence,
+general polygon mesh support, or paper-scope reproduction claims.

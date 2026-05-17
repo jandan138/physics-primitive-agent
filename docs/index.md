@@ -2,10 +2,12 @@
 
 Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries with next-slice triage metadata, contact canaries, and gated task smokes; bed and capped Franka both select boxes in the current support-aware lanes, while three capped Franka cheaper raw-cost cylinder candidates are reported as support-blocked. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: the explicitly opt-in synthetic Newton task-smoke probe over the
-lookahead-changed package pair is complete under recorded settings. The next step is not a capped
-bed/Franka rerun unless a separate real package change is introduced and passes full mapping,
-contact-canary, task-gate, and dated-record gates. The
+Current next action: the CPD paper offline lane has closed the mapped-subset PrimitiveSpec
+candidate-source audit with zero eligible current candidates. The next step is the offline
+`paper_mapped_subset_native_current_fixture_contract`, not a capped bed/Franka rerun and not
+runtime PrimitiveSpec or package generation. A capped bed/Franka rerun remains blocked unless a
+separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
+dated-record gates. The
 completed cylinder branch remains useful context: the `cylinder_near_miss_cluster` fixture,
 near-miss workbench, fit-ablation report, scoring-sensitivity report, report-only scoring-policy
 ablation, and boxy guardrail extension show how synthetic changes are gated before broader runs.
@@ -123,14 +125,20 @@ template rows, not runtime `PrimitiveSpec` objects and not a `CollisionPackage`;
 native-family templates for box/sphere/capsule, keeps blocked/no-op paper families explicit, keeps
 all current unmapped rows offline/no-op, records zero generated runtime PrimitiveSpecs, zero
 CollisionPackages, and zero runtime-admissibility checks, and advances the next gate to
-`paper_mapped_subset_primitivespec_candidate_source_contract`.
+`paper_mapped_subset_primitivespec_candidate_source_contract`. The report now also closes only
+that PrimitiveSpec candidate-source contract with a command-only offline source audit, not runtime
+`PrimitiveSpec` generation and not a `CollisionPackage`; it records three future-only native
+template source rows, two blocked approximation-policy source rows, one no-op trapezoidal-prism
+family source row, and 16 traceable but ineligible current unmapped trapezoidal-prism rows,
+keeps eligible current PrimitiveSpec candidate sources at zero, and advances the next gate to
+`paper_mapped_subset_native_current_fixture_contract`.
 This review, planning table,
 source-policy
 matrix, primitive-fit engine matrix, search-engine matrix, postprocess-policy matrix,
 package-boundary readiness matrix, changed-decomposition output contract, and package-adapter
 contract, unsupported-primitive policy, mapped-subset planning table, candidate matrix,
 adapter-preflight contract, PrimitiveSpec dry-run contract, PrimitiveSpec validation contract, and
-PrimitiveSpec generation-preflight and generation contracts
+PrimitiveSpec generation-preflight, generation, and candidate-source contracts
 are not
 `paper_faithful_offline` support, and they are not a capped bed/Franka rerun unless a separate real
 package change is introduced and passes full mapping, contact-canary, task-gate, and dated-record
@@ -160,8 +168,9 @@ records exist.
   candidate matrix are now implemented, and the mapped-subset adapter-preflight contract is now
   implemented, the mapped-subset PrimitiveSpec dry-run contract is now implemented, and the
   mapped-subset PrimitiveSpec validation contract, generation-preflight contract, and generation
-  contract are now implemented, while the next gate is
-  `paper_mapped_subset_primitivespec_candidate_source_contract`.
+  contract are now implemented, and the mapped-subset PrimitiveSpec candidate-source contract is
+  now implemented, while the next gate is
+  `paper_mapped_subset_native_current_fixture_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -244,6 +253,12 @@ records exist.
   offline/no-op, keeps generated runtime PrimitiveSpecs, CollisionPackages, and
   runtime-admissibility checks at zero, and advances the next gate to
   `paper_mapped_subset_primitivespec_candidate_source_contract`.
+- [CPD paper mapped-subset PrimitiveSpec candidate-source contract record](records/2026-05-17-cpd-paper-mapped-subset-primitivespec-candidate-source-contract.md):
+  dated implementation record for the command-only offline PrimitiveSpec candidate-source audit,
+  not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. It keeps the report partial,
+  classifies future native templates separately from current rows, records zero eligible current
+  PrimitiveSpec candidate sources, and advances the next gate to
+  `paper_mapped_subset_native_current_fixture_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -664,10 +679,12 @@ records exist.
   PrimitiveSpec generation-preflight contract that closes only
   `paper_mapped_subset_primitivespec_generation_preflight_contract`, plus an offline mapped-subset
   PrimitiveSpec generation contract that closes only
-  `paper_mapped_subset_primitivespec_generation_contract`. It also records a
+  `paper_mapped_subset_primitivespec_generation_contract`, plus an offline mapped-subset
+  PrimitiveSpec candidate-source audit that closes only
+  `paper_mapped_subset_primitivespec_candidate_source_contract`. It also records a
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_primitivespec_candidate_source_contract`, keeps
+  `next_required_gate: paper_mapped_subset_native_current_fixture_contract`, keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD, package
   generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
