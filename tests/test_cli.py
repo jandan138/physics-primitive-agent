@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_adapter_preflight_contract_missing",
+        "paper_mapped_subset_primitivespec_dry_run_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_adapter_preflight_contract"
+        == "paper_mapped_subset_primitivespec_dry_run_contract"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1542,7 +1542,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_adapter_preflight_contract",
+        "paper_mapped_subset_primitivespec_dry_run_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1550,6 +1550,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_package_adapter_unsupported_primitive_policy",
         "paper_package_conversion_mapped_subset_plan",
         "paper_mapped_subset_conversion_candidate_matrix",
+        "paper_mapped_subset_adapter_preflight_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -1868,6 +1869,45 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert candidate_matrix["newton_runtime_triggered"] is False
     assert candidate_matrix["real_usd_triggered"] is False
     assert candidate_matrix["benchmark_triggered"] is False
+    preflight = payload["paper_mapped_subset_adapter_preflight_contract"]
+    assert preflight["gate_id"] == "paper_mapped_subset_adapter_preflight_contract"
+    assert (
+        preflight["input_gate_id"]
+        == "paper_mapped_subset_conversion_candidate_matrix"
+    )
+    assert (
+        preflight["next_required_gate"]
+        == "paper_mapped_subset_primitivespec_dry_run_contract"
+    )
+    assert preflight["package_generation_allowed"] is False
+    assert (
+        preflight["coverage_summary"]["family_preflight_requirement_row_count"]
+        == 6
+    )
+    assert (
+        preflight["coverage_summary"]["future_native_family_preflight_record_count"]
+        == 3
+    )
+    assert (
+        preflight["coverage_summary"]["current_row_adapter_preflight_row_count"]
+        == 16
+    )
+    assert (
+        preflight["coverage_summary"]["current_preflight_pass_record_count"]
+        == 0
+    )
+    assert (
+        preflight["coverage_summary"]["current_package_conversion_candidate_count"]
+        == 0
+    )
+    assert preflight["primitive_spec_generated"] is False
+    assert preflight["collision_package_generated"] is False
+    assert preflight["runtime_admissibility_checked"] is False
+    assert preflight["newton_support_claimed"] is False
+    assert preflight["package_generation_triggered"] is False
+    assert preflight["newton_runtime_triggered"] is False
+    assert preflight["real_usd_triggered"] is False
+    assert preflight["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

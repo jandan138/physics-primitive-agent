@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the mapped-subset planning gate:
-  `paper_mapped_subset_conversion_candidate_matrix_missing`.
+- the current top-level failure label after the adapter-preflight gate:
+  `paper_mapped_subset_primitivespec_dry_run_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -582,8 +582,11 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 
 ## Current Fixture-Breadth Position
 
-The paper-lane gate after the fixture-breadth completion review is now closed by a command-only
-generalization planning table:
+The paper-lane gate immediately after the fixture-breadth completion review was closed by a
+command-only generalization planning table. Later source-policy, primitive-fit engine,
+search-engine, postprocess-policy, package-boundary readiness, changed-decomposition output,
+package-adapter, unsupported-primitive policy, mapped-subset plan, candidate-matrix, and
+adapter-preflight contract gates are also now closed:
 
 ```text
 paper_faithful_offline_generalization_plan
@@ -591,7 +594,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate: paper_mapped_subset_adapter_preflight_contract
+-> current next gate after the later closed gates: paper_mapped_subset_primitivespec_dry_run_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -648,8 +651,8 @@ matrices rather than a durable changed-decomposition output contract; package ge
 Newton runtime execution remain blocked; real-USD and benchmark gates remain later work. It is not
 package readiness, Newton readiness, package generation, Newton runtime execution, real-USD
 evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
-collision-quality evidence, deployment readiness, or safety certification. The next current gate is
-`paper_offline_changed_decomposition_output_contract` at the historical Batch E stage.
+collision-quality evidence, deployment readiness, or safety certification. At the historical Batch
+E stage the follow-up gate was `paper_offline_changed_decomposition_output_contract`.
 
 `paper_offline_changed_decomposition_output_contract` closes only the offline output-contract
 gate. It records an offline changed-decomposition output contract, not a `CollisionPackage`, over
@@ -703,4 +706,16 @@ admissibility, Newton runtime execution, real-USD, and benchmark triggers false.
 readiness, Newton readiness, runtime admissibility, approximation support, package generation,
 Newton runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support,
 full CPD reproduction, collision-quality evidence, deployment readiness, or safety certification.
-The next current gate is `paper_mapped_subset_adapter_preflight_contract`.
+At that stage the follow-up gate was `paper_mapped_subset_adapter_preflight_contract`.
+
+`paper_mapped_subset_adapter_preflight_contract` closes only the offline adapter-preflight gate. It
+records a command-only contract, not `PrimitiveSpec` generation and not a `CollisionPackage`, over
+the candidate-matrix rows. The payload records future adapter requirements, records no-op behavior
+for the current zero package-conversion-candidate state, keeps all current
+`trapezoidal_prism` / `offline_only_unmapped` rows offline, keeps package generation disabled, and
+keeps PrimitiveSpec generation, CollisionPackage generation, runtime admissibility, Newton runtime
+execution, real-USD, and benchmark triggers false. It is not package readiness, Newton readiness,
+runtime admissibility, approximation support, `PrimitiveSpec` readiness, package generation,
+Newton runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support,
+full CPD reproduction, collision-quality evidence, deployment readiness, or safety certification.
+The next current gate is `paper_mapped_subset_primitivespec_dry_run_contract`.

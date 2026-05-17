@@ -1,9 +1,12 @@
 import json
 from math import isfinite, pi, sqrt
 
+import pytest
+
 from primitive_collision_compiler.baselines.cpd_like.primitives import SUPPORTED_PRIMITIVES
 from primitive_collision_compiler.baselines.cpd_paper.offline import (
     CPD_PAPER_OFFLINE_CLAIM_BOUNDARY,
+    _paper_mapped_subset_adapter_preflight_contract_payload,
     _paper_package_adapter_contract_payload,
     build_cpd_paper_offline_report,
 )
@@ -34,6 +37,9 @@ EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX = (
 EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT = (
     "paper_mapped_subset_adapter_preflight_contract"
 )
+EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT = (
+    "paper_mapped_subset_primitivespec_dry_run_contract"
+)
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
 )
@@ -49,7 +55,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -62,6 +68,9 @@ EXPECTED_CONVERSION_MAPPED_SUBSET_REMAINING_GAPS = [
 ]
 EXPECTED_CANDIDATE_MATRIX_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
+]
+EXPECTED_PREFLIGHT_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -347,7 +356,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_package_boundary_gap()
 def test_cpd_paper_offline_report_next_gate_is_mapped_subset_adapter_preflight_contract():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1169,7 +1181,10 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1286,7 +1301,10 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1387,7 +1405,10 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1466,7 +1487,10 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1577,7 +1601,10 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1812,7 +1839,10 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1986,7 +2016,10 @@ def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -2099,7 +2132,10 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -2110,6 +2146,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
         EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
         EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
+        EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2318,7 +2355,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2330,6 +2367,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
         EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
         EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
+        EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -2482,7 +2520,10 @@ def test_cpd_paper_records_unsupported_primitive_policy_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -2650,7 +2691,7 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2839,7 +2880,7 @@ def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
     payload = report["paper_mapped_subset_conversion_candidate_matrix"]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3044,6 +3085,312 @@ def test_cpd_paper_candidate_matrix_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
+def test_cpd_paper_records_mapped_subset_adapter_preflight_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_adapter_preflight_contract"]
+
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_PREFLIGHT_REMAINING_GAPS
+    )
+    assert (
+        EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+
+    assert payload["gate_id"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        payload["gate_status"]
+        == "implemented_offline_adapter_preflight_contract_only_partial"
+    )
+    assert payload["closed_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert payload["input_gate_id"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert (
+        payload["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
+    assert payload["decision"] == "remain_partial"
+    assert (
+        payload["decision_reason"]
+        == "adapter_preflight_contract_complete_primitivespec_dry_run_contract_missing"
+    )
+    assert payload["paper_faithful_offline_allowed"] is False
+    assert payload["package_generation_allowed"] is False
+    assert payload["artifact_kind"] == (
+        "offline_adapter_preflight_contract_not_primitivespec_not_collision_package"
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["implementation_boundary"] == (
+        "offline_adapter_preflight_no_primitivespec_no_collision_package_no_newton"
+    )
+    assert payload["candidate_count_at_preflight"] == 0
+    assert payload["preflight_action"] == "no_op_keep_offline"
+    assert payload["remaining_gaps"] == EXPECTED_PREFLIGHT_REMAINING_GAPS
+
+
+def test_cpd_paper_adapter_preflight_records_family_requirements():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_adapter_preflight_contract"]
+    rows = {
+        row["paper_primitive"]: row
+        for row in payload["adapter_preflight_requirement_rows"]
+    }
+
+    assert list(rows) == [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    expected_native = {
+        "oriented_bounding_box": "box",
+        "sphere": "sphere",
+        "capsule": "capsule",
+    }
+    for primitive_name, runtime_kind in expected_native.items():
+        row = rows[primitive_name]
+        assert row["candidate_runtime_kind"] == runtime_kind
+        assert (
+            row["adapter_preflight_decision"]
+            == "future_native_family_preflight_recorded_only"
+        )
+        assert row["future_native_family_preflight_recorded"] is True
+        assert row["current_row_evidence_count"] == 0
+        assert row["current_package_conversion_candidate_count"] == 0
+        assert row["package_generation_enabled_by_this_gate"] is False
+        assert row["primitive_spec_generation_triggered"] is False
+        assert row["collision_package_generation_triggered"] is False
+        assert row["runtime_admissibility_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+
+    for primitive_name in ("capped_cylinder", "frustum"):
+        row = rows[primitive_name]
+        assert row["candidate_runtime_kind"] == "offline_only_unmapped"
+        assert (
+            row["adapter_preflight_decision"]
+            == "blocked_approximation_policy_missing"
+        )
+        assert row["future_native_family_preflight_recorded"] is False
+        assert row["package_generation_enabled_by_this_gate"] is False
+
+    trapezoid = rows["trapezoidal_prism"]
+    assert trapezoid["candidate_runtime_kind"] == "offline_only_unmapped"
+    assert (
+        trapezoid["adapter_preflight_decision"]
+        == "noop_current_unmapped_rows_keep_offline"
+    )
+    assert trapezoid["future_native_family_preflight_recorded"] is False
+    assert trapezoid["current_row_evidence_count"] == 16
+    assert trapezoid["current_package_conversion_candidate_count"] == 0
+
+
+def test_cpd_paper_adapter_preflight_noops_current_unmapped_rows():
+    report = build_cpd_paper_offline_report()
+    matrix = report["paper_mapped_subset_conversion_candidate_matrix"]
+    payload = report["paper_mapped_subset_adapter_preflight_contract"]
+    summary = payload["coverage_summary"]
+    rows = payload["current_row_adapter_preflight_rows"]
+
+    assert summary["family_preflight_requirement_row_count"] == 6
+    assert summary["future_native_family_preflight_record_count"] == 3
+    assert summary["blocked_family_preflight_record_count"] == 3
+    assert summary["current_row_adapter_preflight_row_count"] == 16
+    assert summary["current_preflight_pass_record_count"] == 0
+    assert summary["current_preflight_noop_record_count"] == 16
+    assert summary["current_package_conversion_candidate_count"] == 0
+    assert summary["package_candidate_record_count"] == 0
+    assert summary["current_paper_primitive_distribution"] == {
+        "trapezoidal_prism": 16,
+    }
+    assert summary["current_runtime_kind_distribution"] == {
+        "offline_only_unmapped": 16,
+    }
+
+    matrix_rows = matrix["current_row_candidate_matrix_rows"]
+    assert len(rows) == len(matrix_rows) == 16
+    for row, upstream_row in zip(rows, matrix_rows):
+        assert row["source_candidate_matrix_row_id"] == (
+            upstream_row["candidate_matrix_row_id"]
+        )
+        assert row["source_conversion_plan_row_id"] == (
+            upstream_row["source_conversion_plan_row_id"]
+        )
+        assert row["source_policy_decision_id"] == upstream_row[
+            "source_policy_decision_id"
+        ]
+        assert row["source_adapter_decision_id"] == (
+            upstream_row["source_adapter_decision_id"]
+        )
+        assert row["source_output_id"] == upstream_row["source_output_id"]
+        assert row["evidence_case_id"] == upstream_row["evidence_case_id"]
+        assert row["offline_primitive_id"] == upstream_row["offline_primitive_id"]
+        assert row["paper_primitive"] == "trapezoidal_prism"
+        assert row["offline_runtime_kind_label"] == "offline_only_unmapped"
+        assert row["input_candidate_matrix_decision"] == "blocked_unmapped_current_rows"
+        assert (
+            row["adapter_preflight_decision"]
+            == "noop_keep_offline_unmapped_current_row"
+        )
+        assert row["adapter_preflight_action"] == "keep_offline"
+        assert row["current_package_conversion_candidate"] is False
+        assert row["adapter_preflight_passed"] is False
+        assert row["package_generation_enabled_by_this_gate"] is False
+        assert (
+            row["required_later_gate"]
+            == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+        )
+        assert row["required_future_policy"] == upstream_row["required_future_policy"]
+        assert row["primitive_spec_generation_triggered"] is False
+        assert row["collision_package_generation_triggered"] is False
+        assert row["runtime_admissibility_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+
+
+def test_cpd_paper_adapter_preflight_stays_report_only():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_adapter_preflight_contract"]
+
+    forbidden_keys = {
+        "CollisionPackage",
+        "PrimitiveSpec",
+        "runtime_result",
+        "usd_asset_path",
+        "benchmark_metric",
+        "timing",
+        "surface_distance",
+        "collision_quality",
+    }
+    assert forbidden_keys.isdisjoint(payload)
+    assert payload["primitive_spec_generation_allowed"] is False
+    assert payload["collision_package_generation_allowed"] is False
+    assert payload["newton_runtime_allowed"] is False
+    assert payload["runtime_admissibility_supported"] is False
+    assert payload["approximation_policy_enabled"] is False
+    assert payload["silent_drop_allowed"] is False
+    assert payload["adapter_preflight_contract"][
+        "primitive_spec_generation_allowed"
+    ] is False
+    assert payload["adapter_preflight_contract"][
+        "collision_package_generation_allowed"
+    ] is False
+    assert payload["adapter_preflight_contract"]["newton_runtime_allowed"] is False
+    assert payload["adapter_preflight_contract"][
+        "runtime_admissibility_supported"
+    ] is False
+    assert payload["adapter_preflight_contract"]["silent_drop_allowed"] is False
+    assert payload["generated_primitive_spec_count"] == 0
+    assert payload["generated_collision_package_count"] == 0
+    assert payload["runtime_admissibility_check_count"] == 0
+    assert payload["primitive_spec_generated"] is False
+    assert payload["collision_package_generated"] is False
+    assert payload["runtime_admissibility_checked"] is False
+    assert payload["newton_support_claimed"] is False
+    assert payload["package_generation_triggered"] is False
+    assert payload["newton_runtime_triggered"] is False
+    assert payload["real_usd_triggered"] is False
+    assert payload["benchmark_triggered"] is False
+    for row in payload["adapter_preflight_requirement_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+    for row in payload["current_row_adapter_preflight_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+
+
+def test_cpd_paper_adapter_preflight_rejects_wrong_candidate_matrix_gate():
+    report = build_cpd_paper_offline_report()
+    candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
+    candidate_matrix["gate_id"] = "stale_gate"
+
+    with pytest.raises(ValueError, match="candidate_matrix_gate_id_mismatch"):
+        _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
+
+
+def test_cpd_paper_adapter_preflight_rejects_true_input_trigger_flags():
+    report = build_cpd_paper_offline_report()
+    candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
+    candidate_matrix["package_generation_triggered"] = True
+
+    with pytest.raises(ValueError, match="input_trigger_flag_true"):
+        _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
+
+
+def test_cpd_paper_adapter_preflight_rejects_nonzero_input_candidates():
+    report = build_cpd_paper_offline_report()
+    candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
+    candidate_matrix["coverage_summary"] = {
+        **candidate_matrix["coverage_summary"],
+        "current_package_conversion_candidate_count": 1,
+    }
+
+    with pytest.raises(ValueError, match="input_package_candidate_count_nonzero"):
+        _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
+
+
+def test_cpd_paper_adapter_preflight_rejects_row_level_current_candidate():
+    report = build_cpd_paper_offline_report()
+    candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
+    current_rows = [
+        dict(row) for row in candidate_matrix["current_row_candidate_matrix_rows"]
+    ]
+    current_rows[0]["current_package_conversion_candidate"] = True
+    candidate_matrix["current_row_candidate_matrix_rows"] = current_rows
+
+    with pytest.raises(ValueError, match="input_package_candidate_count_nonzero"):
+        _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
+
+
+def test_cpd_paper_adapter_preflight_rejects_family_level_candidate_count():
+    report = build_cpd_paper_offline_report()
+    candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
+    family_rows = [
+        dict(row) for row in candidate_matrix["future_family_candidate_matrix_rows"]
+    ]
+    family_rows[0]["current_package_conversion_candidate_count"] = 1
+    candidate_matrix["future_family_candidate_matrix_rows"] = family_rows
+
+    with pytest.raises(ValueError, match="input_package_candidate_count_nonzero"):
+        _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
+
+
+def test_cpd_paper_adapter_preflight_rejects_unknown_family_decision():
+    report = build_cpd_paper_offline_report()
+    candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
+    family_rows = [
+        dict(row) for row in candidate_matrix["future_family_candidate_matrix_rows"]
+    ]
+    family_rows[0]["candidate_matrix_decision"] = "misspelled_decision"
+    candidate_matrix["future_family_candidate_matrix_rows"] = family_rows
+
+    with pytest.raises(ValueError, match="unknown_family_candidate_matrix_decision"):
+        _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
+
+
+def test_cpd_paper_adapter_preflight_rejects_duplicate_input_row_ids():
+    report = build_cpd_paper_offline_report()
+    candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
+    current_rows = [
+        dict(row) for row in candidate_matrix["current_row_candidate_matrix_rows"]
+    ]
+    current_rows[1]["candidate_matrix_row_id"] = current_rows[0][
+        "candidate_matrix_row_id"
+    ]
+    candidate_matrix["current_row_candidate_matrix_rows"] = current_rows
+
+    with pytest.raises(ValueError, match="duplicate_candidate_matrix_row_id"):
+        _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
+
+
 def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_records():
     report = build_cpd_paper_offline_report()
     changed = dict(report["paper_offline_changed_decomposition_output_contract"])
@@ -3225,7 +3572,10 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS

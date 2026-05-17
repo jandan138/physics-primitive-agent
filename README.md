@@ -85,11 +85,18 @@ paper-lane gate to `paper_mapped_subset_conversion_candidate_matrix`. The report
 `CollisionPackage`. That matrix records three future-family review rows, keeps all 16 current
 trapezoidal-prism rows blocked/offline, records zero current package-conversion candidates, keeps
 PrimitiveSpec/CollisionPackage/runtime-admissibility/Newton/real-USD/benchmark triggers false,
-and advances the next paper-lane gate to `paper_mapped_subset_adapter_preflight_contract`. These
+and at that stage advanced the next paper-lane gate to
+`paper_mapped_subset_adapter_preflight_contract`. The report now also includes
+`paper_mapped_subset_adapter_preflight_contract`, a command-only offline adapter-preflight
+contract, not `PrimitiveSpec` generation and not a `CollisionPackage`. That preflight contract
+records future adapter requirements, keeps the current zero package-conversion-candidate state as
+no-op, keeps all current unmapped trapezoidal-prism rows offline, keeps package generation
+disabled, and advances the next paper-lane gate to
+`paper_mapped_subset_primitivespec_dry_run_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix slices do not
+mapped-subset-planning/candidate-matrix/preflight slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

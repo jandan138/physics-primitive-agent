@@ -133,9 +133,17 @@ The repository has not reached that full result. It has reached the workbench st
     three future-family review rows, keeps the current 16 `trapezoidal_prism` /
     `offline_only_unmapped` rows blocked and offline, records zero current package-conversion
     candidates, keeps PrimitiveSpec/CollisionPackage/runtime-admissibility/Newton/real-USD/
-    benchmark triggers false, keeps the report partial, and points next to
+    benchmark triggers false, keeps the report partial, and at that stage pointed next to
     `paper_mapped_subset_adapter_preflight_contract`.
-42. Records and configs can preserve exactly what was run.
+42. `paper_mapped_subset_adapter_preflight_contract` is now implemented as a command-only offline
+    adapter-preflight contract, not `PrimitiveSpec` generation and not a `CollisionPackage`. It
+    closes only that preflight gate, records future adapter requirements, records no-op behavior
+    for the current zero package-conversion-candidate state, keeps all current unmapped
+    trapezoidal-prism rows offline, keeps package generation disabled, keeps
+    PrimitiveSpec/CollisionPackage/runtime-admissibility/Newton/real-USD/benchmark triggers false,
+    keeps the report partial, and points next to
+    `paper_mapped_subset_primitivespec_dry_run_contract`.
+43. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -465,7 +473,9 @@ contract is now implemented as an offline changed-decomposition output contract,
 adapter decision table, not a `CollisionPackage`. The unsupported-primitive policy now also exists
 as a command-only offline policy table, not a `CollisionPackage`. The mapped-subset
 package-conversion plan and candidate matrix now also exist as command-only offline tables, not a
-`CollisionPackage`; the next code slice is `paper_mapped_subset_adapter_preflight_contract`.
+`CollisionPackage`. The mapped-subset adapter-preflight contract now also exists as a
+command-only offline contract, not `PrimitiveSpec` generation and not a `CollisionPackage`; the
+next code slice is `paper_mapped_subset_primitivespec_dry_run_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -678,7 +688,8 @@ local USD mirrors or synthetic fixtures
 -> unsupported-primitive policy, still partial and still without package/Newton/real-USD
 -> mapped-subset package-conversion plan, still partial and still without package/Newton/real-USD
 -> mapped-subset conversion candidate matrix, still partial and still without package/Newton/real-USD
--> next: paper_mapped_subset_adapter_preflight_contract
+-> mapped-subset adapter preflight contract, still partial and still without PrimitiveSpec/package/Newton/real-USD
+-> next: paper_mapped_subset_primitivespec_dry_run_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -770,12 +781,14 @@ fixture-breadth completion review, the command-only generalization planning tabl
 source-policy, primitive-fit engine, search-engine, postprocess-policy, and package-boundary
 readiness generalization matrices now exist. The offline changed-decomposition output contract,
 offline package-adapter contract, offline unsupported-primitive policy, offline mapped-subset
-conversion plan, and offline candidate matrix now also exist. The immediate next code slice should
-stay offline and define the adapter preflight contract without adding stronger evaluation claims:
+conversion plan, offline candidate matrix, and offline adapter-preflight contract now also exist.
+The immediate next code slice should stay offline and define a PrimitiveSpec dry-run contract
+without adding stronger evaluation claims:
 
-1. Implement `paper_mapped_subset_adapter_preflight_contract` after the candidate-matrix gate.
-2. Define adapter preflight requirements and no-op behavior while current unmapped rows remain
-   offline unless a later mapping or approximation policy exists.
+1. Implement `paper_mapped_subset_primitivespec_dry_run_contract` after the adapter-preflight
+   gate.
+2. Define report-only PrimitiveSpec dry-run requirements and zero-candidate behavior while current
+   unmapped rows remain offline unless a later mapping or approximation policy exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime
