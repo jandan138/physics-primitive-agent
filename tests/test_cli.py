@@ -1528,11 +1528,14 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_native_fixture_generation_contract_missing",
+        (
+            "paper_mapped_subset_primitivespec_native_fixture_"
+            "serialization_contract_missing"
+        ),
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
+        == "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1542,7 +1545,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_primitivespec_native_fixture_generation_contract",
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1557,6 +1560,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_primitivespec_generation_contract",
         "paper_mapped_subset_primitivespec_candidate_source_contract",
         "paper_mapped_subset_native_current_fixture_contract",
+        "paper_mapped_subset_primitivespec_native_fixture_generation_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -2232,6 +2236,60 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert native_fixture["newton_runtime_triggered"] is False
     assert native_fixture["real_usd_triggered"] is False
     assert native_fixture["benchmark_triggered"] is False
+    native_generation = payload[
+        "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
+    ]
+    assert (
+        native_generation["gate_id"]
+        == "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
+    )
+    assert (
+        native_generation["input_gate_id"]
+        == "paper_mapped_subset_native_current_fixture_contract"
+    )
+    assert (
+        native_generation["next_required_gate"]
+        == "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    )
+    assert native_generation["primitive_spec_generation_candidate_count"] == 1
+    assert native_generation["offline_serialized_primitivespec_like_dict_count"] == 1
+    assert native_generation["generated_runtime_primitive_spec_count"] == 0
+    assert native_generation["generated_primitive_spec_count"] == 0
+    assert native_generation["generated_collision_package_count"] == 0
+    assert native_generation["runtime_admissibility_check_count"] == 0
+    assert len(native_generation["native_fixture_primitivespec_generation_rows"]) == 1
+    native_generation_row = native_generation[
+        "native_fixture_primitivespec_generation_rows"
+    ][0]
+    generated_spec = native_generation_row[
+        "offline_serialized_primitivespec_like_dict"
+    ]
+    assert native_generation_row["fixture_id"] == "paper_single_box"
+    assert native_generation_row["primitive_spec_kind"] == "box"
+    assert native_generation_row["generated_primitive_spec"] is None
+    assert native_generation_row["runtime_instance_generated"] is False
+    assert generated_spec["primitive_id"] == "paper_single_box__oriented_bounding_box__box"
+    assert generated_spec["kind"] == "box"
+    assert generated_spec["pose"] == []
+    assert generated_spec["frame"] == "asset"
+    assert generated_spec["dimensions"] == {
+        "half_extents": native_fixture_row["half_extents"]
+    }
+    assert generated_spec["center"] == native_fixture_row["center"]
+    assert generated_spec["axes"] == native_fixture_row["axes"]
+    assert generated_spec["source_faces"] == native_fixture_row["fixture_source_faces"]
+    assert generated_spec["contains_assigned_points"] is True
+    assert generated_spec["conversion_status"] == (
+        "report_only_offline_serialized_primitivespec_like_dict_not_runtime_object"
+    )
+    assert native_generation["primitive_spec_generated"] is False
+    assert native_generation["collision_package_generated"] is False
+    assert native_generation["runtime_admissibility_checked"] is False
+    assert native_generation["newton_support_claimed"] is False
+    assert native_generation["package_generation_triggered"] is False
+    assert native_generation["newton_runtime_triggered"] is False
+    assert native_generation["real_usd_triggered"] is False
+    assert native_generation["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

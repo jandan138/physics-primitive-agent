@@ -191,9 +191,18 @@ The repository has not reached that full result. It has reached the workbench st
     eligible current candidate source and one report-only PrimitiveSpec generation candidate,
     keeps generated PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks,
     Newton runtime, real-USD, benchmark, collision-quality, deployment, and certification triggers
-    at zero or false, keeps the report partial, and points next to
-    `paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
-49. Records and configs can preserve exactly what was run.
+    at zero or false, keeps the report partial, and led to the later
+    `paper_mapped_subset_primitivespec_native_fixture_generation_contract` gate.
+49. `paper_mapped_subset_primitivespec_native_fixture_generation_contract` is now implemented as
+    a command-only offline native-fixture PrimitiveSpec-like dict generation contract, not runtime
+    `PrimitiveSpec` object creation and not a `CollisionPackage`. It closes only that
+    native-fixture generation gate, emits exactly one JSON-serializable report-only dict shaped
+    like `PrimitiveSpec.to_dict()` for the deterministic synthetic `paper_single_box` OBB/box
+    source row, keeps generated runtime PrimitiveSpecs, generated CollisionPackages,
+    runtime-admissibility checks, Newton runtime, real-USD, benchmark, collision-quality,
+    deployment, and certification triggers at zero or false, keeps the report partial, and points
+    next to `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
+50. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -536,8 +545,10 @@ still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. The m
 PrimitiveSpec candidate-source contract now also exists as a command-only offline source audit,
 still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-subset
 native-current fixture contract now also exists as a command-only offline source-row contract,
-still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`; the next code slice is
-`paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
+still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. The native-fixture
+PrimitiveSpec-like dict generation contract now also exists as a command-only offline report
+artifact, still not runtime `PrimitiveSpec` object creation and not a `CollisionPackage`; the next
+code slice is `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -757,7 +768,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset PrimitiveSpec generation contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec candidate-source contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset native-current fixture contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
--> next: paper_mapped_subset_primitivespec_native_fixture_generation_contract
+-> mapped-subset native-fixture PrimitiveSpec-like dict generation contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
+-> next: paper_mapped_subset_primitivespec_native_fixture_serialization_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -850,18 +862,18 @@ fixture-breadth completion review, the command-only generalization planning tabl
 source-policy, primitive-fit engine, search-engine, postprocess-policy, and package-boundary
 readiness generalization matrices now exist. The offline changed-decomposition output contract,
 offline package-adapter contract, offline unsupported-primitive policy, offline mapped-subset
-conversion plan, offline candidate matrix, offline adapter-preflight contract, and offline
-PrimitiveSpec dry-run contract now also exist. The offline PrimitiveSpec validation contract now
-also exists. The offline PrimitiveSpec generation-preflight contract now also exists. The offline
-PrimitiveSpec generation contract now also exists. The offline PrimitiveSpec candidate-source
-contract now also exists. The offline native-current fixture contract now also exists. The
-immediate next code slice should stay offline and introduce report-only PrimitiveSpec generation
-for the deterministic native fixture without adding stronger evaluation claims:
+conversion plan, offline candidate matrix, offline adapter-preflight contract, offline
+PrimitiveSpec dry-run contract, offline PrimitiveSpec validation contract, offline PrimitiveSpec
+generation-preflight contract, offline PrimitiveSpec generation contract, offline PrimitiveSpec
+candidate-source contract, offline native-current fixture contract, and offline native-fixture
+PrimitiveSpec-like dict generation contract now exist. The immediate next code slice should stay
+offline and validate serialization/schema stability for the deterministic native-fixture dict
+without adding stronger evaluation claims:
 
-1. Implement `paper_mapped_subset_primitivespec_native_fixture_generation_contract` after the
-   native-current fixture contract gate.
-2. Generate only the report-only native fixture PrimitiveSpec row for the deterministic
-   `paper_single_box` OBB/box source before any runtime PrimitiveSpec generation is allowed.
+1. Implement `paper_mapped_subset_primitivespec_native_fixture_serialization_contract` after the
+   native-fixture PrimitiveSpec-like dict generation contract gate.
+2. Validate only the report-only serialized dict for the deterministic `paper_single_box` OBB/box
+   source before any runtime PrimitiveSpec generation is allowed.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime

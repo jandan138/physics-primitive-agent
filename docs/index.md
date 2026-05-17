@@ -2,10 +2,11 @@
 
 Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries with next-slice triage metadata, contact canaries, and gated task smokes; bed and capped Franka both select boxes in the current support-aware lanes, while three capped Franka cheaper raw-cost cylinder candidates are reported as support-blocked. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
-Current next action: the CPD paper offline lane has closed the mapped-subset native-current
-fixture contract with one synthetic `paper_single_box` OBB/box source row. The next step is the
-offline report-only `paper_mapped_subset_primitivespec_native_fixture_generation_contract`, not a
-capped bed/Franka rerun and not runtime PrimitiveSpec or package generation. A capped bed/Franka rerun remains blocked unless a
+Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
+PrimitiveSpec-like dict generation contract with one JSON-serializable, report-only
+`paper_single_box` OBB/box dict. The next step is the offline report-only
+`paper_mapped_subset_primitivespec_native_fixture_serialization_contract`, not a capped
+bed/Franka rerun and not runtime PrimitiveSpec object or package generation. A capped bed/Franka rerun remains blocked unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
 dated-record gates. The
 completed cylinder branch remains useful context: the `cylinder_near_miss_cluster` fixture,
@@ -137,7 +138,13 @@ native-current fixture contract with a command-only offline source row, not runt
 `paper_single_box` selected OBB/box source row, one eligible current candidate source, one
 report-only PrimitiveSpec generation candidate, zero generated PrimitiveSpecs, zero generated
 CollisionPackages, zero runtime-admissibility checks, and advances the next gate to
-`paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
+`paper_mapped_subset_primitivespec_native_fixture_generation_contract` at that stage. The report now
+also closes only that native-fixture generation contract with one JSON-serializable, report-only
+PrimitiveSpec-like dict shaped like `PrimitiveSpec.to_dict()` for review, while keeping runtime
+`PrimitiveSpec` objects, `CollisionPackage` generation, runtime-admissibility checks, Newton,
+real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or false.
+The current next gate is
+`paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
 This review, planning table,
 source-policy
 matrix, primitive-fit engine matrix, search-engine matrix, postprocess-policy matrix,
@@ -176,9 +183,9 @@ records exist.
   implemented, the mapped-subset PrimitiveSpec dry-run contract is now implemented, and the
   mapped-subset PrimitiveSpec validation contract, generation-preflight contract, and generation
   contract are now implemented, and the mapped-subset PrimitiveSpec candidate-source contract is
-  now implemented, and the mapped-subset native-current fixture contract is now implemented, while
-  the next gate is
-  `paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
+  now implemented, and the mapped-subset native-current fixture contract and native-fixture
+  PrimitiveSpec-like dict generation contract are now implemented, while the next gate is
+  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -271,8 +278,13 @@ records exist.
   dated implementation record for the command-only offline native-current fixture source-row
   contract, not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. It records one
   synthetic `paper_single_box` OBB/box source row, one eligible current candidate source, one
-  report-only PrimitiveSpec generation candidate, and advances the next gate to
-  `paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
+  report-only PrimitiveSpec generation candidate, and led to the later
+  `paper_mapped_subset_primitivespec_native_fixture_generation_contract` gate.
+- [CPD paper mapped-subset PrimitiveSpec native-fixture generation contract record](records/2026-05-17-cpd-paper-mapped-subset-primitivespec-native-fixture-generation-contract.md):
+  dated implementation record for the command-only offline native-fixture PrimitiveSpec-like dict
+  generation contract, not runtime `PrimitiveSpec` object creation and not a `CollisionPackage`.
+  It emits exactly one report-only serialized dict for `paper_single_box` and advances the next
+  gate to `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -697,10 +709,12 @@ records exist.
   PrimitiveSpec candidate-source audit that closes only
   `paper_mapped_subset_primitivespec_candidate_source_contract`, plus an offline mapped-subset
   native-current fixture source-row contract that closes only
-  `paper_mapped_subset_native_current_fixture_contract`. It also records a
+  `paper_mapped_subset_native_current_fixture_contract`, plus an offline native-fixture
+  PrimitiveSpec-like dict generation contract that closes only
+  `paper_mapped_subset_primitivespec_native_fixture_generation_contract`. It also records a
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_primitivespec_native_fixture_generation_contract`,
+  `next_required_gate: paper_mapped_subset_primitivespec_native_fixture_serialization_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD, package
   generation, or benchmarks.

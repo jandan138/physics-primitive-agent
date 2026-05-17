@@ -135,11 +135,19 @@ PrimitiveSpec generation candidate, keeps generated PrimitiveSpecs, CollisionPac
 runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs,
 collision-quality measurement, and deployment/certification claims at zero or false, and advances
 the next paper-lane gate to
-`paper_mapped_subset_primitivespec_native_fixture_generation_contract`. These
+`paper_mapped_subset_primitivespec_native_fixture_generation_contract`. The report now also
+includes `paper_mapped_subset_primitivespec_native_fixture_generation_contract`, a command-only
+offline native-fixture PrimitiveSpec-like dict generation contract, not runtime `PrimitiveSpec`
+object creation and not a `CollisionPackage`. It emits exactly one JSON-serializable,
+report-only PrimitiveSpec-like dict for the synthetic `paper_single_box` OBB/box source row,
+keeps generated runtime PrimitiveSpecs, CollisionPackages, runtime-admissibility checks, Newton
+runtime, real-USD loading, benchmark runs, collision-quality measurement, and
+deployment/certification claims at zero or false, and advances the next paper-lane gate to
+`paper_mapped_subset_primitivespec_native_fixture_serialization_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

@@ -103,6 +103,9 @@ _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT = (
 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT = (
     "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
 )
+_PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT = (
+    "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -724,6 +727,12 @@ def _paper_remaining_gaps_after_mapped_subset_primitivespec_candidate_source() -
 def _paper_remaining_gaps_after_mapped_subset_native_current_fixture() -> list[str]:
     return [
         _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+    ]
+
+
+def _paper_remaining_gaps_after_mapped_subset_primitivespec_native_fixture_generation() -> list[str]:
+    return [
+        _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
     ]
 
 
@@ -6089,6 +6098,407 @@ def _paper_mapped_subset_native_current_fixture_contract_payload(
     }
 
 
+def _paper_validate_primitivespec_native_fixture_generation_false_flags(
+    row: dict[str, object],
+) -> None:
+    for flag in _PRIMITIVESPEC_VALIDATION_ROW_FALSE_FLAGS:
+        if bool(row.get(flag)):
+            raise ValueError(
+                "primitivespec_native_fixture_generation_input_trigger_flag_true:"
+                f"{flag}"
+            )
+
+
+def _paper_primitivespec_native_fixture_generation_source_row(
+    native_fixture: dict[str, object],
+) -> dict[str, object]:
+    if (
+        native_fixture.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_native_fixture_generation_input_gate_id_mismatch"
+        )
+    if (
+        native_fixture.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_native_fixture_generation_input_next_gate_mismatch"
+        )
+    for field_name in ("paper_faithful_offline_allowed", "package_generation_allowed"):
+        if bool(native_fixture.get(field_name)):
+            raise ValueError(
+                "primitivespec_native_fixture_generation_input_boundary_flag_true:"
+                f"{field_name}"
+            )
+    _paper_validate_primitivespec_native_fixture_generation_false_flags(
+        native_fixture
+    )
+    expected_counts = {
+        "eligible_current_candidate_source_count": 1,
+        "primitive_spec_generation_candidate_count": 1,
+        "generated_primitive_spec_count": 0,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+    }
+    for field_name, expected_value in expected_counts.items():
+        if native_fixture[field_name] != expected_value:
+            raise ValueError(
+                "primitivespec_native_fixture_generation_input_count_mismatch:"
+                f"{field_name}"
+            )
+    coverage = native_fixture["coverage_summary"]
+    expected_coverage = {
+        "native_current_fixture_source_row_count": 1,
+        "eligible_current_candidate_source_count": 1,
+        "primitive_spec_generation_candidate_record_count": 1,
+        "generated_primitive_spec_record_count": 0,
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+    }
+    for field_name, expected_value in expected_coverage.items():
+        if coverage[field_name] != expected_value:
+            raise ValueError(
+                "primitivespec_native_fixture_generation_coverage_count_mismatch:"
+                f"{field_name}"
+            )
+    rows = native_fixture["native_current_fixture_source_rows"]
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_row_count_mismatch"
+        )
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_row_count_mismatch"
+        )
+    _paper_validate_primitivespec_native_fixture_generation_false_flags(row)
+    if row.get("fixture_id") != "paper_single_box":
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_fixture_mismatch"
+        )
+    if row.get("paper_primitive") != "oriented_bounding_box":
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_paper_primitive_mismatch"
+        )
+    if row.get("primitive_spec_kind") != "box":
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_kind_mismatch"
+        )
+    if row.get("candidate_mapping_label") != "box":
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_mapping_label_mismatch"
+        )
+    if row.get("newton_runtime_kind") != "box":
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_runtime_kind_mismatch"
+        )
+    if not bool(row.get("eligible_current_candidate_source")):
+        raise ValueError("primitivespec_native_fixture_generation_source_not_eligible")
+    if not bool(row.get("primitive_spec_generation_candidate")):
+        raise ValueError("primitivespec_native_fixture_generation_source_not_candidate")
+    if row.get("generated_primitive_spec") is not None:
+        raise ValueError(
+            "primitivespec_native_fixture_generation_input_generated_spec_nonzero"
+        )
+    if (
+        row.get("required_later_gate")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_native_fixture_generation_source_required_gate_mismatch"
+        )
+    return row
+
+
+def _paper_primitivespec_native_fixture_generation_geometry(
+    row: dict[str, object],
+) -> dict[str, object]:
+    center = _paper_native_fixture_finite_array(
+        row.get("center"),
+        (3,),
+        "primitivespec_native_fixture_generation_invalid_center",
+    )
+    axes = _paper_native_fixture_finite_array(
+        row.get("axes"),
+        (3, 3),
+        "primitivespec_native_fixture_generation_invalid_axes",
+    )
+    half_extents = _paper_native_fixture_finite_array(
+        row.get("half_extents"),
+        (3,),
+        "primitivespec_native_fixture_generation_invalid_half_extents",
+    )
+    if any(float(value) <= 0.0 for value in half_extents):
+        raise ValueError(
+            "primitivespec_native_fixture_generation_invalid_half_extents"
+        )
+    volume = _paper_native_fixture_positive_float(
+        row.get("volume"),
+        "primitivespec_native_fixture_generation_invalid_volume",
+    )
+    weighted_volume = _paper_native_fixture_positive_float(
+        row.get("weighted_volume"),
+        "primitivespec_native_fixture_generation_invalid_weighted_volume",
+    )
+    source_faces = row.get("fixture_source_faces")
+    if not isinstance(source_faces, list | tuple) or len(source_faces) == 0:
+        raise ValueError(
+            "primitivespec_native_fixture_generation_missing_source_faces"
+        )
+    for face_id in source_faces:
+        if isinstance(face_id, bool) or not isinstance(face_id, int) or face_id < 0:
+            raise ValueError(
+                "primitivespec_native_fixture_generation_invalid_source_face_id"
+            )
+    return {
+        "center": center,
+        "axes": axes,
+        "half_extents": half_extents,
+        "volume": volume,
+        "weighted_volume": weighted_volume,
+        "source_faces": list(source_faces),
+    }
+
+
+def _paper_primitivespec_native_fixture_generation_serialized_dict(
+    row: dict[str, object],
+    geometry: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "primitive_id": "paper_single_box__oriented_bounding_box__box",
+        "kind": "box",
+        "pose": [],
+        "center": geometry["center"],
+        "axes": geometry["axes"],
+        "dimensions": {"half_extents": geometry["half_extents"]},
+        "frame": "asset",
+        "source_faces": geometry["source_faces"],
+        "contains_assigned_points": bool(row["contains_assigned_points"]),
+        "volume": geometry["volume"],
+        "weighted_volume": geometry["weighted_volume"],
+        "conversion_status": (
+            "report_only_offline_serialized_primitivespec_like_dict_"
+            "not_runtime_object"
+        ),
+    }
+
+
+def _paper_primitivespec_native_fixture_generation_row(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    geometry = _paper_primitivespec_native_fixture_generation_geometry(source_row)
+    serialized = _paper_primitivespec_native_fixture_generation_serialized_dict(
+        source_row,
+        geometry,
+    )
+    return {
+        "native_fixture_primitivespec_generation_row_id": (
+            "native_fixture_primitivespec_generation__paper_single_box__"
+            "oriented_bounding_box__box"
+        ),
+        "source_native_current_fixture_source_row_id": source_row[
+            "native_current_fixture_source_row_id"
+        ],
+        "source_candidate_source_audit_row_id": source_row[
+            "source_candidate_source_audit_row_id"
+        ],
+        "source_primitivespec_generation_row_id": source_row[
+            "source_primitivespec_generation_row_id"
+        ],
+        "source_primitivespec_generation_preflight_row_id": source_row[
+            "source_primitivespec_generation_preflight_row_id"
+        ],
+        "source_primitivespec_validation_row_id": source_row[
+            "source_primitivespec_validation_row_id"
+        ],
+        "source_primitivespec_dry_run_row_id": source_row[
+            "source_primitivespec_dry_run_row_id"
+        ],
+        "source_adapter_preflight_row_id": source_row[
+            "source_adapter_preflight_row_id"
+        ],
+        "source_candidate_matrix_row_id": source_row[
+            "source_candidate_matrix_row_id"
+        ],
+        "source_conversion_plan_row_id": source_row[
+            "source_conversion_plan_row_id"
+        ],
+        "fixture_id": source_row["fixture_id"],
+        "fixture_source_faces": geometry["source_faces"],
+        "paper_primitive": source_row["paper_primitive"],
+        "primitive_spec_kind": source_row["primitive_spec_kind"],
+        "candidate_mapping_label": source_row["candidate_mapping_label"],
+        "newton_runtime_kind": source_row["newton_runtime_kind"],
+        "generation_decision": (
+            "report_only_serialized_primitivespec_like_dict_generated"
+        ),
+        "generation_action": "emit_offline_serialized_dict_only",
+        "primitive_spec_generation_candidate": True,
+        "offline_serialized_primitivespec_like_dict": serialized,
+        "runtime_instance_generated": False,
+        "generated_primitive_spec": None,
+        "required_later_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        ),
+        "required_future_policy": (
+            "report_only_primitivespec_payload_serialization_contract"
+        ),
+        "fit_model": source_row["fit_model"],
+        "axis_selection_policy": source_row["axis_selection_policy"],
+        "center": geometry["center"],
+        "axes": geometry["axes"],
+        "half_extents": geometry["half_extents"],
+        "volume": geometry["volume"],
+        "weighted_volume": geometry["weighted_volume"],
+        "contains_assigned_points": source_row["contains_assigned_points"],
+        "primitive_parameter_lower_clamp": source_row[
+            "primitive_parameter_lower_clamp"
+        ],
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
+def _paper_primitivespec_native_fixture_generation_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "native_current_fixture_source_row_count": len(rows),
+        "primitive_spec_generation_candidate_record_count": sum(
+            bool(row["primitive_spec_generation_candidate"]) for row in rows
+        ),
+        "offline_serialized_primitivespec_like_dict_record_count": sum(
+            isinstance(row["offline_serialized_primitivespec_like_dict"], dict)
+            for row in rows
+        ),
+        "generated_runtime_primitive_spec_record_count": 0,
+        "generated_primitive_spec_record_count": sum(
+            row["generated_primitive_spec"] is not None for row in rows
+        ),
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+        "fixture_id_distribution": _paper_policy_distribution(rows, "fixture_id"),
+        "paper_primitive_distribution": _paper_policy_distribution(
+            rows,
+            "paper_primitive",
+        ),
+        "primitive_spec_kind_distribution": _paper_policy_distribution(
+            rows,
+            "primitive_spec_kind",
+        ),
+        "generation_decision_distribution": _paper_policy_distribution(
+            rows,
+            "generation_decision",
+        ),
+    }
+
+
+def _paper_mapped_subset_primitivespec_native_fixture_generation_contract_payload(
+    native_fixture: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_primitivespec_native_fixture_generation_source_row(
+        native_fixture
+    )
+    generation_row = _paper_primitivespec_native_fixture_generation_row(source_row)
+    rows = [generation_row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_primitivespec_native_fixture_generation()
+    )
+    return {
+        "gate_id": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+        ),
+        "gate_status": (
+            "implemented_offline_native_fixture_primitivespec_generation_"
+            "contract_only_partial"
+        ),
+        "closed_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+        ),
+        "input_gate_id": _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "native_fixture_primitivespec_generation_contract_complete_"
+            "serialization_contract_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": (
+            "offline_native_fixture_primitivespec_like_dict_not_runtime_"
+            "primitivespec_not_collision_package"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_native_fixture_primitivespec_like_dict_only_no_runtime_"
+            "primitivespec_no_collision_package_no_newton_no_real_usd_no_benchmark"
+        ),
+        "native_fixture_primitivespec_generation_action": (
+            "emit_one_report_only_serialized_primitivespec_like_dict"
+        ),
+        "primitive_spec_generation_candidate_count": 1,
+        "offline_serialized_primitivespec_like_dict_count": 1,
+        "generated_runtime_primitive_spec_count": 0,
+        "generated_primitive_spec_count": 0,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+        "native_fixture_primitivespec_generation_contract": {
+            "input_gate_required": _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+            "native_fixture_generation_gate_closed": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+            ),
+            "next_serialization_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+            ),
+            "source_fixture_required": "paper_single_box",
+            "source_paper_primitive_required": "oriented_bounding_box",
+            "source_primitive_spec_kind_required": "box",
+            "offline_serialized_primitivespec_like_dicts_required": 1,
+            "generated_runtime_primitivespecs_required": 0,
+            "generated_collision_packages_required": 0,
+            "runtime_admissibility_checks_required": 0,
+            "runtime_primitive_spec_generation_allowed": False,
+            "collision_package_generation_allowed": False,
+            "newton_runtime_allowed": False,
+            "real_usd_allowed": False,
+            "benchmark_allowed": False,
+            "silent_drop_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": native_fixture["gate_id"],
+            "input_next_required_gate": native_fixture["next_required_gate"],
+            "input_eligible_current_candidate_source_count": native_fixture[
+                "eligible_current_candidate_source_count"
+            ],
+            "input_primitive_spec_generation_candidate_count": native_fixture[
+                "primitive_spec_generation_candidate_count"
+            ],
+            "input_generated_primitive_spec_count": native_fixture[
+                "generated_primitive_spec_count"
+            ],
+            "input_generated_collision_package_count": native_fixture[
+                "generated_collision_package_count"
+            ],
+            "input_runtime_admissibility_check_count": native_fixture[
+                "runtime_admissibility_check_count"
+            ],
+            "source_row_id": source_row["native_current_fixture_source_row_id"],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_spec_kind": source_row["primitive_spec_kind"],
+        },
+        "native_fixture_primitivespec_generation_rows": rows,
+        "coverage_summary": (
+            _paper_primitivespec_native_fixture_generation_coverage_summary(rows)
+        ),
+        "remaining_gaps": remaining_gaps,
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -6291,8 +6701,13 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             cases,
         )
     )
+    mapped_subset_primitivespec_native_fixture_generation = (
+        _paper_mapped_subset_primitivespec_native_fixture_generation_contract_payload(
+            mapped_subset_native_current_fixture
+        )
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_mapped_subset_native_current_fixture()
+        _paper_remaining_gaps_after_mapped_subset_primitivespec_native_fixture_generation()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -6314,7 +6729,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             for missing_item in missing_before_paper_faithful
         ],
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
         ),
         "paper_faithfulness": {
             "status": "partial",
@@ -6361,6 +6776,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
                 _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -6421,6 +6837,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_native_current_fixture_contract": (
             mapped_subset_native_current_fixture
+        ),
+        "paper_mapped_subset_primitivespec_native_fixture_generation_contract": (
+            mapped_subset_primitivespec_native_fixture_generation
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

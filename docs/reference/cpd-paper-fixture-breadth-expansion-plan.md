@@ -212,8 +212,12 @@ fixture contract is now implemented as a command-only offline source-row contrac
 `PrimitiveSpec` generation and not a `CollisionPackage`; it records exactly one synthetic
 `paper_single_box` selected OBB/box source row, one eligible current candidate source, one
 report-only PrimitiveSpec generation candidate, zero generated PrimitiveSpecs, zero generated
-CollisionPackages, and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
+CollisionPackages, and zero runtime-admissibility checks. The native-fixture PrimitiveSpec-like
+dict generation contract is now implemented as a command-only offline dict-generation contract,
+not runtime `PrimitiveSpec` object creation and not a `CollisionPackage`; it emits one
+JSON-serializable report-only dict for the same synthetic source row and keeps runtime/package
+checks at zero. The current next gate is
+`paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive

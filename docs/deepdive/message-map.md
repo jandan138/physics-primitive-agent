@@ -37,7 +37,9 @@ Do not claim:
 - CPD PrimitiveSpec candidate-source audits as evidence that current native PrimitiveSpec
   candidates exist; the candidate-source audit records zero eligible current candidates, and the
   native-current fixture contract records only one synthetic `paper_single_box` OBB/box source row
-  for a later report-only generation gate.
+  for a later report-only generation gate. The native-fixture generation contract emits one
+  serialized offline PrimitiveSpec-like dict for review, not a runtime `PrimitiveSpec` object,
+  package, Newton run, benchmark, or collision-quality result.
 
 ## First 4-Week Proof Point
 

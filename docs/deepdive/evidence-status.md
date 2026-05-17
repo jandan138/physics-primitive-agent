@@ -146,13 +146,13 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_primitivespec_native_fixture_generation_contract` after the source-policy,
+  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
   PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight, and
-  PrimitiveSpec generation-contract, candidate-source-contract, and native-current-fixture
-  slices.
+  PrimitiveSpec generation-contract, candidate-source-contract, native-current-fixture, and
+  native-fixture PrimitiveSpec-like dict generation slices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -354,12 +354,27 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_single_box` selected OBB/box source row traced to the OBB template, one eligible current
   candidate source, one report-only PrimitiveSpec generation candidate, zero generated
   PrimitiveSpecs, zero generated CollisionPackages, and zero runtime-admissibility checks. It
-  advances the next required gate to
-  `paper_mapped_subset_primitivespec_native_fixture_generation_contract`. This is not package
+  led to the later
+  `paper_mapped_subset_primitivespec_native_fixture_generation_contract` gate. This is not package
   readiness, Newton readiness, runtime admissibility, approximation support, `PrimitiveSpec`
   readiness, real `PrimitiveSpec` generation, `paper_faithful_offline`, full CPD reproduction,
   package generation, Newton runtime support, real-USD evidence, benchmark evidence,
   collision-quality validation, deployment readiness, or safety certification.
+- The current executable surface can also run
+  `paper_mapped_subset_primitivespec_native_fixture_generation_contract` inside
+  `cpd_paper_offline_report`. It closes only that native-fixture generation gate with a
+  command-only offline contract, not real runtime `PrimitiveSpec` object creation and not a
+  `CollisionPackage`. It emits exactly one JSON-serializable, report-only PrimitiveSpec-like dict
+  shaped like `PrimitiveSpec.to_dict()` for the deterministic synthetic `paper_single_box`
+  OBB/box source row. It keeps generated runtime PrimitiveSpecs, generated CollisionPackages,
+  runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs,
+  collision-quality measurement, and deployment/certification claims at zero or false. It
+  advances the next required gate to
+  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`. This is not package
+  readiness, Newton readiness, runtime admissibility, approximation support, `PrimitiveSpec`
+  readiness, real runtime PrimitiveSpec generation, `paper_faithful_offline`, full CPD
+  reproduction, package generation, Newton runtime support, real-USD evidence, benchmark
+  evidence, collision-quality validation, deployment readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.
