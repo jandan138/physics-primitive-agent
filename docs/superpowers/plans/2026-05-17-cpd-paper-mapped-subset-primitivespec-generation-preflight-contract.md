@@ -25,6 +25,7 @@
 - Modify docs:
   - `README.md`
   - `docs/index.md`
+  - `docs/deepdive/message-map.md`
   - `docs/deepdive/evidence-status.md`
   - `docs/reference/claim-boundaries.md`
   - `docs/reference/cpd-paper-faithful-offline-lane-spec.md`
@@ -41,9 +42,11 @@
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `tests/test_cli.py`
 
-- [ ] **Step 1: Add import and expected constant**
+- [ ] **Step 1: Add imports and expected constant**
 
-In `tests/test_cpd_paper_offline.py`, add `_paper_mapped_subset_primitivespec_generation_preflight_contract_payload` to the import block. Add:
+In `tests/test_cpd_paper_offline.py`, add
+`_paper_mapped_subset_primitivespec_generation_preflight_contract_payload` and
+`_paper_require_unique_generation_preflight_row_ids` to the import block. Add:
 
 ```python
 EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT = (
@@ -219,6 +222,24 @@ def test_cpd_paper_primitivespec_generation_preflight_noops_current_unmapped_row
         assert row["source_primitivespec_dry_run_row_id"] == (
             upstream_row["source_primitivespec_dry_run_row_id"]
         )
+        assert row["source_adapter_preflight_row_id"] == (
+            upstream_row["source_adapter_preflight_row_id"]
+        )
+        assert row["source_candidate_matrix_row_id"] == (
+            upstream_row["source_candidate_matrix_row_id"]
+        )
+        assert row["source_conversion_plan_row_id"] == (
+            upstream_row["source_conversion_plan_row_id"]
+        )
+        assert row["source_policy_decision_id"] == (
+            upstream_row["source_policy_decision_id"]
+        )
+        assert row["source_adapter_decision_id"] == (
+            upstream_row["source_adapter_decision_id"]
+        )
+        assert row["source_output_id"] == upstream_row["source_output_id"]
+        assert row["evidence_case_id"] == upstream_row["evidence_case_id"]
+        assert row["offline_primitive_id"] == upstream_row["offline_primitive_id"]
         assert row["primitive_spec_generation_preflight_decision"] == (
             "skip_unmapped_current_row_preflighted"
         )
@@ -276,10 +297,14 @@ for row in (
     + payload["current_row_primitivespec_generation_preflight_rows"]
 ):
     for flag in (
+        "primitive_spec_generated",
+        "collision_package_generated",
+        "runtime_admissibility_checked",
+        "newton_support_claimed",
+        "approximation_policy_applied",
         "primitive_spec_generation_triggered",
         "collision_package_generation_triggered",
         "runtime_admissibility_triggered",
-        "newton_runtime_triggered",
         "real_usd_loaded",
         "benchmark_run",
         "collision_quality_measured",
@@ -288,6 +313,12 @@ for row in (
         "newton_runtime_triggered",
         "real_usd_triggered",
         "benchmark_triggered",
+        "primitive_spec_generation_allowed",
+        "collision_package_generation_allowed",
+        "runtime_admissibility_supported",
+        "newton_runtime_allowed",
+        "approximation_policy_enabled",
+        "silent_drop_allowed",
     ):
         assert row[flag] is False
 ```
@@ -476,10 +507,14 @@ The requirement builder must emit `primitive_spec_generation_preflight_row_id` a
 `f"{row['primitive_spec_validation_row_id']}:generation_preflight"`, copy all source ids, set
 `required_later_gate` to `_PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT`, and set
 `generation_preflight_candidate` to `False`. It must also emit explicit false flags for
-`primitive_spec_generation_triggered`, `collision_package_generation_triggered`,
-`runtime_admissibility_triggered`, `newton_runtime_triggered`, `real_usd_loaded`,
+`primitive_spec_generated`, `collision_package_generated`, `runtime_admissibility_checked`,
+`newton_support_claimed`, `approximation_policy_applied`, `primitive_spec_generation_triggered`,
+`collision_package_generation_triggered`, `runtime_admissibility_triggered`, `real_usd_loaded`,
 `benchmark_run`, `collision_quality_measured`, `deployment_or_certification_claimed`,
-`package_generation_triggered`, `real_usd_triggered`, and `benchmark_triggered`.
+`package_generation_triggered`, `newton_runtime_triggered`, `real_usd_triggered`,
+`benchmark_triggered`, `primitive_spec_generation_allowed`,
+`collision_package_generation_allowed`, `runtime_admissibility_supported`, `newton_runtime_allowed`,
+`approximation_policy_enabled`, and `silent_drop_allowed`.
 
 The current-row builder must emit `primitive_spec_generation_preflight_row_id` the same way, copy
 all source ids, set `primitive_spec_generation_preflight_decision` to
@@ -550,6 +585,7 @@ Expected: pass.
 **Files:**
 - Modify: `README.md`
 - Modify: `docs/index.md`
+- Modify: `docs/deepdive/message-map.md`
 - Modify: `docs/deepdive/evidence-status.md`
 - Modify: `docs/reference/claim-boundaries.md`
 - Modify: `docs/reference/cpd-paper-faithful-offline-lane-spec.md`
@@ -585,6 +621,12 @@ Create `docs/records/2026-05-17-cpd-paper-mapped-subset-primitivespec-generation
 
 2026-05-17
 
+## Status
+
+Complete for an offline/report-only generation-preflight contract. Not complete for real
+PrimitiveSpec generation, CollisionPackage generation, package readiness, Newton runtime, real-USD
+evidence, benchmarks, collision-quality measurement, deployment readiness, or safety certification.
+
 ## Decision
 
 Implemented `paper_mapped_subset_primitivespec_generation_preflight_contract` as an offline,
@@ -614,8 +656,26 @@ evidence, not deployment readiness, and not safety certification.
 
 - [ ] **Step 3: Update registry**
 
-Add a registry entry with the new gate id and record path. Keep artifact paths to Markdown/config
-only; do not add raw USD or generated 3D assets.
+Add a complete registry entry with the new gate id and record path. Match the adjacent validation
+contract entry shape and include:
+
+```yaml
+- id: cpd-paper-mapped-subset-primitivespec-generation-preflight-contract
+  status: complete
+  command: python -m pytest tests/test_cpd_paper_offline.py tests/test_cli.py -q
+  record: docs/records/2026-05-17-cpd-paper-mapped-subset-primitivespec-generation-preflight-contract.md
+  purpose: >
+    Records the offline/report-only PrimitiveSpec generation-preflight gate after validation.
+  claims_supported: >
+    Supports only that the command-only CPD paper offline report includes a generation-preflight
+    contract with zero current PrimitiveSpec candidates, zero generated PrimitiveSpecs, zero
+    CollisionPackages, and zero runtime-admissibility checks. Claim boundary: not real
+    PrimitiveSpec generation, not CollisionPackage generation, not package readiness, not Newton
+    runtime support, not real-USD evidence, not benchmark evidence, not collision-quality evidence,
+    not deployment readiness, and not safety certification.
+```
+
+Keep artifact paths to Markdown/config only; do not add raw USD or generated 3D assets.
 
 - [ ] **Step 4: Run docs checks**
 
