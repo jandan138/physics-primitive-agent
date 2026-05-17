@@ -4555,6 +4555,9 @@ def _paper_validate_primitivespec_generation_input(
             )
     if len(requirement_rows) != 6 or len(current_rows) != 16:
         raise ValueError("primitivespec_generation_coverage_count_mismatch:row_count")
+    _paper_require_unique_generation_preflight_row_ids(
+        requirement_rows + current_rows
+    )
     if [
         row["paper_primitive"] for row in requirement_rows
     ] != _PRIMITIVESPEC_VALIDATION_EXPECTED_FAMILY_ORDER:

@@ -2180,6 +2180,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2404,6 +2405,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -5842,6 +5844,33 @@ def test_cpd_paper_primitivespec_generation_rejects_duplicate_emitted_row_ids():
         match="duplicate_primitivespec_generation_row_id",
     ):
         _paper_require_unique_generation_row_ids(rows)
+
+
+def test_cpd_paper_primitivespec_generation_rejects_duplicate_input_preflight_row_ids():
+    preflight = _generation_contract_preflight_input()
+    requirement_rows = [
+        dict(row)
+        for row in preflight[
+            "primitive_spec_generation_preflight_requirement_rows"
+        ]
+    ]
+    current_rows = [
+        dict(row)
+        for row in preflight["current_row_primitivespec_generation_preflight_rows"]
+    ]
+    current_rows[0]["primitive_spec_generation_preflight_row_id"] = (
+        requirement_rows[0]["primitive_spec_generation_preflight_row_id"]
+    )
+    preflight["primitive_spec_generation_preflight_requirement_rows"] = (
+        requirement_rows
+    )
+    preflight["current_row_primitivespec_generation_preflight_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="duplicate_primitivespec_generation_preflight_row_id",
+    ):
+        _paper_mapped_subset_primitivespec_generation_contract_payload(preflight)
 
 
 def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_records():
