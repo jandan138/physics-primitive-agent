@@ -51,6 +51,18 @@ separate mapped current-candidate source contract or approximation-policy gate e
   - Result: `61 passed, 101 deselected`
 - `python -m pytest -q tests/test_cpd_paper_offline.py tests/test_cli.py`
   - Result: `272 passed`
+- `python -m pytest -q`
+  - Initial result: one importer test failed because the ignored local paper source intake directory
+    was absent from this isolated worktree.
+  - Action: copied ignored source intake from the main worktree into
+    `docs/tmp/papers/arXiv-2602.07369v1/`; this remains ignored and is not a commit artifact.
+  - Final result: `572 passed`
+- `python scripts/validate_docs.py`
+  - Result: `docs validation passed`
+- `python scripts/validate_site_claims.py`
+  - Result: `site claim validation passed`
+- `git diff --check`
+  - Result: passed
 
 ## Review Notes
 
