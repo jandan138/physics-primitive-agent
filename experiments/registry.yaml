@@ -612,6 +612,20 @@ experiments:
       - keeps generated runtime PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs, collision-quality measurement, and deployment/certification claims at zero or false
       - closes only paper_mapped_subset_primitivespec_native_fixture_serialization_contract and advances the next gate to paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract
       - no package-readiness claim, PrimitiveSpec-readiness claim, runtime PrimitiveSpec-object-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-mapped-subset-primitivespec-runtime-boundary-preflight-contract
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-mapped-subset-primitivespec-runtime-boundary-preflight-contract.md
+    purpose: >
+      Add a command-only offline mapped-subset PrimitiveSpec runtime-boundary preflight contract
+      before any runtime PrimitiveSpec object construction, CollisionPackage generation, runtime
+      admissibility, package generation, or Newton runtime work.
+    claims_supported:
+      - partial command-only offline runtime-boundary preflight contract for deterministic synthetic fixture records only
+      - records exactly one later runtime-construction candidate for the paper_single_box OBB/box serialization row
+      - keeps runtime construction disallowed in the current gate, with generated runtime PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs, collision-quality measurement, and deployment/certification claims at zero or false
+      - closes only paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract and advances the next gate to paper_mapped_subset_primitivespec_runtime_construction_contract
+      - no package-readiness claim, PrimitiveSpec-readiness claim, runtime PrimitiveSpec-object-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

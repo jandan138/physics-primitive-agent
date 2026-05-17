@@ -152,11 +152,20 @@ round-trip equality check for the deterministic `paper_single_box` OBB/box dict,
 runtime PrimitiveSpecs, CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD
 loading, benchmark runs, collision-quality measurement, and deployment/certification claims at
 zero or false, and advances the next paper-lane gate to
-`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. These
+`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. The report now also
+includes `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`, a command-only
+offline boundary preflight, not runtime `PrimitiveSpec` object creation and not a
+`CollisionPackage`. It records exactly one later runtime `PrimitiveSpec` construction candidate
+for the same synthetic `paper_single_box` OBB/box row, keeps runtime construction disallowed in
+the current gate, keeps generated runtime PrimitiveSpecs, CollisionPackages,
+runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs,
+collision-quality measurement, and deployment/certification claims at zero or false, and advances
+the next paper-lane gate to
+`paper_mapped_subset_primitivespec_runtime_construction_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization/runtime-boundary slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

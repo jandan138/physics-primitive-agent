@@ -299,8 +299,8 @@ Before `paper_faithful_offline` wording, record:
   clamped to `1e-3`;
 - fixture scope for the comparison;
 - the current top-level failure label after the native-fixture PrimitiveSpec-like dict generation
-  and serialization contracts:
-  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_missing`.
+  and serialization contracts plus the runtime-boundary preflight contract:
+  `paper_mapped_subset_primitivespec_runtime_construction_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -596,7 +596,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract
+-> current next gate after the later closed gates: paper_mapped_subset_primitivespec_runtime_construction_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -735,8 +735,9 @@ runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offlin
 CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
 validation, generation-preflight, generation, candidate-source, and native-current fixture
 contracts are now implemented. The native-fixture PrimitiveSpec-like dict generation and
-serialization contracts are also implemented, and the current next gate is
-`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
+serialization contracts are also implemented. The runtime-boundary preflight contract is also
+implemented as an offline boundary check, and the current next gate is
+`paper_mapped_subset_primitivespec_runtime_construction_contract`.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -767,4 +768,10 @@ stability gate, validates strict canonical JSON and round-trip equality for that
 dict, keeps runtime PrimitiveSpec objects, CollisionPackages, runtime-admissibility, Newton,
 real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or false,
 and advances the current next gate to
-`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
+`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. The runtime-boundary
+preflight contract now closes only the offline boundary-preflight gate, records one later runtime
+`PrimitiveSpec` construction candidate for that same row, keeps runtime construction disallowed in
+the current gate, keeps runtime PrimitiveSpec objects, CollisionPackages, runtime-admissibility,
+Newton, real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
+false, and advances the current next gate to
+`paper_mapped_subset_primitivespec_runtime_construction_contract`.

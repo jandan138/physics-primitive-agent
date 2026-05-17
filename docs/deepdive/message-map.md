@@ -41,7 +41,10 @@ Do not claim:
   serialized offline PrimitiveSpec-like dict for review, not a runtime `PrimitiveSpec` object,
   package, Newton run, benchmark, or collision-quality result. The native-fixture serialization
   contract validates strict canonical JSON and round-trip equality for that one report-only dict;
-  it still creates no runtime `PrimitiveSpec`, no `CollisionPackage`, and no Newton evidence.
+  it still creates no runtime `PrimitiveSpec`, no `CollisionPackage`, and no Newton evidence. The
+  runtime-boundary preflight contract records one later runtime-construction candidate for that row,
+  but still allows no runtime construction in the current gate and creates no runtime
+  `PrimitiveSpec`, no `CollisionPackage`, and no Newton evidence.
 
 ## First 4-Week Proof Point
 

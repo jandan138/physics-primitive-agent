@@ -219,8 +219,12 @@ JSON-serializable report-only dict for the same synthetic source row and keeps r
 checks at zero. The native-fixture serialization contract is now also implemented as a
 command-only offline JSON serialization/schema-stability contract, not runtime `PrimitiveSpec`
 object creation and not a `CollisionPackage`; it validates strict canonical JSON and round-trip
-equality for that one report-only dict and keeps runtime/package checks at zero. The current next
-gate is `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
+equality for that one report-only dict and keeps runtime/package checks at zero. The
+runtime-boundary preflight contract is now implemented as a command-only offline boundary check,
+not runtime `PrimitiveSpec` construction and not a `CollisionPackage`; it records one later
+runtime-construction candidate for that row while keeping runtime construction disallowed and
+runtime/package checks at zero. The current next gate is
+`paper_mapped_subset_primitivespec_runtime_construction_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive

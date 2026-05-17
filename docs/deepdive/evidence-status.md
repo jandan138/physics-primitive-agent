@@ -146,13 +146,14 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract` after the source-policy,
+  `paper_mapped_subset_primitivespec_runtime_construction_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
   PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight,
   PrimitiveSpec generation-contract, candidate-source-contract, native-current-fixture,
-  native-fixture PrimitiveSpec-like dict generation, and native-fixture serialization slices.
+  native-fixture PrimitiveSpec-like dict generation, native-fixture serialization, and
+  runtime-boundary preflight slices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -385,7 +386,16 @@ This file separates current evidence from future claims. See [message-map.md](me
   keeps generated runtime PrimitiveSpecs, generated CollisionPackages, runtime-admissibility
   checks, Newton runtime, real-USD loading, benchmark runs, collision-quality measurement, and
   deployment/certification claims at zero or false. It advances the next required gate to
-  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. This is not package
+  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. The current executable
+  surface can also run `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`
+  inside `cpd_paper_offline_report`. It closes only that runtime-boundary preflight gate with a
+  command-only offline contract, records one later runtime `PrimitiveSpec` construction candidate
+  for the same deterministic synthetic `paper_single_box` OBB/box row, keeps runtime construction
+  disallowed in the current gate, and keeps generated runtime PrimitiveSpecs, generated
+  CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD loading, benchmark
+  runs, collision-quality measurement, and deployment/certification claims at zero or false. It
+  advances the next required gate to
+  `paper_mapped_subset_primitivespec_runtime_construction_contract`. This is not package
   readiness, Newton readiness, runtime admissibility, approximation support, `PrimitiveSpec`
   readiness, real runtime PrimitiveSpec generation, `paper_faithful_offline`, full CPD
   reproduction, package generation, Newton runtime support, real-USD evidence, benchmark

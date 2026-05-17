@@ -4,9 +4,13 @@ Current status: this repository is a DeepDive application and project bootstrap 
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract and then closed the report-only serialization/schema
-stability contract for that one JSON-serializable `paper_single_box` OBB/box dict. The next step
-is `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`, not a capped
-bed/Franka rerun and not runtime PrimitiveSpec object or package generation. A capped bed/Franka rerun remains blocked unless a
+stability contract for that one JSON-serializable `paper_single_box` OBB/box dict. It now also
+closes the command-only runtime-boundary preflight by recording one later runtime
+`PrimitiveSpec` construction candidate while still creating zero runtime objects, zero
+`CollisionPackage`s, zero runtime-admissibility checks, and no Newton, real-USD, benchmark,
+collision-quality, deployment, safety, full-CPD, or `paper_faithful_offline` evidence. The next
+step is `paper_mapped_subset_primitivespec_runtime_construction_contract`, not a capped
+bed/Franka rerun and not package generation. A capped bed/Franka rerun remains blocked unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
 dated-record gates. The
 completed cylinder branch remains useful context: the `cylinder_near_miss_cluster` fixture,
@@ -143,12 +147,12 @@ also closes only that native-fixture generation contract with one JSON-serializa
 PrimitiveSpec-like dict shaped like `PrimitiveSpec.to_dict()` for review, while keeping runtime
 `PrimitiveSpec` objects, `CollisionPackage` generation, runtime-admissibility checks, Newton,
 real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or false.
-The current next gate is
-now after a command-only native-fixture serialization/schema-stability contract:
-`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. The serialization
-contract validates strict canonical JSON and round-trip equality for the one report-only
-`paper_single_box` OBB/box PrimitiveSpec-like dict; it still creates no runtime `PrimitiveSpec`,
-no `CollisionPackage`, and no Newton/runtime evidence.
+The current next gate is now after a command-only runtime-boundary preflight contract:
+`paper_mapped_subset_primitivespec_runtime_construction_contract`. The serialization contract
+validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
+OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
+construction candidate for that row, while still creating no runtime `PrimitiveSpec`, no
+`CollisionPackage`, and no Newton/runtime evidence.
 This review, planning table,
 source-policy
 matrix, primitive-fit engine matrix, search-engine matrix, postprocess-policy matrix,
@@ -189,8 +193,8 @@ records exist.
   contract are now implemented, and the mapped-subset PrimitiveSpec candidate-source contract is
   now implemented, and the mapped-subset native-current fixture contract, native-fixture
   PrimitiveSpec-like dict generation contract, and native-fixture serialization contract are now
-  implemented, while the next gate is
-  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
+  implemented, and the runtime-boundary preflight contract is now implemented, while the next gate
+  is `paper_mapped_subset_primitivespec_runtime_construction_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -296,6 +300,11 @@ records exist.
   It validates strict canonical JSON and round-trip equality for one report-only `paper_single_box`
   OBB/box dict and advances the next gate to
   `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
+- [CPD paper mapped-subset PrimitiveSpec runtime-boundary preflight contract record](records/2026-05-17-cpd-paper-mapped-subset-primitivespec-runtime-boundary-preflight-contract.md):
+  dated implementation record for the command-only offline runtime-boundary preflight contract,
+  not runtime `PrimitiveSpec` construction and not a `CollisionPackage`. It records one later
+  runtime-construction candidate for the same `paper_single_box` row and advances the next gate to
+  `paper_mapped_subset_primitivespec_runtime_construction_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -724,10 +733,12 @@ records exist.
   PrimitiveSpec-like dict generation contract that closes only
   `paper_mapped_subset_primitivespec_native_fixture_generation_contract`, plus an offline
   native-fixture serialization/schema-stability contract that closes only
-  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`. It also records a
+  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`, plus a
+  runtime-boundary preflight contract that closes only
+  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. It also records a
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`,
+  `next_required_gate: paper_mapped_subset_primitivespec_runtime_construction_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD, package
   generation, or benchmarks.

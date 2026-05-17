@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_missing",
+        "paper_mapped_subset_primitivespec_runtime_construction_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
+        == "paper_mapped_subset_primitivespec_runtime_construction_contract"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1542,7 +1542,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract",
+        "paper_mapped_subset_primitivespec_runtime_construction_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1559,6 +1559,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_native_current_fixture_contract",
         "paper_mapped_subset_primitivespec_native_fixture_generation_contract",
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract",
+        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -2331,6 +2332,51 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert native_serialization["newton_runtime_triggered"] is False
     assert native_serialization["real_usd_triggered"] is False
     assert native_serialization["benchmark_triggered"] is False
+    runtime_boundary = payload[
+        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
+    ]
+    assert (
+        runtime_boundary["gate_id"]
+        == "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
+    )
+    assert (
+        runtime_boundary["input_gate_id"]
+        == "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    )
+    assert (
+        runtime_boundary["next_required_gate"]
+        == "paper_mapped_subset_primitivespec_runtime_construction_contract"
+    )
+    assert runtime_boundary["runtime_boundary_preflight_row_count"] == 1
+    assert (
+        runtime_boundary["later_runtime_primitivespec_construction_candidate_count"]
+        == 1
+    )
+    assert runtime_boundary["runtime_construction_allowed_in_current_gate"] is False
+    assert runtime_boundary["generated_runtime_primitive_spec_count"] == 0
+    assert runtime_boundary["generated_primitive_spec_count"] == 0
+    assert runtime_boundary["generated_collision_package_count"] == 0
+    assert runtime_boundary["runtime_admissibility_check_count"] == 0
+    assert len(runtime_boundary["runtime_boundary_preflight_rows"]) == 1
+    runtime_boundary_row = runtime_boundary["runtime_boundary_preflight_rows"][0]
+    assert runtime_boundary_row["fixture_id"] == "paper_single_box"
+    assert runtime_boundary_row["primitive_spec_kind"] == "box"
+    assert runtime_boundary_row["later_runtime_primitivespec_construction_candidate"] is True
+    assert runtime_boundary_row["runtime_construction_allowed_in_current_gate"] is False
+    assert (
+        runtime_boundary_row["required_later_gate"]
+        == "paper_mapped_subset_primitivespec_runtime_construction_contract"
+    )
+    assert runtime_boundary_row["generated_primitive_spec"] is None
+    assert runtime_boundary_row["runtime_instance_generated"] is False
+    assert runtime_boundary["primitive_spec_generated"] is False
+    assert runtime_boundary["collision_package_generated"] is False
+    assert runtime_boundary["runtime_admissibility_checked"] is False
+    assert runtime_boundary["newton_support_claimed"] is False
+    assert runtime_boundary["package_generation_triggered"] is False
+    assert runtime_boundary["newton_runtime_triggered"] is False
+    assert runtime_boundary["real_usd_triggered"] is False
+    assert runtime_boundary["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

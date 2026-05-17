@@ -209,9 +209,18 @@ The repository has not reached that full result. It has reached the workbench st
     report-only `paper_single_box` OBB/box PrimitiveSpec-like dict, keeps generated runtime
     PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime,
     real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
+    false, keeps the report partial, and led to the later
+    `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract` gate.
+51. `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract` is now implemented as a
+    command-only offline runtime-boundary preflight contract, not runtime `PrimitiveSpec`
+    construction and not a `CollisionPackage`. It closes only that boundary gate, consumes the
+    strict native-fixture serialization row, records one later runtime-construction candidate,
+    keeps runtime construction disallowed in the current gate, keeps generated runtime
+    PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime,
+    real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
     false, keeps the report partial, and points next to
-    `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
-51. Records and configs can preserve exactly what was run.
+    `paper_mapped_subset_primitivespec_runtime_construction_contract`.
+52. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -558,8 +567,9 @@ still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. The n
 PrimitiveSpec-like dict generation contract now also exists as a command-only offline report
 artifact, still not runtime `PrimitiveSpec` object creation and not a `CollisionPackage`. The
 native-fixture serialization contract now also exists as a command-only offline JSON
-serialization/schema-stability contract for that one report-only dict; the next code slice is
-`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
+serialization/schema-stability contract for that one report-only dict. The runtime-boundary
+preflight contract now also exists as a command-only offline boundary contract for that same row;
+the next code slice is `paper_mapped_subset_primitivespec_runtime_construction_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -781,7 +791,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset native-current fixture contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset native-fixture PrimitiveSpec-like dict generation contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset native-fixture serialization contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
--> next: paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract
+-> mapped-subset PrimitiveSpec runtime-boundary preflight contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
+-> next: paper_mapped_subset_primitivespec_runtime_construction_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -845,6 +856,7 @@ Use:
 - "offline package-adapter contract";
 - "offline unsupported-primitive adapter policy";
 - "offline PrimitiveSpec candidate-source audit with zero eligible current candidates";
+- "offline PrimitiveSpec runtime-boundary preflight contract";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -877,16 +889,17 @@ offline package-adapter contract, offline unsupported-primitive policy, offline 
 conversion plan, offline candidate matrix, offline adapter-preflight contract, offline
 PrimitiveSpec dry-run contract, offline PrimitiveSpec validation contract, offline PrimitiveSpec
 generation-preflight contract, offline PrimitiveSpec generation contract, offline PrimitiveSpec
-candidate-source contract, offline native-current fixture contract, and offline native-fixture
-PrimitiveSpec-like dict generation contract and native-fixture serialization contract now exist.
-The immediate next code slice should stay offline and define the runtime-boundary preflight before
-any later runtime object proposal:
+candidate-source contract, offline native-current fixture contract, offline native-fixture
+PrimitiveSpec-like dict generation contract, native-fixture serialization contract, and
+runtime-boundary preflight contract now exist. The immediate next code slice should keep the same
+offline boundary and decide whether a real runtime object can be represented without claiming
+package or Newton support:
 
-1. Implement `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract` after the
-   native-fixture serialization/schema-stability contract gate.
-2. Define only the report-side boundary for whether a later runtime `PrimitiveSpec` object may be
-   proposed for the deterministic `paper_single_box` OBB/box
-   source before any runtime PrimitiveSpec generation is allowed.
+1. Implement `paper_mapped_subset_primitivespec_runtime_construction_contract` after the
+   runtime-boundary preflight gate.
+2. If it constructs a runtime `PrimitiveSpec` object for the deterministic `paper_single_box`
+   OBB/box source, keep the artifact report-scoped and preserve explicit zero package/Newton
+   counters until a later dated package-generation gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime

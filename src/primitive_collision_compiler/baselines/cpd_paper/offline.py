@@ -110,6 +110,9 @@ _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT = (
 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT = (
     "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
 )
+_PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT = (
+    "paper_mapped_subset_primitivespec_runtime_construction_contract"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -743,6 +746,12 @@ def _paper_remaining_gaps_after_mapped_subset_primitivespec_native_fixture_gener
 def _paper_remaining_gaps_after_mapped_subset_primitivespec_native_fixture_serialization() -> list[str]:
     return [
         _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+    ]
+
+
+def _paper_remaining_gaps_after_mapped_subset_primitivespec_runtime_boundary_preflight() -> list[str]:
+    return [
+        _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
     ]
 
 
@@ -6903,6 +6912,418 @@ def _paper_mapped_subset_primitivespec_native_fixture_serialization_contract_pay
     }
 
 
+def _paper_validate_primitivespec_runtime_boundary_preflight_false_flags(
+    payload: dict[str, object],
+) -> None:
+    for field_name in ("paper_faithful_offline_allowed", "package_generation_allowed"):
+        if bool(payload.get(field_name)):
+            raise ValueError(
+                "primitivespec_runtime_boundary_preflight_input_trigger_flag_true:"
+                f"{field_name}"
+            )
+    for field_name in _paper_false_primitivespec_generation_flags():
+        if bool(payload.get(field_name)):
+            raise ValueError(
+                "primitivespec_runtime_boundary_preflight_input_trigger_flag_true:"
+                f"{field_name}"
+            )
+
+
+def _paper_primitivespec_like_required_schema_keys() -> list[str]:
+    return sorted(
+        [
+            "primitive_id",
+            "kind",
+            "pose",
+            "center",
+            "axes",
+            "dimensions",
+            "frame",
+            "source_faces",
+            "contains_assigned_points",
+            "volume",
+            "weighted_volume",
+            "conversion_status",
+        ]
+    )
+
+
+def _paper_validate_primitivespec_runtime_boundary_preflight_payload_values(
+    payload: dict[str, object],
+    row: dict[str, object],
+) -> None:
+    expected_payload_values = {
+        "primitive_id": row["primitive_id"],
+        "kind": row["kind"],
+        "frame": "asset",
+        "contains_assigned_points": True,
+        "conversion_status": (
+            "report_only_offline_serialized_primitivespec_like_dict_not_runtime_object"
+        ),
+    }
+    for field_name, expected_value in expected_payload_values.items():
+        if payload.get(field_name) != expected_value:
+            raise ValueError(
+                "primitivespec_runtime_boundary_preflight_serialized_payload_"
+                f"value_mismatch:{field_name}"
+            )
+
+
+def _paper_primitivespec_runtime_boundary_preflight_source_row(
+    serialization: dict[str, object],
+) -> dict[str, object]:
+    if (
+        serialization.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_input_gate_id_mismatch"
+        )
+    if (
+        serialization.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_input_next_gate_mismatch"
+        )
+    _paper_validate_primitivespec_runtime_boundary_preflight_false_flags(
+        serialization
+    )
+    expected_counts = {
+        "serialized_primitivespec_like_dict_count": 1,
+        "json_serialization_check_count": 1,
+        "json_round_trip_match_count": 1,
+        "schema_stability_check_count": 1,
+        "generated_runtime_primitive_spec_count": 0,
+        "generated_primitive_spec_count": 0,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+    }
+    for field_name, expected_value in expected_counts.items():
+        if serialization.get(field_name) != expected_value:
+            raise ValueError(
+                "primitivespec_runtime_boundary_preflight_input_count_mismatch:"
+                f"{field_name}"
+            )
+    rows = serialization.get("serialization_rows")
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_serialization_row_count_mismatch"
+        )
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_serialization_row_count_mismatch"
+        )
+    _paper_validate_primitivespec_runtime_boundary_preflight_false_flags(row)
+    if row.get("fixture_id") != "paper_single_box":
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_source_fixture_mismatch"
+        )
+    expected_kind_fields = {
+        "paper_primitive": "oriented_bounding_box",
+        "primitive_spec_kind": "box",
+        "candidate_mapping_label": "box",
+        "newton_runtime_kind": "box",
+        "kind": "box",
+    }
+    for field_name, expected_value in expected_kind_fields.items():
+        if row.get(field_name) != expected_value:
+            raise ValueError(
+                "primitivespec_runtime_boundary_preflight_source_kind_mismatch"
+            )
+    payload = row.get("serialized_payload")
+    if not isinstance(payload, dict):
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_serialized_payload_missing"
+        )
+    expected_schema_keys = _paper_primitivespec_like_required_schema_keys()
+    if sorted(payload) != expected_schema_keys:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_serialized_payload_schema_mismatch"
+        )
+    if row.get("schema_keys") != expected_schema_keys:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_serialized_payload_schema_mismatch"
+        )
+    _paper_validate_primitivespec_runtime_boundary_preflight_payload_values(
+        payload,
+        row,
+    )
+    if row.get("json_round_trip_equal") is not True:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_json_round_trip_missing"
+        )
+    if row.get("schema_validation_status") != "passed":
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_schema_validation_missing"
+        )
+    if row.get("canonical_json_stable") is not True:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_canonical_json_mismatch"
+        )
+    canonical_json = row.get("canonical_primitivespec_json")
+    if not isinstance(canonical_json, str):
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_canonical_json_mismatch"
+        )
+    expected_json = _paper_primitivespec_native_fixture_canonical_json(payload)
+    if canonical_json != expected_json:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_canonical_json_mismatch"
+        )
+    if json.loads(canonical_json) != payload:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_canonical_json_mismatch"
+        )
+    if bool(row.get("runtime_instance_generated")):
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_runtime_object_leak:"
+            "runtime_instance_generated"
+        )
+    if row.get("generated_primitive_spec") is not None:
+        raise ValueError(
+            "primitivespec_runtime_boundary_preflight_runtime_object_leak:"
+            "generated_primitive_spec"
+        )
+    return row
+
+
+def _paper_primitivespec_runtime_boundary_preflight_row(
+    row: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "runtime_boundary_preflight_row_id": (
+            "runtime_boundary_preflight__paper_single_box__"
+            "oriented_bounding_box__box"
+        ),
+        "source_native_fixture_primitivespec_serialization_row_id": row[
+            "native_fixture_primitivespec_serialization_row_id"
+        ],
+        "source_native_fixture_primitivespec_generation_row_id": row[
+            "source_native_fixture_primitivespec_generation_row_id"
+        ],
+        "source_native_current_fixture_source_row_id": row[
+            "source_native_current_fixture_source_row_id"
+        ],
+        "source_candidate_source_audit_row_id": row[
+            "source_candidate_source_audit_row_id"
+        ],
+        "source_primitivespec_generation_row_id": row[
+            "source_primitivespec_generation_row_id"
+        ],
+        "source_primitivespec_generation_preflight_row_id": row[
+            "source_primitivespec_generation_preflight_row_id"
+        ],
+        "source_primitivespec_validation_row_id": row[
+            "source_primitivespec_validation_row_id"
+        ],
+        "source_primitivespec_dry_run_row_id": row[
+            "source_primitivespec_dry_run_row_id"
+        ],
+        "source_adapter_preflight_row_id": row["source_adapter_preflight_row_id"],
+        "source_candidate_matrix_row_id": row["source_candidate_matrix_row_id"],
+        "source_conversion_plan_row_id": row["source_conversion_plan_row_id"],
+        "fixture_id": row["fixture_id"],
+        "paper_primitive": row["paper_primitive"],
+        "primitive_spec_kind": row["primitive_spec_kind"],
+        "candidate_mapping_label": row["candidate_mapping_label"],
+        "newton_runtime_kind": row["newton_runtime_kind"],
+        "primitive_id": row["primitive_id"],
+        "kind": row["kind"],
+        "serialized_payload_schema_keys": sorted(row["serialized_payload"]),
+        "canonical_primitivespec_json": row["canonical_primitivespec_json"],
+        "input_json_round_trip_equal": row["json_round_trip_equal"],
+        "input_canonical_json_stable": row["canonical_json_stable"],
+        "input_schema_validation_status": row["schema_validation_status"],
+        "later_runtime_primitivespec_construction_candidate": True,
+        "runtime_construction_allowed_in_current_gate": False,
+        "required_later_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+        ),
+        "preflight_decision": (
+            "later_runtime_primitivespec_construction_contract_may_be_proposed"
+        ),
+        "preflight_reason": (
+            "canonical_json_schema_stable_box_payload_but_current_gate_is_"
+            "boundary_only"
+        ),
+        "runtime_instance_generated": False,
+        "generated_primitive_spec": None,
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
+def _paper_primitivespec_runtime_boundary_preflight_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "runtime_boundary_preflight_row_count": len(rows),
+        "later_runtime_primitivespec_construction_candidate_record_count": sum(
+            bool(row["later_runtime_primitivespec_construction_candidate"])
+            for row in rows
+        ),
+        "runtime_construction_allowed_record_count": sum(
+            bool(row["runtime_construction_allowed_in_current_gate"])
+            for row in rows
+        ),
+        "generated_runtime_primitive_spec_record_count": 0,
+        "generated_primitive_spec_record_count": sum(
+            row["generated_primitive_spec"] is not None for row in rows
+        ),
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+        "fixture_id_distribution": _paper_policy_distribution(rows, "fixture_id"),
+        "paper_primitive_distribution": _paper_policy_distribution(
+            rows,
+            "paper_primitive",
+        ),
+        "primitive_spec_kind_distribution": _paper_policy_distribution(
+            rows,
+            "primitive_spec_kind",
+        ),
+        "preflight_decision_distribution": _paper_policy_distribution(
+            rows,
+            "preflight_decision",
+        ),
+    }
+
+
+def _paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_payload(
+    serialization: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_primitivespec_runtime_boundary_preflight_source_row(
+        serialization
+    )
+    preflight_row = _paper_primitivespec_runtime_boundary_preflight_row(
+        source_row
+    )
+    rows = [preflight_row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_primitivespec_runtime_boundary_preflight()
+    )
+    return {
+        "gate_id": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+        ),
+        "gate_status": (
+            "implemented_offline_primitivespec_runtime_boundary_preflight_"
+            "contract_only_partial"
+        ),
+        "closed_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+        ),
+        "input_gate_id": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        ),
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "runtime_boundary_preflight_contract_complete_"
+            "runtime_construction_contract_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": (
+            "offline_runtime_boundary_preflight_not_runtime_primitivespec_"
+            "not_collision_package"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_runtime_boundary_preflight_only_no_runtime_primitivespec_"
+            "no_collision_package_no_newton_no_real_usd_no_benchmark"
+        ),
+        "runtime_boundary_action": (
+            "record_one_later_runtime_primitivespec_construction_candidate_"
+            "without_runtime_object"
+        ),
+        "runtime_boundary_requirements": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+            ),
+            "runtime_boundary_preflight_gate_closed": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+            ),
+            "next_runtime_construction_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+            ),
+            "source_fixture_required": "paper_single_box",
+            "source_paper_primitive_required": "oriented_bounding_box",
+            "source_primitive_spec_kind_required": "box",
+            "json_round_trip_required": True,
+            "schema_validation_required": True,
+            "later_runtime_construction_candidates_required": 1,
+            "runtime_construction_allowed_in_current_gate": False,
+            "generated_runtime_primitivespecs_required": 0,
+            "generated_collision_packages_required": 0,
+            "runtime_admissibility_checks_required": 0,
+            "newton_runtime_allowed": False,
+            "real_usd_allowed": False,
+            "benchmark_allowed": False,
+            "silent_drop_allowed": False,
+        },
+        "runtime_boundary_preflight_row_count": 1,
+        "later_runtime_primitivespec_construction_candidate_count": 1,
+        "runtime_construction_allowed_in_current_gate": False,
+        "generated_runtime_primitive_spec_count": 0,
+        "generated_primitive_spec_count": 0,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+        "runtime_boundary_preflight_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+            ),
+            "runtime_boundary_preflight_gate_closed": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+            ),
+            "next_runtime_construction_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+            ),
+            "runtime_boundary_preflight_rows_required": 1,
+            "runtime_construction_allowed_in_current_gate": False,
+            "generated_runtime_primitivespecs_required": 0,
+            "generated_collision_packages_required": 0,
+            "runtime_admissibility_checks_required": 0,
+        },
+        "input_contract_summary": {
+            "input_gate_id": serialization["gate_id"],
+            "input_next_required_gate": serialization["next_required_gate"],
+            "input_serialized_primitivespec_like_dict_count": serialization[
+                "serialized_primitivespec_like_dict_count"
+            ],
+            "input_json_serialization_check_count": serialization[
+                "json_serialization_check_count"
+            ],
+            "input_json_round_trip_match_count": serialization[
+                "json_round_trip_match_count"
+            ],
+            "input_schema_stability_check_count": serialization[
+                "schema_stability_check_count"
+            ],
+            "input_generated_runtime_primitive_spec_count": serialization[
+                "generated_runtime_primitive_spec_count"
+            ],
+            "input_generated_collision_package_count": serialization[
+                "generated_collision_package_count"
+            ],
+            "source_row_id": source_row[
+                "native_fixture_primitivespec_serialization_row_id"
+            ],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_spec_kind": source_row["primitive_spec_kind"],
+        },
+        "runtime_boundary_preflight_rows": rows,
+        "coverage_summary": (
+            _paper_primitivespec_runtime_boundary_preflight_coverage_summary(rows)
+        ),
+        "remaining_gaps": remaining_gaps,
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -7115,8 +7536,13 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             mapped_subset_primitivespec_native_fixture_generation
         )
     )
+    mapped_subset_primitivespec_runtime_boundary_preflight = (
+        _paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_payload(
+            mapped_subset_primitivespec_native_fixture_serialization
+        )
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_mapped_subset_primitivespec_native_fixture_serialization()
+        _paper_remaining_gaps_after_mapped_subset_primitivespec_runtime_boundary_preflight()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -7138,7 +7564,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             for missing_item in missing_before_paper_faithful
         ],
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
         ),
         "paper_faithfulness": {
             "status": "partial",
@@ -7187,6 +7613,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT,
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -7253,6 +7680,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract": (
             mapped_subset_primitivespec_native_fixture_serialization
+        ),
+        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract": (
+            mapped_subset_primitivespec_runtime_boundary_preflight
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,
