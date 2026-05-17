@@ -2040,6 +2040,57 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         ]
         == 0
     )
+    family_rows = {
+        row["paper_primitive"]: row
+        for row in generation_preflight[
+            "primitive_spec_generation_preflight_requirement_rows"
+        ]
+    }
+    assert list(family_rows) == [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    assert family_rows["oriented_bounding_box"][
+        "primitive_spec_generation_preflight_decision"
+    ] == "future_native_family_generation_requirement_preflighted"
+    assert (
+        family_rows["oriented_bounding_box"]["validated_future_primitive_spec_kind"]
+        == "box"
+    )
+    assert (
+        family_rows["capped_cylinder"][
+            "primitive_spec_generation_preflight_decision"
+        ]
+        == "blocked_approximation_policy_generation_preflight_recorded"
+    )
+    assert (
+        family_rows["trapezoidal_prism"][
+            "primitive_spec_generation_preflight_decision"
+        ]
+        == "noop_unmapped_family_generation_preflight_recorded"
+    )
+    current_rows = generation_preflight[
+        "current_row_primitivespec_generation_preflight_rows"
+    ]
+    assert len(current_rows) == 16
+    for row in current_rows:
+        assert row["primitive_spec_generation_preflight_decision"] == (
+            "skip_unmapped_current_row_preflighted"
+        )
+        assert row["primitive_spec_generation_preflight_action"] == "keep_offline"
+        assert row["primitive_spec_generation_candidate"] is False
+        assert row["generated_primitive_spec"] is None
+        assert (
+            row["required_later_gate"]
+            == "paper_mapped_subset_primitivespec_generation_contract"
+        )
+        assert row["primitive_spec_generation_triggered"] is False
+        assert row["collision_package_generation_triggered"] is False
+        assert row["runtime_admissibility_triggered"] is False
     assert generation_preflight["primitive_spec_generated"] is False
     assert generation_preflight["collision_package_generated"] is False
     assert generation_preflight["runtime_admissibility_checked"] is False
