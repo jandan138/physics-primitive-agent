@@ -47,7 +47,7 @@ Implement an offline source-audit contract, not PrimitiveSpec generation.
 
 The payload should consume `paper_mapped_subset_primitivespec_generation_contract` and emit:
 
-- a `source_audit_contract` block that names the upstream generation contract and the next blocker;
+- a `candidate_source_contract` block that names the upstream generation contract and the next blocker;
 - three native-template source audit rows classified as future-only;
 - three paper-family blocked/no-op audit rows classified as not current candidates;
 - 16 current-row audit rows classified as traceable but ineligible;

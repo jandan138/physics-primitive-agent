@@ -450,6 +450,25 @@ generation.get("generated_collision_package_count") == 0
 generation.get("runtime_admissibility_check_count") == 0
 ```
 
+Also validate the upstream structure exactly:
+
+```python
+generation["primitive_spec_generation_contract"]["input_gate_required"] == _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
+generation["primitive_spec_generation_contract"]["current_candidate_source_gate_required"] == _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+generation["primitive_spec_generation_contract"]["template_only_native_families"] == ["box", "sphere", "capsule"]
+[row["paper_primitive"] for row in generation["native_family_primitivespec_template_rows"]] == ["oriented_bounding_box", "sphere", "capsule"]
+[row["paper_primitive"] for row in generation["blocked_primitivespec_generation_requirement_rows"]] == ["capped_cylinder", "frustum"]
+[row["paper_primitive"] for row in generation["noop_primitivespec_generation_requirement_rows"]] == ["trapezoidal_prism"]
+len(generation["current_row_primitivespec_generation_rows"]) == 16
+all(row["paper_primitive"] == "trapezoidal_prism" for row in generation["current_row_primitivespec_generation_rows"])
+all(row["offline_mapping_label"] == "offline_only_unmapped" for row in generation["current_row_primitivespec_generation_rows"])
+```
+
+Reject all true row-level runtime/package/Newton/USD/benchmark/collision-quality/deployment flags
+in every upstream row collection. Reject non-empty generated specs, candidate flags, silent-drop
+flags, empty source ids, sequence drift, coverage count drift, duplicate upstream row ids, and
+duplicate emitted audit row ids with the rejection labels from the design spec.
+
 Use the rejection labels from the design spec. Reuse `_paper_false_primitivespec_generation_flags()`
 and the existing distribution helpers where possible.
 
@@ -562,6 +581,40 @@ def _paper_mapped_subset_primitivespec_candidate_source_contract_payload(
         "generated_primitive_spec_count": 0,
         "generated_collision_package_count": 0,
         "runtime_admissibility_check_count": 0,
+        "input_contract_summary": {
+            "input_gate_id": generation["gate_id"],
+            "input_artifact_kind": generation["artifact_kind"],
+            "native_family_primitivespec_template_row_count": (
+                generation["coverage_summary"][
+                    "native_family_primitivespec_template_row_count"
+                ]
+            ),
+            "blocked_primitivespec_generation_requirement_row_count": (
+                generation["coverage_summary"][
+                    "blocked_primitivespec_generation_requirement_row_count"
+                ]
+            ),
+            "noop_primitivespec_generation_requirement_row_count": (
+                generation["coverage_summary"][
+                    "noop_primitivespec_generation_requirement_row_count"
+                ]
+            ),
+            "current_row_primitivespec_generation_row_count": (
+                generation["coverage_summary"][
+                    "current_row_primitivespec_generation_row_count"
+                ]
+            ),
+            "primitive_spec_generation_candidate_record_count": (
+                generation["coverage_summary"][
+                    "primitive_spec_generation_candidate_record_count"
+                ]
+            ),
+            "generated_primitive_spec_record_count": (
+                generation["coverage_summary"][
+                    "generated_primitive_spec_record_count"
+                ]
+            ),
+        },
         "candidate_source_contract": {
             "input_gate_required": _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
             "current_candidate_source_gate_closed": (
