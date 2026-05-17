@@ -100,6 +100,9 @@ _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT = (
 _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT = (
     "paper_mapped_subset_native_current_fixture_contract"
 )
+_PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT = (
+    "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -716,6 +719,12 @@ def _paper_remaining_gaps_after_mapped_subset_primitivespec_generation() -> list
 
 def _paper_remaining_gaps_after_mapped_subset_primitivespec_candidate_source() -> list[str]:
     return [_PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT]
+
+
+def _paper_remaining_gaps_after_mapped_subset_native_current_fixture() -> list[str]:
+    return [
+        _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+    ]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -5528,6 +5537,558 @@ def _paper_mapped_subset_primitivespec_candidate_source_contract_payload(
     }
 
 
+def _paper_validate_native_current_fixture_false_flags(
+    row: dict[str, object],
+) -> None:
+    for flag in _PRIMITIVESPEC_VALIDATION_ROW_FALSE_FLAGS:
+        if bool(row.get(flag)):
+            raise ValueError(
+                f"native_current_fixture_input_trigger_flag_true:{flag}"
+            )
+
+
+def _paper_native_current_fixture_obb_template_row(
+    candidate_source: dict[str, object],
+) -> dict[str, object]:
+    native_rows = candidate_source["native_template_candidate_source_audit_rows"]
+    obb_rows = [
+        row
+        for row in native_rows
+        if row.get("candidate_source_audit_row_id")
+        == "candidate_source_template__oriented_bounding_box"
+    ]
+    if len(obb_rows) != 1:
+        raise ValueError("native_current_fixture_obb_template_row_missing")
+    return obb_rows[0]
+
+
+def _paper_validate_native_current_fixture_obb_template_row(
+    row: dict[str, object],
+) -> None:
+    expected_fields = {
+        "paper_primitive": "oriented_bounding_box",
+        "primitive_spec_kind": "box",
+        "candidate_mapping_label": "box",
+        "source_role": "future_native_template",
+        "candidate_source_decision": "template_only_not_current_candidate_source",
+        "required_later_gate": _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+        "required_future_policy": "native_current_fixture",
+    }
+    for field_name, expected_value in expected_fields.items():
+        if row.get(field_name) != expected_value:
+            raise ValueError(
+                f"native_current_fixture_template_row_mismatch:{field_name}"
+            )
+    if bool(row["eligible_current_candidate_source"]):
+        raise ValueError(
+            "native_current_fixture_template_row_runtime_leak:"
+            "eligible_current_candidate_source"
+        )
+    if bool(row["primitive_spec_generation_candidate"]):
+        raise ValueError(
+            "native_current_fixture_template_row_runtime_leak:"
+            "primitive_spec_generation_candidate"
+        )
+    if row["generated_primitive_spec"] is not None:
+        raise ValueError(
+            "native_current_fixture_template_row_runtime_leak:"
+            "generated_primitive_spec"
+        )
+    for field_name in (
+        "source_primitivespec_generation_row_id",
+        "source_primitivespec_generation_preflight_row_id",
+        "source_primitivespec_validation_row_id",
+        "source_primitivespec_dry_run_row_id",
+        "source_adapter_preflight_row_id",
+        "source_candidate_matrix_row_id",
+        "source_conversion_plan_row_id",
+    ):
+        _paper_require_nonempty_source_id(
+            row,
+            field_name,
+            "native_current_fixture_template_missing_source_id",
+        )
+    _paper_validate_native_current_fixture_false_flags(row)
+
+
+def _paper_validate_native_current_fixture_current_source_row(
+    row: dict[str, object],
+) -> None:
+    if bool(row.get("eligible_current_candidate_source")):
+        raise ValueError(
+            "native_current_fixture_current_row_runtime_leak:"
+            "eligible_current_candidate_source"
+        )
+    if bool(row.get("primitive_spec_generation_candidate")):
+        raise ValueError(
+            "native_current_fixture_current_row_runtime_leak:"
+            "primitive_spec_generation_candidate"
+        )
+    if row.get("generated_primitive_spec") is not None:
+        raise ValueError(
+            "native_current_fixture_current_row_runtime_leak:"
+            "generated_primitive_spec"
+        )
+    _paper_validate_native_current_fixture_false_flags(row)
+
+
+def _paper_validate_native_current_fixture_candidate_source_input(
+    candidate_source: dict[str, object],
+) -> None:
+    if (
+        candidate_source.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+    ):
+        raise ValueError("native_current_fixture_input_gate_id_mismatch")
+    if (
+        candidate_source.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
+    ):
+        raise ValueError("native_current_fixture_input_next_gate_mismatch")
+    for field_name in ("paper_faithful_offline_allowed", "package_generation_allowed"):
+        if bool(candidate_source.get(field_name)):
+            raise ValueError(
+                f"native_current_fixture_input_boundary_flag_true:{field_name}"
+            )
+    _paper_validate_native_current_fixture_false_flags(candidate_source)
+    if candidate_source["eligible_current_candidate_source_count"] != 0:
+        raise ValueError("native_current_fixture_input_candidate_count_nonzero")
+    if candidate_source["primitive_spec_generation_candidate_count"] != 0:
+        raise ValueError(
+            "native_current_fixture_input_generation_candidate_count_nonzero"
+        )
+    if candidate_source["generated_primitive_spec_count"] != 0:
+        raise ValueError("native_current_fixture_input_generated_spec_nonzero")
+    if candidate_source["generated_collision_package_count"] != 0:
+        raise ValueError(
+            "native_current_fixture_input_generated_collision_package_nonzero"
+        )
+    if candidate_source["runtime_admissibility_check_count"] != 0:
+        raise ValueError("native_current_fixture_input_runtime_admissibility_nonzero")
+
+    coverage = candidate_source["coverage_summary"]
+    expected_coverage = {
+        "native_template_candidate_source_audit_row_count": 3,
+        "blocked_family_candidate_source_audit_row_count": 2,
+        "noop_family_candidate_source_audit_row_count": 1,
+        "current_row_candidate_source_audit_row_count": 16,
+        "eligible_current_candidate_source_count": 0,
+        "primitive_spec_generation_candidate_record_count": 0,
+        "generated_primitive_spec_record_count": 0,
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+    }
+    for field_name, expected_value in expected_coverage.items():
+        if coverage[field_name] != expected_value:
+            raise ValueError(
+                f"native_current_fixture_coverage_count_mismatch:{field_name}"
+            )
+    if len(candidate_source["native_template_candidate_source_audit_rows"]) != 3:
+        raise ValueError("native_current_fixture_native_template_row_count_mismatch")
+    if len(candidate_source["current_row_candidate_source_audit_rows"]) != 16:
+        raise ValueError(
+            "native_current_fixture_coverage_count_mismatch:"
+            "current_row_candidate_source_audit_row_count"
+        )
+    for row in candidate_source["current_row_candidate_source_audit_rows"]:
+        _paper_validate_native_current_fixture_current_source_row(row)
+    _paper_validate_native_current_fixture_obb_template_row(
+        _paper_native_current_fixture_obb_template_row(candidate_source)
+    )
+
+
+def _paper_single_box_case(cases: list[dict[str, object]]) -> dict[str, object]:
+    matches = [case for case in cases if case["case_id"] == "paper_single_box"]
+    if len(matches) != 1:
+        raise ValueError("native_current_fixture_source_case_missing:paper_single_box")
+    return matches[0]
+
+
+def _paper_native_fixture_finite_array(
+    value: object,
+    shape: tuple[int, ...],
+    error_label: str,
+) -> list[object]:
+    try:
+        array = np.asarray(value, dtype=np.float64)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(error_label) from exc
+    if array.shape != shape or not bool(np.all(np.isfinite(array))):
+        raise ValueError(error_label)
+    return array.tolist()
+
+
+def _paper_native_fixture_positive_float(
+    value: object,
+    error_label: str,
+) -> float:
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(error_label) from exc
+    if not np.isfinite(numeric) or numeric <= 0.0:
+        raise ValueError(error_label)
+    return numeric
+
+
+def _paper_native_current_fixture_selected_fit_geometry(
+    selected: dict[str, object],
+) -> dict[str, object]:
+    center = _paper_native_fixture_finite_array(
+        selected.get("center"),
+        (3,),
+        "native_current_fixture_invalid_center",
+    )
+    axes = _paper_native_fixture_finite_array(
+        selected.get("axes"),
+        (3, 3),
+        "native_current_fixture_invalid_axes",
+    )
+    dimensions = selected.get("dimensions")
+    if not isinstance(dimensions, dict):
+        raise ValueError("native_current_fixture_invalid_half_extents")
+    half_extents = _paper_native_fixture_finite_array(
+        dimensions.get("half_extents"),
+        (3,),
+        "native_current_fixture_invalid_half_extents",
+    )
+    if any(float(value) <= 0.0 for value in half_extents):
+        raise ValueError("native_current_fixture_invalid_half_extents")
+    volume = _paper_native_fixture_positive_float(
+        selected.get("volume"),
+        "native_current_fixture_invalid_volume",
+    )
+    weighted_volume = _paper_native_fixture_positive_float(
+        selected.get("weighted_volume"),
+        "native_current_fixture_invalid_weighted_volume",
+    )
+    return {
+        "center": center,
+        "axes": axes,
+        "half_extents": half_extents,
+        "volume": volume,
+        "weighted_volume": weighted_volume,
+    }
+
+
+def _paper_native_current_fixture_reference_obb_geometry(
+    primitive_fit_audit: dict[str, object],
+) -> dict[str, object]:
+    candidates = primitive_fit_audit.get("candidates")
+    if not isinstance(candidates, list | tuple):
+        raise ValueError("native_current_fixture_selected_fit_reference_missing")
+    matches = [
+        candidate
+        for candidate in candidates
+        if isinstance(candidate, dict)
+        and candidate.get("paper_primitive") == "oriented_bounding_box"
+        and candidate.get("current_implementation_kind")
+        == "offline_paper_oriented_bounding_box_fit"
+    ]
+    if len(matches) != 1:
+        raise ValueError("native_current_fixture_selected_fit_reference_missing")
+    return _paper_native_current_fixture_selected_fit_geometry(matches[0])
+
+
+def _paper_validate_native_current_fixture_selected_geometry_matches_reference(
+    selected_geometry: dict[str, object],
+    reference_geometry: dict[str, object],
+) -> None:
+    for field_name in ("center", "axes", "half_extents"):
+        if not np.allclose(
+            np.asarray(selected_geometry[field_name], dtype=np.float64),
+            np.asarray(reference_geometry[field_name], dtype=np.float64),
+            rtol=0.0,
+            atol=1e-12,
+        ):
+            raise ValueError(
+                f"native_current_fixture_selected_fit_geometry_mismatch:{field_name}"
+            )
+    for field_name in ("volume", "weighted_volume"):
+        if not np.isclose(
+            float(selected_geometry[field_name]),
+            float(reference_geometry[field_name]),
+            rtol=0.0,
+            atol=1e-12,
+        ):
+            raise ValueError(
+                f"native_current_fixture_selected_fit_geometry_mismatch:{field_name}"
+            )
+
+
+def _paper_validate_native_current_fixture_selected_fit(
+    selected: dict[str, object],
+    primitive_fit_audit: dict[str, object],
+) -> None:
+    if (
+        selected.get("paper_primitive") != "oriented_bounding_box"
+        or selected.get("current_implementation_kind")
+        != "offline_paper_oriented_bounding_box_fit"
+    ):
+        raise ValueError("native_current_fixture_selected_fit_not_obb")
+    if selected.get("newton_runtime_kind") != "box":
+        raise ValueError("native_current_fixture_selected_fit_not_newton_box")
+    if selected.get("fit_model") != "paper_operator_eigenbasis_projected_bounds":
+        raise ValueError("native_current_fixture_fit_model_mismatch")
+    if selected.get("axis_selection_policy") != "paper_q_eigenbasis":
+        raise ValueError("native_current_fixture_axis_policy_mismatch")
+    if not bool(selected.get("contains_assigned_points")):
+        raise ValueError("native_current_fixture_selected_fit_not_containing_points")
+    if (
+        float(selected.get("primitive_parameter_lower_clamp", 0.0))
+        != PAPER_PRIMITIVE_MIN_DIMENSION
+    ):
+        raise ValueError("native_current_fixture_clamp_mismatch")
+    source_faces = primitive_fit_audit.get("source_faces")
+    if not isinstance(source_faces, list | tuple) or len(source_faces) == 0:
+        raise ValueError("native_current_fixture_selected_fit_missing_source_faces")
+    selected_geometry = _paper_native_current_fixture_selected_fit_geometry(selected)
+    reference_geometry = _paper_native_current_fixture_reference_obb_geometry(
+        primitive_fit_audit
+    )
+    _paper_validate_native_current_fixture_selected_geometry_matches_reference(
+        selected_geometry,
+        reference_geometry,
+    )
+
+
+def _paper_native_current_fixture_source_row(
+    template_row: dict[str, object],
+    case: dict[str, object],
+) -> dict[str, object]:
+    primitive_fit_audit = case.get("primitive_fit_audit")
+    if not isinstance(primitive_fit_audit, dict):
+        raise ValueError("native_current_fixture_missing_primitive_fit_audit")
+    selected = primitive_fit_audit.get("selected")
+    if not isinstance(selected, dict):
+        raise ValueError("native_current_fixture_missing_primitive_fit_audit")
+    _paper_validate_native_current_fixture_selected_fit(
+        selected,
+        primitive_fit_audit,
+    )
+    geometry = _paper_native_current_fixture_selected_fit_geometry(selected)
+    source_faces = [int(face_id) for face_id in primitive_fit_audit["source_faces"]]
+    return {
+        "native_current_fixture_source_row_id": (
+            "native_current_fixture__paper_single_box__oriented_bounding_box"
+        ),
+        "source_candidate_source_audit_row_id": template_row[
+            "candidate_source_audit_row_id"
+        ],
+        "source_primitivespec_generation_row_id": template_row[
+            "source_primitivespec_generation_row_id"
+        ],
+        "source_primitivespec_generation_preflight_row_id": template_row[
+            "source_primitivespec_generation_preflight_row_id"
+        ],
+        "source_primitivespec_validation_row_id": template_row[
+            "source_primitivespec_validation_row_id"
+        ],
+        "source_primitivespec_dry_run_row_id": template_row[
+            "source_primitivespec_dry_run_row_id"
+        ],
+        "source_adapter_preflight_row_id": template_row[
+            "source_adapter_preflight_row_id"
+        ],
+        "source_candidate_matrix_row_id": template_row[
+            "source_candidate_matrix_row_id"
+        ],
+        "source_conversion_plan_row_id": template_row[
+            "source_conversion_plan_row_id"
+        ],
+        "fixture_id": case["case_id"],
+        "fixture_source_faces": source_faces,
+        "source_fit_selected_paper_primitive": selected["paper_primitive"],
+        "source_fit_candidate_scope": primitive_fit_audit["candidate_scope"],
+        "source_fit_selection_rule": primitive_fit_audit["selection_rule"],
+        "paper_primitive": "oriented_bounding_box",
+        "primitive_spec_kind": "box",
+        "candidate_mapping_label": "box",
+        "newton_runtime_kind": "box",
+        "source_role": "synthetic_native_current_fixture",
+        "candidate_source_decision": (
+            "eligible_synthetic_native_current_fixture_source"
+        ),
+        "candidate_source_reason": (
+            "paper_single_box_selected_obb_fixture_is_newton_native_box_source"
+        ),
+        "eligible_current_candidate_source": True,
+        "primitive_spec_generation_candidate": True,
+        "generated_primitive_spec": None,
+        "required_later_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+        ),
+        "required_future_policy": (
+            "report_only_primitivespec_native_fixture_generation"
+        ),
+        "fit_model": selected["fit_model"],
+        "axis_selection_policy": selected["axis_selection_policy"],
+        "center": geometry["center"],
+        "axes": geometry["axes"],
+        "half_extents": geometry["half_extents"],
+        "volume": geometry["volume"],
+        "weighted_volume": geometry["weighted_volume"],
+        "contains_assigned_points": selected["contains_assigned_points"],
+        "primitive_parameter_lower_clamp": selected[
+            "primitive_parameter_lower_clamp"
+        ],
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
+def _paper_native_current_fixture_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "native_current_fixture_source_row_count": len(rows),
+        "eligible_current_candidate_source_count": sum(
+            bool(row["eligible_current_candidate_source"]) for row in rows
+        ),
+        "primitive_spec_generation_candidate_record_count": sum(
+            bool(row["primitive_spec_generation_candidate"]) for row in rows
+        ),
+        "generated_primitive_spec_record_count": sum(
+            row["generated_primitive_spec"] is not None for row in rows
+        ),
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+        "fixture_id_distribution": _paper_policy_distribution(rows, "fixture_id"),
+        "paper_primitive_distribution": _paper_policy_distribution(
+            rows,
+            "paper_primitive",
+        ),
+        "candidate_mapping_label_distribution": _paper_policy_distribution(
+            rows,
+            "candidate_mapping_label",
+        ),
+        "native_current_fixture_decision_distribution": _paper_policy_distribution(
+            rows,
+            "candidate_source_decision",
+        ),
+    }
+
+
+def _paper_mapped_subset_native_current_fixture_contract_payload(
+    candidate_source: dict[str, object],
+    cases: list[dict[str, object]],
+) -> dict[str, object]:
+    _paper_validate_native_current_fixture_candidate_source_input(candidate_source)
+    template_row = _paper_native_current_fixture_obb_template_row(candidate_source)
+    source_case = _paper_single_box_case(cases)
+    source_row = _paper_native_current_fixture_source_row(template_row, source_case)
+    rows = [source_row]
+    remaining_gaps = _paper_remaining_gaps_after_mapped_subset_native_current_fixture()
+    return {
+        "gate_id": _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+        "gate_status": (
+            "implemented_offline_native_current_fixture_contract_only_partial"
+        ),
+        "closed_gate": _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+        "input_gate_id": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+        ),
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "native_current_fixture_contract_complete_"
+            "primitivespec_native_fixture_generation_contract_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": (
+            "offline_native_current_fixture_source_not_primitivespec_"
+            "not_collision_package"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_native_current_fixture_source_only_no_runtime_primitivespec_"
+            "no_collision_package_no_newton"
+        ),
+        "native_current_fixture_action": (
+            "record_one_synthetic_native_current_fixture_source"
+        ),
+        "eligible_current_candidate_source_count": 1,
+        "primitive_spec_generation_candidate_count": 1,
+        "generated_primitive_spec_count": 0,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+        "native_current_fixture_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+            ),
+            "native_current_fixture_gate_closed": (
+                _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
+            ),
+            "next_generation_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+            ),
+            "source_fixture_required": "paper_single_box",
+            "source_fit_selected_paper_primitive_required": (
+                "oriented_bounding_box"
+            ),
+            "source_template_row_required": (
+                "candidate_source_template__oriented_bounding_box"
+            ),
+            "native_fixture_rows_required": 1,
+            "eligible_current_candidate_sources_required": 1,
+            "primitive_spec_generation_candidates_required": 1,
+            "generated_primitivespecs_required": 0,
+            "generated_collision_packages_required": 0,
+            "runtime_admissibility_checks_required": 0,
+            "runtime_primitive_spec_generation_allowed": False,
+            "collision_package_generation_allowed": False,
+            "newton_runtime_allowed": False,
+            "approximation_policy_enabled": False,
+            "real_usd_allowed": False,
+            "benchmark_allowed": False,
+            "silent_drop_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": candidate_source["gate_id"],
+            "input_next_required_gate": candidate_source["next_required_gate"],
+            "input_eligible_current_candidate_source_count": (
+                candidate_source["eligible_current_candidate_source_count"]
+            ),
+            "input_primitive_spec_generation_candidate_count": (
+                candidate_source["primitive_spec_generation_candidate_count"]
+            ),
+            "input_generated_primitive_spec_count": (
+                candidate_source["generated_primitive_spec_count"]
+            ),
+            "input_generated_collision_package_count": (
+                candidate_source["generated_collision_package_count"]
+            ),
+            "input_runtime_admissibility_check_count": (
+                candidate_source["runtime_admissibility_check_count"]
+            ),
+            "native_template_candidate_source_audit_row_count": (
+                candidate_source["coverage_summary"][
+                    "native_template_candidate_source_audit_row_count"
+                ]
+            ),
+            "current_row_candidate_source_audit_row_count": (
+                candidate_source["coverage_summary"][
+                    "current_row_candidate_source_audit_row_count"
+                ]
+            ),
+        },
+        "fixture_source_summary": {
+            "fixture_id": source_row["fixture_id"],
+            "fixture_source_faces": source_row["fixture_source_faces"],
+            "selected_paper_primitive": source_row["paper_primitive"],
+            "selected_newton_runtime_kind": source_row["newton_runtime_kind"],
+            "contains_assigned_points": source_row["contains_assigned_points"],
+        },
+        "native_current_fixture_source_rows": rows,
+        "coverage_summary": _paper_native_current_fixture_coverage_summary(rows),
+        "remaining_gaps": remaining_gaps,
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -5724,8 +6285,14 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             mapped_subset_primitivespec_generation
         )
     )
+    mapped_subset_native_current_fixture = (
+        _paper_mapped_subset_native_current_fixture_contract_payload(
+            mapped_subset_primitivespec_candidate_source,
+            cases,
+        )
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_mapped_subset_primitivespec_candidate_source()
+        _paper_remaining_gaps_after_mapped_subset_native_current_fixture()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -5747,7 +6314,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             for missing_item in missing_before_paper_faithful
         ],
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
         ),
         "paper_faithfulness": {
             "status": "partial",
@@ -5793,6 +6360,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
+                _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -5850,6 +6418,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_primitivespec_candidate_source_contract": (
             mapped_subset_primitivespec_candidate_source
+        ),
+        "paper_mapped_subset_native_current_fixture_contract": (
+            mapped_subset_native_current_fixture
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

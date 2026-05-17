@@ -207,8 +207,13 @@ at zero. The mapped-subset PrimitiveSpec candidate-source contract is now implem
 command-only offline source audit, not runtime `PrimitiveSpec` generation and not a
 `CollisionPackage`; it keeps the native templates future-only, classifies the current 16 unmapped
 trapezoidal-prism rows as traceable but ineligible, records zero eligible current PrimitiveSpec
-candidate sources, and keeps runtime/package checks at zero. The current next gate is
-`paper_mapped_subset_native_current_fixture_contract`.
+candidate sources, and keeps runtime/package checks at zero. The mapped-subset native-current
+fixture contract is now implemented as a command-only offline source-row contract, not runtime
+`PrimitiveSpec` generation and not a `CollisionPackage`; it records exactly one synthetic
+`paper_single_box` selected OBB/box source row, one eligible current candidate source, one
+report-only PrimitiveSpec generation candidate, zero generated PrimitiveSpecs, zero generated
+CollisionPackages, and zero runtime-admissibility checks. The current next gate is
+`paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -240,7 +245,11 @@ CollisionPackage artifacts, plus an offline mapped-subset PrimitiveSpec generati
 contract that still generates zero real PrimitiveSpec, zero CollisionPackage artifacts, and zero
 runtime-admissibility checks, plus an offline mapped-subset PrimitiveSpec candidate-source
 contract that records zero eligible current PrimitiveSpec candidate sources and still generates
-zero real PrimitiveSpec, zero CollisionPackage artifacts, and zero runtime-admissibility checks.
+zero real PrimitiveSpec, zero CollisionPackage artifacts, and zero runtime-admissibility checks,
+plus an offline mapped-subset native-current fixture source-row contract that records one
+synthetic `paper_single_box` OBB/box source row and one report-only PrimitiveSpec generation
+candidate while still generating zero real PrimitiveSpec, zero CollisionPackage artifacts, and
+zero runtime-admissibility checks.
 ```
 
 It does not support:

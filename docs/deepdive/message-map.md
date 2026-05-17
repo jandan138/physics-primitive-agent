@@ -35,8 +35,9 @@ Do not claim:
   Newton runtime support, benchmark evidence, collision-quality evidence, deployment readiness, or
   safety certification.
 - CPD PrimitiveSpec candidate-source audits as evidence that current native PrimitiveSpec
-  candidates exist; the current candidate-source audit records zero eligible current candidates
-  until a separate native current-fixture gate is implemented.
+  candidates exist; the candidate-source audit records zero eligible current candidates, and the
+  native-current fixture contract records only one synthetic `paper_single_box` OBB/box source row
+  for a later report-only generation gate.
 
 ## First 4-Week Proof Point
 

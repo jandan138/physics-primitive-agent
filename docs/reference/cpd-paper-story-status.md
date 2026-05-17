@@ -184,7 +184,16 @@ The repository has not reached that full result. It has reached the workbench st
     candidate sources, generated PrimitiveSpecs, generated CollisionPackages, and
     runtime-admissibility checks at zero, keeps the report partial, and points next to
     `paper_mapped_subset_native_current_fixture_contract`.
-48. Records and configs can preserve exactly what was run.
+48. `paper_mapped_subset_native_current_fixture_contract` is now implemented as a command-only
+    offline native-current fixture source-row contract, not runtime `PrimitiveSpec` generation and
+    not a `CollisionPackage`. It closes only that source-row gate, records exactly one synthetic
+    `paper_single_box` selected OBB/box source row traced to the future OBB template, records one
+    eligible current candidate source and one report-only PrimitiveSpec generation candidate,
+    keeps generated PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks,
+    Newton runtime, real-USD, benchmark, collision-quality, deployment, and certification triggers
+    at zero or false, keeps the report partial, and points next to
+    `paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
+49. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -525,8 +534,10 @@ contract, still not real `PrimitiveSpec` generation and not a `CollisionPackage`
 PrimitiveSpec generation contract now also exists as a command-only offline template contract,
 still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-subset
 PrimitiveSpec candidate-source contract now also exists as a command-only offline source audit,
+still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-subset
+native-current fixture contract now also exists as a command-only offline source-row contract,
 still not runtime `PrimitiveSpec` generation and not a `CollisionPackage`; the next code slice is
-`paper_mapped_subset_native_current_fixture_contract`.
+`paper_mapped_subset_primitivespec_native_fixture_generation_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -745,7 +756,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset PrimitiveSpec generation preflight contract, still partial and still without real PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec generation contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec candidate-source contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
--> next: paper_mapped_subset_native_current_fixture_contract
+-> mapped-subset native-current fixture contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
+-> next: paper_mapped_subset_primitivespec_native_fixture_generation_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -842,13 +854,14 @@ conversion plan, offline candidate matrix, offline adapter-preflight contract, a
 PrimitiveSpec dry-run contract now also exist. The offline PrimitiveSpec validation contract now
 also exists. The offline PrimitiveSpec generation-preflight contract now also exists. The offline
 PrimitiveSpec generation contract now also exists. The offline PrimitiveSpec candidate-source
-contract now also exists. The immediate next code slice should stay offline and introduce a
-deterministic native current fixture contract without adding stronger evaluation claims:
+contract now also exists. The offline native-current fixture contract now also exists. The
+immediate next code slice should stay offline and introduce report-only PrimitiveSpec generation
+for the deterministic native fixture without adding stronger evaluation claims:
 
-1. Implement `paper_mapped_subset_native_current_fixture_contract` after the candidate-source
-   contract gate.
-2. Add or select one deterministic synthetic current row in the Newton-native mapped subset before
-   any runtime PrimitiveSpec generation is allowed.
+1. Implement `paper_mapped_subset_primitivespec_native_fixture_generation_contract` after the
+   native-current fixture contract gate.
+2. Generate only the report-only native fixture PrimitiveSpec row for the deterministic
+   `paper_single_box` OBB/box source before any runtime PrimitiveSpec generation is allowed.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime

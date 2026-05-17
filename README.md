@@ -126,11 +126,20 @@ That audit keeps the three native-family template rows future-only, records two 
 approximation-policy family rows, records one no-op trapezoidal-prism family row, classifies all
 16 current `trapezoidal_prism` / `offline_only_unmapped` rows as traceable but ineligible, keeps
 eligible current PrimitiveSpec candidate sources at zero, and advances the next paper-lane gate to
-`paper_mapped_subset_native_current_fixture_contract`. These
+`paper_mapped_subset_native_current_fixture_contract`. The report now also includes
+`paper_mapped_subset_native_current_fixture_contract`, a command-only offline native-current
+fixture source contract, not runtime `PrimitiveSpec` generation and not a `CollisionPackage`.
+That contract records exactly one synthetic `paper_single_box` selected OBB/box source row traced
+to the future OBB template, records one eligible current candidate source and one report-only
+PrimitiveSpec generation candidate, keeps generated PrimitiveSpecs, CollisionPackages,
+runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs,
+collision-quality measurement, and deployment/certification claims at zero or false, and advances
+the next paper-lane gate to
+`paper_mapped_subset_primitivespec_native_fixture_generation_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
