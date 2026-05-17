@@ -299,9 +299,9 @@ Before `paper_faithful_offline` wording, record:
   clamped to `1e-3`;
 - fixture scope for the comparison;
 - the current top-level failure label after the native-fixture PrimitiveSpec-like dict generation,
-  serialization, runtime-boundary preflight, runtime-construction, and collision-package
-  generation preflight contracts:
-  `paper_mapped_subset_collision_package_generation_contract_missing`.
+  serialization, runtime-boundary preflight, runtime-construction, collision-package generation
+  preflight, and collision-package generation contracts:
+  `paper_mapped_subset_runtime_admissibility_preflight_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -587,17 +587,19 @@ fixture-scope criteria that need a fixture-breadth plan before any stronger offl
 The paper-lane gate immediately after the fixture-breadth completion review was closed by a
 command-only generalization planning table. Later source-policy, primitive-fit engine,
 search-engine, postprocess-policy, package-boundary readiness, changed-decomposition output,
-package-adapter, unsupported-primitive policy, mapped-subset plan, candidate-matrix, and
+package-adapter, unsupported-primitive policy, mapped-subset plan, candidate-matrix,
 adapter-preflight, PrimitiveSpec dry-run, validation, generation-preflight, generation,
-candidate-source, and native-current fixture contract gates are also now closed:
+candidate-source, native-current fixture, native-fixture serialization/runtime-boundary,
+runtime-construction, package-generation preflight, and package-generation contract gates are also
+now closed:
 
 ```text
 paper_faithful_offline_generalization_plan
 -> planning-only gate for broadening the offline algorithm beyond named toy fixtures
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
--> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_collision_package_generation_contract
+-> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
+-> current next gate after the later closed gates: paper_mapped_subset_runtime_admissibility_preflight_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -744,7 +746,9 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_collision_package_generation_contract`.
+`paper_mapped_subset_runtime_admissibility_preflight_contract` after the later single-fixture
+collision-package generation contract constructs one synthetic, report-scoped
+`CollisionPackage.to_dict()` artifact for the same `paper_single_box` OBB/box row.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -794,4 +798,10 @@ generation preflight contract now closes only the single-fixture offline preflig
 one later package-generation candidate from that `PrimitiveSpec.to_dict()` payload, keeps package
 generation disallowed in the current gate, keeps generated CollisionPackages and
 runtime-admissibility checks at zero, and advances the current next gate to
-`paper_mapped_subset_collision_package_generation_contract`.
+`paper_mapped_subset_collision_package_generation_contract`. The collision-package generation
+contract now closes only the single-fixture offline generation gate, constructs exactly one
+synthetic, report-scoped `CollisionPackage.to_dict()` artifact for the same `paper_single_box`
+OBB/box row, records `generated_collision_package_count: 1`, keeps runtime-admissibility checks,
+Newton, real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
+false, and advances the current next gate to
+`paper_mapped_subset_runtime_admissibility_preflight_contract`.

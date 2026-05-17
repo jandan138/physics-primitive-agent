@@ -138,7 +138,7 @@ def test_cpd_paper_collision_package_generation_contract_records_one_package_dic
     assert package["source_path"] == "synthetic://cpd-paper/paper_single_box"
     assert package["method"] == "cpd_paper_mapped_subset_offline"
     assert package["stage"] == EXPECTED_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT
-    assert package["status"] == "offline_synthetic_candidate_not_runtime_admissible"
+    assert package["status"] == "offline_synthetic_candidate_runtime_admissibility_not_checked"
     assert package["claim_boundary"] == (
         "single_fixture_box_only_offline_collision_package_artifact_"
         "not_paper_vocabulary_runtime_admissibility_or_newton"

@@ -239,7 +239,15 @@ The repository has not reached that full result. It has reached the workbench st
     real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
     false, keeps the report partial, and points next to
     `paper_mapped_subset_collision_package_generation_contract`.
-54. Records and configs can preserve exactly what was run.
+54. `paper_mapped_subset_collision_package_generation_contract` is now implemented as a
+    single-fixture offline CollisionPackage generation contract, not runtime admissibility and not
+    Newton execution. It consumes the package-generation preflight row, constructs exactly one
+    synthetic, report-scoped `CollisionPackage.to_dict()` artifact for the deterministic
+    `paper_single_box` OBB/box row, records generated CollisionPackage counts as one, keeps
+    runtime-admissibility checks, Newton runtime, real-USD, benchmark, collision-quality,
+    deployment, and certification triggers at zero or false, keeps the report partial, and points
+    next to `paper_mapped_subset_runtime_admissibility_preflight_contract`.
+55. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -592,8 +600,9 @@ the runtime-construction contract now also exists as a single-fixture offline co
 constructs exactly one runtime `PrimitiveSpec` object and stores only `PrimitiveSpec.to_dict()` in
 the report. The package-generation preflight contract now also exists as a single-fixture offline
 contract that records one later package-generation candidate while creating zero
-CollisionPackages. The next code slice is
-`paper_mapped_subset_collision_package_generation_contract`.
+CollisionPackages. The package-generation contract now also exists as a single-fixture offline
+contract that constructs one synthetic, report-scoped `CollisionPackage.to_dict()` artifact. The
+next code slice is `paper_mapped_subset_runtime_admissibility_preflight_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -818,7 +827,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset PrimitiveSpec runtime-boundary preflight contract, still partial and still without runtime PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec runtime-construction contract, still partial and still without CollisionPackage/Newton/real-USD
 -> mapped-subset CollisionPackage generation preflight contract, still partial and still without CollisionPackage/Newton/real-USD
--> next: paper_mapped_subset_collision_package_generation_contract
+-> mapped-subset CollisionPackage generation contract, still partial and still without runtime admissibility/Newton/real-USD
+-> next: paper_mapped_subset_runtime_admissibility_preflight_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -885,6 +895,7 @@ Use:
 - "offline PrimitiveSpec runtime-boundary preflight contract";
 - "single-fixture offline PrimitiveSpec runtime-construction contract";
 - "single-fixture offline CollisionPackage generation preflight contract";
+- "single-fixture offline CollisionPackage generation contract";
 - "Newton diagnostic smoke over a CPD-like collision package";
 - "below full CPD paper reproduction."
 
@@ -920,19 +931,21 @@ generation-preflight contract, offline PrimitiveSpec generation contract, offlin
 candidate-source contract, offline native-current fixture contract, offline native-fixture
 PrimitiveSpec-like dict generation contract, native-fixture serialization contract,
 runtime-boundary preflight contract, and single-fixture runtime-construction contract now exist.
-The single-fixture package-generation preflight contract now also exists. The immediate next code
-slice should keep the same boundary and implement actual package-generation contract accounting
-without claiming Newton support:
+The single-fixture package-generation preflight contract and single-fixture CollisionPackage
+generation contract now also exist. The immediate next code slice should keep the same boundary and
+implement runtime-admissibility preflight accounting without running Newton:
 
-1. Implement `paper_mapped_subset_collision_package_generation_contract` after the preflight gate.
-2. Keep the constructed runtime `PrimitiveSpec` object and preflight candidate for the
-   deterministic `paper_single_box` OBB/box source report-scoped until a later runtime
-   admissibility/Newton gate exists.
+1. Implement `paper_mapped_subset_runtime_admissibility_preflight_contract` after the
+   package-generation gate.
+2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, and synthetic
+   `CollisionPackage.to_dict()` artifact for the deterministic `paper_single_box` OBB/box source
+   report-scoped until a later runtime admissibility/Newton gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real USD,
-   benchmark, collision-quality, deployment, and safety claims unsupported; any package generation
-   in the next gate must remain the bounded synthetic contract path.
+   benchmark, collision-quality, deployment, and safety claims unsupported; the next gate must
+   only decide whether this one synthetic package-shaped artifact is admissible for a future
+   runtime check.
 5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality

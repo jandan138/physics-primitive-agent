@@ -80,7 +80,7 @@ The generated package will use deterministic metadata:
   digest
 - `method`: `cpd_paper_mapped_subset_offline`
 - `stage`: `paper_mapped_subset_collision_package_generation_contract`
-- `status`: `offline_synthetic_candidate_not_runtime_admissible`
+- `status`: `offline_synthetic_candidate_runtime_admissibility_not_checked`
 - `claim_boundary`: `single_fixture_box_only_offline_collision_package_artifact_not_paper_vocabulary_runtime_admissibility_or_newton`
 - `mesh_point_count`: `8`
 - `mesh_face_count`: `12`

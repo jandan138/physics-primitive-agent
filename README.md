@@ -176,12 +176,22 @@ offline preflight contract, not a `CollisionPackage` and not Newton execution. I
 one later package-generation candidate from that `PrimitiveSpec.to_dict()` payload, keeps package
 generation disallowed in the current gate, keeps generated CollisionPackages and
 runtime-admissibility checks at zero, and advances the next paper-lane gate to
-`paper_mapped_subset_collision_package_generation_contract`. These
+`paper_mapped_subset_collision_package_generation_contract`. The report now also includes
+`paper_mapped_subset_collision_package_generation_contract`, a single-fixture offline
+CollisionPackage generation contract. It constructs exactly one synthetic, report-scoped
+`CollisionPackage.to_dict()` artifact for the same `paper_single_box` OBB/box row, records
+`generated_collision_package_count: 1`, keeps runtime-admissibility checks at zero, marks the
+package status as `offline_synthetic_candidate_runtime_admissibility_not_checked`, and advances the next
+paper-lane gate to `paper_mapped_subset_runtime_admissibility_preflight_contract`. This generated
+package dict is only a serialized offline candidate for one box fixture: it is not Newton runtime
+execution, not runtime admissibility, not real-USD evidence, not benchmark evidence, not
+collision-quality evidence, not paper primitive vocabulary coverage, and not general package
+readiness. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization/runtime-boundary/runtime-construction/package-preflight slices do not
-support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization/runtime-boundary/runtime-construction/package-preflight/package-generation slices do not
+support full CPD reproduction, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See

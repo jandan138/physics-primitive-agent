@@ -56,7 +56,12 @@ Do not claim:
   contract records one later package-generation candidate from that dict, but keeps actual
   package generation disallowed in the current gate and still creates no `CollisionPackage`, no
   runtime-admissibility evidence, no Newton evidence, no real-USD evidence, no benchmark evidence,
-  and no collision-quality evidence.
+  and no collision-quality evidence. The collision-package generation contract then constructs
+  exactly one synthetic, report-scoped `CollisionPackage.to_dict()` artifact for the
+  `paper_single_box` OBB/box row and records `generated_collision_package_count: 1`, but still
+  creates no runtime-admissibility evidence, no Newton evidence, no real-USD evidence, no
+  benchmark evidence, no collision-quality evidence, and no paper primitive vocabulary coverage.
+  The next gate is `paper_mapped_subset_runtime_admissibility_preflight_contract`.
 
 ## First 4-Week Proof Point
 

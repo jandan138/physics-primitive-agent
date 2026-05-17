@@ -231,8 +231,12 @@ Newton, real-USD, benchmark, collision-quality, deployment, and certification ch
 false. The collision-package generation preflight contract is now implemented as a single-fixture
 offline preflight that records one later package-generation candidate from the runtime
 `PrimitiveSpec.to_dict()` row while still creating zero CollisionPackage artifacts and zero
-runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_collision_package_generation_contract`.
+runtime-admissibility checks. The collision-package generation contract is now implemented as a
+single-fixture offline generation check that constructs exactly one synthetic, report-scoped
+`CollisionPackage.to_dict()` artifact for the same `paper_single_box` OBB/box row while still
+creating zero runtime-admissibility checks and no Newton, real-USD, benchmark, collision-quality,
+deployment, or certification evidence. The current next gate is
+`paper_mapped_subset_runtime_admissibility_preflight_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -277,14 +281,16 @@ only `PrimitiveSpec.to_dict()` in the report while still generating zero Collisi
 artifacts, zero runtime-admissibility checks, and no Newton, real-USD, benchmark,
 collision-quality, deployment, or certification evidence, plus a single-fixture offline
 collision-package generation preflight that records one later package-generation candidate while
-still generating zero CollisionPackage artifacts and zero runtime-admissibility checks.
+still generating zero CollisionPackage artifacts and zero runtime-admissibility checks, plus a
+single-fixture offline collision-package generation contract that generates exactly one synthetic
+`CollisionPackage.to_dict()` artifact while still generating zero runtime-admissibility checks.
 ```
 
 It does not support:
 
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
-- package generation;
+- general package readiness;
 - Newton runtime support;
 - real-USD evidence;
 - benchmark evidence;

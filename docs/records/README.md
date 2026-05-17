@@ -338,6 +338,12 @@ Proposed | In progress | Complete | Failed | Superseded
   runtime `PrimitiveSpec.to_dict()` payload, keeps generated CollisionPackages and
   runtime-admissibility checks at zero, and remains not package readiness, not Newton execution,
   not real-USD evidence, not benchmark evidence, and not collision-quality evidence.
+- [2026-05-17 CPD Paper Mapped-Subset CollisionPackage Generation Contract](2026-05-17-cpd-paper-mapped-subset-collision-package-generation-contract.md):
+  partial single-fixture offline mapped-subset CollisionPackage generation contract inside
+  `cpd_paper_offline_report`. It constructs exactly one synthetic `CollisionPackage.to_dict()`
+  artifact for `paper_single_box`, keeps runtime-admissibility checks and Newton execution at
+  zero or false, and remains not package readiness, not real-USD evidence, not benchmark evidence,
+  not collision-quality evidence, and not paper primitive vocabulary coverage.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
