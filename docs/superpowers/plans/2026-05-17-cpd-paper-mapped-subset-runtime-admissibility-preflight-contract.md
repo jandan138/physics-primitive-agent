@@ -655,7 +655,7 @@ git diff --check
 
 Expected: pass.
 
-- [ ] **Step 4: Commit, merge to main, push, and remove the worktree**
+- [x] **Step 4: Commit, merge to main, push, and remove the worktree**
 
 Use a commit message:
 
