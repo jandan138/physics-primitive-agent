@@ -220,7 +220,7 @@ Required fields:
 
 ```text
 candidate_source_audit_row_id
-source_primitivespec_generation_template_row_id
+source_primitivespec_generation_row_id
 source_primitivespec_generation_preflight_row_id
 source_primitivespec_validation_row_id
 source_primitivespec_dry_run_row_id
