@@ -72,9 +72,12 @@ Do not claim:
   mapping, Newton runtime, real USD, benchmark, or collision-quality tasks. The Newton
   shape-mapping preflight contract then records one offline/static mapper-handoff row for the same
   synthetic box dict, with zero mapping attempts, zero Newton mapping records, and zero Newton
-  runtime executions. It is still not package readiness, not Newton readiness, not Newton support
-  or execution, not full CPD reproduction, and not safety evidence. The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_mapping_contract`.
+  runtime executions. The Newton shape-mapping contract then records exactly one offline/static
+  report-scoped descriptor dict for target kind `box`, still with zero mapping attempts, zero
+  Newton mapping records, zero Newton shape objects, and zero Newton runtime executions. It is
+  still not package readiness, not Newton readiness, not Newton support or execution, not full CPD
+  reproduction, and not safety evidence. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
 
 ## First 4-Week Proof Point
 

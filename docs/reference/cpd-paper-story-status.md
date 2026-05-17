@@ -272,7 +272,15 @@ The repository has not reached that full result. It has reached the workbench st
     benchmark, collision-quality, deployment, and certification triggers at zero or false, keeps
     the report partial, and points next to
     `paper_mapped_subset_newton_shape_mapping_contract`.
-58. Records and configs can preserve exactly what was run.
+58. `paper_mapped_subset_newton_shape_mapping_contract` is now implemented as a single-fixture
+    offline/static Newton shape descriptor contract, not Newton object construction and not Newton
+    execution. It consumes the shape-mapping preflight row for the same synthetic
+    `paper_single_box` box artifact, records exactly one report-scoped
+    `newton_shape_descriptor_dict` for target kind `box`, keeps mapping attempts, Newton mapping
+    records, Newton shape objects, Newton runtime, real-USD, benchmark, collision-quality,
+    deployment, and certification triggers at zero or false, keeps the report partial, and points
+    next to `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
+59. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -633,8 +641,11 @@ checks and zero Newton code. The runtime-admissibility contract now also exists 
 single-fixture offline/static contract that records one finite-geometry and box-schema check while
 running zero Newton mapping and zero Newton code. The shape-mapping preflight now also exists as a
 single-fixture offline/static contract that records one mapper-handoff row for the same synthetic
-box dict while running zero mapping attempts and zero Newton code. The next code slice is
-`paper_mapped_subset_newton_shape_mapping_contract`.
+box dict while running zero mapping attempts and zero Newton code. The shape-mapping contract now
+also exists as a single-fixture offline/static contract that records one report-scoped descriptor
+dict for the same synthetic box dict while creating zero Newton shape objects and running zero
+Newton code. The next code slice is
+`paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -863,7 +874,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset runtime-admissibility preflight contract, still partial and still without runtime admissibility/Newton/real-USD
 -> mapped-subset runtime-admissibility contract, still partial and still without Newton shape mapping/Newton/real-USD
 -> mapped-subset Newton shape-mapping preflight contract, still partial and still without Newton shape mapping/Newton/real-USD
--> next: paper_mapped_subset_newton_shape_mapping_contract
+-> mapped-subset Newton shape-mapping contract, still partial and still without Newton shape object construction/Newton execution/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -969,22 +981,25 @@ runtime-boundary preflight contract, and single-fixture runtime-construction con
 The single-fixture package-generation preflight contract and single-fixture CollisionPackage
 generation contract now also exist. The single-fixture runtime-admissibility preflight contract
 and the single-fixture offline/static runtime-admissibility contract now also exist. The
-single-fixture offline/static Newton shape-mapping preflight contract now also exists. The
-immediate next code slice should keep the same boundary and implement the bounded
-`paper_mapped_subset_newton_shape_mapping_contract` without running Newton task diagnostics:
+single-fixture offline/static Newton shape-mapping preflight contract and the single-fixture
+offline/static Newton shape-mapping descriptor contract now also exist. The immediate next code
+slice should keep the same boundary and implement the bounded
+`paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract` without running Newton task
+diagnostics:
 
-1. Implement `paper_mapped_subset_newton_shape_mapping_contract` after the preflight has proved one
-   package-shaped artifact has a report-scoped shape-mapping handoff row.
+1. Implement `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract` after the
+   descriptor contract has proved one package-shaped artifact has a report-scoped static Newton
+   shape descriptor row.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
-   `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, and static
-   runtime-admissibility row for the deterministic `paper_single_box` OBB/box source report-scoped
-   until a later Newton execution gate exists.
+   `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
+   runtime-admissibility row, shape-mapping preflight row, and descriptor row for the deterministic
+   `paper_single_box` OBB/box source report-scoped until a later Newton execution gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton support/execution, real USD,
    benchmark, collision-quality, deployment readiness, and safety certification claims
-   unsupported; the next gate may only decide whether this one synthetic package-shaped artifact
-   has a report-scoped shape-mapping contract row, not whether Newton has run it.
+   unsupported; the next gate may only preflight whether this one synthetic descriptor row may
+   approach a later Newton runtime boundary, not whether Newton has constructed or run it.
 5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality

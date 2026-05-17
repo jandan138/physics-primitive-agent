@@ -27,13 +27,19 @@ the same synthetic `paper_single_box` box row. That preflight records one static
 target shape kind `box`, center/axes/dimensions/half-extents field checks, and a pending support
 evidence label for the later mapper. It does not call a mapper, does not import Newton, does not
 create a Newton shape, and records `mapping_attempt_count: 0`, `newton_mapping_record_count: 0`,
-and `newton_runtime_execution_count: 0`. The current next gate is
-`paper_mapped_subset_newton_shape_mapping_contract`. This is still not package
+and `newton_runtime_execution_count: 0`. The report now also closes the single-fixture Newton
+shape-mapping contract by recording exactly one report-scoped static `newton_shape_descriptor_dict`
+for target kind `box`. That descriptor is JSON-safe report data only: it records the target shape
+kind, source fixture/primitive ids, center, axes, half extents, and
+`mapping_contract: report_scoped_static_descriptor_no_newton_call`. It still records
+`mapping_attempt_count: 0`, `newton_mapping_record_count: 0`, `newton_shape_object_count: 0`, and
+`newton_runtime_execution_count: 0`. The current next gate is
+`paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`. This is still not package
 readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD evidence,
 not benchmark evidence, not collision-quality evidence, not deployment/safety evidence, not
 full-CPD evidence, not `paper_faithful_offline` evidence, and not paper primitive vocabulary
-coverage. The next step is the actual Newton shape-mapping contract for the same single synthetic
-package, not a capped bed/Franka rerun and not Newton execution. A capped bed/Franka rerun remains blocked
+coverage. The next step is the Newton shape runtime-boundary preflight for the same single
+synthetic package, not a capped bed/Franka rerun and not Newton execution. A capped bed/Franka rerun remains blocked
 unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
 dated-record gates. The
@@ -174,8 +180,8 @@ real-USD, benchmark, collision-quality, deployment, and certification triggers a
 The current next gate is now after the command-only runtime-boundary preflight, single-fixture
 runtime-construction, package-generation preflight, package-generation, runtime-admissibility
 preflight, offline/static runtime-admissibility contract, and offline/static Newton shape-mapping
-preflight contract:
-`paper_mapped_subset_newton_shape_mapping_contract`. The serialization contract
+preflight contract, and offline/static Newton shape-mapping descriptor contract:
+`paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
@@ -234,8 +240,9 @@ records exist.
   now implemented, and the single-fixture CollisionPackage generation contract is now implemented,
   the single-fixture runtime-admissibility preflight contract is now implemented, and the
   single-fixture offline/static runtime-admissibility contract is now implemented, and the
-  single-fixture offline/static Newton shape-mapping preflight contract is now implemented, while
-  the next gate is `paper_mapped_subset_newton_shape_mapping_contract`.
+  single-fixture offline/static Newton shape-mapping preflight contract is now implemented, and the
+  single-fixture offline/static Newton shape-mapping descriptor contract is now implemented, while
+  the next gate is `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -390,6 +397,13 @@ records exist.
   checks, zero mapping attempts, zero Newton mapping records, and zero Newton runtime executions,
   and advances the runtime-lane next gate to
   `paper_mapped_subset_newton_shape_mapping_contract`.
+- [CPD paper mapped-subset Newton shape-mapping contract record](records/2026-05-18-cpd-paper-mapped-subset-newton-shape-mapping-contract.md):
+  dated implementation record for the single-fixture offline/static Newton shape descriptor
+  contract. It consumes the shape-mapping preflight row for the same synthetic `paper_single_box`
+  box artifact, records exactly one report-scoped descriptor dict for target kind `box`, keeps
+  mapping attempts, Newton mapping records, Newton shape object construction, and Newton execution
+  at zero or false, and advances the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -833,10 +847,12 @@ records exist.
   `paper_mapped_subset_runtime_admissibility_contract` as one offline/static box-schema and
   finite-geometry check for the same synthetic package, plus a Newton shape-mapping preflight
   contract that closes only `paper_mapped_subset_newton_shape_mapping_preflight_contract` as one
-  static mapper-handoff row. It keeps
+  static mapper-handoff row, plus a Newton shape-mapping contract that closes only
+  `paper_mapped_subset_newton_shape_mapping_contract` as one report-scoped static descriptor row.
+  It keeps
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_newton_shape_mapping_contract`,
+  `next_required_gate: paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
   Newton mapping, runtime execution, or benchmarks.
