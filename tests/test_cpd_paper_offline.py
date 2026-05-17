@@ -6262,6 +6262,28 @@ def test_cpd_paper_primitivespec_candidate_source_rejects_true_input_trigger_fla
 
 
 @pytest.mark.parametrize(
+    "field_name",
+    [
+        "paper_faithful_offline_allowed",
+        "package_generation_allowed",
+    ],
+)
+def test_cpd_paper_primitivespec_candidate_source_rejects_top_level_boundary_flags(
+    field_name,
+):
+    generation = _candidate_source_generation_input()
+    generation[field_name] = True
+
+    with pytest.raises(
+        ValueError,
+        match=f"primitivespec_candidate_source_input_boundary_flag_true:{field_name}",
+    ):
+        cpd_paper_offline._paper_mapped_subset_primitivespec_candidate_source_contract_payload(
+            generation
+        )
+
+
+@pytest.mark.parametrize(
     ("field_name", "error_label"),
     [
         (
@@ -6350,6 +6372,53 @@ def test_cpd_paper_primitivespec_candidate_source_rejects_native_template_sequen
         ValueError,
         match="primitivespec_candidate_source_native_template_sequence_mismatch",
     ):
+        cpd_paper_offline._paper_mapped_subset_primitivespec_candidate_source_contract_payload(
+            generation
+        )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "error_label"),
+    [
+        (
+            "template_only",
+            False,
+            "primitivespec_candidate_source_template_runtime_leak:template_only",
+        ),
+        (
+            "runtime_instance_generated",
+            True,
+            "primitivespec_candidate_source_template_runtime_leak:"
+            "runtime_instance_generated",
+        ),
+        (
+            "primitive_spec_kind",
+            "capsule",
+            "primitivespec_candidate_source_template_kind_mismatch:"
+            "oriented_bounding_box",
+        ),
+        (
+            "candidate_mapping_label",
+            "capsule",
+            "primitivespec_candidate_source_template_mapping_mismatch:"
+            "oriented_bounding_box",
+        ),
+    ],
+)
+def test_cpd_paper_primitivespec_candidate_source_rejects_native_template_drift(
+    field_name,
+    bad_value,
+    error_label,
+):
+    generation = _candidate_source_generation_input()
+    rows = [
+        dict(row)
+        for row in generation["native_family_primitivespec_template_rows"]
+    ]
+    rows[0][field_name] = bad_value
+    generation["native_family_primitivespec_template_rows"] = rows
+
+    with pytest.raises(ValueError, match=error_label):
         cpd_paper_offline._paper_mapped_subset_primitivespec_candidate_source_contract_payload(
             generation
         )

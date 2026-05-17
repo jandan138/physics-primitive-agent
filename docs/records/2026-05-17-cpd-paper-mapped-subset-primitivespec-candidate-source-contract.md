@@ -42,6 +42,11 @@ deliberately zero because the current decomposition rows remain `trapezoidal_pri
   candidate-source audit rows.
 - Earlier gate tests were updated to expect the new top-level native-current-fixture gate and the
   expanded implemented output-contract scope after the candidate-source contract closes.
+- Review fix: candidate-source input validation now rejects top-level
+  `paper_faithful_offline_allowed` and `package_generation_allowed` drift.
+- Review fix: native template input rows now reject `template_only`, `runtime_instance_generated`,
+  `primitive_spec_kind`, and `candidate_mapping_label` drift before candidate-source rows are
+  emitted.
 
 ## Boundary
 
@@ -64,6 +69,11 @@ current-fixture or explicit mapping-policy gate exists.
   - Result: `2 passed, 109 deselected`.
 - `python -m pytest tests/test_cpd_paper_offline.py -k 'changed_decomposition_output_contract_gate or package_adapter_contract_gate or package_conversion_mapped_subset_plan_gate or mapped_subset_conversion_candidate_matrix_gate' -q`
   - Result after fixing stale top-level expectations: `4 passed, 179 deselected`.
+- `python -m pytest tests/test_cpd_paper_offline.py -k 'candidate_source_rejects_top_level_boundary_flags or candidate_source_rejects_native_template_drift' -q`
+  - RED result before review fix: `6 failed, 183 deselected`.
+  - GREEN result after review fix: `6 passed, 183 deselected`.
+- `python -m pytest tests/test_cpd_paper_offline.py -k 'candidate_source or primitivespec_generation_contract_gate' -q`
+  - Result after review fix: `30 passed, 159 deselected`.
 - `python -m pytest -q tests/test_cpd_paper_offline.py tests/test_cli.py`
   - Result: `294 passed`.
 - `python -m pytest -q`

@@ -5002,6 +5002,31 @@ def _paper_validate_candidate_source_template_row(
             "primitivespec_candidate_source_template_runtime_leak:"
             "silent_drop_detected"
         )
+    if not bool(row["template_only"]):
+        raise ValueError(
+            "primitivespec_candidate_source_template_runtime_leak:template_only"
+        )
+    if bool(row["runtime_instance_generated"]):
+        raise ValueError(
+            "primitivespec_candidate_source_template_runtime_leak:"
+            "runtime_instance_generated"
+        )
+    expected_kind_by_primitive = {
+        "oriented_bounding_box": "box",
+        "sphere": "sphere",
+        "capsule": "capsule",
+    }
+    expected_kind = expected_kind_by_primitive[row["paper_primitive"]]
+    if row["primitive_spec_kind"] != expected_kind:
+        raise ValueError(
+            "primitivespec_candidate_source_template_kind_mismatch:"
+            f"{row['paper_primitive']}"
+        )
+    if row["candidate_mapping_label"] != expected_kind:
+        raise ValueError(
+            "primitivespec_candidate_source_template_mapping_mismatch:"
+            f"{row['paper_primitive']}"
+        )
     if (
         row["required_current_candidate_source_gate"]
         != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
@@ -5105,6 +5130,12 @@ def _paper_validate_primitivespec_candidate_source_input(
         != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
     ):
         raise ValueError("primitivespec_candidate_source_input_next_gate_mismatch")
+    for field_name in ("paper_faithful_offline_allowed", "package_generation_allowed"):
+        if bool(generation.get(field_name)):
+            raise ValueError(
+                "primitivespec_candidate_source_input_boundary_flag_true:"
+                f"{field_name}"
+            )
     _paper_validate_primitivespec_candidate_source_false_flags(generation)
     if generation["primitive_spec_generation_candidate_count"] != 0:
         raise ValueError(
