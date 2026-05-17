@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_runtime_admissibility_preflight_contract_missing",
+        "paper_mapped_subset_runtime_admissibility_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_runtime_admissibility_preflight_contract"
+        == "paper_mapped_subset_runtime_admissibility_contract"
     )
     assert payload["generated_collision_package_count"] == 1
     assert payload["runtime_admissibility_check_count"] == 0
@@ -1544,7 +1544,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_runtime_admissibility_preflight_contract",
+        "paper_mapped_subset_runtime_admissibility_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1565,6 +1565,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_primitivespec_runtime_construction_contract",
         "paper_mapped_subset_collision_package_generation_preflight_contract",
         "paper_mapped_subset_collision_package_generation_contract",
+        "paper_mapped_subset_runtime_admissibility_preflight_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -2491,6 +2492,43 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert package_generation["newton_runtime_triggered"] is False
     assert package_generation["real_usd_triggered"] is False
     assert package_generation["benchmark_triggered"] is False
+    runtime_preflight = payload[
+        "paper_mapped_subset_runtime_admissibility_preflight_contract"
+    ]
+    assert runtime_preflight["gate_id"] == (
+        "paper_mapped_subset_runtime_admissibility_preflight_contract"
+    )
+    assert runtime_preflight["input_gate_id"] == (
+        "paper_mapped_subset_collision_package_generation_contract"
+    )
+    assert runtime_preflight["next_required_gate"] == (
+        "paper_mapped_subset_runtime_admissibility_contract"
+    )
+    assert runtime_preflight["runtime_admissibility_preflight_row_count"] == 1
+    assert runtime_preflight["later_runtime_admissibility_candidate_count"] == 1
+    assert runtime_preflight["generated_collision_package_count"] == 1
+    assert runtime_preflight["runtime_admissibility_check_count"] == 0
+    runtime_preflight_row = runtime_preflight[
+        "runtime_admissibility_preflight_rows"
+    ][0]
+    assert runtime_preflight_row["source_package_id"] == (
+        generated_package["package_id"]
+    )
+    assert runtime_preflight_row["source_asset_id"] == "paper_single_box"
+    assert runtime_preflight_row["source_package_status"] == (
+        "offline_synthetic_candidate_runtime_admissibility_not_checked"
+    )
+    assert runtime_preflight_row["source_package_primitive_subset"] == ["box"]
+    assert runtime_preflight_row["source_package_unsupported_primitives"] == []
+    assert runtime_preflight_row["later_runtime_admissibility_candidate"] is True
+    assert runtime_preflight["source_collision_package_available"] is True
+    assert runtime_preflight["runtime_admissibility_checked"] is False
+    assert runtime_preflight["runtime_admissibility_triggered"] is False
+    assert runtime_preflight["runtime_admissibility_supported"] is False
+    assert runtime_preflight["newton_support_claimed"] is False
+    assert runtime_preflight["newton_runtime_triggered"] is False
+    assert runtime_preflight["real_usd_triggered"] is False
+    assert runtime_preflight["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

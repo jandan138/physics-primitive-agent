@@ -182,17 +182,26 @@ CollisionPackage generation contract. It constructs exactly one synthetic, repor
 `CollisionPackage.to_dict()` artifact for the same `paper_single_box` OBB/box row, records
 `generated_collision_package_count: 1`, keeps runtime-admissibility checks at zero, marks the
 package status as `offline_synthetic_candidate_runtime_admissibility_not_checked`, and advances the next
-paper-lane gate to `paper_mapped_subset_runtime_admissibility_preflight_contract`. This generated
-package dict is only a serialized offline candidate for one box fixture: it is not Newton runtime
-execution, not runtime admissibility, not real-USD evidence, not benchmark evidence, not
-collision-quality evidence, not paper primitive vocabulary coverage, and not general package
-readiness. These
+paper-lane gate to `paper_mapped_subset_runtime_admissibility_preflight_contract`. The report now
+also includes `paper_mapped_subset_runtime_admissibility_preflight_contract`, a single-fixture
+offline preflight contract, not a runtime-admissibility check and not Newton execution. It consumes
+that one synthetic `CollisionPackage.to_dict()` artifact, validates its identity, source metadata,
+schema, primitive subset, and false trigger flags, records exactly one later
+runtime-admissibility candidate row without copying the full package dict, keeps
+`runtime_admissibility_check_count: 0`, and advances the next paper-lane gate to
+`paper_mapped_subset_runtime_admissibility_contract`. This generated package dict and preflight
+row are only serialized offline candidates for one box fixture: they are not executable runtime
+admissibility, not Newton runtime execution, not Newton support, not real-USD evidence, not
+benchmark evidence, not collision-quality evidence, not paper primitive vocabulary coverage, not
+`paper_faithful_offline`, not deployment readiness, not safety certification, and not general
+package readiness. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization/runtime-boundary/runtime-construction/package-preflight/package-generation slices do not
-support full CPD reproduction, Newton runtime execution, real-USD evidence,
-collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization/runtime-boundary/runtime-construction/package-preflight/package-generation/runtime-admissibility-preflight slices do not
+support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
+evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
+certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

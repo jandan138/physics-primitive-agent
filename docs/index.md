@@ -7,17 +7,23 @@ PrimitiveSpec-like dict generation contract, the report-only serialization/schem
 contract, the command-only runtime-boundary preflight, the single-fixture runtime-construction
 contract, the single-fixture CollisionPackage generation preflight contract, and the
 single-fixture CollisionPackage generation contract for one synthetic `paper_single_box` OBB/box
-row. It constructs exactly one runtime `PrimitiveSpec` object from canonical preflight JSON,
-stores `PrimitiveSpec.to_dict()` in the report, then constructs exactly one report-scoped
-`CollisionPackage.to_dict()` artifact for that same box row. The package artifact has
-`generated_collision_package_count: 1`, `runtime_admissibility_check_count: 0`, status
+row, plus the single-fixture runtime-admissibility preflight contract for that same report-scoped
+package artifact. It constructs exactly one runtime `PrimitiveSpec` object from canonical
+preflight JSON, stores `PrimitiveSpec.to_dict()` in the report, constructs exactly one
+report-scoped `CollisionPackage.to_dict()` artifact for that same box row, then records exactly
+one later runtime-admissibility candidate row without copying the full package dict. The package
+artifact has `generated_collision_package_count: 1`,
+`runtime_admissibility_check_count: 0`, status
 `offline_synthetic_candidate_runtime_admissibility_not_checked`, and claim boundary
 `single_fixture_box_only_offline_collision_package_artifact_not_paper_vocabulary_runtime_admissibility_or_newton`.
-It is still not Newton execution, not runtime admissibility, not real-USD evidence, not benchmark
-evidence, not collision-quality evidence, not deployment/safety evidence, not full-CPD evidence,
-not `paper_faithful_offline` evidence, and not paper primitive vocabulary coverage. The next step
-is `paper_mapped_subset_runtime_admissibility_preflight_contract`, not a capped bed/Franka rerun
-and not Newton execution. A capped bed/Franka rerun remains blocked unless a
+The new preflight payload also keeps `runtime_admissibility_check_count: 0` and advances the
+current next gate to `paper_mapped_subset_runtime_admissibility_contract`. This is still not
+package readiness, not Newton execution, not runtime admissibility, not real-USD evidence, not
+benchmark evidence, not collision-quality evidence, not deployment/safety evidence, not full-CPD
+evidence, not `paper_faithful_offline` evidence, and not paper primitive vocabulary coverage. The
+next step is
+`paper_mapped_subset_runtime_admissibility_contract`, not a capped bed/Franka rerun and not
+Newton execution. A capped bed/Franka rerun remains blocked unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
 dated-record gates. The
 completed cylinder branch remains useful context: the `cylinder_near_miss_cluster` fixture,
@@ -156,14 +162,16 @@ PrimitiveSpec-like dict shaped like `PrimitiveSpec.to_dict()` for review, while 
 real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or false.
 The current next gate is now after the command-only runtime-boundary preflight, single-fixture
 runtime-construction, package-generation preflight, and package-generation contracts:
-`paper_mapped_subset_runtime_admissibility_preflight_contract`. The serialization contract
+`paper_mapped_subset_runtime_admissibility_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
 runtime `PrimitiveSpec` object. The package-generation preflight then records one later
 package-generation candidate; the package-generation contract constructs exactly one synthetic,
-report-scoped `CollisionPackage.to_dict()` artifact for that same box row while still creating no
-runtime-admissibility, Newton, real-USD, benchmark, or collision-quality evidence.
+report-scoped `CollisionPackage.to_dict()` artifact for that same box row; and the
+runtime-admissibility preflight contract records one later runtime-admissibility candidate row
+while still creating no runtime-admissibility, Newton, real-USD, benchmark, or collision-quality
+evidence.
 This review, planning table,
 source-policy
 matrix, primitive-fit engine matrix, search-engine matrix, postprocess-policy matrix,
@@ -207,7 +215,8 @@ records exist.
   implemented, the runtime-boundary preflight contract is now implemented, the single-fixture
   runtime-construction contract is now implemented, the package-generation preflight contract is
   now implemented, and the single-fixture CollisionPackage generation contract is now implemented,
-  while the next gate is `paper_mapped_subset_runtime_admissibility_preflight_contract`.
+  and the single-fixture runtime-admissibility preflight contract is now implemented, while the
+  next gate is `paper_mapped_subset_runtime_admissibility_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -338,6 +347,15 @@ records exist.
   `paper_single_box`, keeps runtime-admissibility checks, Newton runtime, real-USD, benchmark, and
   collision-quality evidence at zero or false, and advances the next gate to
   `paper_mapped_subset_runtime_admissibility_preflight_contract`.
+- [CPD paper mapped-subset runtime-admissibility preflight contract record](records/2026-05-17-cpd-paper-mapped-subset-runtime-admissibility-preflight-contract.md):
+  dated implementation record for the single-fixture offline runtime-admissibility preflight
+  contract. It consumes the one synthetic `paper_single_box` `CollisionPackage.to_dict()` artifact,
+  records exactly one later runtime-admissibility candidate row without copying the full package
+  dict, keeps runtime-admissibility checks, Newton runtime, real-USD, benchmark, and
+  collision-quality evidence at zero or false; it is not package readiness, not executable
+  runtime-admissibility, not full CPD reproduction, not `paper_faithful_offline`, and not
+  deployment, safety, or certification evidence. It advances the next gate to
+  `paper_mapped_subset_runtime_admissibility_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -774,10 +792,12 @@ records exist.
   package-generation preflight contract that closes only
   `paper_mapped_subset_collision_package_generation_preflight_contract`, plus a single-fixture
   CollisionPackage generation contract that closes only
-  `paper_mapped_subset_collision_package_generation_contract`. It also records a
+  `paper_mapped_subset_collision_package_generation_contract`, plus a single-fixture
+  runtime-admissibility preflight contract that closes only
+  `paper_mapped_subset_runtime_admissibility_preflight_contract`. It also records a
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_runtime_admissibility_preflight_contract`,
+  `next_required_gate: paper_mapped_subset_runtime_admissibility_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
   runtime-admissibility checks, or benchmarks.

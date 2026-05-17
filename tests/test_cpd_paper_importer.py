@@ -2,6 +2,8 @@ from pathlib import Path
 import importlib.util
 import re
 
+import pytest
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 IMPORTER_PATH = REPO_ROOT / "site" / "scripts" / "import_cpd_paper.py"
@@ -13,6 +15,13 @@ def _load_importer():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
+
+
+def _paper_source_root_or_skip() -> Path:
+    source = REPO_ROOT / "docs" / "tmp" / "papers" / "arXiv-2602.07369v1"
+    if not source.exists():
+        pytest.skip("raw CPD paper LaTeX source intake is not committed")
+    return source
 
 
 def test_extract_section_commands_from_latex():
@@ -654,7 +663,7 @@ def test_parser_does_not_split_inline_bmatrix_from_paragraph():
 
 def test_imported_reader_text_has_no_known_broken_math_artifacts():
     importer = _load_importer()
-    source = REPO_ROOT / "docs" / "tmp" / "papers" / "arXiv-2602.07369v1"
+    source = _paper_source_root_or_skip()
     translations = importer.load_translations(REPO_ROOT / "site" / "src" / "data" / "translations")
     sections = importer.import_sections(source)
 
@@ -691,7 +700,7 @@ def test_imported_reader_text_has_no_known_broken_math_artifacts():
 
 def test_imported_experiment_translation_ids_stay_semantically_aligned():
     importer = _load_importer()
-    source = REPO_ROOT / "docs" / "tmp" / "papers" / "arXiv-2602.07369v1"
+    source = _paper_source_root_or_skip()
     translations = importer.load_translations(REPO_ROOT / "site" / "src" / "data" / "translations")
     sections = importer.import_sections(source)
     experiments = next(section for section in sections if section["slug"] == "experiments")

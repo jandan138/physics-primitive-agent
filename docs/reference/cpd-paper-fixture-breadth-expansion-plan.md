@@ -236,7 +236,9 @@ single-fixture offline generation check that constructs exactly one synthetic, r
 `CollisionPackage.to_dict()` artifact for the same `paper_single_box` OBB/box row while still
 creating zero runtime-admissibility checks and no Newton, real-USD, benchmark, collision-quality,
 deployment, or certification evidence. The current next gate is
-`paper_mapped_subset_runtime_admissibility_preflight_contract`.
+`paper_mapped_subset_runtime_admissibility_contract` after the single-fixture
+runtime-admissibility preflight records one later runtime-admissibility candidate row without
+running the check.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -283,7 +285,9 @@ collision-quality, deployment, or certification evidence, plus a single-fixture 
 collision-package generation preflight that records one later package-generation candidate while
 still generating zero CollisionPackage artifacts and zero runtime-admissibility checks, plus a
 single-fixture offline collision-package generation contract that generates exactly one synthetic
-`CollisionPackage.to_dict()` artifact while still generating zero runtime-admissibility checks.
+`CollisionPackage.to_dict()` artifact while still generating zero runtime-admissibility checks,
+plus a single-fixture runtime-admissibility preflight contract that records exactly one later
+runtime-admissibility candidate row while still generating zero runtime-admissibility checks.
 ```
 
 It does not support:
@@ -291,7 +295,9 @@ It does not support:
 - `paper_faithful_offline`;
 - full CPD paper reproduction;
 - general package readiness;
+- runtime-admissibility execution;
 - Newton runtime support;
+- Newton execution;
 - real-USD evidence;
 - benchmark evidence;
 - collision-quality validation;

@@ -16,7 +16,7 @@
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `tests/test_cli.py`
 
-- [ ] **Step 1: Add expected next gate constant**
+- [x] **Step 1: Add expected next gate constant**
 
 Add near the existing mapped-subset gate constants:
 
@@ -29,7 +29,7 @@ EXPECTED_RUNTIME_ADMISSIBILITY_PREFLIGHT_REMAINING_GAPS = [
 ]
 ```
 
-- [ ] **Step 2: Add helper for the new input payload**
+- [x] **Step 2: Add helper for the new input payload**
 
 Add near `_collision_package_generation_contract_input()`:
 
@@ -45,7 +45,7 @@ def _runtime_admissibility_preflight_input() -> dict[str, object]:
     )
 ```
 
-- [ ] **Step 3: Add required-key sets**
+- [x] **Step 3: Add required-key sets**
 
 Add after the existing collision-package key sets:
 
@@ -54,6 +54,10 @@ RUNTIME_ADMISSIBILITY_PREFLIGHT_PAYLOAD_FALSE_FLAGS = (
     "paper_faithful_offline_allowed",
     "paper_faithful_offline_supported",
     *RUNTIME_CONSTRUCTION_FALSE_FLAGS,
+)
+
+RUNTIME_ADMISSIBILITY_PREFLIGHT_INPUT_FALSE_FLAGS = (
+    *COLLISION_PACKAGE_GENERATION_BOUNDARY_FALSE_FLAGS,
 )
 
 RUNTIME_ADMISSIBILITY_PREFLIGHT_PAYLOAD_REQUIRED_KEYS = {
@@ -132,7 +136,7 @@ RUNTIME_ADMISSIBILITY_PREFLIGHT_ROW_REQUIRED_KEYS = {
 }
 ```
 
-- [ ] **Step 4: Add report and payload RED tests**
+- [x] **Step 4: Add report and payload RED tests**
 
 Add tests named:
 
@@ -243,7 +247,7 @@ PYTHONPATH=src python -m pytest tests/test_cpd_paper_offline.py -k 'runtime_admi
 
 Expected: fail because the payload is not implemented.
 
-- [ ] **Step 5: Add row, package-copy, and boundary RED tests**
+- [x] **Step 5: Add row, package-copy, and boundary RED tests**
 
 Add tests named:
 
@@ -486,7 +490,7 @@ Expected: fail because production code is still absent.
 **Files:**
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] **Step 1: Add the next gate constant**
+- [x] **Step 1: Add the next gate constant**
 
 Add near `_PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT`:
 
@@ -496,7 +500,7 @@ _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT = (
 )
 ```
 
-- [ ] **Step 2: Add remaining-gap helper**
+- [x] **Step 2: Add remaining-gap helper**
 
 Add near the collision-package generation remaining-gap helper:
 
@@ -505,7 +509,7 @@ def _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_preflight() 
     return [_PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT]
 ```
 
-- [ ] **Step 3: Add validators and row builder**
+- [x] **Step 3: Add validators and row builder**
 
 Implement helpers after `_paper_mapped_subset_collision_package_generation_contract_payload`:
 
@@ -532,7 +536,7 @@ recomputed source SHA, primitive equality, exactly one recursive package-shaped 
 gate, and false runtime/Newton boundary flags. It must store package identity, method, source path,
 and SHA fields only, not the full package dict.
 
-- [ ] **Step 4: Wire the new payload into `build_cpd_paper_offline_report()`**
+- [x] **Step 4: Wire the new payload into `build_cpd_paper_offline_report()`**
 
 Construct the new payload after `mapped_subset_collision_package_generation` and use it for:
 
@@ -542,7 +546,7 @@ Construct the new payload after `mapped_subset_collision_package_generation` and
 - `paper_faithfulness["implemented_output_contract_scope"]`;
 - report key `paper_mapped_subset_runtime_admissibility_preflight_contract`.
 
-- [ ] **Step 5: Run GREEN tests**
+- [x] **Step 5: Run GREEN tests**
 
 Run:
 
@@ -568,7 +572,7 @@ Expected: pass.
 - Modify: `docs/records/README.md`
 - Create: `docs/records/2026-05-17-cpd-paper-mapped-subset-runtime-admissibility-preflight-contract.md`
 
-- [ ] **Step 1: Update current-state wording**
+- [x] **Step 1: Update current-state wording**
 
 Replace the previous "next gate is runtime-admissibility preflight" wording with:
 
@@ -580,7 +584,7 @@ accounting, not package readiness or runtime admissibility. The next gate is
 `paper_mapped_subset_runtime_admissibility_contract`.
 ```
 
-- [ ] **Step 2: Add a dated record**
+- [x] **Step 2: Add a dated record**
 
 Create a record with sections:
 
@@ -600,7 +604,7 @@ support, not Newton execution, not real-USD evidence, not benchmark evidence, no
 collision-quality evidence, not full CPD reproduction, not paper primitive vocabulary coverage,
 not deployment readiness, and not safety certification.
 
-- [ ] **Step 3: Run docs validators**
+- [x] **Step 3: Run docs validators**
 
 Run:
 
@@ -617,7 +621,7 @@ Expected: pass.
 **Files:**
 - All changed files
 
-- [ ] **Step 1: Request multiagent review**
+- [x] **Step 1: Request multiagent review**
 
 Dispatch one code-contract reviewer and one docs-claim reviewer. Review scope:
 
@@ -626,7 +630,7 @@ Dispatch one code-contract reviewer and one docs-claim reviewer. Review scope:
 - exact schema and count consistency;
 - docs claim boundaries match implementation.
 
-- [ ] **Step 2: Fix review findings and rerun focused tests**
+- [x] **Step 2: Fix review findings and rerun focused tests**
 
 Run:
 
@@ -638,7 +642,7 @@ PYTHONPATH=src python -m pytest tests/test_cli.py -k cpd_paper_offline_report -q
 
 Expected: pass.
 
-- [ ] **Step 3: Final verification**
+- [x] **Step 3: Final verification**
 
 Run:
 

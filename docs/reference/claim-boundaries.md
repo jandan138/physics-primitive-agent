@@ -115,7 +115,11 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   The collision-package generation gate then constructs exactly one synthetic, report-scoped
   `CollisionPackage.to_dict()` artifact for the same `paper_single_box` OBB/box row, records
   `generated_collision_package_count: 1`, keeps runtime-admissibility checks at zero, and advances
-  the current next gate to `paper_mapped_subset_runtime_admissibility_preflight_contract`.
+  the next gate at that stage to `paper_mapped_subset_runtime_admissibility_preflight_contract`.
+  The runtime-admissibility preflight gate then consumes that one synthetic package artifact,
+  records one later runtime-admissibility candidate row without copying the full package dict,
+  keeps runtime-admissibility checks at zero, and advances the current next gate to
+  `paper_mapped_subset_runtime_admissibility_contract`.
   The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
@@ -174,15 +178,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_runtime_admissibility_preflight_contract` after the source-policy,
+  `paper_mapped_subset_runtime_admissibility_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
   PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight,
   PrimitiveSpec generation-contract, candidate-source-contract, native-current-fixture,
   native-fixture PrimitiveSpec-like dict generation, native-fixture serialization, and
-  runtime-boundary preflight, runtime-construction, collision-package generation preflight, and
-  collision-package generation slices.
+  runtime-boundary preflight, runtime-construction, collision-package generation preflight,
+  collision-package generation, and runtime-admissibility preflight slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -331,10 +335,21 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `generated_collision_package_count: 1`, keeps runtime-admissibility checks at zero, records
   only `box` as the evaluated fixture primitive family in this gate, and advances the next gate to
   `paper_mapped_subset_runtime_admissibility_preflight_contract`. It is not package readiness,
-  Newton readiness, runtime admissibility, paper primitive vocabulary coverage, approximation
-  support, general `PrimitiveSpec` readiness, Newton runtime execution, real-USD asset evidence,
+  Newton readiness, Newton support, runtime admissibility, paper primitive vocabulary coverage,
+  approximation support, general `PrimitiveSpec` readiness, Newton runtime execution, real-USD asset evidence,
   benchmark evidence, `paper_faithful_offline` support, full CPD reproduction, collision-quality
   evidence, deployment readiness, or safety certification.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_mapped_subset_runtime_admissibility_preflight_contract`, a single-fixture offline
+  runtime-admissibility preflight contract. It consumes the one synthetic `paper_single_box`
+  `CollisionPackage.to_dict()` artifact, validates identity, source metadata, schema, primitive
+  subset, and false trigger flags, records exactly one later runtime-admissibility candidate row
+  without copying the full package dict, keeps runtime-admissibility checks at zero, and advances
+  the next gate to `paper_mapped_subset_runtime_admissibility_contract`. It is not package
+  readiness, Newton readiness, Newton support, runtime admissibility, paper primitive vocabulary coverage,
+  approximation support, general `PrimitiveSpec` readiness, Newton runtime execution, real-USD
+  asset evidence, benchmark evidence, `paper_faithful_offline` support, full CPD reproduction,
+  collision-quality evidence, deployment readiness, or safety certification.
 - The partial `cpd_paper_offline_report` now includes
   `paper_mapped_subset_conversion_candidate_matrix`, a command-only offline candidate matrix, not a
   `CollisionPackage`. It records three future-family review rows, keeps the current 16
@@ -779,6 +794,13 @@ Use these only after broader benchmark records exist.
   artifact for the deterministic `paper_single_box` OBB/box row, records no runtime-admissibility
   checks, and marks the next required gate as
   `paper_mapped_subset_runtime_admissibility_preflight_contract`.
+- Do not describe `paper_mapped_subset_runtime_admissibility_preflight_contract` as package
+  readiness, Newton support, Newton execution, runtime admissibility, real-USD evidence, benchmark
+  evidence, collision-quality evidence, deployment readiness, safety certification, full CPD
+  reproduction, `paper_faithful_offline` support, paper primitive vocabulary coverage, or
+  runtime-check completion. It records one later runtime-admissibility candidate row from the one
+  synthetic `paper_single_box` package artifact and marks the next required gate as
+  `paper_mapped_subset_runtime_admissibility_contract`.
 
 ## Wording Rules
 

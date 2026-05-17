@@ -61,7 +61,13 @@ Do not claim:
   `paper_single_box` OBB/box row and records `generated_collision_package_count: 1`, but still
   creates no runtime-admissibility evidence, no Newton evidence, no real-USD evidence, no
   benchmark evidence, no collision-quality evidence, and no paper primitive vocabulary coverage.
-  The next gate is `paper_mapped_subset_runtime_admissibility_preflight_contract`.
+  The runtime-admissibility preflight contract then consumes that one synthetic package artifact,
+  records exactly one later runtime-admissibility candidate row without copying the full package
+  dict, and still runs no runtime-admissibility check and no Newton code. It is not package
+  readiness, not executable runtime-admissibility, not Newton support or execution, not real-USD
+  evidence, not benchmark or collision-quality evidence, not full CPD reproduction, not
+  `paper_faithful_offline`, and not deployment, safety, or certification evidence. The next gate is
+  `paper_mapped_subset_runtime_admissibility_contract`.
 
 ## First 4-Week Proof Point
 
