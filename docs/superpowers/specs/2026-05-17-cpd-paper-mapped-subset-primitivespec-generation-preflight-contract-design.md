@@ -22,6 +22,8 @@ all package/runtime/evaluation triggers false.
 After this slice, the current next gate should be
 `paper_mapped_subset_primitivespec_generation_contract`. That later gate may decide whether actual
 PrimitiveSpec dictionaries can be emitted for a mapped subset. This slice must not emit them.
+This is a new mapped-subset PrimitiveSpec gate and must not reuse the older
+`paper_package_generation_contract` package-level gate.
 
 ## Design Choice
 
@@ -70,6 +72,17 @@ Top-level fields:
 - `generated_primitive_spec_count`: `0`
 - `generated_collision_package_count`: `0`
 - `runtime_admissibility_check_count`: `0`
+- `real_usd_loaded`: `False`
+- `benchmark_run`: `False`
+
+The top-level report must also move forward:
+
+- `next_required_gate`: `paper_mapped_subset_primitivespec_generation_contract`
+- `failure_labels`: `["paper_mapped_subset_primitivespec_generation_contract_missing"]`
+- `paper_faithfulness.missing_before_paper_faithful_offline`:
+  `["paper_mapped_subset_primitivespec_generation_contract"]`
+- `paper_faithfulness.implemented_output_contract_scope` includes
+  `paper_mapped_subset_primitivespec_generation_preflight_contract`
 
 The payload keeps all generation/runtime booleans false:
 
@@ -89,6 +102,22 @@ The payload keeps all generation/runtime booleans false:
 
 `primitive_spec_generation_preflight_requirement_rows` has six rows copied from validation rows
 with explicit generation-preflight decisions.
+
+Every family row must include:
+
+- `primitive_spec_generation_preflight_row_id`
+- `source_primitivespec_validation_row_id`
+- `source_primitivespec_dry_run_row_id`
+- `source_adapter_preflight_row_id`
+- `source_candidate_matrix_row_id`
+- `source_conversion_plan_row_id`
+- `paper_primitive`
+- `candidate_mapping_label`
+- `validated_future_primitive_spec_kind`
+- `input_primitivespec_validation_decision`
+- `primitive_spec_generation_preflight_decision`
+- `generation_preflight_candidate`
+- `required_later_gate`
 
 Expected decisions:
 
@@ -113,6 +142,7 @@ Every current row remains:
 
 Each current row must preserve these source ids:
 
+- `primitive_spec_generation_preflight_row_id`
 - `source_primitivespec_validation_row_id`
 - `source_primitivespec_dry_run_row_id`
 - `source_adapter_preflight_row_id`
@@ -148,8 +178,40 @@ The new builder validates its input before emitting the payload:
 - current rows must require `paper_mapped_subset_primitivespec_generation_preflight_contract`;
 - family and current rows must preserve non-empty source ids needed for traceability;
 - row-level generation/runtime/real-USD/benchmark/collision-quality/deployment flags must be false.
+- emitted generation-preflight row ids must be unique and non-empty.
+
+The emitted `coverage_summary` must contain:
+
+- `primitive_spec_generation_preflight_requirement_row_count`: `6`
+- `future_native_primitivespec_generation_preflight_count`: `3`
+- `blocked_primitivespec_generation_preflight_requirement_count`: `2`
+- `noop_primitivespec_generation_preflight_requirement_count`: `1`
+- `current_row_primitivespec_generation_preflight_row_count`: `16`
+- `current_primitivespec_generation_preflight_pass_record_count`: `0`
+- `current_primitivespec_generation_preflight_noop_record_count`: `16`
+- `generation_preflight_candidate_record_count`: `0`
+- `generated_primitive_spec_record_count`: `0`
 
 Validation failures raise `ValueError` with specific labels so tests can lock claim boundaries.
+
+Required failure labels include:
+
+- `primitivespec_generation_preflight_input_gate_id_mismatch`
+- `generation_preflight_input_trigger_flag_true:<flag>`
+- `generation_preflight_input_candidate_count_nonzero`
+- `generation_preflight_input_generated_spec_nonzero`
+- `generation_preflight_input_generated_collision_package_nonzero`
+- `generation_preflight_coverage_count_mismatch:<field>`
+- `generation_preflight_family_primitive_sequence_mismatch`
+- `generation_preflight_future_mapping_label_mismatch:<paper_primitive>`
+- `generation_preflight_family_contract_mismatch:<paper_primitive>`
+- `generation_preflight_missing_validation_row_id:<field>`
+- `generation_preflight_missing_current_row_source_id:<field>`
+- `duplicate_primitivespec_validation_row_id`
+- `duplicate_primitivespec_generation_preflight_row_id`
+- `unknown_primitivespec_validation_family_decision:<decision>`
+- `unknown_primitivespec_validation_current_decision:<decision>`
+- `generation_preflight_current_row_required_later_gate_mismatch`
 
 ## Documentation Updates
 
