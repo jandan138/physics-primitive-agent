@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_generation_preflight_contract_missing",
+        "paper_mapped_subset_primitivespec_generation_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_primitivespec_generation_preflight_contract"
+        == "paper_mapped_subset_primitivespec_generation_contract"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1542,7 +1542,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_primitivespec_generation_preflight_contract",
+        "paper_mapped_subset_primitivespec_generation_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1553,6 +1553,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_adapter_preflight_contract",
         "paper_mapped_subset_primitivespec_dry_run_contract",
         "paper_mapped_subset_primitivespec_validation_contract",
+        "paper_mapped_subset_primitivespec_generation_preflight_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -1996,6 +1997,108 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert validation["newton_runtime_triggered"] is False
     assert validation["real_usd_triggered"] is False
     assert validation["benchmark_triggered"] is False
+    generation_preflight = payload[
+        "paper_mapped_subset_primitivespec_generation_preflight_contract"
+    ]
+    assert (
+        generation_preflight["gate_id"]
+        == "paper_mapped_subset_primitivespec_generation_preflight_contract"
+    )
+    assert (
+        generation_preflight["input_gate_id"]
+        == "paper_mapped_subset_primitivespec_validation_contract"
+    )
+    assert (
+        generation_preflight["next_required_gate"]
+        == "paper_mapped_subset_primitivespec_generation_contract"
+    )
+    assert generation_preflight["generation_preflight_candidate_count"] == 0
+    assert generation_preflight["generated_primitive_spec_count"] == 0
+    assert generation_preflight["generated_collision_package_count"] == 0
+    assert generation_preflight["runtime_admissibility_check_count"] == 0
+    assert (
+        generation_preflight["coverage_summary"][
+            "primitive_spec_generation_preflight_requirement_row_count"
+        ]
+        == 6
+    )
+    assert (
+        generation_preflight["coverage_summary"][
+            "future_native_primitivespec_generation_preflight_count"
+        ]
+        == 3
+    )
+    assert (
+        generation_preflight["coverage_summary"][
+            "current_row_primitivespec_generation_preflight_row_count"
+        ]
+        == 16
+    )
+    assert (
+        generation_preflight["coverage_summary"][
+            "generation_preflight_candidate_record_count"
+        ]
+        == 0
+    )
+    family_rows = {
+        row["paper_primitive"]: row
+        for row in generation_preflight[
+            "primitive_spec_generation_preflight_requirement_rows"
+        ]
+    }
+    assert list(family_rows) == [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    assert family_rows["oriented_bounding_box"][
+        "primitive_spec_generation_preflight_decision"
+    ] == "future_native_family_generation_requirement_preflighted"
+    assert (
+        family_rows["oriented_bounding_box"]["validated_future_primitive_spec_kind"]
+        == "box"
+    )
+    assert (
+        family_rows["capped_cylinder"][
+            "primitive_spec_generation_preflight_decision"
+        ]
+        == "blocked_approximation_policy_generation_preflight_recorded"
+    )
+    assert (
+        family_rows["trapezoidal_prism"][
+            "primitive_spec_generation_preflight_decision"
+        ]
+        == "noop_unmapped_family_generation_preflight_recorded"
+    )
+    current_rows = generation_preflight[
+        "current_row_primitivespec_generation_preflight_rows"
+    ]
+    assert len(current_rows) == 16
+    for row in current_rows:
+        assert row["primitive_spec_generation_preflight_decision"] == (
+            "skip_unmapped_current_row_preflighted"
+        )
+        assert row["primitive_spec_generation_preflight_action"] == "keep_offline"
+        assert row["primitive_spec_generation_candidate"] is False
+        assert row["generated_primitive_spec"] is None
+        assert (
+            row["required_later_gate"]
+            == "paper_mapped_subset_primitivespec_generation_contract"
+        )
+        assert row["primitive_spec_generation_triggered"] is False
+        assert row["collision_package_generation_triggered"] is False
+        assert row["runtime_admissibility_triggered"] is False
+    assert generation_preflight["primitive_spec_generated"] is False
+    assert generation_preflight["collision_package_generated"] is False
+    assert generation_preflight["runtime_admissibility_checked"] is False
+    assert generation_preflight["newton_support_claimed"] is False
+    assert generation_preflight["package_generation_triggered"] is False
+    assert generation_preflight["newton_runtime_triggered"] is False
+    assert generation_preflight["real_usd_triggered"] is False
+    assert generation_preflight["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

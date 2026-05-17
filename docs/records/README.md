@@ -299,6 +299,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-17 CPD Paper Mapped-Subset PrimitiveSpec Validation Contract](2026-05-17-cpd-paper-mapped-subset-primitivespec-validation-contract.md):
   partial command-only offline mapped-subset PrimitiveSpec validation contract inside
   `cpd_paper_offline_report`, not real `PrimitiveSpec` generation and not a `CollisionPackage`.
+- [2026-05-17 CPD Paper Mapped-Subset PrimitiveSpec Generation Preflight Contract](2026-05-17-cpd-paper-mapped-subset-primitivespec-generation-preflight-contract.md):
+  partial command-only offline mapped-subset PrimitiveSpec generation-preflight contract inside
+  `cpd_paper_offline_report`, not real `PrimitiveSpec` generation and not a `CollisionPackage`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

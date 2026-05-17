@@ -31,6 +31,9 @@ Do not claim:
 - LLM/VLM benefit before the non-LLM baseline is measured;
 - task-level Newton checker results before the checker exists and has run;
 - simulator checks as proof of collision correctness outside named assumptions.
+- CPD paper-lane offline gates as real PrimitiveSpec generation, CollisionPackage generation,
+  Newton runtime support, benchmark evidence, collision-quality evidence, deployment readiness, or
+  safety certification.
 
 ## First 4-Week Proof Point
 
