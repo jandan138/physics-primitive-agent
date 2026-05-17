@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_generation_contract_missing",
+        "paper_mapped_subset_primitivespec_candidate_source_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_primitivespec_generation_contract"
+        == "paper_mapped_subset_primitivespec_candidate_source_contract"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1542,7 +1542,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_primitivespec_generation_contract",
+        "paper_mapped_subset_primitivespec_candidate_source_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1554,11 +1554,14 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_primitivespec_dry_run_contract",
         "paper_mapped_subset_primitivespec_validation_contract",
         "paper_mapped_subset_primitivespec_generation_preflight_contract",
+        "paper_mapped_subset_primitivespec_generation_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
     assert payload["benchmark_triggered"] is False
+    assert payload["collision_quality_measured"] is False
+    assert payload["deployment_or_certification_claimed"] is False
     plan = payload["paper_faithful_offline_generalization_plan"]
     assert plan["closed_gate"] == "paper_faithful_offline_generalization_plan"
     assert plan["generalization_plan_complete"] is True
@@ -2099,6 +2102,56 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert generation_preflight["newton_runtime_triggered"] is False
     assert generation_preflight["real_usd_triggered"] is False
     assert generation_preflight["benchmark_triggered"] is False
+    generation = payload["paper_mapped_subset_primitivespec_generation_contract"]
+    assert (
+        generation["gate_id"]
+        == "paper_mapped_subset_primitivespec_generation_contract"
+    )
+    assert (
+        generation["input_gate_id"]
+        == "paper_mapped_subset_primitivespec_generation_preflight_contract"
+    )
+    assert (
+        generation["next_required_gate"]
+        == "paper_mapped_subset_primitivespec_candidate_source_contract"
+    )
+    assert generation["primitive_spec_generation_candidate_count"] == 0
+    assert generation["offline_primitivespec_template_count"] == 3
+    assert generation["generated_primitive_spec_count"] == 0
+    assert generation["generated_collision_package_count"] == 0
+    assert generation["runtime_admissibility_check_count"] == 0
+    assert len(generation["native_family_primitivespec_template_rows"]) == 3
+    assert len(generation["blocked_primitivespec_generation_requirement_rows"]) == 2
+    assert len(generation["noop_primitivespec_generation_requirement_rows"]) == 1
+    assert len(generation["current_row_primitivespec_generation_rows"]) == 16
+    assert (
+        generation["coverage_summary"][
+            "primitive_spec_generation_requirement_row_count"
+        ]
+        == 6
+    )
+    assert (
+        generation["coverage_summary"]["current_row_primitivespec_generation_row_count"]
+        == 16
+    )
+    assert (
+        generation["coverage_summary"][
+            "primitive_spec_generation_candidate_record_count"
+        ]
+        == 0
+    )
+    assert (
+        generation["coverage_summary"]["offline_primitivespec_template_record_count"]
+        == 3
+    )
+    assert generation["primitive_spec_generated"] is False
+    assert generation["collision_package_generated"] is False
+    assert generation["runtime_admissibility_checked"] is False
+    assert generation["newton_support_claimed"] is False
+    assert generation["package_generation_triggered"] is False
+    assert generation["newton_runtime_triggered"] is False
+    assert generation["real_usd_triggered"] is False
+    assert generation["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]
