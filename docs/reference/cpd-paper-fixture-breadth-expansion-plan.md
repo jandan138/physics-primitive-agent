@@ -196,8 +196,11 @@ implemented as a command-only offline contract, not real `PrimitiveSpec` generat
 rows offline/no-op. The mapped-subset PrimitiveSpec validation contract is now implemented as a
 command-only offline validation contract, not real `PrimitiveSpec` generation and not a
 `CollisionPackage`; it validates the dry-run contract and keeps current unmapped rows offline/no-op.
-The current next gate is
-`paper_mapped_subset_primitivespec_generation_preflight_contract`. Batch C
+The mapped-subset PrimitiveSpec generation-preflight contract is now implemented as a command-only
+offline preflight contract, not real `PrimitiveSpec` generation and not a `CollisionPackage`; it
+records zero current generation candidates, zero generated PrimitiveSpecs, zero generated
+CollisionPackages, and zero runtime-admissibility checks. The current next gate is
+`paper_mapped_subset_primitivespec_generation_contract`. Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it
@@ -224,7 +227,9 @@ package-conversion plan, an offline mapped-subset candidate matrix, and an offli
 adapter-preflight contract, plus an offline mapped-subset PrimitiveSpec dry-run contract inside
 the partial paper report, plus an offline mapped-subset PrimitiveSpec validation contract that
 validates the dry-run shape while still generating zero real PrimitiveSpec and zero
-CollisionPackage artifacts.
+CollisionPackage artifacts, plus an offline mapped-subset PrimitiveSpec generation-preflight
+contract that still generates zero real PrimitiveSpec, zero CollisionPackage artifacts, and zero
+runtime-admissibility checks.
 ```
 
 It does not support:

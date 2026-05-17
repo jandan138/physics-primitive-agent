@@ -159,7 +159,15 @@ The repository has not reached that full result. It has reached the workbench st
     zero generated PrimitiveSpecs, and false runtime/evaluation triggers, keeps the report
     partial, and points next to
     `paper_mapped_subset_primitivespec_generation_preflight_contract`.
-45. Records and configs can preserve exactly what was run.
+45. `paper_mapped_subset_primitivespec_generation_preflight_contract` is now implemented as a
+    command-only offline generation-preflight contract, not real `PrimitiveSpec` generation and
+    not a `CollisionPackage`. It closes only that preflight gate, records the future native-family
+    requirements for OBB/box, sphere, and capsule, records capped cylinder and frustum as blocked
+    behind approximation policy, records trapezoidal prism as no-op/unmapped, keeps current
+    generation candidates, generated PrimitiveSpecs, generated CollisionPackages, and
+    runtime-admissibility checks at zero, keeps the report partial, and points next to
+    `paper_mapped_subset_primitivespec_generation_contract`.
+46. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -494,8 +502,10 @@ command-only offline contract, not `PrimitiveSpec` generation and not a `Collisi
 mapped-subset PrimitiveSpec dry-run contract now also exists as a command-only offline contract,
 not real `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-subset
 PrimitiveSpec validation contract now also exists as a command-only offline validation contract,
-not real `PrimitiveSpec` generation and not a `CollisionPackage`; the next code slice is
-`paper_mapped_subset_primitivespec_generation_preflight_contract`.
+not real `PrimitiveSpec` generation and not a `CollisionPackage`. The mapped-subset
+PrimitiveSpec generation-preflight contract now also exists as a command-only offline preflight
+contract, still not real `PrimitiveSpec` generation and not a `CollisionPackage`; the next code
+slice is `paper_mapped_subset_primitivespec_generation_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -711,7 +721,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset adapter preflight contract, still partial and still without PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec dry-run contract, still partial and still without real PrimitiveSpec/package/Newton/real-USD
 -> mapped-subset PrimitiveSpec validation contract, still partial and still without real PrimitiveSpec/package/Newton/real-USD
--> next: paper_mapped_subset_primitivespec_generation_preflight_contract
+-> mapped-subset PrimitiveSpec generation preflight contract, still partial and still without real PrimitiveSpec/package/Newton/real-USD
+-> next: paper_mapped_subset_primitivespec_generation_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -805,12 +816,13 @@ readiness generalization matrices now exist. The offline changed-decomposition o
 offline package-adapter contract, offline unsupported-primitive policy, offline mapped-subset
 conversion plan, offline candidate matrix, offline adapter-preflight contract, and offline
 PrimitiveSpec dry-run contract now also exist. The offline PrimitiveSpec validation contract now
-also exists. The immediate next code slice should stay offline and define a PrimitiveSpec
-generation-preflight contract without adding stronger evaluation claims:
+also exists. The offline PrimitiveSpec generation-preflight contract now also exists. The immediate
+next code slice should stay offline and define a PrimitiveSpec generation contract without adding
+stronger evaluation claims:
 
-1. Implement `paper_mapped_subset_primitivespec_generation_preflight_contract` after the
-   PrimitiveSpec validation gate.
-2. Keep report-only PrimitiveSpec validation requirements and zero-candidate behavior intact while
+1. Implement `paper_mapped_subset_primitivespec_generation_contract` after the PrimitiveSpec
+   generation-preflight gate.
+2. Keep report-only PrimitiveSpec generation-preflight requirements and zero-candidate behavior intact while
    current unmapped rows remain offline unless a later mapping or approximation policy exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.

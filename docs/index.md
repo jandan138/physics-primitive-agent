@@ -112,12 +112,19 @@ PrimitiveSpec validation gate with a command-only offline validation contract, n
 mapped future shape labels, six family rows, 16 current no-op rows, source traceability, zero
 current candidates, zero generated PrimitiveSpecs, and false runtime/evaluation triggers, and
 advances the next gate to
-`paper_mapped_subset_primitivespec_generation_preflight_contract`. This review, planning table,
+`paper_mapped_subset_primitivespec_generation_preflight_contract`. The report now also closes only
+that PrimitiveSpec generation-preflight gate with a command-only offline preflight contract, not
+real `PrimitiveSpec` generation and not a `CollisionPackage`; it records the future mapped native
+families, blocked approximation-policy families, current no-op rows, zero generation candidates,
+zero generated PrimitiveSpecs, zero generated CollisionPackages, and zero runtime-admissibility
+checks, and advances the next gate to `paper_mapped_subset_primitivespec_generation_contract`.
+This review, planning table,
 source-policy
 matrix, primitive-fit engine matrix, search-engine matrix, postprocess-policy matrix,
 package-boundary readiness matrix, changed-decomposition output contract, and package-adapter
 contract, unsupported-primitive policy, mapped-subset planning table, candidate matrix,
-adapter-preflight contract, PrimitiveSpec dry-run contract, and PrimitiveSpec validation contract
+adapter-preflight contract, PrimitiveSpec dry-run contract, PrimitiveSpec validation contract, and
+PrimitiveSpec generation-preflight contract
 are not
 `paper_faithful_offline` support, and they are not a capped bed/Franka rerun unless a separate real
 package change is introduced and passes full mapping, contact-canary, task-gate, and dated-record
@@ -146,8 +153,8 @@ records exist.
   unsupported-primitive policy, mapped-subset package-conversion plan, and mapped-subset
   candidate matrix are now implemented, and the mapped-subset adapter-preflight contract is now
   implemented, the mapped-subset PrimitiveSpec dry-run contract is now implemented, and the
-  mapped-subset PrimitiveSpec validation contract is now implemented, while the next gate is
-  `paper_mapped_subset_primitivespec_generation_preflight_contract`.
+  mapped-subset PrimitiveSpec validation contract and generation-preflight contract are now
+  implemented, while the next gate is `paper_mapped_subset_primitivespec_generation_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -216,6 +223,13 @@ records exist.
   `paper_mapped_subset_primitivespec_generation_preflight_contract` without PrimitiveSpec
   generation, CollisionPackage generation, Newton runtime, real-USD, benchmark, or
   collision-quality evidence.
+- [CPD paper mapped-subset PrimitiveSpec generation-preflight contract record](records/2026-05-17-cpd-paper-mapped-subset-primitivespec-generation-preflight-contract.md):
+  dated implementation record for the command-only offline PrimitiveSpec generation-preflight
+  contract, not real `PrimitiveSpec` generation and not a `CollisionPackage`. It keeps the report
+  partial, records future native-family generation requirements, keeps current unmapped rows
+  offline/no-op, keeps current generation candidates at zero, and advances the next gate to
+  `paper_mapped_subset_primitivespec_generation_contract` without PrimitiveSpec generation,
+  CollisionPackage generation, Newton runtime, real-USD, benchmark, or collision-quality evidence.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -632,10 +646,12 @@ records exist.
   plus an offline mapped-subset PrimitiveSpec dry-run contract that closes only
   `paper_mapped_subset_primitivespec_dry_run_contract`, plus an offline mapped-subset
   PrimitiveSpec validation contract that closes only
-  `paper_mapped_subset_primitivespec_validation_contract`. It also records a
+  `paper_mapped_subset_primitivespec_validation_contract`, plus an offline mapped-subset
+  PrimitiveSpec generation-preflight contract that closes only
+  `paper_mapped_subset_primitivespec_generation_preflight_contract`. It also records a
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_primitivespec_generation_preflight_contract`, keeps
+  `next_required_gate: paper_mapped_subset_primitivespec_generation_contract`, keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD, package
   generation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic

@@ -524,6 +524,21 @@ experiments:
       - keeps current PrimitiveSpec candidates, generated PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs, collision-quality measurement, and deployment/certification claims at zero or false
       - closes only paper_mapped_subset_primitivespec_validation_contract and advances the next gate to paper_mapped_subset_primitivespec_generation_preflight_contract
       - no package-readiness claim, PrimitiveSpec-readiness claim, PrimitiveSpec-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-mapped-subset-primitivespec-generation-preflight-contract
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-mapped-subset-primitivespec-generation-preflight-contract.md
+    purpose: >
+      Add a command-only offline mapped-subset PrimitiveSpec generation-preflight contract before
+      any real PrimitiveSpec, CollisionPackage, runtime admissibility, package generation, or
+      Newton runtime work.
+    claims_supported:
+      - partial command-only offline PrimitiveSpec generation-preflight contract for deterministic synthetic fixture records only
+      - records future native-family generation requirements for OBB/box, sphere, and capsule
+      - keeps capped cylinder and frustum blocked behind approximation policy and keeps trapezoidal prism no-op/unmapped
+      - keeps current PrimitiveSpec generation candidates, generated PrimitiveSpecs, generated CollisionPackages, runtime-admissibility checks, Newton runtime, real-USD loading, benchmark runs, collision-quality measurement, and deployment/certification claims at zero or false
+      - closes only paper_mapped_subset_primitivespec_generation_preflight_contract and advances the next gate to paper_mapped_subset_primitivespec_generation_contract
+      - no package-readiness claim, PrimitiveSpec-readiness claim, PrimitiveSpec-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

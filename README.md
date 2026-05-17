@@ -106,11 +106,19 @@ contract for that dry-run payload, not real `PrimitiveSpec` generation and not a
 future shape labels for box/sphere/capsule, six family rows, 16 current no-op rows, source
 traceability, zero current candidates, zero generated PrimitiveSpecs, and false runtime/evaluation
 triggers, then advances the next paper-lane gate to
-`paper_mapped_subset_primitivespec_generation_preflight_contract`. These
+`paper_mapped_subset_primitivespec_generation_preflight_contract`. The report now also includes
+`paper_mapped_subset_primitivespec_generation_preflight_contract`, a command-only offline
+generation-preflight contract for that validation payload, not real `PrimitiveSpec` generation
+and not a `CollisionPackage`. That generation-preflight contract records future native-family
+requirements for OBB/box, sphere, and capsule, keeps capped cylinder and frustum blocked behind
+approximation policy, keeps trapezoidal prism no-op/unmapped, records zero current generation
+candidates, zero generated PrimitiveSpecs, zero generated CollisionPackages, and zero runtime
+admissibility checks, then advances the next paper-lane gate to
+`paper_mapped_subset_primitivespec_generation_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

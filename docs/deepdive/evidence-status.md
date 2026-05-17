@@ -146,11 +146,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_primitivespec_generation_preflight_contract` after the source-policy,
+  `paper_mapped_subset_primitivespec_generation_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
-  PrimitiveSpec dry-run, and PrimitiveSpec validation slices.
+  PrimitiveSpec dry-run, PrimitiveSpec validation, and PrimitiveSpec generation-preflight slices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -302,6 +302,19 @@ This file separates current evidence from future claims. See [message-map.md](me
   readiness, `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime
   support, real-USD evidence, benchmark evidence, collision-quality validation, deployment
   readiness, or safety certification.
+- The current executable surface can also run
+  `paper_mapped_subset_primitivespec_generation_preflight_contract` inside
+  `cpd_paper_offline_report`. It closes only that PrimitiveSpec generation-preflight gate with a
+  command-only offline preflight contract, not real `PrimitiveSpec` generation and not a
+  `CollisionPackage`. It records future native-family generation requirements for OBB/box,
+  sphere, and capsule, keeps capped cylinder and frustum blocked behind approximation policy,
+  keeps trapezoidal prism no-op/unmapped, keeps current generation candidates at zero, keeps
+  generated PrimitiveSpecs, generated CollisionPackages, and runtime-admissibility checks at zero,
+  and advances the next required gate to `paper_mapped_subset_primitivespec_generation_contract`.
+  This is not package readiness, Newton readiness, runtime admissibility, approximation support,
+  `PrimitiveSpec` readiness, real `PrimitiveSpec` generation, `paper_faithful_offline`, full CPD
+  reproduction, package generation, Newton runtime support, real-USD evidence, benchmark evidence,
+  collision-quality validation, deployment readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.
