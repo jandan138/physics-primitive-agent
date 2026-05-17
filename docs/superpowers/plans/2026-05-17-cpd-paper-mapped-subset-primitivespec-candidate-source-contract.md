@@ -45,25 +45,28 @@
 
 - [ ] **Step 1: Add import and constants**
 
-Add `_paper_mapped_subset_primitivespec_candidate_source_contract_payload` and
-`_paper_require_unique_candidate_source_row_ids` to the import block:
+Add a module alias for new helper access during RED, while keeping existing direct imports for
+already-implemented helpers:
 
 ```python
+import primitive_collision_compiler.baselines.cpd_paper.offline as cpd_paper_offline
 from primitive_collision_compiler.baselines.cpd_paper.offline import (
     CPD_PAPER_OFFLINE_CLAIM_BOUNDARY,
     _paper_mapped_subset_adapter_preflight_contract_payload,
-    _paper_mapped_subset_primitivespec_candidate_source_contract_payload,
     _paper_mapped_subset_primitivespec_dry_run_contract_payload,
     _paper_mapped_subset_primitivespec_generation_contract_payload,
     _paper_mapped_subset_primitivespec_generation_preflight_contract_payload,
     _paper_mapped_subset_primitivespec_validation_contract_payload,
     _paper_package_adapter_contract_payload,
-    _paper_require_unique_candidate_source_row_ids,
     _paper_require_unique_generation_preflight_row_ids,
     _paper_require_unique_generation_row_ids,
     build_cpd_paper_offline_report,
 )
 ```
+
+Call new helpers through `cpd_paper_offline.<helper_name>` in RED tests. This keeps pytest
+collection runnable before the new functions exist, so the first RED failure points at missing
+behavior rather than an import-time collection error.
 
 Add:
 
