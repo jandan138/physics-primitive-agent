@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the PrimitiveSpec dry-run gate:
-  `paper_mapped_subset_primitivespec_validation_contract_missing`.
+- the current top-level failure label after the PrimitiveSpec validation gate:
+  `paper_mapped_subset_primitivespec_generation_preflight_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -594,7 +594,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_primitivespec_validation_contract
+-> current next gate after the later closed gates: paper_mapped_subset_primitivespec_generation_preflight_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -731,4 +731,13 @@ real-USD, and benchmark triggers false. It is not package readiness, Newton read
 admissibility, approximation support, `PrimitiveSpec` readiness, package generation, Newton
 runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full
 CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
-next current gate is `paper_mapped_subset_primitivespec_validation_contract`.
+validation contract is now implemented; the current next gate is
+`paper_mapped_subset_primitivespec_generation_preflight_contract`.
+
+`paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
+validation gate. It validates the dry-run contract field list, mapped future shape labels, six
+family rows, 16 current no-op rows, source traceability, zero current candidates, zero generated
+PrimitiveSpecs, and false runtime/evaluation triggers. It is not real `PrimitiveSpec` generation,
+not a `CollisionPackage`, not package readiness, not Newton readiness, not runtime admissibility,
+and not collision-quality evidence. The next current gate is
+`paper_mapped_subset_primitivespec_generation_preflight_contract`.

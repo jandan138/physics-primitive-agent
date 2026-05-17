@@ -156,7 +156,8 @@ summary = payload["coverage_summary"]
 rows = payload["current_row_primitivespec_dry_run_rows"]
 assert summary["primitive_spec_requirement_row_count"] == 6
 assert summary["future_native_primitivespec_shape_record_count"] == 3
-assert summary["blocked_primitivespec_requirement_row_count"] == 3
+assert summary["blocked_primitivespec_requirement_row_count"] == 2
+assert summary["noop_primitivespec_requirement_row_count"] == 1
 assert summary["current_row_primitivespec_dry_run_row_count"] == 16
 assert summary["current_primitivespec_dry_run_pass_record_count"] == 0
 assert summary["current_primitivespec_noop_record_count"] == 16

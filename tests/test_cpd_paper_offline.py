@@ -8,6 +8,7 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
     CPD_PAPER_OFFLINE_CLAIM_BOUNDARY,
     _paper_mapped_subset_adapter_preflight_contract_payload,
     _paper_mapped_subset_primitivespec_dry_run_contract_payload,
+    _paper_mapped_subset_primitivespec_validation_contract_payload,
     _paper_package_adapter_contract_payload,
     build_cpd_paper_offline_report,
 )
@@ -44,6 +45,9 @@ EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT = (
 EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT = (
     "paper_mapped_subset_primitivespec_validation_contract"
 )
+EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT = (
+    "paper_mapped_subset_primitivespec_generation_preflight_contract"
+)
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
 )
@@ -59,7 +63,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -78,6 +82,9 @@ EXPECTED_PREFLIGHT_REMAINING_GAPS = [
 ]
 EXPECTED_PRIMITIVESPEC_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
+]
+EXPECTED_VALIDATION_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -360,12 +367,12 @@ def test_cpd_paper_offline_report_failure_labels_point_to_package_boundary_gap()
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_primitivespec_validation_contract():
+def test_cpd_paper_offline_report_next_gate_is_primitivespec_generation_preflight_contract():
     report = build_cpd_paper_offline_report()
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
 
 
@@ -1190,7 +1197,7 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1310,7 +1317,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1414,7 +1421,7 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1496,7 +1503,7 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -1610,7 +1617,7 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -1848,7 +1855,7 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2025,7 +2032,7 @@ def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2141,7 +2148,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2155,6 +2162,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
         EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2363,7 +2371,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2377,6 +2385,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
         EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -2531,7 +2540,7 @@ def test_cpd_paper_records_unsupported_primitive_policy_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2700,7 +2709,7 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2889,7 +2898,7 @@ def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
     payload = report["paper_mapped_subset_conversion_candidate_matrix"]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3100,7 +3109,7 @@ def test_cpd_paper_records_mapped_subset_adapter_preflight_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3406,12 +3415,12 @@ def test_cpd_paper_records_mapped_subset_primitivespec_dry_run_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
-        == EXPECTED_PRIMITIVESPEC_REMAINING_GAPS
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
     )
     assert (
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
@@ -3436,6 +3445,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_dry_run_contract_gate():
         "primitivespec_dry_run_contract_complete_"
         "primitivespec_validation_contract_missing"
     )
+    assert payload["remaining_gaps"] == EXPECTED_PRIMITIVESPEC_REMAINING_GAPS
     assert payload["paper_faithful_offline_allowed"] is False
     assert payload["package_generation_allowed"] is False
     assert payload["artifact_kind"] == (
@@ -3535,7 +3545,8 @@ def test_cpd_paper_primitivespec_dry_run_noops_current_unmapped_rows():
 
     assert summary["primitive_spec_requirement_row_count"] == 6
     assert summary["future_native_primitivespec_shape_record_count"] == 3
-    assert summary["blocked_primitivespec_requirement_row_count"] == 3
+    assert summary["blocked_primitivespec_requirement_row_count"] == 2
+    assert summary["noop_primitivespec_requirement_row_count"] == 1
     assert summary["current_row_primitivespec_dry_run_row_count"] == 16
     assert summary["current_primitivespec_dry_run_pass_record_count"] == 0
     assert summary["current_primitivespec_noop_record_count"] == 16
@@ -3705,6 +3716,32 @@ def test_cpd_paper_primitivespec_dry_run_rejects_row_level_candidate():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
+def test_cpd_paper_primitivespec_dry_run_rejects_family_real_usd_flag():
+    report = build_cpd_paper_offline_report()
+    preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
+    family_rows = [
+        dict(row) for row in preflight["adapter_preflight_requirement_rows"]
+    ]
+    family_rows[0]["real_usd_loaded"] = True
+    preflight["adapter_preflight_requirement_rows"] = family_rows
+
+    with pytest.raises(ValueError, match="input_trigger_flag_true:real_usd_loaded"):
+        _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
+
+
+def test_cpd_paper_primitivespec_dry_run_rejects_current_benchmark_flag():
+    report = build_cpd_paper_offline_report()
+    preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
+    current_rows = [
+        dict(row) for row in preflight["current_row_adapter_preflight_rows"]
+    ]
+    current_rows[0]["benchmark_run"] = True
+    preflight["current_row_adapter_preflight_rows"] = current_rows
+
+    with pytest.raises(ValueError, match="input_trigger_flag_true:benchmark_run"):
+        _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
+
+
 def test_cpd_paper_primitivespec_dry_run_rejects_duplicate_preflight_row_ids():
     report = build_cpd_paper_offline_report()
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
@@ -3746,6 +3783,19 @@ def test_cpd_paper_primitivespec_dry_run_rejects_missing_current_source_id():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
+def test_cpd_paper_primitivespec_dry_run_rejects_blank_current_source_id():
+    report = build_cpd_paper_offline_report()
+    preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
+    current_rows = [
+        dict(row) for row in preflight["current_row_adapter_preflight_rows"]
+    ]
+    current_rows[0]["source_output_id"] = " "
+    preflight["current_row_adapter_preflight_rows"] = current_rows
+
+    with pytest.raises(ValueError, match="missing_current_row_source_id"):
+        _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
+
+
 def test_cpd_paper_primitivespec_dry_run_rejects_wrong_required_later_gate():
     report = build_cpd_paper_offline_report()
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
@@ -3757,6 +3807,585 @@ def test_cpd_paper_primitivespec_dry_run_rejects_wrong_required_later_gate():
 
     with pytest.raises(ValueError, match="current_row_required_later_gate_mismatch"):
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
+
+
+def test_cpd_paper_records_mapped_subset_primitivespec_validation_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_primitivespec_validation_contract"]
+
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
+    )
+    assert report["failure_labels"] == [
+        "paper_mapped_subset_primitivespec_generation_preflight_contract_missing",
+    ]
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_VALIDATION_REMAINING_GAPS
+    )
+    assert (
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert payload["gate_id"] == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+    assert payload["gate_status"] == (
+        "implemented_offline_primitivespec_validation_contract_only_partial"
+    )
+    assert payload["closed_gate"] == (
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+    )
+    assert (
+        payload["input_gate_id"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_DRY_RUN_CONTRACT
+    )
+    assert (
+        payload["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
+    )
+    assert payload["decision"] == "remain_partial"
+    assert payload["decision_reason"] == (
+        "primitivespec_validation_contract_complete_"
+        "primitivespec_generation_preflight_contract_missing"
+    )
+    assert payload["artifact_kind"] == (
+        "offline_primitivespec_validation_contract_not_primitivespec_"
+        "not_collision_package"
+    )
+    assert payload["validated_primitive_spec_candidate_count"] == 0
+    assert payload["generated_primitive_spec_count"] == 0
+    assert payload["remaining_gaps"] == EXPECTED_VALIDATION_REMAINING_GAPS
+
+
+def test_cpd_paper_primitivespec_validation_records_family_requirements():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_primitivespec_validation_contract"]
+    rows = {
+        row["paper_primitive"]: row
+        for row in payload["primitive_spec_validation_requirement_rows"]
+    }
+
+    assert list(rows) == [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    assert rows["oriented_bounding_box"][
+        "primitive_spec_validation_decision"
+    ] == "future_native_family_primitivespec_shape_requirement_validated"
+    assert rows["oriented_bounding_box"][
+        "validated_future_primitive_spec_kind"
+    ] == "box"
+    assert rows["sphere"]["validated_future_primitive_spec_kind"] == "sphere"
+    assert rows["capsule"]["validated_future_primitive_spec_kind"] == "capsule"
+    assert rows["capped_cylinder"]["primitive_spec_validation_decision"] == (
+        "blocked_approximation_policy_validation_recorded"
+    )
+    assert rows["frustum"]["primitive_spec_validation_decision"] == (
+        "blocked_approximation_policy_validation_recorded"
+    )
+    assert rows["trapezoidal_prism"]["primitive_spec_validation_decision"] == (
+        "noop_unmapped_family_validation_recorded"
+    )
+    for primitive_name in ("capped_cylinder", "frustum", "trapezoidal_prism"):
+        assert rows[primitive_name]["validated_future_primitive_spec_kind"] is None
+        assert rows[primitive_name]["primitive_spec_generation_triggered"] is False
+        assert rows[primitive_name]["collision_package_generation_triggered"] is False
+        assert rows[primitive_name]["runtime_admissibility_triggered"] is False
+        assert rows[primitive_name]["newton_runtime_triggered"] is False
+        assert rows[primitive_name]["real_usd_triggered"] is False
+        assert rows[primitive_name]["benchmark_triggered"] is False
+
+
+def test_cpd_paper_primitivespec_validation_noops_current_unmapped_rows():
+    report = build_cpd_paper_offline_report()
+    dry_run = report["paper_mapped_subset_primitivespec_dry_run_contract"]
+    payload = report["paper_mapped_subset_primitivespec_validation_contract"]
+    summary = payload["coverage_summary"]
+    rows = payload["current_row_primitivespec_validation_rows"]
+
+    assert summary["primitive_spec_validation_requirement_row_count"] == 6
+    assert summary["future_native_primitivespec_shape_validation_count"] == 3
+    assert summary["blocked_primitivespec_validation_requirement_count"] == 2
+    assert summary["noop_primitivespec_validation_requirement_count"] == 1
+    assert summary["current_row_primitivespec_validation_row_count"] == 16
+    assert summary["current_primitivespec_validation_pass_record_count"] == 0
+    assert summary["current_primitivespec_validation_noop_record_count"] == 16
+    assert summary["validated_primitive_spec_candidate_record_count"] == 0
+    assert summary["generated_primitive_spec_record_count"] == 0
+
+    dry_run_rows = dry_run["current_row_primitivespec_dry_run_rows"]
+    assert len(rows) == len(dry_run_rows) == 16
+    for row, upstream_row in zip(rows, dry_run_rows):
+        assert row["source_primitivespec_dry_run_row_id"] == (
+            upstream_row["primitive_spec_dry_run_row_id"]
+        )
+        assert row["source_adapter_preflight_row_id"] == (
+            upstream_row["source_adapter_preflight_row_id"]
+        )
+        assert row["source_candidate_matrix_row_id"] == (
+            upstream_row["source_candidate_matrix_row_id"]
+        )
+        assert row["source_conversion_plan_row_id"] == (
+            upstream_row["source_conversion_plan_row_id"]
+        )
+        assert row["source_policy_decision_id"] == upstream_row[
+            "source_policy_decision_id"
+        ]
+        assert row["source_adapter_decision_id"] == (
+            upstream_row["source_adapter_decision_id"]
+        )
+        assert row["source_output_id"] == upstream_row["source_output_id"]
+        assert row["evidence_case_id"] == upstream_row["evidence_case_id"]
+        assert row["offline_primitive_id"] == upstream_row["offline_primitive_id"]
+        assert row["primitive_spec_validation_decision"] == (
+            "skip_unmapped_current_row_validated"
+        )
+        assert row["primitive_spec_validation_action"] == "keep_offline"
+        assert row["primitive_spec_validation_passed"] is False
+        assert row["primitive_spec_candidate"] is False
+        assert row["generated_primitive_spec"] is None
+        assert row["silent_drop_detected"] is False
+        assert row["primitive_spec_generation_triggered"] is False
+        assert row["collision_package_generation_triggered"] is False
+        assert row["runtime_admissibility_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+
+
+def test_cpd_paper_primitivespec_validation_stays_report_only():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_primitivespec_validation_contract"]
+
+    forbidden_keys = {
+        "CollisionPackage",
+        "PrimitiveSpec",
+        "runtime_result",
+        "usd_asset_path",
+        "benchmark_metric",
+        "timing",
+        "surface_distance",
+        "collision_quality",
+    }
+    assert forbidden_keys.isdisjoint(payload)
+    assert payload["primitive_spec_generation_allowed"] is False
+    assert payload["collision_package_generation_allowed"] is False
+    assert payload["newton_runtime_allowed"] is False
+    assert payload["runtime_admissibility_supported"] is False
+    assert payload["approximation_policy_enabled"] is False
+    assert payload["silent_drop_allowed"] is False
+    assert payload["primitive_spec_validation_contract"][
+        "primitive_spec_generation_allowed"
+    ] is False
+    assert payload["primitive_spec_validation_contract"][
+        "collision_package_generation_allowed"
+    ] is False
+    assert payload["primitive_spec_generated"] is False
+    assert payload["collision_package_generated"] is False
+    assert payload["runtime_admissibility_checked"] is False
+    assert payload["newton_support_claimed"] is False
+    assert payload["approximation_policy_applied"] is False
+    assert payload["package_generation_triggered"] is False
+    assert payload["newton_runtime_triggered"] is False
+    assert payload["real_usd_triggered"] is False
+    assert payload["benchmark_triggered"] is False
+    assert payload["collision_quality_measured"] is False
+    assert payload["deployment_or_certification_claimed"] is False
+    for row in payload["primitive_spec_validation_requirement_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+    for row in payload["current_row_primitivespec_validation_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_wrong_input_gate():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    dry_run["gate_id"] = "stale_gate"
+
+    with pytest.raises(
+        ValueError,
+        match="primitivespec_validation_input_gate_id_mismatch",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_true_input_trigger_flags():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    dry_run["newton_runtime_triggered"] = True
+
+    with pytest.raises(ValueError, match="validation_input_trigger_flag_true"):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_nonzero_input_candidates():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    dry_run["candidate_count_at_dry_run"] = 1
+
+    with pytest.raises(
+        ValueError,
+        match="validation_input_candidate_count_nonzero",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_required_field_mismatch():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    contract = dict(dry_run["primitive_spec_dry_run_contract"])
+    contract["required_primitive_spec_fields"] = contract[
+        "required_primitive_spec_fields"
+    ][:-1]
+    dry_run["primitive_spec_dry_run_contract"] = contract
+
+    with pytest.raises(ValueError, match="validation_required_fields_mismatch"):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_allowed_kind_mismatch():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    contract = dict(dry_run["primitive_spec_dry_run_contract"])
+    contract["allowed_future_runtime_kinds"] = [
+        *contract["allowed_future_runtime_kinds"],
+        "cylinder",
+    ]
+    dry_run["primitive_spec_dry_run_contract"] = contract
+
+    with pytest.raises(ValueError, match="validation_allowed_runtime_kinds_mismatch"):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_coverage_count_mismatch():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    coverage = dict(dry_run["coverage_summary"])
+    coverage["current_row_primitivespec_dry_run_row_count"] = 15
+    dry_run["coverage_summary"] = coverage
+
+    with pytest.raises(ValueError, match="validation_coverage_count_mismatch"):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_duplicate_dry_run_row_ids():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[1]["primitive_spec_dry_run_row_id"] = current_rows[0][
+        "primitive_spec_dry_run_row_id"
+    ]
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(ValueError, match="duplicate_primitivespec_dry_run_row_id"):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_unknown_family_decision():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[0]["primitive_spec_dry_run_decision"] = "misspelled_decision"
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="unknown_primitivespec_dry_run_family_decision",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_missing_future_native_kind():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[0]["future_primitive_spec_kind"] = None
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(ValueError, match="future_native_primitivespec_kind_missing"):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_mutated_family_semantics():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    capped_cylinder = next(
+        row for row in requirement_rows if row["paper_primitive"] == "capped_cylinder"
+    )
+    capped_cylinder["primitive_spec_dry_run_decision"] = (
+        "future_native_family_primitivespec_shape_recorded_only"
+    )
+    capped_cylinder["candidate_runtime_kind"] = "box"
+    capped_cylinder["future_primitive_spec_kind"] = "box"
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_family_contract_mismatch:capped_cylinder",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_duplicate_family_identity():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[1]["paper_primitive"] = "oriented_bounding_box"
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_family_primitive_sequence_mismatch",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_future_mapping_label_mismatch():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[0]["candidate_runtime_kind"] = "offline_only_unmapped"
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_future_mapping_label_mismatch:oriented_bounding_box",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_source_id():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[0]["source_adapter_preflight_row_id"] = ""
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_missing_requirement_row_source_id",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_whitespace_requirement_source_id():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[0]["source_adapter_preflight_row_id"] = "   "
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_missing_requirement_row_source_id",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_row_id():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[0]["primitive_spec_dry_run_row_id"] = " "
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_missing_primitivespec_dry_run_row_id",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_requirement_real_usd_flag():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    requirement_rows = [
+        dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
+    ]
+    requirement_rows[0]["real_usd_loaded"] = True
+    dry_run["primitive_spec_dry_run_requirement_rows"] = requirement_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_input_trigger_flag_true:real_usd_loaded",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_blank_current_source_id():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["source_output_id"] = ""
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_missing_current_row_source_id",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_whitespace_current_source_id():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["source_output_id"] = " "
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_missing_current_row_source_id",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_blank_current_row_id():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["primitive_spec_dry_run_row_id"] = ""
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_missing_primitivespec_dry_run_row_id",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_current_benchmark_flag():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["benchmark_run"] = True
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_input_trigger_flag_true:benchmark_run",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_generated_collision_package_count():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    dry_run["generated_collision_package_count"] = 1
+
+    with pytest.raises(
+        ValueError,
+        match="validation_input_generated_collision_package_nonzero",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_row_level_pass():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["primitive_spec_dry_run_passed"] = True
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(ValueError, match="validation_input_pass_count_nonzero"):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_row_level_candidate():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["primitive_spec_candidate"] = True
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_input_candidate_count_nonzero",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_generated_spec():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["generated_primitive_spec"] = {"kind": "box"}
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_input_generated_spec_nonzero",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_missing_current_source_id():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0].pop("source_output_id")
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_missing_current_row_source_id",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
+
+
+def test_cpd_paper_primitivespec_validation_rejects_wrong_required_later_gate():
+    report = build_cpd_paper_offline_report()
+    dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
+    current_rows = [
+        dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
+    ]
+    current_rows[0]["required_later_gate"] = "stale_gate"
+    dry_run["current_row_primitivespec_dry_run_rows"] = current_rows
+
+    with pytest.raises(
+        ValueError,
+        match="validation_current_row_required_later_gate_mismatch",
+    ):
+        _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
 def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_records():
@@ -3942,7 +4571,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
