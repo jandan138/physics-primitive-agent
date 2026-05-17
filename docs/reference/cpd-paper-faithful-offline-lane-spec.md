@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the PrimitiveSpec generation-preflight gate:
-  `paper_mapped_subset_primitivespec_generation_contract_missing`.
+- the current top-level failure label after the PrimitiveSpec generation contract:
+  `paper_mapped_subset_primitivespec_candidate_source_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -594,7 +594,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_primitivespec_generation_contract
+-> current next gate after the later closed gates: paper_mapped_subset_primitivespec_candidate_source_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -731,8 +731,8 @@ real-USD, and benchmark triggers false. It is not package readiness, Newton read
 admissibility, approximation support, `PrimitiveSpec` readiness, package generation, Newton
 runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full
 CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
-validation and generation-preflight contracts are now implemented; the current next gate is
-`paper_mapped_subset_primitivespec_generation_contract`.
+validation, generation-preflight, and generation contracts are now implemented; the current next
+gate is `paper_mapped_subset_primitivespec_candidate_source_contract`.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -742,5 +742,8 @@ not a `CollisionPackage`, not package readiness, not Newton readiness, not runti
 and not collision-quality evidence. The generation-preflight contract now closes only the offline
 PrimitiveSpec generation-preflight gate, records zero current generation candidates, zero generated
 PrimitiveSpecs, zero generated CollisionPackages, and zero runtime-admissibility checks, and keeps
-the lane partial. The next current gate is
-`paper_mapped_subset_primitivespec_generation_contract`.
+the lane partial. The generation contract now closes only the offline PrimitiveSpec generation
+contract, emits native-family template rows for box/sphere/capsule, records zero runtime
+PrimitiveSpecs, zero CollisionPackages, and zero runtime-admissibility checks, and keeps current
+unmapped rows offline/no-op. The next current gate is
+`paper_mapped_subset_primitivespec_candidate_source_contract`.

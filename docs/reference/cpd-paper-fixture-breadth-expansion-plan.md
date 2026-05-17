@@ -199,8 +199,12 @@ command-only offline validation contract, not real `PrimitiveSpec` generation an
 The mapped-subset PrimitiveSpec generation-preflight contract is now implemented as a command-only
 offline preflight contract, not real `PrimitiveSpec` generation and not a `CollisionPackage`; it
 records zero current generation candidates, zero generated PrimitiveSpecs, zero generated
-CollisionPackages, and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_primitivespec_generation_contract`. Batch C
+CollisionPackages, and zero runtime-admissibility checks. The mapped-subset PrimitiveSpec
+generation contract is now also implemented as a command-only offline template contract, not
+runtime `PrimitiveSpec` generation and not a `CollisionPackage`; it emits native-family templates
+for box/sphere/capsule, keeps current unmapped rows offline/no-op, and keeps runtime/package checks
+at zero. The current next gate is `paper_mapped_subset_primitivespec_candidate_source_contract`.
+Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it

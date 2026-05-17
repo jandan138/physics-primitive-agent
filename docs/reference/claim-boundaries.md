@@ -97,8 +97,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   validation contract, not real `PrimitiveSpec` generation and not a `CollisionPackage`, and
   now also closes only `paper_mapped_subset_primitivespec_generation_preflight_contract` with a
   command-only offline generation-preflight contract, not real `PrimitiveSpec` generation and not
-  a `CollisionPackage`; the current next gate is
-  `paper_mapped_subset_primitivespec_generation_contract`. The
+  a `CollisionPackage`; that closed gate led to the later
+  `paper_mapped_subset_primitivespec_generation_contract` gate. The report now also closes only
+  `paper_mapped_subset_primitivespec_generation_contract` with a command-only offline generation
+  contract that emits future native-family template rows, not runtime `PrimitiveSpec` objects and
+  not a `CollisionPackage`; the current next gate is
+  `paper_mapped_subset_primitivespec_candidate_source_contract`. The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
   overlaps and scope accounting only, not nonzero-threshold mesh cleanup, not
@@ -156,11 +160,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_primitivespec_generation_contract` after the source-policy,
+  `paper_mapped_subset_primitivespec_candidate_source_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
-  PrimitiveSpec dry-run, PrimitiveSpec validation, and PrimitiveSpec generation-preflight slices.
+  PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight, and
+  PrimitiveSpec generation-contract slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -302,6 +307,19 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   runtime-admissibility checks at zero, and advances the next gate to
   `paper_mapped_subset_primitivespec_generation_contract`. It is not package readiness, Newton
   readiness, runtime admissibility, approximation support, `PrimitiveSpec` readiness, real
+  PrimitiveSpec generation, CollisionPackage generation, package generation, Newton runtime
+  execution, real-USD asset evidence, benchmark evidence, `paper_faithful_offline` support, full
+  CPD reproduction, collision-quality evidence, deployment readiness, or safety certification.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_mapped_subset_primitivespec_generation_contract`, a command-only offline PrimitiveSpec
+  generation contract with template rows, not runtime `PrimitiveSpec` generation and not a
+  `CollisionPackage`. It consumes the generation-preflight contract, emits future native-family
+  templates for box/sphere/capsule, keeps capped cylinder and frustum blocked behind later
+  approximation policy, keeps trapezoidal prism and all current unmapped rows offline/no-op, keeps
+  generated runtime PrimitiveSpecs, generated CollisionPackages, and runtime-admissibility checks
+  at zero, and advances the next gate to
+  `paper_mapped_subset_primitivespec_candidate_source_contract`. It is not package readiness,
+  Newton readiness, runtime admissibility, approximation support, `PrimitiveSpec` readiness, real
   PrimitiveSpec generation, CollisionPackage generation, package generation, Newton runtime
   execution, real-USD asset evidence, benchmark evidence, `paper_faithful_offline` support, full
   CPD reproduction, collision-quality evidence, deployment readiness, or safety certification.
@@ -612,6 +630,11 @@ Use these only after broader benchmark records exist.
   PrimitiveSpec readiness, real PrimitiveSpec generation, package readiness, package conversion
   execution, CollisionPackage generation, Newton support, runtime admissibility, approximation
   support, or package-generation gate completion. It is offline PrimitiveSpec generation-preflight
+  accounting only.
+- Do not describe `paper_mapped_subset_primitivespec_generation_contract` as PrimitiveSpec
+  readiness, real PrimitiveSpec generation, package readiness, package conversion execution,
+  CollisionPackage generation, Newton support, runtime admissibility, approximation support, or
+  package-generation gate completion. It is offline PrimitiveSpec generation-contract template
   accounting only.
 
 ## Wording Rules
