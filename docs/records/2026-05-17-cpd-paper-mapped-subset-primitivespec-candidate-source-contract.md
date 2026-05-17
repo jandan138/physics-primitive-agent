@@ -66,6 +66,8 @@ current-fixture or explicit mapping-policy gate exists.
   - Result after fixing stale top-level expectations: `4 passed, 179 deselected`.
 - `python -m pytest -q tests/test_cpd_paper_offline.py tests/test_cli.py`
   - Result: `294 passed`.
+- `python -m pytest -q`
+  - Result: `593 passed`.
 - `python scripts/validate_docs.py`
   - Result: `docs validation passed`.
 - `python scripts/validate_site_claims.py`
