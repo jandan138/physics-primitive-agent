@@ -467,9 +467,22 @@ experiments:
       generation, runtime admissibility, or Newton runtime work.
     claims_supported:
       - partial command-only offline mapped-subset conversion planning for deterministic synthetic fixture records only
-      - identifies future native-mapped paper primitive families while recording zero current package-conversion candidates
+      - identifies native-family review rows while recording zero current package-conversion candidates
       - records a closed paper_package_conversion_mapped_subset_plan gate and advances the next gate to paper_mapped_subset_conversion_candidate_matrix
       - no package-readiness claim, Newton-readiness claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-mapped-subset-conversion-candidate-matrix
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-mapped-subset-conversion-candidate-matrix.md
+    purpose: >
+      Add a command-only offline mapped-subset conversion candidate matrix before any
+      PrimitiveSpec, CollisionPackage, runtime admissibility, package generation, or Newton
+      runtime work.
+    claims_supported:
+      - partial command-only offline candidate-matrix review for deterministic synthetic fixture records only
+      - records three future-family review rows and keeps current package-conversion candidates at zero
+      - closes only paper_mapped_subset_conversion_candidate_matrix and advances the next gate to paper_mapped_subset_adapter_preflight_contract
+      - no package-readiness claim, PrimitiveSpec-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

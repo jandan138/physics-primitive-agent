@@ -66,8 +66,8 @@ package generation and Newton runtime blocked. It now also includes
 `paper_offline_changed_decomposition_output_contract`, an offline changed-decomposition output
 contract, not a `CollisionPackage`. That contract records synthetic toy fixture decomposition
 rows, stable offline primitive ids, source-face/group ids, selected paper primitive audit fields,
-explicit postprocess state rows, and package/Newton/real-USD/benchmark false triggers, then
-the report now also includes `paper_package_adapter_contract`, a command-only offline
+explicit postprocess state rows, and package/Newton/real-USD/benchmark false triggers. The report
+now also includes `paper_package_adapter_contract`, a command-only offline
 package-adapter contract, not a `CollisionPackage`. The adapter contract consumes those 16 offline
 primitive records as adapter input rows and classifies all current `trapezoidal_prism`
 `offline_only_unmapped` rows as `later_policy_required`. The report now also includes
@@ -77,13 +77,19 @@ records six paper primitive family policy rows, and advances the next paper-lane
 `paper_package_conversion_mapped_subset_plan`. The report now also includes
 `paper_package_conversion_mapped_subset_plan`, a command-only offline mapped-subset
 package-conversion planning table, not a `CollisionPackage`. That table identifies
-`oriented_bounding_box`, `sphere`, and `capsule` as future native-mapping families, keeps the
+`oriented_bounding_box`, `sphere`, and `capsule` as native-family review rows, keeps the
 current 16 unmapped trapezoidal-prism rows offline, records zero current package-conversion
 candidates, keeps package/Newton/real-USD/benchmark triggers false, and advances the next
-paper-lane gate to `paper_mapped_subset_conversion_candidate_matrix`. These source-policy,
+paper-lane gate to `paper_mapped_subset_conversion_candidate_matrix`. The report now also includes
+`paper_mapped_subset_conversion_candidate_matrix`, a command-only offline candidate matrix, not a
+`CollisionPackage`. That matrix records three future-family review rows, keeps all 16 current
+trapezoidal-prism rows blocked/offline, records zero current package-conversion candidates, keeps
+PrimitiveSpec/CollisionPackage/runtime-admissibility/Newton/real-USD/benchmark triggers false,
+and advances the next paper-lane gate to `paper_mapped_subset_adapter_preflight_contract`. These
+source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning slices do not
+mapped-subset-planning/candidate-matrix slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

@@ -31,6 +31,9 @@ EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN = (
 EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX = (
     "paper_mapped_subset_conversion_candidate_matrix"
 )
+EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT = (
+    "paper_mapped_subset_adapter_preflight_contract"
+)
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
 )
@@ -46,13 +49,19 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
+    EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
 ]
 EXPECTED_UNSUPPORTED_POLICY_REMAINING_GAPS = [
     EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+]
+EXPECTED_CONVERSION_MAPPED_SUBSET_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
+]
+EXPECTED_CANDIDATE_MATRIX_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -335,10 +344,10 @@ def test_cpd_paper_offline_report_failure_labels_point_to_package_boundary_gap()
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_mapped_subset_candidate_matrix():
+def test_cpd_paper_offline_report_next_gate_is_mapped_subset_adapter_preflight_contract():
     report = build_cpd_paper_offline_report()
 
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
 
 
 def _candidate_by_paper_primitive(audit, paper_primitive):
@@ -1160,7 +1169,7 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1277,7 +1286,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1378,7 +1387,7 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -1457,7 +1466,7 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1568,7 +1577,7 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1803,7 +1812,7 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -1977,7 +1986,7 @@ def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
         == EXPECTED_CLOSED_GENERALIZATION_GATES
@@ -2090,7 +2099,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -2100,6 +2109,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_PACKAGE_ADAPTER_CONTRACT,
         EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
         EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+        EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2308,7 +2318,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+        == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2319,6 +2329,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_PACKAGE_ADAPTER_CONTRACT,
         EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
         EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN,
+        EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -2471,7 +2482,7 @@ def test_cpd_paper_records_unsupported_primitive_policy_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
@@ -2639,7 +2650,7 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+        EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2677,7 +2688,7 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
     assert payload["implementation_boundary"] == (
         "offline_conversion_plan_no_collision_package_no_primitivespec_no_newton"
     )
-    assert payload["remaining_gaps"] == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
+    assert payload["remaining_gaps"] == EXPECTED_CONVERSION_MAPPED_SUBSET_REMAINING_GAPS
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
@@ -2820,6 +2831,216 @@ def test_cpd_paper_mapped_subset_plan_stays_report_only():
     for row in payload["paper_primitive_family_conversion_plan_rows"]:
         assert forbidden_keys.isdisjoint(row)
     for row in payload["current_row_conversion_plan_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+
+
+def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_conversion_candidate_matrix"]
+
+    assert report["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    )
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
+    )
+    assert (
+        EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+
+    assert payload["gate_id"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert (
+        payload["gate_status"]
+        == "implemented_offline_candidate_matrix_only_partial"
+    )
+    assert payload["closed_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert payload["input_gate_id"] == EXPECTED_PACKAGE_CONVERSION_MAPPED_SUBSET_PLAN
+    assert (
+        payload["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+    )
+    assert payload["decision"] == "remain_partial"
+    assert (
+        payload["decision_reason"]
+        == "candidate_matrix_complete_adapter_preflight_contract_missing"
+    )
+    assert payload["paper_faithful_offline_allowed"] is False
+    assert payload["package_generation_allowed"] is False
+    assert payload["artifact_kind"] == (
+        "offline_mapped_subset_candidate_matrix_not_collision_package"
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["implementation_boundary"] == (
+        "offline_candidate_matrix_no_primitivespec_no_collision_package_no_newton"
+    )
+    assert payload["remaining_gaps"] == EXPECTED_CANDIDATE_MATRIX_REMAINING_GAPS
+    assert payload["primitive_spec_generated"] is False
+    assert payload["collision_package_generated"] is False
+    assert payload["runtime_admissibility_checked"] is False
+    assert payload["newton_support_claimed"] is False
+    assert payload["package_generation_triggered"] is False
+    assert payload["newton_runtime_triggered"] is False
+    assert payload["real_usd_triggered"] is False
+    assert payload["benchmark_triggered"] is False
+
+
+def test_cpd_paper_candidate_matrix_records_future_family_review_rows():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_conversion_candidate_matrix"]
+    rows = {
+        row["paper_primitive"]: row
+        for row in payload["future_family_candidate_matrix_rows"]
+    }
+
+    assert list(rows) == [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+        "capped_cylinder",
+        "frustum",
+        "trapezoidal_prism",
+    ]
+    expected_native = {
+        "oriented_bounding_box": "box",
+        "sphere": "sphere",
+        "capsule": "capsule",
+    }
+    for primitive_name, runtime_kind in expected_native.items():
+        row = rows[primitive_name]
+        assert row["candidate_runtime_kind"] == runtime_kind
+        assert row["candidate_matrix_decision"] == "native_family_review_only"
+        assert row["future_family_review_candidate"] is True
+        assert row["current_row_evidence_count"] == 0
+        assert row["current_package_conversion_candidate_count"] == 0
+        assert row["package_candidate_status"] == (
+            "future_family_review_candidate_no_current_rows"
+        )
+        assert row["package_conversion_enabled_by_this_gate"] is False
+        assert row["primitive_spec_generation_triggered"] is False
+        assert row["collision_package_generation_triggered"] is False
+        assert row["runtime_admissibility_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+
+    for primitive_name in ("capped_cylinder", "frustum"):
+        row = rows[primitive_name]
+        assert row["candidate_runtime_kind"] == "offline_only_unmapped"
+        assert row["candidate_matrix_decision"] == "blocked_approximation_policy_missing"
+        assert row["future_family_review_candidate"] is False
+        assert row["package_candidate_status"] == (
+            "not_current_candidate_mapping_or_approximation_missing"
+        )
+        assert row["package_conversion_enabled_by_this_gate"] is False
+
+    trapezoid = rows["trapezoidal_prism"]
+    assert trapezoid["candidate_runtime_kind"] == "offline_only_unmapped"
+    assert trapezoid["candidate_matrix_decision"] == "blocked_unmapped_current_rows"
+    assert trapezoid["future_family_review_candidate"] is False
+    assert trapezoid["current_row_evidence_count"] == 16
+    assert trapezoid["current_package_conversion_candidate_count"] == 0
+    assert trapezoid["package_candidate_status"] == (
+        "not_current_candidate_unsupported_policy_block"
+    )
+
+
+def test_cpd_paper_candidate_matrix_blocks_current_unmapped_rows():
+    report = build_cpd_paper_offline_report()
+    plan = report["paper_package_conversion_mapped_subset_plan"]
+    payload = report["paper_mapped_subset_conversion_candidate_matrix"]
+    summary = payload["coverage_summary"]
+    rows = payload["current_row_candidate_matrix_rows"]
+
+    assert summary["future_family_candidate_matrix_row_count"] == 6
+    assert summary["future_family_review_candidate_count"] == 3
+    assert summary["excluded_family_review_row_count"] == 3
+    assert summary["current_row_candidate_matrix_row_count"] == 16
+    assert summary["current_package_conversion_candidate_count"] == 0
+    assert summary["current_blocked_requires_policy_count"] == 16
+    assert summary["package_candidate_record_count"] == 0
+    assert summary["current_paper_primitive_distribution"] == {
+        "trapezoidal_prism": 16,
+    }
+    assert summary["current_runtime_kind_distribution"] == {
+        "offline_only_unmapped": 16,
+    }
+    assert (
+        summary["current_package_conversion_candidate_count"]
+        + summary["current_blocked_requires_policy_count"]
+        == summary["current_row_candidate_matrix_row_count"]
+    )
+
+    plan_rows = plan["current_row_conversion_plan_rows"]
+    assert len(rows) == len(plan_rows) == 16
+    for row, upstream_row in zip(rows, plan_rows):
+        assert row["source_conversion_plan_row_id"] == (
+            upstream_row["conversion_plan_row_id"]
+        )
+        assert row["source_policy_decision_id"] == upstream_row[
+            "source_policy_decision_id"
+        ]
+        assert row["source_adapter_decision_id"] == (
+            upstream_row["source_adapter_decision_id"]
+        )
+        assert row["source_output_id"] == upstream_row["source_output_id"]
+        assert row["offline_primitive_id"] == upstream_row["offline_primitive_id"]
+        assert row["paper_primitive"] == "trapezoidal_prism"
+        assert row["offline_runtime_kind_label"] == "offline_only_unmapped"
+        assert row["input_conversion_plan_decision"] == (
+            "exclude_requires_explicit_mapping_or_approximation_policy"
+        )
+        assert row["candidate_matrix_decision"] == "blocked_unmapped_current_rows"
+        assert row["candidate_matrix_action"] == "keep_offline"
+        assert row["current_package_conversion_candidate"] is False
+        assert row["package_candidate_status"] == (
+            "not_current_candidate_unsupported_policy_block"
+        )
+        assert row["required_later_gate"] == (
+            EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
+        )
+        assert row["required_future_policy"] == (
+            "explicit_mapping_or_approximation_policy_before_package_generation"
+        )
+        assert row["primitive_spec_generation_triggered"] is False
+        assert row["collision_package_generation_triggered"] is False
+        assert row["runtime_admissibility_triggered"] is False
+        assert row["newton_runtime_triggered"] is False
+        assert row["real_usd_triggered"] is False
+        assert row["benchmark_triggered"] is False
+
+
+def test_cpd_paper_candidate_matrix_stays_report_only():
+    report = build_cpd_paper_offline_report()
+    payload = report["paper_mapped_subset_conversion_candidate_matrix"]
+
+    forbidden_keys = {
+        "CollisionPackage",
+        "PrimitiveSpec",
+        "runtime_result",
+        "usd_asset_path",
+        "benchmark_metric",
+        "timing",
+        "surface_distance",
+        "collision_quality",
+    }
+    assert forbidden_keys.isdisjoint(payload)
+    assert payload["candidate_matrix_contract"][
+        "primitive_spec_generation_allowed"
+    ] is False
+    assert payload["candidate_matrix_contract"][
+        "collision_package_generation_allowed"
+    ] is False
+    assert payload["candidate_matrix_contract"]["newton_runtime_allowed"] is False
+    assert payload["candidate_matrix_contract"][
+        "runtime_admissibility_supported"
+    ] is False
+    for row in payload["future_family_candidate_matrix_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+    for row in payload["current_row_candidate_matrix_rows"]:
         assert forbidden_keys.isdisjoint(row)
 
 
@@ -3004,7 +3225,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["paper_faithfulness"]["status"] == "partial"
     assert report["source_scope"] == "synthetic_toy_fixtures_only"
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_CONVERSION_CANDIDATE_MATRIX
+    assert report["next_required_gate"] == EXPECTED_MAPPED_SUBSET_ADAPTER_PREFLIGHT_CONTRACT
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
         == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS

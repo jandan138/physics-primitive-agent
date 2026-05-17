@@ -287,6 +287,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-17 CPD Paper Package Conversion Mapped-Subset Plan](2026-05-17-cpd-paper-package-conversion-mapped-subset-plan.md):
   partial command-only offline mapped-subset package-conversion planning table inside
   `cpd_paper_offline_report`, not a `CollisionPackage`.
+- [2026-05-17 CPD Paper Mapped-Subset Conversion Candidate Matrix](2026-05-17-cpd-paper-mapped-subset-conversion-candidate-matrix.md):
+  partial command-only offline mapped-subset conversion candidate matrix inside
+  `cpd_paper_offline_report`, not a `CollisionPackage`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

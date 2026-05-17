@@ -185,7 +185,10 @@ package-adapter contract is now implemented as a command-only offline adapter de
 policy table, not a `CollisionPackage`. The mapped-subset package-conversion plan is now
 implemented as a command-only offline planning table, not a `CollisionPackage`; it keeps the
 current unmapped trapezoidal-prism rows offline and records zero current package-conversion
-candidates. The current next gate is `paper_mapped_subset_conversion_candidate_matrix`. Batch C
+candidates. The mapped-subset candidate matrix is now implemented as a command-only offline
+review matrix, not a `CollisionPackage`; it records three future-family review rows and keeps
+current package-conversion candidates at zero. The current next gate is
+`paper_mapped_subset_adapter_preflight_contract`. Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it
@@ -207,7 +210,8 @@ Batch E postprocess implementation plus a command-only synthetic fixture-breadth
 a source-policy generalization matrix, a primitive-fit engine generalization matrix, and a
 search-engine generalization matrix, plus a postprocess-policy generalization matrix, a
 package-boundary readiness matrix, an offline changed-decomposition output contract, an offline
-package-adapter contract, and an offline unsupported-primitive policy inside the partial paper
+package-adapter contract, an offline unsupported-primitive policy, an offline mapped-subset
+package-conversion plan, and an offline mapped-subset candidate matrix inside the partial paper
 report.
 ```
 

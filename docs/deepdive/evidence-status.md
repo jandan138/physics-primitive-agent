@@ -241,14 +241,27 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_package_conversion_mapped_subset_plan` inside `cpd_paper_offline_report`. It closes only
   that mapped-subset planning gate by adding a command-only offline package-conversion planning
   table, not a `CollisionPackage`. The table identifies `oriented_bounding_box`, `sphere`, and
-  `capsule` as future native-mapped families, keeps the current 16
+  `capsule` as native-family review rows, keeps the current 16
   `trapezoidal_prism` / `offline_only_unmapped` rows offline, records zero current
   package-conversion candidates, keeps package generation and Newton runtime execution blocked,
-  and advances the next required gate to `paper_mapped_subset_conversion_candidate_matrix`. This
-  is not package readiness, Newton readiness, runtime admissibility, approximation support,
-  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
-  real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
-  safety certification.
+  and at that stage advanced the next required gate to
+  `paper_mapped_subset_conversion_candidate_matrix`. This is not package readiness, Newton
+  readiness, runtime admissibility, approximation support, `paper_faithful_offline`, full CPD
+  reproduction, package generation, Newton runtime support, real-USD evidence, benchmark evidence,
+  collision-quality validation, deployment readiness, or safety certification.
+- The current executable surface can also run
+  `paper_mapped_subset_conversion_candidate_matrix` inside `cpd_paper_offline_report`. It closes
+  only that candidate-matrix gate by adding a command-only offline review matrix before any package
+  generation. The matrix converts the mapped-subset plan into explicit family and current-record
+  review rows, records three future-family review rows, keeps the current 16
+  `trapezoidal_prism` / `offline_only_unmapped` rows blocked and offline, records zero current
+  package-conversion candidates, keeps PrimitiveSpec generation, CollisionPackage generation,
+  runtime admissibility, Newton runtime execution, real USD, benchmark, and collision-quality
+  triggers false, and advances the next required gate to
+  `paper_mapped_subset_adapter_preflight_contract`. This is not package readiness, Newton
+  readiness, runtime admissibility, approximation support, `paper_faithful_offline`, full CPD
+  reproduction, package generation, Newton runtime support, real-USD evidence, benchmark evidence,
+  collision-quality validation, deployment readiness, or safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.
