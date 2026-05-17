@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_candidate_source_contract_missing",
+        "paper_mapped_subset_native_current_fixture_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_primitivespec_candidate_source_contract"
+        == "paper_mapped_subset_native_current_fixture_contract"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1542,7 +1542,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_primitivespec_candidate_source_contract",
+        "paper_mapped_subset_native_current_fixture_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1555,6 +1555,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_primitivespec_validation_contract",
         "paper_mapped_subset_primitivespec_generation_preflight_contract",
         "paper_mapped_subset_primitivespec_generation_contract",
+        "paper_mapped_subset_primitivespec_candidate_source_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -2152,6 +2153,48 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert generation["newton_runtime_triggered"] is False
     assert generation["real_usd_triggered"] is False
     assert generation["benchmark_triggered"] is False
+    candidate_source = payload[
+        "paper_mapped_subset_primitivespec_candidate_source_contract"
+    ]
+    assert (
+        candidate_source["gate_id"]
+        == "paper_mapped_subset_primitivespec_candidate_source_contract"
+    )
+    assert (
+        candidate_source["input_gate_id"]
+        == "paper_mapped_subset_primitivespec_generation_contract"
+    )
+    assert (
+        candidate_source["next_required_gate"]
+        == "paper_mapped_subset_native_current_fixture_contract"
+    )
+    assert candidate_source["eligible_current_candidate_source_count"] == 0
+    assert candidate_source["primitive_spec_generation_candidate_count"] == 0
+    assert candidate_source["generated_primitive_spec_count"] == 0
+    assert candidate_source["generated_collision_package_count"] == 0
+    assert candidate_source["runtime_admissibility_check_count"] == 0
+    assert len(candidate_source["native_template_candidate_source_audit_rows"]) == 3
+    assert len(candidate_source["blocked_family_candidate_source_audit_rows"]) == 2
+    assert len(candidate_source["noop_family_candidate_source_audit_rows"]) == 1
+    assert len(candidate_source["current_row_candidate_source_audit_rows"]) == 16
+    assert (
+        candidate_source["coverage_summary"]["eligible_current_candidate_source_count"]
+        == 0
+    )
+    assert (
+        candidate_source["coverage_summary"][
+            "current_row_candidate_source_audit_row_count"
+        ]
+        == 16
+    )
+    assert candidate_source["primitive_spec_generated"] is False
+    assert candidate_source["collision_package_generated"] is False
+    assert candidate_source["runtime_admissibility_checked"] is False
+    assert candidate_source["newton_support_claimed"] is False
+    assert candidate_source["package_generation_triggered"] is False
+    assert candidate_source["newton_runtime_triggered"] is False
+    assert candidate_source["real_usd_triggered"] is False
+    assert candidate_source["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]
