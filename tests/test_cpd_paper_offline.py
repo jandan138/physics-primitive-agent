@@ -2188,6 +2188,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2413,6 +2414,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -2735,8 +2737,9 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
-    assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2924,8 +2927,9 @@ def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
     report = build_cpd_paper_offline_report()
     payload = report["paper_mapped_subset_conversion_candidate_matrix"]
 
-    assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
