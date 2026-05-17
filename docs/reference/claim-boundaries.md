@@ -106,8 +106,9 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   candidate-source audit that classifies future templates separately from current rows, records
   zero eligible current PrimitiveSpec candidate sources, and led to the later
   `paper_mapped_subset_native_current_fixture_contract` gate. Later native-current and
-  native-fixture PrimitiveSpec-like dict generation gates remain offline/report-only and advance the
-  current next gate to `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
+  native-fixture PrimitiveSpec-like dict generation and serialization gates remain offline/report-only
+  and advance the current next gate to
+  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
   The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
@@ -166,13 +167,13 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract` after the source-policy,
+  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
-  PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight, and
-  PrimitiveSpec generation-contract, candidate-source-contract, native-current-fixture, and
-  native-fixture PrimitiveSpec-like dict generation slices.
+  PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight,
+  PrimitiveSpec generation-contract, candidate-source-contract, native-current-fixture,
+  native-fixture PrimitiveSpec-like dict generation, and native-fixture serialization slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -281,8 +282,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   source row, keeps generated runtime PrimitiveSpecs, generated CollisionPackages,
   runtime-admissibility checks, Newton runtime execution, real-USD asset evidence, benchmark
   evidence, collision-quality measurement, deployment, and certification triggers at zero or
+  false, and led to the later serialization gate. The partial report now also includes
+  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`, a command-only
+  offline JSON serialization/schema-stability contract for that one report-only dict. It validates
+  strict canonical JSON and round-trip equality, keeps runtime/package/Newton/evaluation triggers
   false, and advances the next gate to
-  `paper_mapped_subset_primitivespec_native_fixture_serialization_contract`. It is not package
+  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`. It is not package
   readiness, Newton readiness, runtime admissibility, approximation support, `PrimitiveSpec`
   readiness, real runtime PrimitiveSpec generation, CollisionPackage generation, package
   generation, Newton runtime execution, real-USD asset evidence, benchmark evidence,
@@ -696,6 +701,16 @@ Use these only after broader benchmark records exist.
   real-USD evidence, benchmark evidence, collision-quality evidence, deployment readiness, safety
   certification, or package-generation gate completion. It is offline serialized
   PrimitiveSpec-like dict accounting only.
+- Do not describe `paper_mapped_subset_primitivespec_native_fixture_serialization_contract` as
+  runtime PrimitiveSpec object creation, package readiness, package conversion execution,
+  CollisionPackage generation, Newton support, runtime admissibility, approximation support,
+  real-USD evidence, benchmark evidence, collision-quality evidence, deployment readiness, safety
+  certification, or package-generation gate completion. It is offline JSON serialization and
+  schema-stability accounting for one report-only PrimitiveSpec-like dict only.
+- Do not describe `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract` as
+  runtime PrimitiveSpec construction unless a later implementation and dated record actually
+  create a runtime object. The planned next gate is still a preflight boundary, not runtime
+  readiness.
 
 ## Wording Rules
 

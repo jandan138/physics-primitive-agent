@@ -1528,14 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        (
-            "paper_mapped_subset_primitivespec_native_fixture_"
-            "serialization_contract_missing"
-        ),
+        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+        == "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
     )
     assert payload["paper_faithfulness"]["implemented_generalization_scope"] == [
         "paper_generalization_batch_a_source_policy",
@@ -1545,7 +1542,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_generalization_batch_e_package_boundary_readiness",
     ]
     assert payload["paper_faithfulness"]["missing_before_paper_faithful_offline"] == [
-        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract",
+        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1561,6 +1558,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_primitivespec_candidate_source_contract",
         "paper_mapped_subset_native_current_fixture_contract",
         "paper_mapped_subset_primitivespec_native_fixture_generation_contract",
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -2290,6 +2288,49 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert native_generation["newton_runtime_triggered"] is False
     assert native_generation["real_usd_triggered"] is False
     assert native_generation["benchmark_triggered"] is False
+    native_serialization = payload[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]
+    assert (
+        native_serialization["gate_id"]
+        == "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    )
+    assert (
+        native_serialization["input_gate_id"]
+        == "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
+    )
+    assert (
+        native_serialization["next_required_gate"]
+        == "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
+    )
+    assert native_serialization["serialized_primitivespec_like_dict_count"] == 1
+    assert native_serialization["json_serialization_check_count"] == 1
+    assert native_serialization["json_round_trip_match_count"] == 1
+    assert native_serialization["schema_stability_check_count"] == 1
+    assert native_serialization["generated_runtime_primitive_spec_count"] == 0
+    assert native_serialization["generated_primitive_spec_count"] == 0
+    assert native_serialization["generated_collision_package_count"] == 0
+    assert native_serialization["runtime_admissibility_check_count"] == 0
+    assert len(native_serialization["serialization_rows"]) == 1
+    native_serialization_row = native_serialization["serialization_rows"][0]
+    assert native_serialization_row["fixture_id"] == "paper_single_box"
+    assert native_serialization_row["primitive_spec_kind"] == "box"
+    assert native_serialization_row["generated_primitive_spec"] is None
+    assert native_serialization_row["runtime_instance_generated"] is False
+    assert native_serialization_row["serialized_payload"] == generated_spec
+    assert json.loads(
+        native_serialization_row["canonical_primitivespec_json"]
+    ) == generated_spec
+    assert native_serialization_row["json_round_trip_equal"] is True
+    assert native_serialization_row["canonical_json_stable"] is True
+    assert native_serialization["primitive_spec_generated"] is False
+    assert native_serialization["collision_package_generated"] is False
+    assert native_serialization["runtime_admissibility_checked"] is False
+    assert native_serialization["newton_support_claimed"] is False
+    assert native_serialization["package_generation_triggered"] is False
+    assert native_serialization["newton_runtime_triggered"] is False
+    assert native_serialization["real_usd_triggered"] is False
+    assert native_serialization["benchmark_triggered"] is False
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]
@@ -2587,6 +2628,22 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         assert case["newton_runtime_triggered"] is False
         assert case["real_usd_triggered"] is False
         assert case["benchmark_triggered"] is False
+
+
+def test_cli_run_cpd_paper_offline_report_serialization_json_is_deterministic(capsys):
+    assert cli.main(["--run-cpd-paper-offline-report"]) == 0
+    first_payload = json.loads(capsys.readouterr().out)
+
+    assert cli.main(["--run-cpd-paper-offline-report"]) == 0
+    second_payload = json.loads(capsys.readouterr().out)
+
+    first_json = first_payload[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]["serialization_rows"][0]["canonical_primitivespec_json"]
+    second_json = second_payload[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]["serialization_rows"][0]["canonical_primitivespec_json"]
+    assert first_json == second_json
 
 
 def test_cli_run_cpd_paper_offline_report_rejects_nonfinite_json(monkeypatch, capsys):

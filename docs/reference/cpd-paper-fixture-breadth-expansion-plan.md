@@ -216,8 +216,11 @@ CollisionPackages, and zero runtime-admissibility checks. The native-fixture Pri
 dict generation contract is now implemented as a command-only offline dict-generation contract,
 not runtime `PrimitiveSpec` object creation and not a `CollisionPackage`; it emits one
 JSON-serializable report-only dict for the same synthetic source row and keeps runtime/package
-checks at zero. The current next gate is
-`paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
+checks at zero. The native-fixture serialization contract is now also implemented as a
+command-only offline JSON serialization/schema-stability contract, not runtime `PrimitiveSpec`
+object creation and not a `CollisionPackage`; it validates strict canonical JSON and round-trip
+equality for that one report-only dict and keeps runtime/package checks at zero. The current next
+gate is `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive

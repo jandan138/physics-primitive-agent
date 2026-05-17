@@ -39,7 +39,9 @@ Do not claim:
   native-current fixture contract records only one synthetic `paper_single_box` OBB/box source row
   for a later report-only generation gate. The native-fixture generation contract emits one
   serialized offline PrimitiveSpec-like dict for review, not a runtime `PrimitiveSpec` object,
-  package, Newton run, benchmark, or collision-quality result.
+  package, Newton run, benchmark, or collision-quality result. The native-fixture serialization
+  contract validates strict canonical JSON and round-trip equality for that one report-only dict;
+  it still creates no runtime `PrimitiveSpec`, no `CollisionPackage`, and no Newton evidence.
 
 ## First 4-Week Proof Point
 

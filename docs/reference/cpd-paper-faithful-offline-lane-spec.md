@@ -299,7 +299,8 @@ Before `paper_faithful_offline` wording, record:
   clamped to `1e-3`;
 - fixture scope for the comparison;
 - the current top-level failure label after the native-fixture PrimitiveSpec-like dict generation
-  contract: `paper_mapped_subset_primitivespec_native_fixture_serialization_contract_missing`.
+  and serialization contracts:
+  `paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -595,7 +596,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_primitivespec_native_fixture_serialization_contract
+-> current next gate after the later closed gates: paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -733,9 +734,9 @@ admissibility, approximation support, `PrimitiveSpec` readiness, package generat
 runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full
 CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
 validation, generation-preflight, generation, candidate-source, and native-current fixture
-contracts are now implemented. The native-fixture PrimitiveSpec-like dict generation contract is
-also implemented, and the current next gate is
-`paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
+contracts are now implemented. The native-fixture PrimitiveSpec-like dict generation and
+serialization contracts are also implemented, and the current next gate is
+`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -760,5 +761,10 @@ CollisionPackages, and zero runtime-admissibility checks. The native-fixture Pri
 dict generation contract now closes only the offline dict-generation gate, emits one
 JSON-serializable report-only dict for that source row, keeps runtime PrimitiveSpec objects,
 CollisionPackages, runtime-admissibility, Newton, real-USD, benchmark, collision-quality,
-deployment, and certification triggers at zero or false, and advances the current next gate to
-`paper_mapped_subset_primitivespec_native_fixture_serialization_contract`.
+deployment, and certification triggers at zero or false, and led to the later serialization gate.
+The native-fixture serialization contract now closes only the offline JSON serialization/schema
+stability gate, validates strict canonical JSON and round-trip equality for that same report-only
+dict, keeps runtime PrimitiveSpec objects, CollisionPackages, runtime-admissibility, Newton,
+real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or false,
+and advances the current next gate to
+`paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract`.

@@ -68,6 +68,9 @@ EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT = (
 EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT = (
     "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
 )
+EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT = (
+    "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
+)
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
 )
@@ -83,7 +86,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -120,6 +123,9 @@ EXPECTED_NATIVE_CURRENT_FIXTURE_REMAINING_GAPS = [
 ]
 EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT,
+]
+EXPECTED_NATIVE_FIXTURE_SERIALIZATION_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -396,18 +402,18 @@ EXPECTED_SCOPE_AUDIT_BLOCKERS = [
 ]
 
 
-def test_cpd_paper_offline_report_failure_labels_point_to_candidate_source_gap():
+def test_cpd_paper_offline_report_failure_labels_point_to_runtime_boundary_gap():
     report = build_cpd_paper_offline_report()
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_native_fixture_serialization_contract():
+def test_cpd_paper_offline_report_next_gate_is_runtime_boundary_preflight_contract():
     report = build_cpd_paper_offline_report()
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
 
 
@@ -1232,7 +1238,7 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1352,7 +1358,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1456,7 +1462,7 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1538,7 +1544,7 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -1652,7 +1658,7 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -1890,7 +1896,7 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2067,7 +2073,7 @@ def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2183,7 +2189,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2203,6 +2209,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2411,7 +2418,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2431,6 +2438,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -2585,7 +2593,7 @@ def test_cpd_paper_records_unsupported_primitive_policy_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2755,7 +2763,7 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2945,7 +2953,7 @@ def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3156,7 +3164,7 @@ def test_cpd_paper_records_mapped_subset_adapter_preflight_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3462,7 +3470,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_dry_run_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3862,14 +3870,12 @@ def test_cpd_paper_records_mapped_subset_primitivespec_validation_contract_gate(
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
-    assert report["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract_missing",
-    ]
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
-        == EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
     )
     assert (
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT
@@ -4481,6 +4487,17 @@ def _native_fixture_primitivespec_generation_input() -> dict[str, object]:
     )
 
 
+def _native_fixture_primitivespec_serialization_input() -> dict[str, object]:
+    report = build_cpd_paper_offline_report()
+    return json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
+            ]
+        )
+    )
+
+
 GENERATION_PREFLIGHT_ROW_FALSE_FLAGS = (
     "primitive_spec_generated",
     "collision_package_generated",
@@ -4846,6 +4863,74 @@ NATIVE_FIXTURE_PRIMITIVESPEC_GENERATION_ROW_REQUIRED_KEYS = {
 }
 
 
+NATIVE_FIXTURE_PRIMITIVESPEC_SERIALIZATION_PAYLOAD_REQUIRED_KEYS = {
+    "gate_id",
+    "gate_status",
+    "closed_gate",
+    "input_gate_id",
+    "next_required_gate",
+    "decision",
+    "decision_reason",
+    "paper_faithful_offline_allowed",
+    "package_generation_allowed",
+    "artifact_kind",
+    "schema_version",
+    "source_scope",
+    "implementation_boundary",
+    "serialization_action",
+    "canonical_json_policy",
+    "serialized_primitivespec_like_dict_count",
+    "json_serialization_check_count",
+    "json_round_trip_match_count",
+    "schema_stability_check_count",
+    "generated_runtime_primitive_spec_count",
+    "generated_primitive_spec_count",
+    "generated_collision_package_count",
+    "runtime_admissibility_check_count",
+    "native_fixture_primitivespec_serialization_contract",
+    "input_contract_summary",
+    "serialization_rows",
+    "coverage_summary",
+    "remaining_gaps",
+    *PRIMITIVESPEC_GENERATION_ROW_FALSE_FLAGS,
+}
+
+
+NATIVE_FIXTURE_PRIMITIVESPEC_SERIALIZATION_ROW_REQUIRED_KEYS = {
+    "native_fixture_primitivespec_serialization_row_id",
+    "source_native_fixture_primitivespec_generation_row_id",
+    "source_native_current_fixture_source_row_id",
+    "source_candidate_source_audit_row_id",
+    "source_primitivespec_generation_row_id",
+    "source_primitivespec_generation_preflight_row_id",
+    "source_primitivespec_validation_row_id",
+    "source_primitivespec_dry_run_row_id",
+    "source_adapter_preflight_row_id",
+    "source_candidate_matrix_row_id",
+    "source_conversion_plan_row_id",
+    "fixture_id",
+    "paper_primitive",
+    "primitive_spec_kind",
+    "candidate_mapping_label",
+    "newton_runtime_kind",
+    "primitive_id",
+    "kind",
+    "schema_keys",
+    "serialized_payload",
+    "canonical_primitivespec_json",
+    "json_allow_nan",
+    "json_sort_keys",
+    "json_separators",
+    "json_round_trip_equal",
+    "canonical_json_stable",
+    "schema_validation_status",
+    "serialization_decision",
+    "runtime_instance_generated",
+    "generated_primitive_spec",
+    *PRIMITIVESPEC_GENERATION_ROW_FALSE_FLAGS,
+}
+
+
 def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_contract_gate():
     report = build_cpd_paper_offline_report()
     payload = report[
@@ -4854,14 +4939,12 @@ def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_cont
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
-    assert report["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract_missing",
-    ]
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
-        == EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
     )
     assert (
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
@@ -5381,14 +5464,12 @@ def test_cpd_paper_records_mapped_subset_primitivespec_generation_contract_gate(
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
-    assert report["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract_missing",
-    ]
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
-        == EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
     )
     assert (
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT
@@ -6153,14 +6234,12 @@ def test_cpd_paper_records_mapped_subset_primitivespec_candidate_source_contract
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
-    assert report["failure_labels"] == [
-        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract_missing",
-    ]
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
-        == EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
     )
     assert (
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
@@ -6719,17 +6798,12 @@ def test_cpd_paper_records_mapped_subset_native_current_fixture_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
-    assert report["failure_labels"] == [
-        (
-            "paper_mapped_subset_primitivespec_native_fixture_"
-            "serialization_contract_missing"
-        ),
-    ]
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
-        == EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
     )
     assert (
         EXPECTED_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
@@ -7415,17 +7489,12 @@ def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_generation
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
-    assert report["failure_labels"] == [
-        (
-            "paper_mapped_subset_primitivespec_native_fixture_"
-            "serialization_contract_missing"
-        ),
-    ]
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
-        == EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS
+        == EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS
     )
     assert (
         EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
@@ -7804,6 +7873,342 @@ def test_cpd_paper_primitivespec_native_fixture_generation_rejects_invalid_geome
         )
 
 
+def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_serialization_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]
+
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+    )
+    assert report["failure_labels"] == [
+        "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_missing",
+    ]
+    assert (
+        report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
+        == EXPECTED_NATIVE_FIXTURE_SERIALIZATION_REMAINING_GAPS
+    )
+    assert (
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+    )
+    assert payload["serialized_primitivespec_like_dict_count"] == 1
+    assert payload["json_serialization_check_count"] == 1
+    assert payload["json_round_trip_match_count"] == 1
+    assert payload["schema_stability_check_count"] == 1
+    assert payload["generated_runtime_primitive_spec_count"] == 0
+    assert payload["generated_primitive_spec_count"] == 0
+    assert payload["generated_collision_package_count"] == 0
+    assert payload["runtime_admissibility_check_count"] == 0
+    assert payload["remaining_gaps"] == EXPECTED_NATIVE_FIXTURE_SERIALIZATION_REMAINING_GAPS
+
+
+def test_cpd_paper_primitivespec_native_fixture_serialization_payload_schema_is_exact():
+    payload = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]
+
+    assert set(payload) == NATIVE_FIXTURE_PRIMITIVESPEC_SERIALIZATION_PAYLOAD_REQUIRED_KEYS
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["paper_faithful_offline_allowed"] is False
+    assert payload["package_generation_allowed"] is False
+    assert payload["artifact_kind"] == (
+        "offline_json_serialization_audit_not_runtime_primitivespec_"
+        "not_collision_package"
+    )
+    assert payload["implementation_boundary"] == (
+        "offline_primitivespec_like_dict_serialization_only_no_runtime_"
+        "primitivespec_no_collision_package_no_newton_no_real_usd_no_benchmark"
+    )
+    assert payload["serialization_action"] == (
+        "verify_one_report_only_primitivespec_like_dict_json_round_trip"
+    )
+    assert payload["canonical_json_policy"] == {
+        "json_allow_nan": False,
+        "json_sort_keys": True,
+        "json_separators": [",", ":"],
+    }
+    assert payload["native_fixture_primitivespec_serialization_contract"] == {
+        "input_gate_required": (
+            EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_GENERATION_CONTRACT
+        ),
+        "native_fixture_serialization_gate_closed": (
+            EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        ),
+        "next_runtime_boundary_preflight_gate_required": (
+            EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
+        ),
+        "source_fixture_required": "paper_single_box",
+        "source_paper_primitive_required": "oriented_bounding_box",
+        "source_primitive_spec_kind_required": "box",
+        "serialized_primitivespec_like_dicts_required": 1,
+        "json_serialization_checks_required": 1,
+        "json_round_trip_matches_required": 1,
+        "schema_stability_checks_required": 1,
+        "generated_runtime_primitivespecs_required": 0,
+        "generated_collision_packages_required": 0,
+        "runtime_admissibility_checks_required": 0,
+        "runtime_primitive_spec_generation_allowed": False,
+        "collision_package_generation_allowed": False,
+        "newton_runtime_allowed": False,
+        "real_usd_allowed": False,
+        "benchmark_allowed": False,
+        "silent_drop_allowed": False,
+    }
+    for flag in PRIMITIVESPEC_GENERATION_ROW_FALSE_FLAGS:
+        assert payload[flag] is False
+
+
+def test_cpd_paper_primitivespec_native_fixture_serialization_records_one_canonical_row():
+    report = build_cpd_paper_offline_report()
+    generation_row = report[
+        "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
+    ]["native_fixture_primitivespec_generation_rows"][0]
+    payload = report[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]
+    rows = payload["serialization_rows"]
+
+    assert len(rows) == 1
+    row = rows[0]
+    assert set(row) == NATIVE_FIXTURE_PRIMITIVESPEC_SERIALIZATION_ROW_REQUIRED_KEYS
+    assert row["native_fixture_primitivespec_serialization_row_id"] == (
+        "native_fixture_primitivespec_serialization__paper_single_box__"
+        "oriented_bounding_box__box"
+    )
+    assert row["source_native_fixture_primitivespec_generation_row_id"] == (
+        generation_row["native_fixture_primitivespec_generation_row_id"]
+    )
+    assert row["fixture_id"] == "paper_single_box"
+    assert row["paper_primitive"] == "oriented_bounding_box"
+    assert row["primitive_spec_kind"] == "box"
+    assert row["candidate_mapping_label"] == "box"
+    assert row["newton_runtime_kind"] == "box"
+    assert row["primitive_id"] == "paper_single_box__oriented_bounding_box__box"
+    assert row["kind"] == "box"
+    assert row["schema_keys"] == sorted(SERIALIZED_PRIMITIVESPEC_LIKE_DICT_REQUIRED_KEYS)
+    assert row["serialized_payload"] == generation_row[
+        "offline_serialized_primitivespec_like_dict"
+    ]
+    expected_json = json.dumps(
+        row["serialized_payload"],
+        allow_nan=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    assert row["canonical_primitivespec_json"] == expected_json
+    assert json.loads(row["canonical_primitivespec_json"]) == row["serialized_payload"]
+    assert row["json_allow_nan"] is False
+    assert row["json_sort_keys"] is True
+    assert row["json_separators"] == [",", ":"]
+    assert row["json_round_trip_equal"] is True
+    assert row["canonical_json_stable"] is True
+    assert row["schema_validation_status"] == "passed"
+    assert row["serialization_decision"] == (
+        "report_only_primitivespec_like_dict_canonical_json_round_trip_passed"
+    )
+    assert row["runtime_instance_generated"] is False
+    assert row["generated_primitive_spec"] is None
+    for flag in PRIMITIVESPEC_GENERATION_ROW_FALSE_FLAGS:
+        assert payload[flag] is False
+        assert row[flag] is False
+
+
+def test_cpd_paper_primitivespec_native_fixture_serialization_is_deterministic():
+    first = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]["serialization_rows"][0]["canonical_primitivespec_json"]
+    second = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]["serialization_rows"][0]["canonical_primitivespec_json"]
+
+    assert first == second
+
+
+def test_cpd_paper_primitivespec_native_fixture_serialization_stays_report_only():
+    payload = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
+    ]
+
+    forbidden_keys = {
+        "CollisionPackage",
+        "PrimitiveSpec",
+        "runtime_result",
+        "usd_asset_path",
+        "benchmark_metric",
+        "timing",
+        "surface_distance",
+        "collision_quality",
+    }
+    assert forbidden_keys.isdisjoint(payload)
+    assert payload["serialized_primitivespec_like_dict_count"] == 1
+    assert payload["generated_runtime_primitive_spec_count"] == 0
+    assert payload["generated_primitive_spec_count"] == 0
+    assert payload["generated_collision_package_count"] == 0
+    assert payload["runtime_admissibility_check_count"] == 0
+    for row in payload["serialization_rows"]:
+        assert forbidden_keys.isdisjoint(row)
+        assert row["generated_primitive_spec"] is None
+        assert row["runtime_instance_generated"] is False
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "error_label"),
+    [
+        (
+            "gate_id",
+            "stale_gate",
+            "primitivespec_native_fixture_serialization_input_gate_id_mismatch",
+        ),
+        (
+            "next_required_gate",
+            "stale_gate",
+            "primitivespec_native_fixture_serialization_input_next_gate_mismatch",
+        ),
+        (
+            "newton_runtime_triggered",
+            True,
+            (
+                "primitivespec_native_fixture_serialization_input_trigger_flag_true:"
+                "newton_runtime_triggered"
+            ),
+        ),
+    ],
+)
+def test_cpd_paper_primitivespec_native_fixture_serialization_rejects_input_drift(
+    field_name,
+    bad_value,
+    error_label,
+):
+    generation = _native_fixture_primitivespec_serialization_input()
+    generation[field_name] = bad_value
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_primitivespec_native_fixture_serialization_contract_payload(
+            generation
+        )
+
+
+@pytest.mark.parametrize(
+    ("mutate_rows", "error_label"),
+    [
+        (
+            lambda rows: [],
+            "primitivespec_native_fixture_serialization_generation_row_count_mismatch",
+        ),
+        (
+            lambda rows: [rows[0], json.loads(json.dumps(rows[0]))],
+            "primitivespec_native_fixture_serialization_generation_row_count_mismatch",
+        ),
+    ],
+)
+def test_cpd_paper_primitivespec_native_fixture_serialization_rejects_row_count_mismatch(
+    mutate_rows,
+    error_label,
+):
+    generation = _native_fixture_primitivespec_serialization_input()
+    generation["native_fixture_primitivespec_generation_rows"] = mutate_rows(
+        generation["native_fixture_primitivespec_generation_rows"]
+    )
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_primitivespec_native_fixture_serialization_contract_payload(
+            generation
+        )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "error_label"),
+    [
+        (
+            "fixture_id",
+            "paper_two_boxes",
+            "primitivespec_native_fixture_serialization_source_fixture_mismatch",
+        ),
+        (
+            "primitive_spec_kind",
+            "sphere",
+            "primitivespec_native_fixture_serialization_source_kind_mismatch",
+        ),
+        (
+            "offline_serialized_primitivespec_like_dict",
+            None,
+            "primitivespec_native_fixture_serialization_missing_payload",
+        ),
+    ],
+)
+def test_cpd_paper_primitivespec_native_fixture_serialization_rejects_source_row_drift(
+    field_name,
+    bad_value,
+    error_label,
+):
+    generation = _native_fixture_primitivespec_serialization_input()
+    rows = [
+        dict(row)
+        for row in generation["native_fixture_primitivespec_generation_rows"]
+    ]
+    rows[0][field_name] = bad_value
+    generation["native_fixture_primitivespec_generation_rows"] = rows
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_primitivespec_native_fixture_serialization_contract_payload(
+            generation
+        )
+
+
+@pytest.mark.parametrize(
+    ("mutate_spec", "error_label"),
+    [
+        (
+            lambda spec: {key: value for key, value in spec.items() if key != "pose"},
+            "primitivespec_native_fixture_serialization_payload_schema_mismatch",
+        ),
+        (
+            lambda spec: {**spec, "unexpected": True},
+            "primitivespec_native_fixture_serialization_payload_schema_mismatch",
+        ),
+        (
+            lambda spec: {**spec, "kind": "sphere"},
+            "primitivespec_native_fixture_serialization_payload_field_drift",
+        ),
+        (
+            lambda spec: {**spec, "volume": float("nan")},
+            "primitivespec_native_fixture_serialization_non_strict_json",
+        ),
+    ],
+)
+def test_cpd_paper_primitivespec_native_fixture_serialization_rejects_payload_drift(
+    mutate_spec,
+    error_label,
+):
+    generation = _native_fixture_primitivespec_serialization_input()
+    rows = [
+        dict(row)
+        for row in generation["native_fixture_primitivespec_generation_rows"]
+    ]
+    rows[0]["offline_serialized_primitivespec_like_dict"] = mutate_spec(
+        dict(rows[0]["offline_serialized_primitivespec_like_dict"])
+    )
+    generation["native_fixture_primitivespec_generation_rows"] = rows
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_primitivespec_native_fixture_serialization_contract_payload(
+            generation
+        )
+
+
 def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_records():
     report = build_cpd_paper_offline_report()
     changed = dict(report["paper_offline_changed_decomposition_output_contract"])
@@ -7987,7 +8392,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
