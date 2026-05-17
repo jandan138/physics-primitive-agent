@@ -52,7 +52,11 @@ Do not claim:
   `paper_single_box` OBB/box preflight JSON after checking the runtime-boundary preflight row's
   canonical JSON SHA-256 fingerprint and stores only `PrimitiveSpec.to_dict()` in the report; it
   still creates no `CollisionPackage`, no Newton evidence, no real-USD evidence, no benchmark
-  evidence, and no collision-quality evidence.
+  evidence, and no collision-quality evidence. The collision-package generation preflight
+  contract records one later package-generation candidate from that dict, but keeps actual
+  package generation disallowed in the current gate and still creates no `CollisionPackage`, no
+  runtime-admissibility evidence, no Newton evidence, no real-USD evidence, no benchmark evidence,
+  and no collision-quality evidence.
 
 ## First 4-Week Proof Point
 

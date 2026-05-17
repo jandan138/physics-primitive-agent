@@ -228,8 +228,11 @@ single-fixture offline construction check; it constructs exactly one runtime `Pr
 the canonical `paper_single_box` OBB/box preflight JSON, stores only `PrimitiveSpec.to_dict()` in
 the report, records runtime PrimitiveSpec generation counts as one, and still keeps package,
 Newton, real-USD, benchmark, collision-quality, deployment, and certification checks at zero or
-false. The current next gate is
-`paper_mapped_subset_collision_package_generation_preflight_contract`.
+false. The collision-package generation preflight contract is now implemented as a single-fixture
+offline preflight that records one later package-generation candidate from the runtime
+`PrimitiveSpec.to_dict()` row while still creating zero CollisionPackage artifacts and zero
+runtime-admissibility checks. The current next gate is
+`paper_mapped_subset_collision_package_generation_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -272,7 +275,9 @@ objects, plus a single-fixture offline runtime-construction contract that constr
 runtime `PrimitiveSpec` object from canonical `paper_single_box` OBB/box preflight JSON and stores
 only `PrimitiveSpec.to_dict()` in the report while still generating zero CollisionPackage
 artifacts, zero runtime-admissibility checks, and no Newton, real-USD, benchmark,
-collision-quality, deployment, or certification evidence.
+collision-quality, deployment, or certification evidence, plus a single-fixture offline
+collision-package generation preflight that records one later package-generation candidate while
+still generating zero CollisionPackage artifacts and zero runtime-admissibility checks.
 ```
 
 It does not support:

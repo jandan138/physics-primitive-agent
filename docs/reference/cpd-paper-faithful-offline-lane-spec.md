@@ -299,8 +299,9 @@ Before `paper_faithful_offline` wording, record:
   clamped to `1e-3`;
 - fixture scope for the comparison;
 - the current top-level failure label after the native-fixture PrimitiveSpec-like dict generation,
-  serialization, runtime-boundary preflight, and runtime-construction contracts:
-  `paper_mapped_subset_collision_package_generation_preflight_contract_missing`.
+  serialization, runtime-boundary preflight, runtime-construction, and collision-package
+  generation preflight contracts:
+  `paper_mapped_subset_collision_package_generation_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -596,7 +597,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_collision_package_generation_preflight_contract
+-> current next gate after the later closed gates: paper_mapped_subset_collision_package_generation_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -739,9 +740,11 @@ serialization contracts are also implemented. The runtime-boundary preflight con
 implemented as an offline boundary check. The runtime-construction contract is now implemented as
 a single-fixture offline contract that constructs exactly one runtime `PrimitiveSpec` from the
 canonical `paper_single_box` OBB/box preflight JSON after checking the preflight row's canonical
-JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the report. The current
-next gate is
-`paper_mapped_subset_collision_package_generation_preflight_contract`.
+JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the report. The
+collision-package generation preflight contract is now implemented as a single-fixture offline
+preflight that records one later package-generation candidate from that dict while still creating
+zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
+`paper_mapped_subset_collision_package_generation_contract`.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -785,5 +788,10 @@ runtime `PrimitiveSpec` object from the canonical preflight JSON after verifying
 stores only the resulting `PrimitiveSpec.to_dict()` payload, records runtime PrimitiveSpec
 generation counts as one, keeps CollisionPackages, runtime-admissibility, Newton, real-USD,
 benchmark, collision-quality, deployment, and certification triggers at zero or false, and
-advances the current next gate to
-`paper_mapped_subset_collision_package_generation_preflight_contract`.
+at that stage advanced the next gate to
+`paper_mapped_subset_collision_package_generation_preflight_contract`. The collision-package
+generation preflight contract now closes only the single-fixture offline preflight gate, records
+one later package-generation candidate from that `PrimitiveSpec.to_dict()` payload, keeps package
+generation disallowed in the current gate, keeps generated CollisionPackages and
+runtime-admissibility checks at zero, and advances the current next gate to
+`paper_mapped_subset_collision_package_generation_contract`.

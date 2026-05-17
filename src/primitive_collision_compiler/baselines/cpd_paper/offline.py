@@ -117,6 +117,9 @@ _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT = (
 _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT = (
     "paper_mapped_subset_collision_package_generation_preflight_contract"
 )
+_PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT = (
+    "paper_mapped_subset_collision_package_generation_contract"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -763,6 +766,10 @@ def _paper_remaining_gaps_after_mapped_subset_primitivespec_runtime_construction
     return [
         _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT
     ]
+
+
+def _paper_remaining_gaps_after_mapped_subset_collision_package_generation_preflight() -> list[str]:
+    return [_PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -7852,6 +7859,553 @@ def _paper_mapped_subset_primitivespec_runtime_construction_contract_payload(
     }
 
 
+_COLLISION_PACKAGE_GENERATION_PREFLIGHT_PAYLOAD_FALSE_FLAGS = (
+    "paper_faithful_offline_allowed",
+    *_RUNTIME_CONSTRUCTION_BOUNDARY_FALSE_FLAGS,
+)
+_COLLISION_PACKAGE_GENERATION_PREFLIGHT_ROW_FALSE_FLAGS = (
+    *_RUNTIME_CONSTRUCTION_BOUNDARY_FALSE_FLAGS,
+)
+_COLLISION_PACKAGE_GENERATION_PREFLIGHT_SOURCE_ROW_REQUIRED_FIELDS = (
+    "runtime_construction_row_id",
+    "source_runtime_boundary_preflight_row_id",
+    "source_native_fixture_primitivespec_serialization_row_id",
+    "source_native_fixture_primitivespec_generation_row_id",
+    "source_native_current_fixture_source_row_id",
+    "source_candidate_source_audit_row_id",
+    "source_primitivespec_generation_row_id",
+    "source_primitivespec_generation_preflight_row_id",
+    "source_primitivespec_validation_row_id",
+    "source_primitivespec_dry_run_row_id",
+    "source_adapter_preflight_row_id",
+    "source_candidate_matrix_row_id",
+    "source_conversion_plan_row_id",
+    "fixture_id",
+    "paper_primitive",
+    "primitive_spec_kind",
+    "candidate_mapping_label",
+    "newton_runtime_kind",
+    "primitive_id",
+    "kind",
+    "canonical_primitivespec_json",
+    "loaded_primitivespec_payload",
+    "runtime_instance_generated",
+    "runtime_primitivespec_construction_triggered",
+    "generated_primitive_spec",
+    "constructed_primitivespec_dict",
+)
+_COLLISION_PACKAGE_GENERATION_PREFLIGHT_ANCHORED_SOURCE_ROW_FIELDS = (
+    "loaded_primitivespec_payload",
+    "canonical_primitivespec_json",
+    "generated_primitive_spec",
+    "constructed_primitivespec_dict",
+    "runtime_construction_row_id",
+    "source_runtime_boundary_preflight_row_id",
+    "source_native_fixture_primitivespec_serialization_row_id",
+    "source_native_fixture_primitivespec_generation_row_id",
+    "source_native_current_fixture_source_row_id",
+    "source_candidate_source_audit_row_id",
+    "source_primitivespec_generation_row_id",
+    "source_primitivespec_generation_preflight_row_id",
+    "source_primitivespec_validation_row_id",
+    "source_primitivespec_dry_run_row_id",
+    "source_adapter_preflight_row_id",
+    "source_candidate_matrix_row_id",
+    "source_conversion_plan_row_id",
+    "fixture_id",
+    "paper_primitive",
+    "primitive_spec_kind",
+    "candidate_mapping_label",
+    "newton_runtime_kind",
+    "primitive_id",
+    "kind",
+    "runtime_instance_generated",
+    "runtime_primitivespec_construction_triggered",
+)
+
+
+def _paper_collision_package_generation_preflight_source_row_schema_error(
+    field_name: str,
+) -> str:
+    return (
+        "collision_package_generation_preflight_source_row_schema_mismatch:"
+        f"{field_name}"
+    )
+
+
+def _paper_collision_package_generation_preflight_primitivespec_dict_mismatch(
+    field_name: str,
+) -> str:
+    return (
+        "collision_package_generation_preflight_primitivespec_dict_mismatch:"
+        f"{field_name}"
+    )
+
+
+def _paper_validate_collision_package_generation_preflight_row_schema(
+    row: dict[str, object],
+) -> None:
+    for field_name in _COLLISION_PACKAGE_GENERATION_PREFLIGHT_SOURCE_ROW_REQUIRED_FIELDS:
+        if field_name not in row:
+            raise ValueError(
+                _paper_collision_package_generation_preflight_source_row_schema_error(
+                    field_name
+                )
+            )
+
+
+def _paper_collision_package_generation_preflight_expected_source_row() -> dict[str, object]:
+    cases = [_case_payload(case) for case in _paper_toy_cases()]
+    changed_decomposition_output_contract = (
+        _paper_changed_decomposition_output_contract_payload(cases)
+    )
+    package_adapter_contract = _paper_package_adapter_contract_payload(
+        changed_decomposition_output_contract
+    )
+    package_adapter_unsupported_policy = (
+        _paper_package_adapter_unsupported_primitive_policy_payload(
+            package_adapter_contract
+        )
+    )
+    package_conversion_mapped_subset_plan = (
+        _paper_package_conversion_mapped_subset_plan_payload(
+            package_adapter_unsupported_policy
+        )
+    )
+    mapped_subset_candidate_matrix = (
+        _paper_mapped_subset_conversion_candidate_matrix_payload(
+            package_conversion_mapped_subset_plan
+        )
+    )
+    mapped_subset_adapter_preflight = (
+        _paper_mapped_subset_adapter_preflight_contract_payload(
+            mapped_subset_candidate_matrix
+        )
+    )
+    mapped_subset_primitivespec_dry_run = (
+        _paper_mapped_subset_primitivespec_dry_run_contract_payload(
+            mapped_subset_adapter_preflight
+        )
+    )
+    mapped_subset_primitivespec_validation = (
+        _paper_mapped_subset_primitivespec_validation_contract_payload(
+            mapped_subset_primitivespec_dry_run
+        )
+    )
+    mapped_subset_primitivespec_generation_preflight = (
+        _paper_mapped_subset_primitivespec_generation_preflight_contract_payload(
+            mapped_subset_primitivespec_validation
+        )
+    )
+    mapped_subset_primitivespec_generation = (
+        _paper_mapped_subset_primitivespec_generation_contract_payload(
+            mapped_subset_primitivespec_generation_preflight
+        )
+    )
+    mapped_subset_primitivespec_candidate_source = (
+        _paper_mapped_subset_primitivespec_candidate_source_contract_payload(
+            mapped_subset_primitivespec_generation
+        )
+    )
+    mapped_subset_native_current_fixture = (
+        _paper_mapped_subset_native_current_fixture_contract_payload(
+            mapped_subset_primitivespec_candidate_source,
+            cases,
+        )
+    )
+    mapped_subset_primitivespec_native_fixture_generation = (
+        _paper_mapped_subset_primitivespec_native_fixture_generation_contract_payload(
+            mapped_subset_native_current_fixture
+        )
+    )
+    mapped_subset_primitivespec_native_fixture_serialization = (
+        _paper_mapped_subset_primitivespec_native_fixture_serialization_contract_payload(
+            mapped_subset_primitivespec_native_fixture_generation
+        )
+    )
+    mapped_subset_primitivespec_runtime_boundary_preflight = (
+        _paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract_payload(
+            mapped_subset_primitivespec_native_fixture_serialization
+        )
+    )
+    runtime_construction = (
+        _paper_mapped_subset_primitivespec_runtime_construction_contract_payload(
+            mapped_subset_primitivespec_runtime_boundary_preflight
+        )
+    )
+    rows = runtime_construction["runtime_construction_rows"]
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError(
+            "collision_package_generation_preflight_expected_source_row_missing"
+        )
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError(
+            "collision_package_generation_preflight_expected_source_row_missing"
+        )
+    return row
+
+
+def _paper_validate_collision_package_generation_preflight_anchored_source_row(
+    row: dict[str, object],
+) -> None:
+    expected = _paper_collision_package_generation_preflight_expected_source_row()
+    for field_name in _COLLISION_PACKAGE_GENERATION_PREFLIGHT_ANCHORED_SOURCE_ROW_FIELDS:
+        if row.get(field_name) != expected[field_name]:
+            raise ValueError(
+                "collision_package_generation_preflight_anchored_source_row_mismatch:"
+                f"{field_name}"
+            )
+
+
+def _paper_validate_collision_package_generation_preflight_primitivespec_dict(
+    payload: dict[str, object],
+    row: dict[str, object],
+) -> None:
+    expected_schema_keys = _paper_primitivespec_like_required_schema_keys()
+    if sorted(payload) != expected_schema_keys:
+        raise ValueError(
+            "collision_package_generation_preflight_primitivespec_dict_schema_mismatch"
+        )
+    canonical_json = row.get("canonical_primitivespec_json")
+    if not isinstance(canonical_json, str):
+        raise ValueError(
+            _paper_collision_package_generation_preflight_source_row_schema_error(
+                "canonical_primitivespec_json"
+            )
+        )
+    try:
+        serialized_payload = json.loads(canonical_json)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            "collision_package_generation_preflight_primitivespec_dict_schema_mismatch"
+        ) from exc
+    if (
+        not isinstance(serialized_payload, dict)
+        or sorted(serialized_payload) != expected_schema_keys
+    ):
+        raise ValueError(
+            "collision_package_generation_preflight_primitivespec_dict_schema_mismatch"
+        )
+    expected_values = dict(serialized_payload)
+    expected_values["primitive_id"] = row["primitive_id"]
+    expected_values["kind"] = row["kind"]
+    expected_values["frame"] = "asset"
+    expected_values["contains_assigned_points"] = True
+    expected_values["conversion_status"] = _RUNTIME_CONSTRUCTION_OUTPUT_STATUS
+    for field_name in expected_schema_keys:
+        if payload.get(field_name) != expected_values[field_name]:
+            raise ValueError(
+                _paper_collision_package_generation_preflight_primitivespec_dict_mismatch(
+                    field_name
+                )
+            )
+    try:
+        _paper_validate_primitivespec_runtime_construction_payload_shape(payload)
+    except ValueError as exc:
+        raise ValueError(
+            _paper_collision_package_generation_preflight_primitivespec_dict_mismatch(
+                "shape"
+            )
+        ) from exc
+
+
+def _paper_collision_package_generation_preflight_source_row(
+    runtime_construction: dict[str, object],
+) -> dict[str, object]:
+    if (
+        runtime_construction.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+    ):
+        raise ValueError(
+            "collision_package_generation_preflight_input_gate_id_mismatch"
+        )
+    if (
+        runtime_construction.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT
+    ):
+        raise ValueError(
+            "collision_package_generation_preflight_input_next_gate_mismatch"
+        )
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        runtime_construction,
+        error_prefix="collision_package_generation_preflight_input_trigger_flag",
+        required_false_flags=(
+            _COLLISION_PACKAGE_GENERATION_PREFLIGHT_PAYLOAD_FALSE_FLAGS
+        ),
+    )
+    expected_counts = {
+        "runtime_construction_row_count": 1,
+        "constructed_runtime_primitivespec_count": 1,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+    }
+    for field_name, expected_value in expected_counts.items():
+        if runtime_construction.get(field_name) != expected_value:
+            raise ValueError(
+                "collision_package_generation_preflight_input_count_mismatch:"
+                f"{field_name}"
+            )
+    rows = runtime_construction.get("runtime_construction_rows")
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError("collision_package_generation_preflight_row_count_mismatch")
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError("collision_package_generation_preflight_row_count_mismatch")
+    _paper_validate_collision_package_generation_preflight_row_schema(row)
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        row,
+        error_prefix="collision_package_generation_preflight_input_trigger_flag",
+        required_false_flags=_COLLISION_PACKAGE_GENERATION_PREFLIGHT_ROW_FALSE_FLAGS,
+    )
+    expected_kind_fields = {
+        "fixture_id": "paper_single_box",
+        "paper_primitive": "oriented_bounding_box",
+        "primitive_spec_kind": "box",
+        "candidate_mapping_label": "box",
+        "newton_runtime_kind": "box",
+        "kind": "box",
+    }
+    for field_name, expected_value in expected_kind_fields.items():
+        if row.get(field_name) != expected_value:
+            raise ValueError(
+                "collision_package_generation_preflight_source_kind_mismatch"
+            )
+    if (
+        row.get("runtime_instance_generated") is not True
+        or row.get("runtime_primitivespec_construction_triggered") is not True
+    ):
+        raise ValueError(
+            "collision_package_generation_preflight_runtime_primitivespec_missing"
+        )
+    generated = row.get("generated_primitive_spec")
+    constructed = row.get("constructed_primitivespec_dict")
+    if not isinstance(generated, dict) or not isinstance(constructed, dict):
+        raise ValueError(
+            "collision_package_generation_preflight_runtime_primitivespec_missing"
+        )
+    if generated != constructed:
+        raise ValueError(
+            "collision_package_generation_preflight_primitivespec_dict_mismatch"
+        )
+    try:
+        json.dumps(generated, allow_nan=False, sort_keys=True)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "collision_package_generation_preflight_primitivespec_dict_mismatch"
+        ) from exc
+    _paper_validate_collision_package_generation_preflight_primitivespec_dict(
+        generated,
+        row,
+    )
+    _paper_validate_collision_package_generation_preflight_anchored_source_row(row)
+    return row
+
+
+def _paper_collision_package_generation_preflight_row(
+    row: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "package_generation_preflight_row_id": (
+            "collision_package_generation_preflight__paper_single_box__box"
+        ),
+        "source_runtime_construction_row_id": row["runtime_construction_row_id"],
+        "source_runtime_boundary_preflight_row_id": row[
+            "source_runtime_boundary_preflight_row_id"
+        ],
+        "source_native_fixture_primitivespec_serialization_row_id": row[
+            "source_native_fixture_primitivespec_serialization_row_id"
+        ],
+        "source_native_fixture_primitivespec_generation_row_id": row[
+            "source_native_fixture_primitivespec_generation_row_id"
+        ],
+        "source_native_current_fixture_source_row_id": row[
+            "source_native_current_fixture_source_row_id"
+        ],
+        "source_candidate_source_audit_row_id": row[
+            "source_candidate_source_audit_row_id"
+        ],
+        "source_primitivespec_generation_row_id": row[
+            "source_primitivespec_generation_row_id"
+        ],
+        "source_primitivespec_generation_preflight_row_id": row[
+            "source_primitivespec_generation_preflight_row_id"
+        ],
+        "source_primitivespec_validation_row_id": row[
+            "source_primitivespec_validation_row_id"
+        ],
+        "source_primitivespec_dry_run_row_id": row[
+            "source_primitivespec_dry_run_row_id"
+        ],
+        "source_adapter_preflight_row_id": row["source_adapter_preflight_row_id"],
+        "source_candidate_matrix_row_id": row["source_candidate_matrix_row_id"],
+        "source_conversion_plan_row_id": row["source_conversion_plan_row_id"],
+        "fixture_id": row["fixture_id"],
+        "paper_primitive": row["paper_primitive"],
+        "primitive_spec_kind": row["primitive_spec_kind"],
+        "candidate_mapping_label": row["candidate_mapping_label"],
+        "newton_runtime_kind": row["newton_runtime_kind"],
+        "primitive_id": row["primitive_id"],
+        "kind": row["kind"],
+        "generated_primitive_spec": row["generated_primitive_spec"],
+        "constructed_primitivespec_dict": row["constructed_primitivespec_dict"],
+        "candidate_primitivespec_dict": row["generated_primitive_spec"],
+        "candidate_package_primitive_kind": "box",
+        "candidate_package_scope": "single_primitivespec_dict_candidate_only",
+        "later_collision_package_generation_candidate": True,
+        "package_generation_allowed_in_current_gate": False,
+        "required_later_gate": (
+            _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT
+        ),
+        "preflight_decision": (
+            "later_collision_package_generation_contract_may_be_proposed"
+        ),
+        "preflight_reason": (
+            "runtime_primitivespec_dict_available_but_current_gate_is_preflight_only"
+        ),
+        "collision_package_generated": False,
+        "generated_collision_package": None,
+        "runtime_admissibility_checked": False,
+        **_paper_false_runtime_construction_boundary_flags(),
+    }
+
+
+def _paper_collision_package_generation_preflight_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "package_generation_preflight_row_count": len(rows),
+        "later_collision_package_generation_candidate_record_count": sum(
+            bool(row["later_collision_package_generation_candidate"])
+            for row in rows
+        ),
+        "package_generation_allowed_record_count": sum(
+            bool(row["package_generation_allowed_in_current_gate"])
+            for row in rows
+        ),
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+        "fixture_id_distribution": _paper_policy_distribution(rows, "fixture_id"),
+        "candidate_package_primitive_kind_distribution": (
+            _paper_policy_distribution(rows, "candidate_package_primitive_kind")
+        ),
+    }
+
+
+def _paper_mapped_subset_collision_package_generation_preflight_contract_payload(
+    runtime_construction: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_collision_package_generation_preflight_source_row(
+        runtime_construction
+    )
+    preflight_row = _paper_collision_package_generation_preflight_row(source_row)
+    rows = [preflight_row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_collision_package_generation_preflight()
+    )
+    return {
+        "gate_id": _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT,
+        "gate_status": (
+            "implemented_single_fixture_collision_package_generation_"
+            "preflight_contract_only_partial"
+        ),
+        "closed_gate": (
+            _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT
+        ),
+        "input_gate_id": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+        ),
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "collision_package_generation_preflight_complete_"
+            "collision_package_generation_contract_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "artifact_kind": "collision_package_generation_preflight_not_package",
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "single_synthetic_primitivespec_dict_package_candidate_only_"
+            "no_collision_package_no_newton_no_real_usd_no_benchmark"
+        ),
+        "package_generation_preflight_action": (
+            "record_one_later_collision_package_generation_candidate"
+        ),
+        "package_generation_preflight_requirements": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+            ),
+            "package_generation_preflight_gate_closed": (
+                _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT
+            ),
+            "next_collision_package_generation_gate_required": (
+                _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT
+            ),
+            "source_fixture_required": "paper_single_box",
+            "source_primitive_spec_kind_required": "box",
+            "later_collision_package_generation_candidates_required": 1,
+            "generated_collision_packages_required": 0,
+            "runtime_admissibility_checks_required": 0,
+            "newton_runtime_allowed": False,
+            "real_usd_allowed": False,
+            "benchmark_allowed": False,
+            "silent_drop_allowed": False,
+        },
+        "package_generation_preflight_row_count": 1,
+        "later_collision_package_generation_candidate_count": 1,
+        "package_generation_allowed_in_current_gate": False,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+        "package_generation_preflight_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT
+            ),
+            "package_generation_preflight_gate_closed": (
+                _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT
+            ),
+            "next_collision_package_generation_gate_required": (
+                _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT
+            ),
+            "package_generation_preflight_rows_required": 1,
+            "later_collision_package_generation_candidates_required": 1,
+            "generated_collision_packages_required": 0,
+            "runtime_admissibility_checks_required": 0,
+        },
+        "input_contract_summary": {
+            "input_gate_id": runtime_construction["gate_id"],
+            "input_next_required_gate": runtime_construction["next_required_gate"],
+            "input_runtime_construction_row_count": runtime_construction[
+                "runtime_construction_row_count"
+            ],
+            "input_constructed_runtime_primitivespec_count": runtime_construction[
+                "constructed_runtime_primitivespec_count"
+            ],
+            "input_generated_runtime_primitive_spec_count": runtime_construction[
+                "generated_runtime_primitive_spec_count"
+            ],
+            "input_generated_collision_package_count": runtime_construction[
+                "generated_collision_package_count"
+            ],
+            "source_row_id": source_row["runtime_construction_row_id"],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_spec_kind": source_row["primitive_spec_kind"],
+        },
+        "package_generation_preflight_rows": rows,
+        "coverage_summary": (
+            _paper_collision_package_generation_preflight_coverage_summary(rows)
+        ),
+        "remaining_gaps": remaining_gaps,
+        **_paper_false_runtime_construction_boundary_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -8074,8 +8628,13 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             mapped_subset_primitivespec_runtime_boundary_preflight
         )
     )
+    mapped_subset_collision_package_generation_preflight = (
+        _paper_mapped_subset_collision_package_generation_preflight_contract_payload(
+            mapped_subset_primitivespec_runtime_construction
+        )
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_mapped_subset_primitivespec_runtime_construction()
+        _paper_remaining_gaps_after_mapped_subset_collision_package_generation_preflight()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -8097,7 +8656,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             for missing_item in missing_before_paper_faithful
         ],
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT
+            _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT
         ),
         "paper_faithfulness": {
             "status": "partial",
@@ -8148,6 +8707,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_NATIVE_FIXTURE_SERIALIZATION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_RUNTIME_CONSTRUCTION_CONTRACT,
+                _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_PREFLIGHT_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -8220,6 +8780,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_primitivespec_runtime_construction_contract": (
             mapped_subset_primitivespec_runtime_construction
+        ),
+        "paper_mapped_subset_collision_package_generation_preflight_contract": (
+            mapped_subset_collision_package_generation_preflight
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

@@ -332,6 +332,12 @@ Proposed | In progress | Complete | Failed | Superseded
   canonical synthetic `paper_single_box` OBB/box preflight JSON, stores only
   `PrimitiveSpec.to_dict()` in the report, and remains not package generation, not Newton
   execution, not real-USD evidence, not benchmark evidence, and not collision-quality evidence.
+- [2026-05-17 CPD Paper Mapped-Subset CollisionPackage Generation Preflight Contract](2026-05-17-cpd-paper-mapped-subset-collision-package-generation-preflight-contract.md):
+  partial single-fixture offline mapped-subset package-generation preflight contract inside
+  `cpd_paper_offline_report`. It records exactly one later package-generation candidate from the
+  runtime `PrimitiveSpec.to_dict()` payload, keeps generated CollisionPackages and
+  runtime-admissibility checks at zero, and remains not package readiness, not Newton execution,
+  not real-USD evidence, not benchmark evidence, and not collision-quality evidence.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
