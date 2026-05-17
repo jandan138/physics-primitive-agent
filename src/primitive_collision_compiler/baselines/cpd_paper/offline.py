@@ -97,6 +97,9 @@ _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT = (
 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT = (
     "paper_mapped_subset_primitivespec_candidate_source_contract"
 )
+_PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT = (
+    "paper_mapped_subset_native_current_fixture_contract"
+)
 _PAPER_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
     "output contract; keep package/Newton wording blocked."
@@ -709,6 +712,10 @@ def _paper_remaining_gaps_after_mapped_subset_primitivespec_generation_preflight
 
 def _paper_remaining_gaps_after_mapped_subset_primitivespec_generation() -> list[str]:
     return [_PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT]
+
+
+def _paper_remaining_gaps_after_mapped_subset_primitivespec_candidate_source() -> list[str]:
+    return [_PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -4906,6 +4913,590 @@ def _paper_mapped_subset_primitivespec_generation_contract_payload(
     }
 
 
+def _paper_validate_primitivespec_candidate_source_false_flags(
+    row: dict[str, object],
+) -> None:
+    for flag in _PRIMITIVESPEC_VALIDATION_ROW_FALSE_FLAGS:
+        if bool(row.get(flag)):
+            raise ValueError(
+                f"primitivespec_candidate_source_input_trigger_flag_true:{flag}"
+            )
+
+
+def _paper_validate_primitivespec_candidate_source_contract(
+    generation: dict[str, object],
+) -> None:
+    contract = generation["primitive_spec_generation_contract"]
+    expected_contract = {
+        "input_gate_required": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT
+        ),
+        "current_candidate_source_gate_required": (
+            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+        ),
+        "template_only_native_families": ["box", "sphere", "capsule"],
+        "zero_runtime_primitivespecs_required": True,
+        "zero_collision_packages_required": True,
+        "zero_runtime_admissibility_checks_required": True,
+        "runtime_primitive_spec_generation_allowed": False,
+        "collision_package_generation_allowed": False,
+        "newton_runtime_allowed": False,
+        "approximation_policy_enabled": False,
+        "silent_drop_allowed": False,
+    }
+    for field_name, expected_value in expected_contract.items():
+        if contract[field_name] != expected_value:
+            raise ValueError(
+                "primitivespec_candidate_source_input_contract_mismatch:"
+                f"{field_name}"
+            )
+
+
+def _paper_require_unique_candidate_source_input_row_ids(
+    rows: list[dict[str, object]],
+) -> None:
+    row_ids: list[str] = []
+    for row in rows:
+        for field_name in (
+            "primitive_spec_generation_template_row_id",
+            "primitive_spec_generation_requirement_row_id",
+            "primitive_spec_generation_row_id",
+        ):
+            if field_name in row:
+                row_ids.append(str(row[field_name]))
+                break
+    if len(row_ids) != len(set(row_ids)):
+        raise ValueError("duplicate_primitivespec_candidate_source_input_row_id")
+
+
+def _paper_validate_candidate_source_template_row(
+    row: dict[str, object],
+) -> None:
+    for field_name in (
+        "primitive_spec_generation_template_row_id",
+        "source_primitivespec_generation_preflight_row_id",
+        "source_primitivespec_validation_row_id",
+        "source_primitivespec_dry_run_row_id",
+        "source_adapter_preflight_row_id",
+        "source_candidate_matrix_row_id",
+        "source_conversion_plan_row_id",
+    ):
+        _paper_require_nonempty_source_id(
+            row,
+            field_name,
+            "primitivespec_candidate_source_missing_template_source_id",
+        )
+    _paper_validate_primitivespec_candidate_source_false_flags(row)
+    if bool(row["primitive_spec_generation_candidate"]):
+        raise ValueError(
+            "primitivespec_candidate_source_template_runtime_leak:"
+            "primitive_spec_generation_candidate"
+        )
+    if row["generated_primitive_spec"] is not None:
+        raise ValueError(
+            "primitivespec_candidate_source_template_runtime_leak:"
+            "generated_primitive_spec"
+        )
+    if bool(row["silent_drop_detected"]):
+        raise ValueError(
+            "primitivespec_candidate_source_template_runtime_leak:"
+            "silent_drop_detected"
+        )
+    if (
+        row["required_current_candidate_source_gate"]
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_candidate_source_template_required_later_gate_mismatch"
+        )
+
+
+def _paper_validate_candidate_source_requirement_row(
+    row: dict[str, object],
+    error_prefix: str,
+) -> None:
+    for field_name in (
+        "primitive_spec_generation_requirement_row_id",
+        "source_primitivespec_generation_preflight_row_id",
+        "source_primitivespec_validation_row_id",
+        "source_primitivespec_dry_run_row_id",
+        "source_adapter_preflight_row_id",
+        "source_candidate_matrix_row_id",
+        "source_conversion_plan_row_id",
+    ):
+        _paper_require_nonempty_source_id(row, field_name, error_prefix)
+    _paper_validate_primitivespec_candidate_source_false_flags(row)
+    if bool(row["primitive_spec_generation_candidate"]):
+        raise ValueError(
+            "primitivespec_candidate_source_requirement_runtime_leak:"
+            "primitive_spec_generation_candidate"
+        )
+    if row["generated_primitive_spec"] is not None:
+        raise ValueError(
+            "primitivespec_candidate_source_requirement_runtime_leak:"
+            "generated_primitive_spec"
+        )
+    if (
+        row["required_later_gate"]
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_candidate_source_requirement_required_later_gate_mismatch"
+        )
+
+
+def _paper_validate_candidate_source_current_row(
+    row: dict[str, object],
+) -> None:
+    for field_name in (
+        "primitive_spec_generation_row_id",
+        "source_primitivespec_generation_preflight_row_id",
+        "source_primitivespec_validation_row_id",
+        "source_primitivespec_dry_run_row_id",
+        "source_adapter_preflight_row_id",
+        "source_candidate_matrix_row_id",
+        "source_conversion_plan_row_id",
+    ):
+        _paper_require_nonempty_source_id(
+            row,
+            field_name,
+            "primitivespec_candidate_source_missing_current_row_source_id",
+        )
+    _paper_validate_primitivespec_candidate_source_false_flags(row)
+    if (
+        row["paper_primitive"] != "trapezoidal_prism"
+        or row["offline_mapping_label"] != "offline_only_unmapped"
+    ):
+        raise ValueError("primitivespec_candidate_source_current_row_not_unmapped")
+    if bool(row["primitive_spec_generation_candidate"]):
+        raise ValueError(
+            "primitivespec_candidate_source_current_row_runtime_leak:"
+            "primitive_spec_generation_candidate"
+        )
+    if row["generated_primitive_spec"] is not None:
+        raise ValueError(
+            "primitivespec_candidate_source_current_row_runtime_leak:"
+            "generated_primitive_spec"
+        )
+    if bool(row["silent_drop_detected"]):
+        raise ValueError(
+            "primitivespec_candidate_source_current_row_runtime_leak:"
+            "silent_drop_detected"
+        )
+    if (
+        row["required_later_gate"]
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+    ):
+        raise ValueError(
+            "primitivespec_candidate_source_current_row_required_later_gate_mismatch"
+        )
+
+
+def _paper_validate_primitivespec_candidate_source_input(
+    generation: dict[str, object],
+) -> None:
+    if (
+        generation.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT
+    ):
+        raise ValueError("primitivespec_candidate_source_input_gate_id_mismatch")
+    if (
+        generation.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+    ):
+        raise ValueError("primitivespec_candidate_source_input_next_gate_mismatch")
+    _paper_validate_primitivespec_candidate_source_false_flags(generation)
+    if generation["primitive_spec_generation_candidate_count"] != 0:
+        raise ValueError(
+            "primitivespec_candidate_source_input_candidate_count_nonzero"
+        )
+    if generation["offline_primitivespec_template_count"] != 3:
+        raise ValueError(
+            "primitivespec_candidate_source_input_template_count_mismatch"
+        )
+    if generation["generated_primitive_spec_count"] != 0:
+        raise ValueError(
+            "primitivespec_candidate_source_input_generated_spec_nonzero"
+        )
+    if generation["generated_collision_package_count"] != 0:
+        raise ValueError(
+            "primitivespec_candidate_source_input_generated_collision_package_nonzero"
+        )
+    if generation["runtime_admissibility_check_count"] != 0:
+        raise ValueError(
+            "primitivespec_candidate_source_input_runtime_admissibility_nonzero"
+        )
+
+    _paper_validate_primitivespec_candidate_source_contract(generation)
+    native_rows = generation["native_family_primitivespec_template_rows"]
+    blocked_rows = generation["blocked_primitivespec_generation_requirement_rows"]
+    noop_rows = generation["noop_primitivespec_generation_requirement_rows"]
+    current_rows = generation["current_row_primitivespec_generation_rows"]
+    _paper_require_unique_candidate_source_input_row_ids(
+        native_rows + blocked_rows + noop_rows + current_rows
+    )
+    coverage = generation["coverage_summary"]
+    expected_coverage = {
+        "primitive_spec_generation_requirement_row_count": 6,
+        "native_family_primitivespec_template_row_count": 3,
+        "blocked_primitivespec_generation_requirement_row_count": 2,
+        "noop_primitivespec_generation_requirement_row_count": 1,
+        "current_row_primitivespec_generation_row_count": 16,
+        "current_primitivespec_generation_pass_record_count": 0,
+        "primitive_spec_generation_candidate_record_count": 0,
+        "offline_primitivespec_template_record_count": 3,
+        "generated_primitive_spec_record_count": 0,
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+        "current_primitivespec_generation_noop_record_count": 16,
+        "current_paper_primitive_distribution": {"trapezoidal_prism": 16},
+        "current_mapping_label_distribution": {"offline_only_unmapped": 16},
+    }
+    for field_name, expected_value in expected_coverage.items():
+        if coverage[field_name] != expected_value:
+            raise ValueError(
+                f"primitivespec_candidate_source_coverage_count_mismatch:"
+                f"{field_name}"
+            )
+    if [row["paper_primitive"] for row in native_rows] != [
+        "oriented_bounding_box",
+        "sphere",
+        "capsule",
+    ]:
+        raise ValueError(
+            "primitivespec_candidate_source_native_template_sequence_mismatch"
+        )
+    if [row["paper_primitive"] for row in blocked_rows] != [
+        "capped_cylinder",
+        "frustum",
+    ]:
+        raise ValueError(
+            "primitivespec_candidate_source_blocked_family_sequence_mismatch"
+        )
+    if [row["paper_primitive"] for row in noop_rows] != ["trapezoidal_prism"]:
+        raise ValueError("primitivespec_candidate_source_noop_family_sequence_mismatch")
+    if len(current_rows) != 16:
+        raise ValueError(
+            "primitivespec_candidate_source_coverage_count_mismatch:"
+            "current_row_primitivespec_generation_row_count"
+        )
+
+    for row in native_rows:
+        _paper_validate_candidate_source_template_row(row)
+    for row in blocked_rows:
+        _paper_validate_candidate_source_requirement_row(
+            row,
+            "primitivespec_candidate_source_missing_requirement_source_id",
+        )
+    for row in noop_rows:
+        _paper_validate_candidate_source_requirement_row(
+            row,
+            "primitivespec_candidate_source_missing_requirement_source_id",
+        )
+    for row in current_rows:
+        _paper_validate_candidate_source_current_row(row)
+
+
+def _paper_candidate_source_audit_base(
+    row: dict[str, object],
+    source_row_id: str,
+    primitive_spec_kind: str | None,
+    candidate_mapping_label: str,
+) -> dict[str, object]:
+    return {
+        "source_primitivespec_generation_row_id": source_row_id,
+        "source_primitivespec_generation_preflight_row_id": row[
+            "source_primitivespec_generation_preflight_row_id"
+        ],
+        "source_primitivespec_validation_row_id": row[
+            "source_primitivespec_validation_row_id"
+        ],
+        "source_primitivespec_dry_run_row_id": row[
+            "source_primitivespec_dry_run_row_id"
+        ],
+        "source_adapter_preflight_row_id": row["source_adapter_preflight_row_id"],
+        "source_candidate_matrix_row_id": row["source_candidate_matrix_row_id"],
+        "source_conversion_plan_row_id": row["source_conversion_plan_row_id"],
+        "paper_primitive": row["paper_primitive"],
+        "primitive_spec_kind": primitive_spec_kind,
+        "candidate_mapping_label": candidate_mapping_label,
+        "eligible_current_candidate_source": False,
+        "primitive_spec_generation_candidate": False,
+        "generated_primitive_spec": None,
+        "required_later_gate": _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
+def _paper_candidate_source_native_template_row(
+    row: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "candidate_source_audit_row_id": (
+            f"candidate_source_template__{row['paper_primitive']}"
+        ),
+        **_paper_candidate_source_audit_base(
+            row,
+            str(row["primitive_spec_generation_template_row_id"]),
+            str(row["primitive_spec_kind"]),
+            str(row["candidate_mapping_label"]),
+        ),
+        "source_role": "future_native_template",
+        "candidate_source_decision": "template_only_not_current_candidate_source",
+        "candidate_source_reason": (
+            "native_family_template_has_no_current_decomposition_row"
+        ),
+        "required_future_policy": "native_current_fixture",
+    }
+
+
+def _paper_candidate_source_blocked_family_row(
+    row: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "candidate_source_audit_row_id": (
+            f"candidate_source_blocked__{row['paper_primitive']}"
+        ),
+        **_paper_candidate_source_audit_base(
+            row,
+            str(row["primitive_spec_generation_requirement_row_id"]),
+            None,
+            str(row["candidate_mapping_label"]),
+        ),
+        "source_role": "blocked_paper_family",
+        "candidate_source_decision": "blocked_until_approximation_policy",
+        "candidate_source_reason": (
+            "paper_family_requires_explicit_approximation_policy_before_"
+            "runtime_source"
+        ),
+        "required_future_policy": "approximation_policy",
+    }
+
+
+def _paper_candidate_source_noop_family_row(
+    row: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "candidate_source_audit_row_id": (
+            f"candidate_source_noop__{row['paper_primitive']}"
+        ),
+        **_paper_candidate_source_audit_base(
+            row,
+            str(row["primitive_spec_generation_requirement_row_id"]),
+            None,
+            str(row["candidate_mapping_label"]),
+        ),
+        "source_role": "unmapped_paper_family",
+        "candidate_source_decision": "no_current_native_candidate_source",
+        "candidate_source_reason": (
+            "paper_family_has_no_newton_native_mapping_in_current_policy"
+        ),
+        "required_future_policy": (
+            "native_current_fixture_or_explicit_mapping_policy"
+        ),
+    }
+
+
+def _paper_candidate_source_current_row(
+    row: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "candidate_source_audit_row_id": (
+            f"{row['primitive_spec_generation_row_id']}:candidate_source"
+        ),
+        **_paper_candidate_source_audit_base(
+            row,
+            str(row["primitive_spec_generation_row_id"]),
+            None,
+            str(row["offline_mapping_label"]),
+        ),
+        "source_role": "current_unmapped_row",
+        "candidate_source_decision": (
+            "current_row_ineligible_unmapped_paper_primitive"
+        ),
+        "candidate_source_reason": (
+            "current_row_is_trapezoidal_prism_offline_only_unmapped"
+        ),
+        "required_future_policy": "native_current_fixture",
+    }
+
+
+def _paper_require_unique_candidate_source_row_ids(
+    rows: list[dict[str, object]],
+) -> None:
+    row_ids = [str(row["candidate_source_audit_row_id"]) for row in rows]
+    if len(row_ids) != len(set(row_ids)):
+        raise ValueError("duplicate_primitivespec_candidate_source_row_id")
+
+
+def _paper_candidate_source_coverage_summary(
+    native_rows: list[dict[str, object]],
+    blocked_rows: list[dict[str, object]],
+    noop_rows: list[dict[str, object]],
+    current_rows: list[dict[str, object]],
+) -> dict[str, object]:
+    all_rows = native_rows + blocked_rows + noop_rows + current_rows
+    return {
+        "candidate_source_requirement_row_count": (
+            len(native_rows) + len(blocked_rows) + len(noop_rows)
+        ),
+        "native_template_candidate_source_audit_row_count": len(native_rows),
+        "blocked_family_candidate_source_audit_row_count": len(blocked_rows),
+        "noop_family_candidate_source_audit_row_count": len(noop_rows),
+        "current_row_candidate_source_audit_row_count": len(current_rows),
+        "eligible_current_candidate_source_count": 0,
+        "ineligible_current_candidate_source_count": len(current_rows),
+        "future_template_only_source_count": len(native_rows),
+        "blocked_policy_source_count": len(blocked_rows),
+        "noop_unmapped_family_source_count": len(noop_rows),
+        "primitive_spec_generation_candidate_record_count": 0,
+        "generated_primitive_spec_record_count": 0,
+        "generated_collision_package_record_count": 0,
+        "runtime_admissibility_check_record_count": 0,
+        "current_paper_primitive_distribution": _paper_policy_distribution(
+            current_rows,
+            "paper_primitive",
+        ),
+        "current_mapping_label_distribution": _paper_policy_distribution(
+            current_rows,
+            "candidate_mapping_label",
+        ),
+        "candidate_source_decision_distribution": _paper_policy_distribution(
+            all_rows,
+            "candidate_source_decision",
+        ),
+    }
+
+
+def _paper_mapped_subset_primitivespec_candidate_source_contract_payload(
+    generation: dict[str, object],
+) -> dict[str, object]:
+    _paper_validate_primitivespec_candidate_source_input(generation)
+    native_rows = [
+        _paper_candidate_source_native_template_row(row)
+        for row in generation["native_family_primitivespec_template_rows"]
+    ]
+    blocked_rows = [
+        _paper_candidate_source_blocked_family_row(row)
+        for row in generation["blocked_primitivespec_generation_requirement_rows"]
+    ]
+    noop_rows = [
+        _paper_candidate_source_noop_family_row(row)
+        for row in generation["noop_primitivespec_generation_requirement_rows"]
+    ]
+    current_rows = [
+        _paper_candidate_source_current_row(row)
+        for row in generation["current_row_primitivespec_generation_rows"]
+    ]
+    all_rows = native_rows + blocked_rows + noop_rows + current_rows
+    _paper_require_unique_candidate_source_row_ids(all_rows)
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_primitivespec_candidate_source()
+    )
+    return {
+        "gate_id": _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
+        "gate_status": (
+            "implemented_offline_primitivespec_candidate_source_contract_only_partial"
+        ),
+        "closed_gate": _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
+        "input_gate_id": _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
+        "next_required_gate": _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "primitivespec_candidate_source_contract_complete_"
+            "native_current_fixture_contract_missing"
+        ),
+        "paper_faithful_offline_allowed": False,
+        "package_generation_allowed": False,
+        "artifact_kind": (
+            "offline_primitivespec_candidate_source_audit_not_primitivespec_"
+            "not_collision_package"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "offline_primitivespec_candidate_source_audit_only_no_runtime_"
+            "primitivespec_no_collision_package_no_newton"
+        ),
+        "candidate_source_action": (
+            "audit_sources_and_keep_current_candidate_count_zero"
+        ),
+        "primitive_spec_generation_candidate_count": 0,
+        "eligible_current_candidate_source_count": 0,
+        "generated_primitive_spec_count": 0,
+        "generated_collision_package_count": 0,
+        "runtime_admissibility_check_count": 0,
+        "candidate_source_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT
+            ),
+            "current_candidate_source_gate_closed": (
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+            ),
+            "next_current_candidate_gate_required": (
+                _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
+            ),
+            "native_template_rows_are_future_only": True,
+            "current_rows_must_be_mapped_native_family": True,
+            "eligible_current_candidate_source_required_before_runtime_generation": True,
+            "zero_runtime_primitivespecs_required": True,
+            "zero_collision_packages_required": True,
+            "zero_runtime_admissibility_checks_required": True,
+            "runtime_primitive_spec_generation_allowed": False,
+            "collision_package_generation_allowed": False,
+            "newton_runtime_allowed": False,
+            "approximation_policy_enabled": False,
+            "silent_drop_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": generation["gate_id"],
+            "input_artifact_kind": generation["artifact_kind"],
+            "native_family_primitivespec_template_row_count": (
+                generation["coverage_summary"][
+                    "native_family_primitivespec_template_row_count"
+                ]
+            ),
+            "blocked_primitivespec_generation_requirement_row_count": (
+                generation["coverage_summary"][
+                    "blocked_primitivespec_generation_requirement_row_count"
+                ]
+            ),
+            "noop_primitivespec_generation_requirement_row_count": (
+                generation["coverage_summary"][
+                    "noop_primitivespec_generation_requirement_row_count"
+                ]
+            ),
+            "current_row_primitivespec_generation_row_count": (
+                generation["coverage_summary"][
+                    "current_row_primitivespec_generation_row_count"
+                ]
+            ),
+            "primitive_spec_generation_candidate_record_count": (
+                generation["coverage_summary"][
+                    "primitive_spec_generation_candidate_record_count"
+                ]
+            ),
+            "generated_primitive_spec_record_count": (
+                generation["coverage_summary"][
+                    "generated_primitive_spec_record_count"
+                ]
+            ),
+        },
+        "native_template_candidate_source_audit_rows": native_rows,
+        "blocked_family_candidate_source_audit_rows": blocked_rows,
+        "noop_family_candidate_source_audit_rows": noop_rows,
+        "current_row_candidate_source_audit_rows": current_rows,
+        "coverage_summary": _paper_candidate_source_coverage_summary(
+            native_rows,
+            blocked_rows,
+            noop_rows,
+            current_rows,
+        ),
+        "remaining_gaps": remaining_gaps,
+        **_paper_false_primitivespec_generation_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -5097,8 +5688,13 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             mapped_subset_primitivespec_generation_preflight
         )
     )
+    mapped_subset_primitivespec_candidate_source = (
+        _paper_mapped_subset_primitivespec_candidate_source_contract_payload(
+            mapped_subset_primitivespec_generation
+        )
+    )
     missing_before_paper_faithful = (
-        _paper_remaining_gaps_after_mapped_subset_primitivespec_generation()
+        _paper_remaining_gaps_after_mapped_subset_primitivespec_candidate_source()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -5120,7 +5716,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             for missing_item in missing_before_paper_faithful
         ],
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT
+            _PAPER_MAPPED_SUBSET_NATIVE_CURRENT_FIXTURE_CONTRACT
         ),
         "paper_faithfulness": {
             "status": "partial",
@@ -5165,6 +5761,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_VALIDATION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_PREFLIGHT_CONTRACT,
                 _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_GENERATION_CONTRACT,
+                _PAPER_MAPPED_SUBSET_PRIMITIVESPEC_CANDIDATE_SOURCE_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
         },
@@ -5219,6 +5816,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_primitivespec_generation_contract": (
             mapped_subset_primitivespec_generation
+        ),
+        "paper_mapped_subset_primitivespec_candidate_source_contract": (
+            mapped_subset_primitivespec_candidate_source
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,
