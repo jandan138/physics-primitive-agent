@@ -31,9 +31,12 @@ Do not claim:
 - LLM/VLM benefit before the non-LLM baseline is measured;
 - task-level Newton checker results before the checker exists and has run;
 - simulator checks as proof of collision correctness outside named assumptions.
-- CPD paper-lane offline gates as real PrimitiveSpec generation, CollisionPackage generation,
-  Newton runtime support, benchmark evidence, collision-quality evidence, deployment readiness, or
-  safety certification.
+- CPD paper-lane offline gates as package-ready or general real PrimitiveSpec generation,
+  CollisionPackage generation, Newton runtime support, benchmark evidence, collision-quality
+  evidence, deployment readiness, or safety certification. The only current runtime PrimitiveSpec
+  exception is the single synthetic `paper_single_box` runtime-construction contract, which stores
+  only `PrimitiveSpec.to_dict()` in the report and remains outside package/Newton/evaluation
+  claims.
 - CPD PrimitiveSpec candidate-source audits as evidence that current native PrimitiveSpec
   candidates exist; the candidate-source audit records zero eligible current candidates, and the
   native-current fixture contract records only one synthetic `paper_single_box` OBB/box source row
@@ -44,7 +47,12 @@ Do not claim:
   it still creates no runtime `PrimitiveSpec`, no `CollisionPackage`, and no Newton evidence. The
   runtime-boundary preflight contract records one later runtime-construction candidate for that row,
   but still allows no runtime construction in the current gate and creates no runtime
-  `PrimitiveSpec`, no `CollisionPackage`, and no Newton evidence.
+  `PrimitiveSpec`, no `CollisionPackage`, and no Newton evidence. The runtime-construction
+  contract now constructs exactly one runtime `PrimitiveSpec` object from the canonical synthetic
+  `paper_single_box` OBB/box preflight JSON after checking the runtime-boundary preflight row's
+  canonical JSON SHA-256 fingerprint and stores only `PrimitiveSpec.to_dict()` in the report; it
+  still creates no `CollisionPackage`, no Newton evidence, no real-USD evidence, no benchmark
+  evidence, and no collision-quality evidence.
 
 ## First 4-Week Proof Point
 

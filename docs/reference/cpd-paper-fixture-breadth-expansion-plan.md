@@ -223,8 +223,13 @@ equality for that one report-only dict and keeps runtime/package checks at zero.
 runtime-boundary preflight contract is now implemented as a command-only offline boundary check,
 not runtime `PrimitiveSpec` construction and not a `CollisionPackage`; it records one later
 runtime-construction candidate for that row while keeping runtime construction disallowed and
-runtime/package checks at zero. The current next gate is
-`paper_mapped_subset_primitivespec_runtime_construction_contract`.
+runtime/package checks at zero. The runtime-construction contract is now implemented as a
+single-fixture offline construction check; it constructs exactly one runtime `PrimitiveSpec` from
+the canonical `paper_single_box` OBB/box preflight JSON, stores only `PrimitiveSpec.to_dict()` in
+the report, records runtime PrimitiveSpec generation counts as one, and still keeps package,
+Newton, real-USD, benchmark, collision-quality, deployment, and certification checks at zero or
+false. The current next gate is
+`paper_mapped_subset_collision_package_generation_preflight_contract`.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -260,7 +265,14 @@ zero real PrimitiveSpec, zero CollisionPackage artifacts, and zero runtime-admis
 plus an offline mapped-subset native-current fixture source-row contract that records one
 synthetic `paper_single_box` OBB/box source row and one report-only PrimitiveSpec generation
 candidate while still generating zero real PrimitiveSpec, zero CollisionPackage artifacts, and
-zero runtime-admissibility checks.
+zero runtime-admissibility checks, plus an offline mapped-subset native-fixture PrimitiveSpec-like
+dict generation contract and serialization contract for that row, plus an offline runtime-boundary
+preflight that records one later runtime-construction candidate while generating zero runtime
+objects, plus a single-fixture offline runtime-construction contract that constructs exactly one
+runtime `PrimitiveSpec` object from canonical `paper_single_box` OBB/box preflight JSON and stores
+only `PrimitiveSpec.to_dict()` in the report while still generating zero CollisionPackage
+artifacts, zero runtime-admissibility checks, and no Newton, real-USD, benchmark,
+collision-quality, deployment, or certification evidence.
 ```
 
 It does not support:

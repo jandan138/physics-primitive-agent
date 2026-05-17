@@ -107,8 +107,11 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   zero eligible current PrimitiveSpec candidate sources, and led to the later
   `paper_mapped_subset_native_current_fixture_contract` gate. Later native-current and
   native-fixture PrimitiveSpec-like dict generation, serialization, and runtime-boundary preflight
-  gates remain offline/report-only and advance the current next gate to
-  `paper_mapped_subset_primitivespec_runtime_construction_contract`.
+  gates remain offline/report-only. The runtime-construction gate constructs exactly one runtime
+  `PrimitiveSpec` object from the deterministic synthetic `paper_single_box` OBB/box preflight JSON
+  after checking the runtime-boundary preflight row's canonical JSON SHA-256 fingerprint, and stores
+  only `PrimitiveSpec.to_dict()` in the report. The current next gate is
+  `paper_mapped_subset_collision_package_generation_preflight_contract`.
   The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
@@ -167,14 +170,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_primitivespec_runtime_construction_contract` after the source-policy,
+  `paper_mapped_subset_collision_package_generation_preflight_contract` after the source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
   unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight,
   PrimitiveSpec dry-run, PrimitiveSpec validation, PrimitiveSpec generation-preflight,
   PrimitiveSpec generation-contract, candidate-source-contract, native-current-fixture,
   native-fixture PrimitiveSpec-like dict generation, native-fixture serialization, and
-  runtime-boundary preflight slices.
+  runtime-boundary preflight and runtime-construction slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -293,12 +296,18 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   command-only offline boundary preflight for that one report-only dict. It records one later
   runtime `PrimitiveSpec` construction candidate, keeps runtime construction disallowed in the
   current gate, keeps runtime/package/Newton/evaluation triggers false, and advances the next gate
-  to `paper_mapped_subset_primitivespec_runtime_construction_contract`. It is not package
-  readiness, Newton readiness, runtime admissibility, approximation support, `PrimitiveSpec`
-  readiness, real runtime PrimitiveSpec generation, CollisionPackage generation, package
-  generation, Newton runtime execution, real-USD asset evidence, benchmark evidence,
-  `paper_faithful_offline` support, full CPD reproduction, collision-quality evidence, deployment
-  readiness, or safety certification.
+  to `paper_mapped_subset_primitivespec_runtime_construction_contract`. The partial report now also
+  includes `paper_mapped_subset_primitivespec_runtime_construction_contract`, a single-fixture
+  offline runtime-construction contract. It constructs exactly one runtime `PrimitiveSpec` object
+  from the canonical `paper_single_box` OBB/box preflight JSON after checking the runtime-boundary
+  preflight row's canonical JSON SHA-256 fingerprint, stores only `PrimitiveSpec.to_dict()` in the
+  JSON report, records runtime PrimitiveSpec generation counts as one, keeps
+  runtime/package/Newton/evaluation triggers false, and advances the next gate to
+  `paper_mapped_subset_collision_package_generation_preflight_contract`. It is not package
+  readiness, Newton readiness, runtime admissibility, approximation support, general
+  `PrimitiveSpec` readiness, CollisionPackage generation, package generation, Newton runtime
+  execution, real-USD asset evidence, benchmark evidence, `paper_faithful_offline` support, full
+  CPD reproduction, collision-quality evidence, deployment readiness, or safety certification.
 - The partial `cpd_paper_offline_report` now includes
   `paper_mapped_subset_conversion_candidate_matrix`, a command-only offline candidate matrix, not a
   `CollisionPackage`. It records three future-family review rows, keeps the current 16
@@ -720,10 +729,14 @@ Use these only after broader benchmark records exist.
   certification, package-generation gate completion, full CPD reproduction, or
   `paper_faithful_offline` support. It is a command-only offline boundary preflight that records
   one later runtime-construction candidate while creating zero runtime objects.
-- Do not describe `paper_mapped_subset_primitivespec_runtime_construction_contract` as complete or
-  supported until a later implementation and dated record actually create or reject a runtime
-  object under explicit claim boundaries. It is the current missing next gate, not runtime
-  readiness.
+- Do not describe `paper_mapped_subset_primitivespec_runtime_construction_contract` as
+  package readiness, package conversion execution, CollisionPackage generation, Newton support,
+  runtime admissibility, approximation support, real-USD evidence, benchmark evidence,
+  collision-quality evidence, deployment readiness, safety certification, package-generation gate
+  completion, full CPD reproduction, `paper_faithful_offline` support, or general PrimitiveSpec
+  readiness. It constructs exactly one runtime `PrimitiveSpec` object from the deterministic
+  synthetic `paper_single_box` OBB/box preflight row and stores only `PrimitiveSpec.to_dict()` in
+  the partial offline report.
 
 ## Wording Rules
 

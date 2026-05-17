@@ -326,6 +326,12 @@ Proposed | In progress | Complete | Failed | Superseded
   partial command-only offline mapped-subset runtime-boundary preflight contract inside
   `cpd_paper_offline_report`, not runtime `PrimitiveSpec` construction and not a
   `CollisionPackage`.
+- [2026-05-17 CPD Paper Mapped-Subset PrimitiveSpec Runtime-Construction Contract](2026-05-17-cpd-paper-mapped-subset-primitivespec-runtime-construction-contract.md):
+  partial single-fixture offline mapped-subset runtime-construction contract inside
+  `cpd_paper_offline_report`. It constructs exactly one runtime `PrimitiveSpec` object from the
+  canonical synthetic `paper_single_box` OBB/box preflight JSON, stores only
+  `PrimitiveSpec.to_dict()` in the report, and remains not package generation, not Newton
+  execution, not real-USD evidence, not benchmark evidence, and not collision-quality evidence.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
