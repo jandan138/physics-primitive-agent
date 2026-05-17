@@ -99,11 +99,18 @@ contract records future PrimitiveSpec shape requirements for OBB/box, sphere, an
 keeps capped cylinder and frustum blocked behind an approximation policy, keeps all current
 unmapped trapezoidal-prism rows offline/no-op, records zero current PrimitiveSpec candidates,
 records zero generated PrimitiveSpec rows, and advances the next paper-lane gate to
-`paper_mapped_subset_primitivespec_validation_contract`. These
+`paper_mapped_subset_primitivespec_validation_contract`. The report now also includes
+`paper_mapped_subset_primitivespec_validation_contract`, a command-only offline validation
+contract for that dry-run payload, not real `PrimitiveSpec` generation and not a
+`CollisionPackage`. That validation contract checks the declared dry-run field list, mapped
+future shape labels for box/sphere/capsule, six family rows, 16 current no-op rows, source
+traceability, zero current candidates, zero generated PrimitiveSpecs, and false runtime/evaluation
+triggers, then advances the next paper-lane gate to
+`paper_mapped_subset_primitivespec_generation_preflight_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

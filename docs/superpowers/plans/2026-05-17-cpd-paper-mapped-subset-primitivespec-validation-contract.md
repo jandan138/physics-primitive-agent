@@ -138,7 +138,7 @@ assert list(rows) == [
     "trapezoidal_prism",
 ]
 assert rows["oriented_bounding_box"]["primitive_spec_validation_decision"] == (
-    "future_native_family_primitivespec_shape_validated"
+    "future_native_family_primitivespec_shape_requirement_validated"
 )
 assert rows["oriented_bounding_box"]["validated_future_primitive_spec_kind"] == "box"
 assert rows["sphere"]["validated_future_primitive_spec_kind"] == "sphere"
@@ -166,7 +166,8 @@ summary = payload["coverage_summary"]
 rows = payload["current_row_primitivespec_validation_rows"]
 assert summary["primitive_spec_validation_requirement_row_count"] == 6
 assert summary["future_native_primitivespec_shape_validation_count"] == 3
-assert summary["blocked_primitivespec_validation_requirement_count"] == 3
+assert summary["blocked_primitivespec_validation_requirement_count"] == 2
+assert summary["noop_primitivespec_validation_requirement_count"] == 1
 assert summary["current_row_primitivespec_validation_row_count"] == 16
 assert summary["current_primitivespec_validation_pass_record_count"] == 0
 assert summary["current_primitivespec_validation_noop_record_count"] == 16
@@ -226,8 +227,11 @@ python -m pytest tests/test_cpd_paper_offline.py -k 'primitivespec_validation or
 python -m pytest tests/test_cli.py -k cpd_paper_offline -q
 ```
 
-Expected: fail because `_paper_mapped_subset_primitivespec_validation_contract_payload` and the new
-report payload do not exist yet.
+Expected for the initial RED phase: fail because
+`_paper_mapped_subset_primitivespec_validation_contract_payload` and the new report payload do not
+exist yet. This stale-by-design RED note is retained as implementation history; the completed
+slice now implements the validation payload and points next to
+`paper_mapped_subset_primitivespec_generation_preflight_contract`.
 
 ## Task 2: Implement The Offline Validation Payload
 

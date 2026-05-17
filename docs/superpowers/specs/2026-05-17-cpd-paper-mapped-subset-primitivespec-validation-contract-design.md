@@ -6,16 +6,18 @@
 
 ## Context
 
-The CPD paper offline lane currently closes
-`paper_mapped_subset_primitivespec_dry_run_contract`. That gate records the shape of a future
-PrimitiveSpec handoff, but deliberately keeps current PrimitiveSpec candidates at zero because all
+Before this slice, the CPD paper offline lane closed only
+`paper_mapped_subset_primitivespec_dry_run_contract`. That gate recorded the shape of a future
+PrimitiveSpec handoff, but deliberately kept current PrimitiveSpec candidates at zero because all
 current rows remain `trapezoidal_prism` / `offline_only_unmapped`.
 
-The next gate is `paper_mapped_subset_primitivespec_validation_contract`. Its job is not to create
-real `PrimitiveSpec` objects. Its job is to validate that the dry-run contract is structurally safe
-to hand to a later generation gate: row ids are unique, required schema fields are present, allowed
-future runtime kinds are limited to Newton-native mapped kinds, current no-op rows preserve source
-traceability, and all generation/runtime triggers remain false.
+This slice implements `paper_mapped_subset_primitivespec_validation_contract`. Its job is not to
+create real `PrimitiveSpec` objects. Its job is to validate that the dry-run contract is
+claim-bounded before a later generation gate: row ids are unique, required schema fields are
+present, allowed future mapping-candidate labels are limited to the planned mapped subset, current
+no-op rows preserve source traceability, and all generation/runtime triggers remain false. After
+this slice, the current next gate is
+`paper_mapped_subset_primitivespec_generation_preflight_contract`.
 
 ## Design Choice
 
@@ -25,7 +27,7 @@ Use a conservative command-only validation contract:
 2. Validate that the upstream dry-run gate has zero current candidates, zero generated
    PrimitiveSpecs, zero generated CollisionPackages, and zero runtime-admissibility checks.
 3. Validate the declared PrimitiveSpec field list against the required dry-run field set.
-4. Validate the declared future runtime kinds against the mapped Newton-native subset:
+4. Validate the declared future mapping-candidate labels against the mapped subset:
    `box`, `sphere`, and `capsule`.
 5. Validate six family requirement rows: three future native shape rows, two blocked approximation
    rows, and one no-op unmapped current-family row.
@@ -79,9 +81,9 @@ The payload keeps all generation/runtime booleans false:
 
 Expected decisions:
 
-- `oriented_bounding_box`: `future_native_family_primitivespec_shape_validated`
-- `sphere`: `future_native_family_primitivespec_shape_validated`
-- `capsule`: `future_native_family_primitivespec_shape_validated`
+- `oriented_bounding_box`: `future_native_family_primitivespec_shape_requirement_validated`
+- `sphere`: `future_native_family_primitivespec_shape_requirement_validated`
+- `capsule`: `future_native_family_primitivespec_shape_requirement_validated`
 - `capped_cylinder`: `blocked_approximation_policy_validation_recorded`
 - `frustum`: `blocked_approximation_policy_validation_recorded`
 - `trapezoidal_prism`: `noop_unmapped_family_validation_recorded`
@@ -121,16 +123,20 @@ The new builder validates its input before emitting the payload:
   `coverage_summary.current_primitivespec_dry_run_pass_record_count` must be zero;
 - `primitive_spec_dry_run_contract.required_primitive_spec_fields` must exactly match the
   repository's required field list;
-- `primitive_spec_dry_run_contract.allowed_future_runtime_kinds` must be `box`, `sphere`, and
-  `capsule`;
+- `primitive_spec_dry_run_contract.allowed_future_runtime_kinds` must be treated as future
+  mapping-candidate labels `box`, `sphere`, and `capsule`;
 - family and current dry-run row ids must be unique;
+- family rows must match the expected ordered six-family contract:
+  OBB/box, sphere/sphere, capsule/capsule, blocked capped cylinder, blocked frustum, and no-op
+  trapezoidal prism;
 - future-native family rows must have a mapped future PrimitiveSpec kind in the allowed set;
+- future-native family rows must keep their mapping-candidate labels aligned with the future kind;
 - blocked or no-op family rows must not claim a future PrimitiveSpec kind;
+- family and current rows must preserve non-empty source ids needed for traceability;
 - current rows must have `primitive_spec_dry_run_passed == False`;
 - current rows must have `primitive_spec_candidate == False`;
 - current rows must have `generated_primitive_spec is None`;
 - current rows must require `paper_mapped_subset_primitivespec_validation_contract`;
-- current rows must preserve the source ids needed for traceability.
 
 Validation failures raise `ValueError` with specific labels so tests can lock claim boundaries.
 
