@@ -496,6 +496,20 @@ experiments:
       - records future adapter requirements while keeping current package-conversion candidates at zero
       - closes only paper_mapped_subset_adapter_preflight_contract and advances the next gate to paper_mapped_subset_primitivespec_dry_run_contract
       - no package-readiness claim, PrimitiveSpec-readiness claim, PrimitiveSpec-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
+  - id: cpd-paper-mapped-subset-primitivespec-dry-run-contract
+    status: complete
+    command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-paper-offline-report
+    record: docs/records/2026-05-17-cpd-paper-mapped-subset-primitivespec-dry-run-contract.md
+    purpose: >
+      Add a command-only offline mapped-subset PrimitiveSpec dry-run contract before any real
+      PrimitiveSpec, CollisionPackage, runtime admissibility, package generation, or Newton
+      runtime work.
+    claims_supported:
+      - partial command-only offline PrimitiveSpec dry-run contract for deterministic synthetic fixture records only
+      - records future PrimitiveSpec shape requirements while keeping current PrimitiveSpec candidates at zero
+      - records 16 current unmapped trapezoidal-prism rows as offline/no-op dry-run rows
+      - closes only paper_mapped_subset_primitivespec_dry_run_contract and advances the next gate to paper_mapped_subset_primitivespec_validation_contract
+      - no package-readiness claim, PrimitiveSpec-readiness claim, PrimitiveSpec-generation claim, CollisionPackage-generation claim, Newton-support claim, runtime-admissibility claim, approximation-support claim, paper_faithful_offline claim, full CPD reproduction claim, package-generation claim, Newton runtime claim, real-USD claim, collision-quality claim, benchmark-suite claim, deployment claim, or safety-certification claim
   - id: cpd-like-expected-failure-synthetic-workbench
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-expected-failure-workbench

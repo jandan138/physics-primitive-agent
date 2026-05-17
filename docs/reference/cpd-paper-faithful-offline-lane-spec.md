@@ -298,8 +298,8 @@ Before `paper_faithful_offline` wording, record:
 - whether `sphere` uses the paper OBB world center and a radius equal to the max point distance
   clamped to `1e-3`;
 - fixture scope for the comparison;
-- the current top-level failure label after the adapter-preflight gate:
-  `paper_mapped_subset_primitivespec_dry_run_contract_missing`.
+- the current top-level failure label after the PrimitiveSpec dry-run gate:
+  `paper_mapped_subset_primitivespec_validation_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -594,7 +594,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep package generation, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_primitivespec_dry_run_contract
+-> current next gate after the later closed gates: paper_mapped_subset_primitivespec_validation_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -718,4 +718,17 @@ execution, real-USD, and benchmark triggers false. It is not package readiness, 
 runtime admissibility, approximation support, `PrimitiveSpec` readiness, package generation,
 Newton runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support,
 full CPD reproduction, collision-quality evidence, deployment readiness, or safety certification.
-The next current gate is `paper_mapped_subset_primitivespec_dry_run_contract`.
+At that stage the follow-up gate was `paper_mapped_subset_primitivespec_dry_run_contract`.
+
+`paper_mapped_subset_primitivespec_dry_run_contract` closes only the offline PrimitiveSpec dry-run
+gate. It records a command-only contract, not real `PrimitiveSpec` generation and not a
+`CollisionPackage`, over the adapter-preflight rows. The payload records future PrimitiveSpec shape
+requirements for OBB/box, sphere, and capsule, keeps capped cylinder and frustum blocked behind an
+approximation policy, keeps all current `trapezoidal_prism` / `offline_only_unmapped` rows
+offline/no-op, records zero current PrimitiveSpec candidates, records zero generated PrimitiveSpec
+rows, and keeps CollisionPackage generation, runtime admissibility, Newton runtime execution,
+real-USD, and benchmark triggers false. It is not package readiness, Newton readiness, runtime
+admissibility, approximation support, `PrimitiveSpec` readiness, package generation, Newton
+runtime execution, real-USD evidence, benchmark evidence, `paper_faithful_offline` support, full
+CPD reproduction, collision-quality evidence, deployment readiness, or safety certification. The
+next current gate is `paper_mapped_subset_primitivespec_validation_contract`.

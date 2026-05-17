@@ -92,11 +92,18 @@ contract, not `PrimitiveSpec` generation and not a `CollisionPackage`. That pref
 records future adapter requirements, keeps the current zero package-conversion-candidate state as
 no-op, keeps all current unmapped trapezoidal-prism rows offline, keeps package generation
 disabled, and advances the next paper-lane gate to
-`paper_mapped_subset_primitivespec_dry_run_contract`. These
+`paper_mapped_subset_primitivespec_dry_run_contract`. The report now also includes
+`paper_mapped_subset_primitivespec_dry_run_contract`, a command-only offline PrimitiveSpec
+dry-run contract, not real `PrimitiveSpec` generation and not a `CollisionPackage`. That dry-run
+contract records future PrimitiveSpec shape requirements for OBB/box, sphere, and capsule,
+keeps capped cylinder and frustum blocked behind an approximation policy, keeps all current
+unmapped trapezoidal-prism rows offline/no-op, records zero current PrimitiveSpec candidates,
+records zero generated PrimitiveSpec rows, and advances the next paper-lane gate to
+`paper_mapped_subset_primitivespec_validation_contract`. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run slices do not
 support full CPD reproduction, package generation, Newton runtime execution, real-USD evidence,
 collision-quality evidence, benchmark evidence, deployment readiness, or safety certification. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the

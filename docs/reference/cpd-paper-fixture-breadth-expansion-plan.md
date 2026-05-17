@@ -190,8 +190,11 @@ review matrix, not a `CollisionPackage`; it records three future-family review r
 current package-conversion candidates at zero. The mapped-subset adapter-preflight contract is now
 implemented as a command-only offline contract, not `PrimitiveSpec` generation and not a
 `CollisionPackage`; it records future adapter requirements, keeps current unmapped rows offline,
-and keeps package generation disabled. The current next gate is
-`paper_mapped_subset_primitivespec_dry_run_contract`. Batch C
+and keeps package generation disabled. The mapped-subset PrimitiveSpec dry-run contract is now
+implemented as a command-only offline contract, not real `PrimitiveSpec` generation and not a
+`CollisionPackage`; it records zero current PrimitiveSpec candidates and keeps current unmapped
+rows offline/no-op. The current next gate is
+`paper_mapped_subset_primitivespec_validation_contract`. Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
 finite threshold block before broader component-pair cases. Batch D stays important because it
@@ -215,7 +218,8 @@ search-engine generalization matrix, plus a postprocess-policy generalization ma
 package-boundary readiness matrix, an offline changed-decomposition output contract, an offline
 package-adapter contract, an offline unsupported-primitive policy, an offline mapped-subset
 package-conversion plan, an offline mapped-subset candidate matrix, and an offline mapped-subset
-adapter-preflight contract inside the partial paper report.
+adapter-preflight contract, plus an offline mapped-subset PrimitiveSpec dry-run contract inside
+the partial paper report.
 ```
 
 It does not support:

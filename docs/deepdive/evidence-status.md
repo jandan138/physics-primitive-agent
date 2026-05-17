@@ -146,11 +146,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved current gate as
-  `paper_mapped_subset_primitivespec_dry_run_contract` after the source-policy, primitive-fit
+  `paper_mapped_subset_primitivespec_validation_contract` after the source-policy, primitive-fit
   engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
-  unsupported-primitive policy, mapped-subset planning, candidate-matrix, and adapter-preflight
-  slices.
+  unsupported-primitive policy, mapped-subset planning, candidate-matrix, adapter-preflight, and
+  PrimitiveSpec dry-run slices.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -272,6 +272,20 @@ This file separates current evidence from future claims. See [message-map.md](me
   generation, CollisionPackage generation, runtime admissibility, Newton runtime execution, real
   USD, benchmark, and collision-quality triggers false, and advances the next required gate to
   `paper_mapped_subset_primitivespec_dry_run_contract`. This is not package readiness, Newton
+  readiness, runtime admissibility, approximation support, `PrimitiveSpec` readiness,
+  `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
+  real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
+  safety certification.
+- The current executable surface can also run
+  `paper_mapped_subset_primitivespec_dry_run_contract` inside `cpd_paper_offline_report`. It
+  closes only that PrimitiveSpec dry-run gate with a command-only offline contract, not real
+  `PrimitiveSpec` generation and not a `CollisionPackage`. It records future PrimitiveSpec shape
+  requirements for OBB/box, sphere, and capsule, keeps capped cylinder and frustum blocked behind
+  an approximation policy, keeps current unmapped trapezoidal-prism rows offline/no-op, records
+  zero current PrimitiveSpec candidates, records zero generated PrimitiveSpec rows, keeps
+  CollisionPackage generation, runtime admissibility, Newton runtime execution, real USD,
+  benchmark, and collision-quality triggers false, and advances the next required gate to
+  `paper_mapped_subset_primitivespec_validation_contract`. This is not package readiness, Newton
   readiness, runtime admissibility, approximation support, `PrimitiveSpec` readiness,
   `paper_faithful_offline`, full CPD reproduction, package generation, Newton runtime support,
   real-USD evidence, benchmark evidence, collision-quality validation, deployment readiness, or
