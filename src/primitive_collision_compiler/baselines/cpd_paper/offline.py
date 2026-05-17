@@ -129,6 +129,9 @@ _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT = (
 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT = (
     "paper_mapped_subset_newton_shape_mapping_preflight_contract"
 )
+_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT = (
+    "paper_mapped_subset_newton_shape_mapping_contract"
+)
 _PAPER_COLLISION_PACKAGE_GENERATION_CLAIM_BOUNDARY = (
     "single_fixture_box_only_offline_collision_package_artifact_"
     "not_paper_vocabulary_runtime_admissibility_or_newton"
@@ -802,6 +805,10 @@ def _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_preflight() 
 
 def _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_contract() -> list[str]:
     return [_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT]
+
+
+def _paper_remaining_gaps_after_mapped_subset_newton_shape_mapping_preflight() -> list[str]:
+    return [_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT]
 
 
 def _paper_faithful_offline_generalization_plan_payload() -> dict[str, object]:
@@ -9800,6 +9807,341 @@ def _paper_mapped_subset_runtime_admissibility_contract_payload(
     }
 
 
+_NEWTON_SHAPE_MAPPING_PREFLIGHT_PAYLOAD_FALSE_FLAGS = (
+    "paper_faithful_offline_allowed",
+    "paper_faithful_offline_supported",
+    "newton_support_claimed",
+    "approximation_policy_applied",
+    "real_usd_loaded",
+    "benchmark_run",
+    "collision_quality_measured",
+    "deployment_or_certification_claimed",
+    "package_generation_triggered",
+    "newton_runtime_triggered",
+    "real_usd_triggered",
+    "benchmark_triggered",
+    "newton_runtime_allowed",
+    "approximation_policy_enabled",
+    "silent_drop_allowed",
+    "mapping_attempted",
+    "newton_shape_mapping_triggered",
+    "newton_shape_mapping_record_created",
+)
+
+
+def _paper_newton_shape_mapping_preflight_false_flags() -> dict[str, bool]:
+    return {
+        flag: False
+        for flag in _NEWTON_SHAPE_MAPPING_PREFLIGHT_PAYLOAD_FALSE_FLAGS
+    }
+
+
+def _paper_newton_shape_mapping_preflight_vector(
+    value: object,
+    *,
+    error_label: str,
+) -> list[float]:
+    if not isinstance(value, list | tuple) or len(value) != 3:
+        raise ValueError(error_label)
+    try:
+        result = [float(item) for item in value]
+    except (TypeError, ValueError) as exc:
+        raise ValueError(error_label) from exc
+    if not all(np.isfinite(result)):
+        raise ValueError(error_label)
+    return result
+
+
+def _paper_validate_newton_shape_mapping_preflight_candidate(
+    candidate: object,
+) -> None:
+    if not isinstance(candidate, dict):
+        raise ValueError(
+            "newton_shape_mapping_preflight_primitivespec_invalid:candidate"
+        )
+    if candidate.get("kind") != "box":
+        raise ValueError(
+            "newton_shape_mapping_preflight_primitivespec_mismatch:kind"
+        )
+    _paper_newton_shape_mapping_preflight_vector(
+        candidate.get("center"),
+        error_label="newton_shape_mapping_preflight_primitivespec_invalid:center",
+    )
+    axes = candidate.get("axes")
+    if not isinstance(axes, list | tuple) or len(axes) != 3:
+        raise ValueError(
+            "newton_shape_mapping_preflight_primitivespec_invalid:axes"
+        )
+    for axis in axes:
+        _paper_newton_shape_mapping_preflight_vector(
+            axis,
+            error_label="newton_shape_mapping_preflight_primitivespec_invalid:axes",
+        )
+    dimensions = candidate.get("dimensions")
+    if not isinstance(dimensions, dict) or "half_extents" not in dimensions:
+        raise ValueError(
+            "newton_shape_mapping_preflight_primitivespec_invalid:dimensions"
+        )
+    half_extents = _paper_newton_shape_mapping_preflight_vector(
+        dimensions.get("half_extents"),
+        error_label=(
+            "newton_shape_mapping_preflight_primitivespec_invalid:half_extents"
+        ),
+    )
+    if any(value <= 0.0 for value in half_extents):
+        raise ValueError(
+            "newton_shape_mapping_preflight_primitivespec_invalid:half_extents"
+        )
+
+
+def _paper_newton_shape_mapping_preflight_source_row(
+    runtime_admissibility: dict[str, object],
+) -> dict[str, object]:
+    if (
+        runtime_admissibility.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT
+    ):
+        raise ValueError(
+            "newton_shape_mapping_preflight_input_gate_id_mismatch"
+        )
+    if (
+        runtime_admissibility.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+    ):
+        raise ValueError(
+            "newton_shape_mapping_preflight_input_next_gate_mismatch"
+        )
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        runtime_admissibility,
+        error_prefix="newton_shape_mapping_preflight_input_flag",
+        required_false_flags=_RUNTIME_ADMISSIBILITY_CONTRACT_PAYLOAD_FALSE_FLAGS,
+    )
+    expected_counts = {
+        "runtime_admissibility_row_count": 1,
+        "offline_static_runtime_admissibility_check_count": 1,
+        "runtime_admissibility_check_count": 1,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 1,
+        "newton_mapping_record_count": 0,
+        "newton_runtime_execution_count": 0,
+    }
+    for field_name, expected_value in expected_counts.items():
+        if runtime_admissibility.get(field_name) != expected_value:
+            raise ValueError(
+                "newton_shape_mapping_preflight_input_count_mismatch:"
+                f"{field_name}"
+            )
+    if (
+        runtime_admissibility.get("offline_static_runtime_admissibility_checked")
+        is not True
+    ):
+        raise ValueError(
+            "newton_shape_mapping_preflight_input_count_mismatch:"
+            "offline_static_runtime_admissibility_checked"
+        )
+    rows = runtime_admissibility.get("runtime_admissibility_rows")
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError("newton_shape_mapping_preflight_row_count_mismatch")
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError("newton_shape_mapping_preflight_row_count_mismatch")
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        row,
+        error_prefix="newton_shape_mapping_preflight_input_flag",
+        required_false_flags=_RUNTIME_ADMISSIBILITY_CONTRACT_PAYLOAD_FALSE_FLAGS,
+    )
+    expected_row_values = {
+        "runtime_admissibility_row_id": "runtime_admissibility__paper_single_box__box",
+        "fixture_id": "paper_single_box",
+        "paper_primitive": "oriented_bounding_box",
+        "primitive_spec_kind": "box",
+        "primitive_id": "paper_single_box__oriented_bounding_box__box",
+        "source_package_id": (
+            "paper_single_box:"
+            f"{_PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT}"
+        ),
+        "source_asset_id": "paper_single_box",
+        "offline_static_runtime_admissibility_check_passed": True,
+        "offline_static_runtime_admissibility_checked": True,
+    }
+    for field_name, expected_value in expected_row_values.items():
+        if row.get(field_name) != expected_value:
+            raise ValueError(
+                "newton_shape_mapping_preflight_source_row_mismatch:"
+                f"{field_name}"
+            )
+    _paper_validate_newton_shape_mapping_preflight_candidate(
+        row.get("candidate_primitivespec_dict")
+    )
+    if list(
+        _paper_runtime_admissibility_preflight_package_dicts(
+            runtime_admissibility
+        )
+    ):
+        raise ValueError(
+            "newton_shape_mapping_preflight_source_package_copy_forbidden"
+        )
+    return row
+
+
+def _paper_newton_shape_mapping_preflight_row(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    candidate = source_row["candidate_primitivespec_dict"]
+    return {
+        "newton_shape_mapping_preflight_row_id": (
+            "newton_shape_mapping_preflight__paper_single_box__box"
+        ),
+        "source_runtime_admissibility_row_id": source_row[
+            "runtime_admissibility_row_id"
+        ],
+        "source_package_id": source_row["source_package_id"],
+        "source_asset_id": source_row["source_asset_id"],
+        "fixture_id": source_row["fixture_id"],
+        "paper_primitive": source_row["paper_primitive"],
+        "primitive_spec_kind": source_row["primitive_spec_kind"],
+        "primitive_id": source_row["primitive_id"],
+        "candidate_primitivespec_dict": candidate,
+        "target_newton_shape_kind": "box",
+        "target_newton_shape_kind_declared": True,
+        "newton_shape_support_evidence_status": (
+            "pending_later_mapping_contract_no_support_claim"
+        ),
+        "target_newton_shape_kind_handoff_source": (
+            "static_current_report_lane_declares_box_target_schema_for_later_mapper"
+        ),
+        "center_transfer_field": "candidate_primitivespec_dict.center",
+        "axes_transfer_field": "candidate_primitivespec_dict.axes",
+        "dimensions_transfer_field": "candidate_primitivespec_dict.dimensions",
+        "box_half_extents_transfer_field": (
+            "candidate_primitivespec_dict.dimensions.half_extents"
+        ),
+        "target_kind_declared_check_passed": True,
+        "center_transfer_check_passed": True,
+        "axes_transfer_check_passed": True,
+        "box_dimensions_transfer_check_passed": True,
+        "source_runtime_admissibility_check_passed": True,
+        "source_package_lineage_check_passed": True,
+        "newton_shape_mapping_preflight_passed": True,
+        "mapping_attempt_count": 0,
+        "newton_mapping_record_count": 0,
+        "newton_runtime_execution_count": 0,
+        **_paper_newton_shape_mapping_preflight_false_flags(),
+    }
+
+
+def _paper_newton_shape_mapping_preflight_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "newton_shape_mapping_preflight_row_count": len(rows),
+        "source_runtime_admissibility_row_count": len(rows),
+        "passed_source_runtime_admissibility_check_count": sum(
+            bool(row["source_runtime_admissibility_check_passed"])
+            for row in rows
+        ),
+        "mapping_attempt_count": 0,
+        "newton_mapping_record_count": 0,
+        "fixture_id_distribution": _paper_policy_distribution(rows, "fixture_id"),
+        "target_newton_shape_kind_distribution": _paper_policy_distribution(
+            rows,
+            "target_newton_shape_kind",
+        ),
+    }
+
+
+def _paper_mapped_subset_newton_shape_mapping_preflight_contract_payload(
+    runtime_admissibility: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_newton_shape_mapping_preflight_source_row(
+        runtime_admissibility
+    )
+    row = _paper_newton_shape_mapping_preflight_row(source_row)
+    rows = [row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_mapping_preflight()
+    )
+    return {
+        "gate_id": _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT,
+        "gate_status": (
+            "implemented_single_fixture_newton_shape_mapping_preflight_"
+            "static_only_partial"
+        ),
+        "closed_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+        ),
+        "input_gate_id": _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT,
+        "next_required_gate": _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT,
+        "decision": "remain_partial",
+        "decision_reason": (
+            "newton_shape_mapping_preflight_complete_"
+            "newton_shape_mapping_contract_missing"
+        ),
+        "artifact_kind": (
+            "offline_static_newton_shape_mapping_preflight_not_mapping"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "single_synthetic_box_mapping_preflight_only_"
+            "no_mapper_no_newton_no_real_usd_no_benchmark_no_metrics"
+        ),
+        "newton_shape_mapping_preflight_action": (
+            "record_one_static_shape_mapping_handoff_row_without_mapping"
+        ),
+        "newton_shape_mapping_preflight_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT
+            ),
+            "closed_gate": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+            ),
+            "next_newton_shape_mapping_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT
+            ),
+            "newton_shape_mapping_preflight_rows_required": 1,
+            "mapping_attempt_allowed": False,
+            "newton_runtime_allowed": False,
+            "newton_support_claim_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": runtime_admissibility["gate_id"],
+            "input_next_required_gate": runtime_admissibility[
+                "next_required_gate"
+            ],
+            "source_row_id": source_row["runtime_admissibility_row_id"],
+            "source_package_id": source_row["source_package_id"],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_spec_kind": source_row["primitive_spec_kind"],
+            "source_runtime_admissibility_row_count": runtime_admissibility[
+                "runtime_admissibility_row_count"
+            ],
+            "source_runtime_admissibility_check_count": (
+                runtime_admissibility["runtime_admissibility_check_count"]
+            ),
+        },
+        "newton_shape_mapping_preflight_row_count": 1,
+        "source_runtime_admissibility_row_count": 1,
+        "source_runtime_admissibility_check_passed": True,
+        "newton_shape_mapping_preflight_passed": True,
+        "mapping_attempt_count": 0,
+        "newton_mapping_record_count": 0,
+        "newton_runtime_execution_count": 0,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 1,
+        "runtime_admissibility_check_count": 1,
+        "offline_static_runtime_admissibility_check_count": 1,
+        "newton_shape_mapping_preflight_rows": rows,
+        "coverage_summary": (
+            _paper_newton_shape_mapping_preflight_coverage_summary(rows)
+        ),
+        "remaining_gaps": remaining_gaps,
+        **_paper_newton_shape_mapping_preflight_false_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -10042,12 +10384,17 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             mapped_subset_runtime_admissibility_preflight
         )
     )
+    mapped_subset_newton_shape_mapping_preflight = (
+        _paper_mapped_subset_newton_shape_mapping_preflight_contract_payload(
+            mapped_subset_runtime_admissibility
+        )
+    )
     paper_faithful_scope_audit = _paper_faithful_offline_scope_audit_payload()
     missing_before_paper_faithful = paper_faithful_scope_audit[
         "blocking_criteria_ids"
     ]
     runtime_lane_remaining_gates = (
-        _paper_remaining_gaps_after_mapped_subset_runtime_admissibility_contract()
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_mapping_preflight()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -10071,7 +10418,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             for missing_item in runtime_lane_remaining_gates
         ],
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT
         ),
         "paper_faithfulness": {
             "status": "partial",
@@ -10126,6 +10473,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_PREFLIGHT_CONTRACT,
                 _PAPER_MAPPED_SUBSET_RUNTIME_ADMISSIBILITY_CONTRACT,
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_PREFLIGHT_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
             "runtime_lane_remaining_gates": runtime_lane_remaining_gates,
@@ -10209,6 +10557,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_runtime_admissibility_contract": (
             mapped_subset_runtime_admissibility
+        ),
+        "paper_mapped_subset_newton_shape_mapping_preflight_contract": (
+            mapped_subset_newton_shape_mapping_preflight
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

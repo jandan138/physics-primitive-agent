@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_newton_shape_mapping_preflight_contract_missing",
+        "paper_mapped_subset_newton_shape_mapping_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_newton_shape_mapping_preflight_contract"
+        == "paper_mapped_subset_newton_shape_mapping_contract"
     )
     assert payload["generated_collision_package_count"] == 1
     assert payload["runtime_admissibility_check_count"] == 1
@@ -1555,7 +1555,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "enclosed_primitive_postprocess",
     ]
     assert payload["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        "paper_mapped_subset_newton_shape_mapping_preflight_contract",
+        "paper_mapped_subset_newton_shape_mapping_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1578,6 +1578,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_collision_package_generation_contract",
         "paper_mapped_subset_runtime_admissibility_preflight_contract",
         "paper_mapped_subset_runtime_admissibility_contract",
+        "paper_mapped_subset_newton_shape_mapping_preflight_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -2584,6 +2585,34 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert runtime_admissibility["newton_runtime_triggered"] is False
     assert runtime_admissibility["real_usd_triggered"] is False
     assert runtime_admissibility["benchmark_triggered"] is False
+    mapping_preflight = payload[
+        "paper_mapped_subset_newton_shape_mapping_preflight_contract"
+    ]
+    assert mapping_preflight["gate_id"] == (
+        "paper_mapped_subset_newton_shape_mapping_preflight_contract"
+    )
+    assert mapping_preflight["input_gate_id"] == (
+        "paper_mapped_subset_runtime_admissibility_contract"
+    )
+    assert mapping_preflight["next_required_gate"] == (
+        "paper_mapped_subset_newton_shape_mapping_contract"
+    )
+    assert mapping_preflight["newton_shape_mapping_preflight_row_count"] == 1
+    assert mapping_preflight["mapping_attempt_count"] == 0
+    assert mapping_preflight["newton_mapping_record_count"] == 0
+    assert mapping_preflight["newton_runtime_execution_count"] == 0
+    assert (
+        mapping_preflight["newton_shape_mapping_preflight_rows"][0][
+            "target_newton_shape_kind"
+        ]
+        == "box"
+    )
+    assert (
+        mapping_preflight["newton_shape_mapping_preflight_rows"][0][
+            "newton_shape_support_evidence_status"
+        ]
+        == "pending_later_mapping_contract_no_support_claim"
+    )
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
     review = payload["paper_fixture_breadth_completion_review"]

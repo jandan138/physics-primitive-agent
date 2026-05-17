@@ -238,8 +238,9 @@ creating zero runtime-admissibility checks and no Newton, real-USD, benchmark, c
 deployment, or certification evidence. The runtime-admissibility preflight then records one later
 runtime-admissibility candidate row without running the check. The runtime-admissibility contract
 now records one offline/static finite-geometry and box-schema check for that same synthetic
-package. The current next gate is
-`paper_mapped_subset_newton_shape_mapping_preflight_contract`, not Newton execution.
+package. The Newton shape-mapping preflight now records one offline/static mapper-handoff row for
+that same box artifact while still running zero mapping attempts and zero Newton code. The current
+next gate is `paper_mapped_subset_newton_shape_mapping_contract`, not Newton execution.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -291,7 +292,9 @@ plus a single-fixture runtime-admissibility preflight contract that records exac
 runtime-admissibility candidate row while still generating zero runtime-admissibility checks, plus
 a single-fixture offline/static runtime-admissibility contract that records exactly one
 finite-geometry and box-schema check while still generating zero Newton shape mappings and zero
-Newton runtime executions.
+Newton runtime executions, plus a single-fixture offline/static Newton shape-mapping preflight
+contract that records exactly one mapper-handoff row while still generating zero Newton shape
+mappings and zero Newton runtime executions.
 ```
 
 It does not support:

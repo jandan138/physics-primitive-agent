@@ -301,8 +301,8 @@ Before `paper_faithful_offline` wording, record:
 - the current top-level failure label after the native-fixture PrimitiveSpec-like dict generation,
   serialization, runtime-boundary preflight, runtime-construction, collision-package generation
   preflight, collision-package generation, runtime-admissibility preflight, and offline/static
-  runtime-admissibility contracts:
-  `paper_mapped_subset_newton_shape_mapping_preflight_contract_missing`.
+  runtime-admissibility contracts, plus the Newton shape-mapping preflight contract:
+  `paper_mapped_subset_newton_shape_mapping_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -600,7 +600,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_newton_shape_mapping_preflight_contract
+-> current next gate after the later closed gates: paper_mapped_subset_newton_shape_mapping_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -747,12 +747,13 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_newton_shape_mapping_preflight_contract` after the later single-fixture
+`paper_mapped_subset_newton_shape_mapping_contract` after the later single-fixture
 collision-package generation contract constructs one synthetic, report-scoped
 `CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract records one
 later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row, and the
-offline/static runtime-admissibility contract records one finite-geometry and box-schema check.
-That check is still report-only; it is not Newton shape mapping or Newton execution.
+offline/static runtime-admissibility contract records one finite-geometry and box-schema check,
+and the Newton shape-mapping preflight records one static mapper-handoff row. Those checks are
+still report-only; they are not Newton shape mapping or Newton execution.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -821,10 +822,19 @@ paper primitive vocabulary coverage, not approximation support, not full CPD rep
 The runtime-admissibility contract now closes only the single-fixture offline/static
 admissibility gate, consumes that preflight row, records one finite center, right-handed
 orthonormal-axis, positive-half-extent, target box-schema, source-face, containment, and volume
-check for the same synthetic package, and advances the current next gate to
+check for the same synthetic package, and at that stage advances the next gate to
 `paper_mapped_subset_newton_shape_mapping_preflight_contract`. It records
 `runtime_admissibility_check_count: 1` only as report-side static accounting. It is not package
 readiness, not Newton readiness, not Newton shape mapping, not Newton execution, not real-USD
 evidence, not benchmark or collision-quality evidence, not paper primitive vocabulary coverage,
 not approximation support, not full CPD reproduction, not `paper_faithful_offline`, and not
 deployment, safety, or certification evidence.
+The Newton shape-mapping preflight contract now closes only the single-fixture offline/static
+preflight gate, consumes that runtime-admissibility row, records one mapper-handoff row for target
+kind `box`, center, axes, dimensions, and half-extents fields, and advances the current next gate
+to `paper_mapped_subset_newton_shape_mapping_contract`. It records `mapping_attempt_count: 0`,
+`newton_mapping_record_count: 0`, and `newton_runtime_execution_count: 0`. It is not Newton
+readiness, not Newton support, not Newton execution, not real-USD evidence, not benchmark or
+collision-quality evidence, not paper primitive vocabulary coverage, not approximation support,
+not full CPD reproduction, not `paper_faithful_offline`, and not deployment, safety, or
+certification evidence.

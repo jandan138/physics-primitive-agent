@@ -22,13 +22,18 @@ orthonormal axes, positive half extents, target box schema, source-face coverage
 flag, and positive volume accounting. The current top-level
 `runtime_admissibility_check_count` is therefore `1`, but runtime execution, Newton mapping,
 Newton runtime, real-USD loading, benchmark runs, and collision-quality measurement remain zero or
-false. The current next gate is
-`paper_mapped_subset_newton_shape_mapping_preflight_contract`. This is still not package
+false. The report now also closes the single-fixture Newton shape-mapping preflight contract for
+the same synthetic `paper_single_box` box row. That preflight records one static handoff row with
+target shape kind `box`, center/axes/dimensions/half-extents field checks, and a pending support
+evidence label for the later mapper. It does not call a mapper, does not import Newton, does not
+create a Newton shape, and records `mapping_attempt_count: 0`, `newton_mapping_record_count: 0`,
+and `newton_runtime_execution_count: 0`. The current next gate is
+`paper_mapped_subset_newton_shape_mapping_contract`. This is still not package
 readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD evidence,
 not benchmark evidence, not collision-quality evidence, not deployment/safety evidence, not
 full-CPD evidence, not `paper_faithful_offline` evidence, and not paper primitive vocabulary
-coverage. The next step is a Newton shape-mapping preflight for the same single synthetic package,
-not a capped bed/Franka rerun and not Newton execution. A capped bed/Franka rerun remains blocked
+coverage. The next step is the actual Newton shape-mapping contract for the same single synthetic
+package, not a capped bed/Franka rerun and not Newton execution. A capped bed/Franka rerun remains blocked
 unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
 dated-record gates. The
@@ -168,8 +173,9 @@ PrimitiveSpec-like dict shaped like `PrimitiveSpec.to_dict()` for review, while 
 real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or false.
 The current next gate is now after the command-only runtime-boundary preflight, single-fixture
 runtime-construction, package-generation preflight, package-generation, runtime-admissibility
-preflight, and offline/static runtime-admissibility contracts:
-`paper_mapped_subset_newton_shape_mapping_preflight_contract`. The serialization contract
+preflight, offline/static runtime-admissibility contract, and offline/static Newton shape-mapping
+preflight contract:
+`paper_mapped_subset_newton_shape_mapping_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
@@ -179,8 +185,9 @@ report-scoped `CollisionPackage.to_dict()` artifact for that same box row; and t
 runtime-admissibility preflight contract records one later runtime-admissibility candidate row
 while still creating no runtime-admissibility, Newton, real-USD, benchmark, or collision-quality
 evidence. The runtime-admissibility contract records one offline/static finite-geometry and
-box-schema check while still creating no Newton shape mapping, no Newton execution, no real-USD
-evidence, no benchmark evidence, and no collision-quality evidence.
+box-schema check; the shape-mapping preflight records one static handoff row while still creating
+no Newton shape mapping, no Newton execution, no real-USD evidence, no benchmark evidence, and no
+collision-quality evidence.
 This review, planning table,
 source-policy
 matrix, primitive-fit engine matrix, search-engine matrix, postprocess-policy matrix,
@@ -226,8 +233,9 @@ records exist.
   runtime-construction contract is now implemented, the package-generation preflight contract is
   now implemented, and the single-fixture CollisionPackage generation contract is now implemented,
   the single-fixture runtime-admissibility preflight contract is now implemented, and the
-  single-fixture offline/static runtime-admissibility contract is now implemented, while the next
-  gate is `paper_mapped_subset_newton_shape_mapping_preflight_contract`.
+  single-fixture offline/static runtime-admissibility contract is now implemented, and the
+  single-fixture offline/static Newton shape-mapping preflight contract is now implemented, while
+  the next gate is `paper_mapped_subset_newton_shape_mapping_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -375,6 +383,13 @@ records exist.
   zero or false, keeps `paper_faithful_offline` blockers separate from runtime-lane gates, and
   advances the runtime-lane next gate to
   `paper_mapped_subset_newton_shape_mapping_preflight_contract`.
+- [CPD paper mapped-subset Newton shape-mapping preflight contract record](records/2026-05-18-cpd-paper-mapped-subset-newton-shape-mapping-preflight-contract.md):
+  dated implementation record for the single-fixture offline/static Newton shape-mapping preflight
+  contract. It consumes the runtime-admissibility row for the same synthetic `paper_single_box`
+  box artifact, records one static mapper-handoff row with target kind `box`, field-transfer
+  checks, zero mapping attempts, zero Newton mapping records, and zero Newton runtime executions,
+  and advances the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_mapping_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -816,10 +831,12 @@ records exist.
   `paper_mapped_subset_runtime_admissibility_preflight_contract`. It also records a
   runtime-admissibility contract that closes only
   `paper_mapped_subset_runtime_admissibility_contract` as one offline/static box-schema and
-  finite-geometry check for the same synthetic package. It keeps
+  finite-geometry check for the same synthetic package, plus a Newton shape-mapping preflight
+  contract that closes only `paper_mapped_subset_newton_shape_mapping_preflight_contract` as one
+  static mapper-handoff row. It keeps
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_newton_shape_mapping_preflight_contract`,
+  `next_required_gate: paper_mapped_subset_newton_shape_mapping_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
   Newton mapping, runtime execution, or benchmarks.

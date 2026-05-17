@@ -69,10 +69,12 @@ Do not claim:
   `paper_faithful_offline`, and not deployment, safety, or certification evidence. The
   runtime-admissibility contract then records one offline/static finite-geometry and box-schema
   check for that same synthetic package. That check is report-only and does not run Newton shape
-  mapping, Newton runtime, real USD, benchmark, or collision-quality tasks. It is still not package
-  readiness, not Newton readiness, not Newton support or execution, not full CPD reproduction, and
-  not safety evidence. The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_mapping_preflight_contract`.
+  mapping, Newton runtime, real USD, benchmark, or collision-quality tasks. The Newton
+  shape-mapping preflight contract then records one offline/static mapper-handoff row for the same
+  synthetic box dict, with zero mapping attempts, zero Newton mapping records, and zero Newton
+  runtime executions. It is still not package readiness, not Newton readiness, not Newton support
+  or execution, not full CPD reproduction, and not safety evidence. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_mapping_contract`.
 
 ## First 4-Week Proof Point
 

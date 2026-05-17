@@ -197,8 +197,16 @@ positive half extents, target box dimension schema, source-face coverage, contai
 positive volume accounting. It records `runtime_admissibility_check_count: 1` as one offline
 static report check, keeps runtime execution, Newton mapping, Newton runtime, real-USD loading,
 benchmark runs, and collision-quality measurement at zero or false, and advances the next
-runtime-lane gate to `paper_mapped_subset_newton_shape_mapping_preflight_contract`. The package
-dict, preflight row, and static runtime-admissibility row are only serialized offline candidates
+runtime-lane gate to `paper_mapped_subset_newton_shape_mapping_preflight_contract`. The report now
+also includes `paper_mapped_subset_newton_shape_mapping_preflight_contract`, a single-fixture
+offline/static shape-mapping handoff preflight, not Newton mapping and not Newton execution. It
+checks only that the same `paper_single_box` box PrimitiveSpec-like dict has the static fields a
+later mapper would need: target kind `box`, center, axes, dimensions, and box half extents. It
+records `newton_shape_mapping_preflight_row_count: 1`, `mapping_attempt_count: 0`,
+`newton_mapping_record_count: 0`, and `newton_runtime_execution_count: 0`, keeps Newton support
+claims false, and advances the current runtime-lane gate to
+`paper_mapped_subset_newton_shape_mapping_contract`. The package dict, preflight row, static
+runtime-admissibility row, and shape-mapping preflight row are only serialized offline candidates
 for one box fixture: they are not general package readiness, not Newton readiness, not Newton
 support, not Newton execution, not real-USD evidence, not benchmark evidence, not
 collision-quality evidence, not paper primitive vocabulary coverage, not `paper_faithful_offline`,
@@ -206,7 +214,7 @@ not deployment readiness, and not safety certification. These
 source-policy,
 primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readiness, and
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, and
-mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization/runtime-boundary/runtime-construction/package-preflight/package-generation/runtime-admissibility-preflight/runtime-admissibility-contract slices do not
+mapped-subset-planning/candidate-matrix/preflight/primitivespec-dry-run/validation/generation-preflight/generation-contract/candidate-source/native-current-fixture/native-fixture-primitivespec-dict/serialization/runtime-boundary/runtime-construction/package-preflight/package-generation/runtime-admissibility-preflight/runtime-admissibility-contract/newton-shape-mapping-preflight slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
 certification. See
