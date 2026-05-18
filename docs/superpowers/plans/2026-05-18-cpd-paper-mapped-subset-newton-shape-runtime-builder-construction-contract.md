@@ -254,28 +254,10 @@ def test_cpd_paper_newton_shape_runtime_builder_construction_records_fake_builde
     )
     assert row["recording_builder_shape_call_count"] == 1
     assert row["recorded_builder_method_name"] == "add_shape_box"
-    assert row["recorded_builder_call"] == {
-        "method": "add_shape_box",
-        "body": -1,
-        "hx": 1.0,
-        "hy": 0.5,
-        "hz": 0.25,
-        "xform": {
-            "kind": "fake_wp_transform",
-            "translation": [0.0, 0.0, 0.0],
-            "rotation": {
-                "kind": "fake_wp_quat_from_matrix",
-                "matrix": {
-                    "kind": "fake_wp_matrix_from_cols",
-                    "cols": [
-                        [1.0, 0.0, 0.0],
-                        [0.0, 1.0, 0.0],
-                        [0.0, 0.0, 1.0],
-                    ],
-                },
-            },
-        },
-    }
+    mapping = preflight_row["constructed_newton_shape_mapping_dict"]
+    assert row["recorded_builder_call"] == _expected_builder_construction_recorded_call(
+        mapping
+    )
     assert row["newton_builder_shape_call_count"] == 0
     assert row["newton_engine_shape_object_count"] == 0
     assert row["newton_runtime_execution_count"] == 0

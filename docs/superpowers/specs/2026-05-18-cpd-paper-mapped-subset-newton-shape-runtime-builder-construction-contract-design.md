@@ -151,9 +151,13 @@ The single construction row should include:
         "kind": "box",
         "status": "mapped",
         "detail": "mapped",
-        "center": [0.0, 0.0, 0.0],
-        "axes": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
-        "dimensions": {"half_extents": [1.0, 0.5, 0.25]},
+        "center": [1.0, 0.5, 0.25],
+        "axes": [
+            [0.0, 0.0, 1.0],
+            [8.000013929428336e-07, 0.99999999999968, 0.0],
+            [-0.99999999999968, 8.000013929428336e-07, 0.0],
+        ],
+        "dimensions": {"half_extents": [0.25, 0.5000008000012329, 1.0000004000003766]},
     },
     "repo_local_static_shape_helper": "_add_static_shape",
     "repo_local_static_shape_helper_called": True,
@@ -163,20 +167,20 @@ The single construction row should include:
     "recorded_builder_call": {
         "method": "add_shape_box",
         "body": -1,
-        "hx": 1.0,
-        "hy": 0.5,
-        "hz": 0.25,
+        "hx": 0.25,
+        "hy": 0.5000008000012329,
+        "hz": 1.0000004000003766,
         "xform": {
             "kind": "fake_wp_transform",
-            "translation": [0.0, 0.0, 0.0],
+            "translation": [1.0, 0.5, 0.25],
             "rotation": {
                 "kind": "fake_wp_quat_from_matrix",
                 "matrix": {
                     "kind": "fake_wp_matrix_from_cols",
                     "cols": [
-                        [1.0, 0.0, 0.0],
-                        [0.0, 1.0, 0.0],
                         [0.0, 0.0, 1.0],
+                        [8.000013929428336e-07, 0.99999999999968, 0.0],
+                        [-0.99999999999968, 8.000013929428336e-07, 0.0],
                     ],
                 },
             },

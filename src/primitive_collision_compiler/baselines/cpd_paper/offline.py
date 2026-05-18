@@ -144,6 +144,9 @@ _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT = (
 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
 )
+_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
+)
 _PAPER_COLLISION_PACKAGE_GENERATION_CLAIM_BOUNDARY = (
     "single_fixture_box_only_offline_collision_package_artifact_"
     "not_paper_vocabulary_runtime_admissibility_or_newton"
@@ -838,6 +841,12 @@ def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_construction(
 def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_builder_preflight() -> list[str]:
     return [
         _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+    ]
+
+
+def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_builder_construction() -> list[str]:
+    return [
+        _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
     ]
 
 
@@ -11800,6 +11809,575 @@ def _paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload
     }
 
 
+_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_PAYLOAD_FALSE_FLAGS = (
+    "paper_faithful_offline_allowed",
+    "paper_faithful_offline_supported",
+    "newton_support_claimed",
+    "approximation_policy_applied",
+    "real_usd_loaded",
+    "benchmark_run",
+    "collision_quality_measured",
+    "deployment_or_certification_claimed",
+    "package_generation_triggered",
+    "newton_runtime_triggered",
+    "real_usd_triggered",
+    "benchmark_triggered",
+    "newton_runtime_allowed",
+    "approximation_policy_enabled",
+    "silent_drop_allowed",
+    "mapping_attempted",
+    "newton_shape_mapping_triggered",
+    "newton_shape_object_created",
+    "newton_shape_runtime_construction_triggered",
+    "newton_shape_runtime_boundary_crossed",
+    "newton_engine_shape_object_created",
+    "newton_builder_shape_called",
+    "newton_runtime_builder_invoked",
+    "newton_model_builder_instantiated",
+    "newton_model_finalized",
+    "real_newton_import_triggered",
+    "newton_collision_pipeline_created",
+    "newton_collision_pipeline_collide_called",
+    "newton_contact_diagnostic_triggered",
+    "newton_drop_settle_triggered",
+    "newton_sphere_rain_triggered",
+)
+
+_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_TRUE_FLAGS = (
+    "newton_shape_runtime_builder_construction_recorded",
+    "repo_local_recording_builder_shape_call_recorded",
+    "repo_local_static_shape_helper_called",
+)
+
+
+def _paper_newton_shape_runtime_builder_construction_false_flags() -> dict[str, bool]:
+    return {
+        flag: False
+        for flag in _NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_PAYLOAD_FALSE_FLAGS
+    }
+
+
+def _paper_newton_shape_runtime_builder_construction_true_flags() -> dict[str, bool]:
+    return {
+        flag: True
+        for flag in _NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_TRUE_FLAGS
+    }
+
+
+def _paper_validate_runtime_builder_construction_input_true_flags(
+    data: dict[str, object],
+) -> None:
+    for flag in _NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_TRUE_FLAGS:
+        if flag not in data:
+            raise ValueError(
+                "newton_shape_runtime_builder_construction_input_flag_missing:"
+                f"{flag}"
+            )
+        if data[flag] is not True:
+            raise ValueError(
+                "newton_shape_runtime_builder_construction_input_flag_false:"
+                f"{flag}"
+            )
+
+
+def _paper_newton_shape_runtime_builder_construction_mapping(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    try:
+        mapping = _paper_validate_newton_shape_runtime_builder_preflight_mapping(
+            source_row
+        )
+    except ValueError as exc:
+        message = str(exc)
+        prefix = "newton_shape_runtime_builder_preflight_mapping_mismatch:"
+        if message.startswith(prefix):
+            raise ValueError(
+                "newton_shape_runtime_builder_construction_mapping_mismatch:"
+                f"{message.removeprefix(prefix)}"
+            ) from exc
+        raise
+    descriptor = _paper_validate_newton_shape_runtime_construction_descriptor(
+        source_row
+    )
+    mismatch_labels = {
+        "center": mapping["center"] != descriptor["center"],
+        "axes": mapping["axes"] != descriptor["axes"],
+        "half_extents": (
+            mapping["dimensions"]["half_extents"] != descriptor["half_extents"]
+        ),
+    }
+    for field_name, mismatched in mismatch_labels.items():
+        if mismatched:
+            raise ValueError(
+                "newton_shape_runtime_builder_construction_mapping_mismatch:"
+                f"{field_name}"
+            )
+    return mapping
+
+
+def _paper_validate_newton_shape_runtime_builder_construction_call_plan(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    plan = source_row.get("builder_call_plan")
+    if not isinstance(plan, dict):
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_call_plan_mismatch:plan"
+        )
+    if plan.get("method") != "add_shape_box":
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_call_plan_mismatch:method"
+        )
+    if plan.get("call_signature_fields") != ["body", "xform", "hx", "hy", "hz"]:
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_call_plan_mismatch:"
+            "call_signature_fields"
+        )
+    mapping = _paper_newton_shape_runtime_builder_construction_mapping(source_row)
+    half_extents = mapping["dimensions"]["half_extents"]
+    if plan.get("dimension_arguments") != {
+        "hx": half_extents[0],
+        "hy": half_extents[1],
+        "hz": half_extents[2],
+    }:
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_call_plan_mismatch:"
+            "dimension_arguments"
+        )
+    return plan
+
+
+def _paper_newton_shape_runtime_builder_construction_source_row(
+    preflight: dict[str, object],
+) -> dict[str, object]:
+    if (
+        preflight.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+    ):
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_input_gate_id_mismatch"
+        )
+    if (
+        preflight.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+    ):
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_input_next_gate_mismatch"
+        )
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        preflight,
+        error_prefix="newton_shape_runtime_builder_construction_input_flag",
+        required_false_flags=(
+            _NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_PAYLOAD_FALSE_FLAGS
+        ),
+    )
+    _paper_validate_runtime_builder_construction_input_true_flags(preflight)
+    expected_counts = {
+        "newton_shape_runtime_builder_preflight_row_count": 1,
+        "source_newton_shape_runtime_construction_row_count": 1,
+        "source_newton_shape_mapping_record_count": 1,
+        "runtime_builder_preflight_passed_count": 1,
+        "builder_call_plan_count": 1,
+        "builder_call_allowed_count": 0,
+        "later_newton_shape_runtime_builder_candidate_count": 1,
+        "newton_mapping_record_count": 1,
+        "newton_mapper_call_count": 0,
+        "newton_shape_object_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 1,
+        "runtime_admissibility_check_count": 1,
+        "offline_static_runtime_admissibility_check_count": 1,
+        "report_scoped_newton_shape_descriptor_count": 1,
+        "later_newton_shape_runtime_construction_candidate_count": 1,
+        "constructed_newton_shape_mapping_record_count": 1,
+    }
+    for field_name, expected_value in expected_counts.items():
+        if preflight.get(field_name) != expected_value:
+            raise ValueError(
+                "newton_shape_runtime_builder_construction_input_count_mismatch:"
+                f"{field_name}"
+            )
+    rows = preflight.get("newton_shape_runtime_builder_preflight_rows")
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_row_count_mismatch"
+        )
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_row_count_mismatch"
+        )
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        row,
+        error_prefix="newton_shape_runtime_builder_construction_input_flag",
+        required_false_flags=(
+            _NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_PAYLOAD_FALSE_FLAGS
+        ),
+    )
+    _paper_validate_runtime_builder_construction_input_true_flags(row)
+    expected_row_values = {
+        "newton_shape_runtime_builder_preflight_row_id": (
+            "newton_shape_runtime_builder_preflight__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_construction_row_id": (
+            "newton_shape_runtime_construction__paper_single_box__box"
+        ),
+        "source_shape_mapping_row_id": "newton_shape_mapping__paper_single_box__box",
+        "source_package_id": (
+            "paper_single_box:"
+            f"{_PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT}"
+        ),
+        "fixture_id": "paper_single_box",
+        "paper_primitive": "oriented_bounding_box",
+        "primitive_spec_kind": "box",
+        "primitive_id": "paper_single_box__oriented_bounding_box__box",
+        "target_newton_shape_kind": "box",
+        "builder_method_name": "add_shape_box",
+        "builder_call_plan_count": 1,
+        "builder_call_allowed": False,
+        "newton_builder_shape_call_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_runtime_execution_count": 0,
+    }
+    for field_name, expected_value in expected_row_values.items():
+        if row.get(field_name) != expected_value:
+            raise ValueError(
+                "newton_shape_runtime_builder_construction_source_row_mismatch:"
+                f"{field_name}"
+            )
+    _paper_validate_newton_shape_runtime_builder_construction_call_plan(row)
+    if list(_paper_runtime_admissibility_preflight_package_dicts(preflight)):
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_source_package_copy_forbidden"
+        )
+    return row
+
+
+class _PaperFakeWarp:
+    def __init__(self) -> None:
+        self._counts = {
+            "vec3_call_count": 0,
+            "matrix_from_cols_call_count": 0,
+            "quat_from_matrix_call_count": 0,
+            "transform_call_count": 0,
+        }
+
+    def vec3(self, x: float, y: float, z: float) -> list[float]:
+        self._counts["vec3_call_count"] += 1
+        return [float(x), float(y), float(z)]
+
+    def matrix_from_cols(self, *cols: list[float]) -> dict[str, object]:
+        self._counts["matrix_from_cols_call_count"] += 1
+        return {
+            "kind": "fake_wp_matrix_from_cols",
+            "cols": [list(col) for col in cols],
+        }
+
+    def quat_from_matrix(self, matrix: dict[str, object]) -> dict[str, object]:
+        self._counts["quat_from_matrix_call_count"] += 1
+        return {"kind": "fake_wp_quat_from_matrix", "matrix": matrix}
+
+    def transform(
+        self,
+        translation: list[float],
+        rotation: dict[str, object],
+    ) -> dict[str, object]:
+        self._counts["transform_call_count"] += 1
+        return {
+            "kind": "fake_wp_transform",
+            "translation": list(translation),
+            "rotation": rotation,
+        }
+
+    def call_summary(self) -> dict[str, int]:
+        return dict(self._counts)
+
+
+class _PaperRecordingNewtonBuilder:
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
+
+    def add_shape_box(
+        self,
+        *,
+        body: int,
+        xform: dict[str, object],
+        hx: float,
+        hy: float,
+        hz: float,
+    ) -> int:
+        self.calls.append(
+            {
+                "method": "add_shape_box",
+                "body": int(body),
+                "xform": xform,
+                "hx": float(hx),
+                "hy": float(hy),
+                "hz": float(hz),
+            }
+        )
+        return len(self.calls) - 1
+
+
+def _paper_construct_recording_builder_shape_call(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    from primitive_collision_compiler.newton.diagnostics import _add_static_shape
+    from primitive_collision_compiler.reports.schema import NewtonShapeMapping
+
+    mapping_dict = source_row["constructed_newton_shape_mapping_dict"]
+    mapping = NewtonShapeMapping(
+        primitive_id=str(mapping_dict["primitive_id"]),
+        kind=str(mapping_dict["kind"]),
+        status=str(mapping_dict["status"]),
+        detail=str(mapping_dict["detail"]),
+        center=tuple(float(value) for value in mapping_dict["center"]),
+        axes=tuple(
+            tuple(float(axis_value) for axis_value in axis)
+            for axis in mapping_dict["axes"]
+        ),
+        dimensions=dict(mapping_dict["dimensions"]),
+    )
+    builder = _PaperRecordingNewtonBuilder()
+    fake_wp = _PaperFakeWarp()
+    _add_static_shape(builder, mapping, fake_wp)
+    if len(builder.calls) != 1:
+        raise ValueError(
+            "newton_shape_runtime_builder_construction_call_count_mismatch"
+        )
+    return {
+        "recorded_builder_call": builder.calls[0],
+        "fake_wp_call_summary": fake_wp.call_summary(),
+    }
+
+
+def _paper_newton_shape_runtime_builder_construction_row(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    construction = _paper_construct_recording_builder_shape_call(source_row)
+    recorded_call = construction["recorded_builder_call"]
+    fake_wp_summary = construction["fake_wp_call_summary"]
+    mapping = _paper_newton_shape_runtime_builder_construction_mapping(source_row)
+    return {
+        "newton_shape_runtime_builder_construction_row_id": (
+            "newton_shape_runtime_builder_construction__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_builder_preflight_row_id": source_row[
+            "newton_shape_runtime_builder_preflight_row_id"
+        ],
+        "source_newton_shape_runtime_construction_row_id": source_row[
+            "source_newton_shape_runtime_construction_row_id"
+        ],
+        "source_newton_shape_runtime_boundary_preflight_row_id": source_row[
+            "source_newton_shape_runtime_boundary_preflight_row_id"
+        ],
+        "source_shape_mapping_row_id": source_row["source_shape_mapping_row_id"],
+        "source_newton_shape_mapping_preflight_row_id": source_row[
+            "source_newton_shape_mapping_preflight_row_id"
+        ],
+        "source_runtime_admissibility_row_id": source_row[
+            "source_runtime_admissibility_row_id"
+        ],
+        "source_package_id": source_row["source_package_id"],
+        "source_asset_id": source_row["source_asset_id"],
+        "fixture_id": source_row["fixture_id"],
+        "paper_primitive": source_row["paper_primitive"],
+        "primitive_spec_kind": source_row["primitive_spec_kind"],
+        "primitive_id": source_row["primitive_id"],
+        "target_newton_shape_kind": source_row["target_newton_shape_kind"],
+        "descriptor_kind": source_row["descriptor_kind"],
+        "descriptor_center": source_row["descriptor_center"],
+        "descriptor_axes": source_row["descriptor_axes"],
+        "descriptor_half_extents": source_row["descriptor_half_extents"],
+        "constructed_newton_shape_mapping_dict": mapping,
+        "builder_call_plan": source_row["builder_call_plan"],
+        "builder_method_name": "add_shape_box",
+        "builder_body_argument": -1,
+        "builder_dimension_arguments": {
+            "hx": recorded_call["hx"],
+            "hy": recorded_call["hy"],
+            "hz": recorded_call["hz"],
+        },
+        "builder_xform_descriptor": recorded_call["xform"],
+        "repo_local_static_shape_helper": "_add_static_shape",
+        "repo_local_static_shape_helper_called": True,
+        "recording_builder_kind": (
+            "repo_local_recording_builder_not_newton_model_builder"
+        ),
+        "recording_builder_shape_call_count": 1,
+        "recorded_builder_method_name": recorded_call["method"],
+        "recorded_builder_call": recorded_call,
+        "recorded_builder_call_count": 1,
+        "fake_wp_call_summary": fake_wp_summary,
+        "real_newton_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 1,
+        "runtime_admissibility_check_count": 1,
+        "offline_static_runtime_admissibility_check_count": 1,
+        "report_scoped_newton_shape_descriptor_count": 1,
+        "later_newton_shape_runtime_construction_candidate_count": 1,
+        "constructed_newton_shape_mapping_record_count": 1,
+        "newton_mapping_record_count": 1,
+        **_paper_newton_shape_runtime_builder_construction_false_flags(),
+        **_paper_newton_shape_runtime_builder_construction_true_flags(),
+    }
+
+
+def _paper_newton_shape_runtime_builder_construction_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "newton_shape_runtime_builder_construction_row_count": len(rows),
+        "source_newton_shape_runtime_builder_preflight_row_count": len(rows),
+        "recording_builder_shape_call_count": sum(
+            int(row["recording_builder_shape_call_count"]) for row in rows
+        ),
+        "recorded_builder_call_count": sum(
+            int(row["recorded_builder_call_count"]) for row in rows
+        ),
+        "repo_local_static_shape_helper_call_count": sum(
+            int(row["repo_local_static_shape_helper_called"]) for row in rows
+        ),
+        "real_newton_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "fixture_id_distribution": _paper_policy_distribution(rows, "fixture_id"),
+        "target_newton_shape_kind_distribution": _paper_policy_distribution(
+            rows,
+            "target_newton_shape_kind",
+        ),
+        "builder_method_distribution": _paper_policy_distribution(
+            rows,
+            "builder_method_name",
+        ),
+    }
+
+
+def _paper_mapped_subset_newton_shape_runtime_builder_construction_contract_payload(
+    preflight: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_newton_shape_runtime_builder_construction_source_row(
+        preflight
+    )
+    row = _paper_newton_shape_runtime_builder_construction_row(source_row)
+    rows = [row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_builder_construction()
+    )
+    return {
+        "gate_id": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+        ),
+        "gate_status": (
+            "implemented_single_fixture_repo_local_recording_builder_"
+            "construction_only_partial"
+        ),
+        "closed_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+        ),
+        "input_gate_id": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        ),
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "repo_local_recording_builder_construction_complete_"
+            "engine_builder_boundary_preflight_contract_missing"
+        ),
+        "artifact_kind": "repo_local_recording_builder_call_not_newton_engine_shape",
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "single_synthetic_box_repo_local_recording_builder_only_"
+            "no_real_newton_import_no_engine_shape_no_model_finalize_no_runtime"
+        ),
+        "runtime_builder_construction_action": (
+            "call_repo_local_static_shape_helper_with_recording_builder_and_fake_wp"
+        ),
+        "newton_shape_runtime_builder_construction_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+            ),
+            "closed_gate": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+            ),
+            "next_engine_builder_boundary_preflight_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
+            ),
+            "source_builder_preflight_rows_required": 1,
+            "repo_local_recording_builder_calls_required": 1,
+            "real_newton_import_allowed": False,
+            "newton_model_builder_allowed": False,
+            "newton_engine_shape_object_allowed": False,
+            "newton_builder_shape_call_allowed": False,
+            "newton_runtime_allowed": False,
+            "newton_support_claim_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": preflight["gate_id"],
+            "input_next_required_gate": preflight["next_required_gate"],
+            "source_newton_shape_runtime_builder_preflight_row_id": source_row[
+                "newton_shape_runtime_builder_preflight_row_id"
+            ],
+            "source_newton_shape_runtime_construction_row_id": source_row[
+                "source_newton_shape_runtime_construction_row_id"
+            ],
+            "source_shape_mapping_row_id": source_row[
+                "source_shape_mapping_row_id"
+            ],
+            "source_package_id": source_row["source_package_id"],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_id": source_row["primitive_id"],
+            "source_target_newton_shape_kind": source_row[
+                "target_newton_shape_kind"
+            ],
+            "source_builder_method_name": source_row["builder_method_name"],
+            "input_builder_call_plan_count": 1,
+        },
+        "newton_shape_runtime_builder_construction_row_count": 1,
+        "source_newton_shape_runtime_builder_preflight_row_count": 1,
+        "recording_builder_shape_call_count": 1,
+        "recorded_builder_call_count": 1,
+        "repo_local_static_shape_helper_call_count": 1,
+        "real_newton_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "generated_runtime_primitive_spec_count": 1,
+        "generated_primitive_spec_count": 1,
+        "generated_collision_package_count": 1,
+        "runtime_admissibility_check_count": 1,
+        "offline_static_runtime_admissibility_check_count": 1,
+        "report_scoped_newton_shape_descriptor_count": 1,
+        "later_newton_shape_runtime_construction_candidate_count": 1,
+        "constructed_newton_shape_mapping_record_count": 1,
+        "builder_call_plan_count": 1,
+        "newton_shape_runtime_builder_construction_rows": rows,
+        "coverage_summary": (
+            _paper_newton_shape_runtime_builder_construction_coverage_summary(rows)
+        ),
+        "remaining_gaps": remaining_gaps,
+        **_paper_newton_shape_runtime_builder_construction_false_flags(),
+        **_paper_newton_shape_runtime_builder_construction_true_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -12067,12 +12645,17 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
             mapped_subset_newton_shape_runtime_construction
         )
     )
+    mapped_subset_newton_shape_runtime_builder_construction = (
+        _paper_mapped_subset_newton_shape_runtime_builder_construction_contract_payload(
+            mapped_subset_newton_shape_runtime_builder_preflight
+        )
+    )
     paper_faithful_scope_audit = _paper_faithful_offline_scope_audit_payload()
     missing_before_paper_faithful = paper_faithful_scope_audit[
         "blocking_criteria_ids"
     ]
     runtime_lane_remaining_gates = (
-        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_builder_preflight()
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_builder_construction()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -12154,6 +12737,7 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT,
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT,
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
             "runtime_lane_remaining_gates": runtime_lane_remaining_gates,
@@ -12252,6 +12836,9 @@ def build_cpd_paper_offline_report() -> dict[str, object]:
         ),
         "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract": (
             mapped_subset_newton_shape_runtime_builder_preflight
+        ),
+        "paper_mapped_subset_newton_shape_runtime_builder_construction_contract": (
+            mapped_subset_newton_shape_runtime_builder_construction
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

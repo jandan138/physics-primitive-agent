@@ -304,7 +304,17 @@ The repository has not reached that full result. It has reached the workbench st
     Newton engine shape objects, Newton runtime, real-USD, benchmark, collision-quality,
     deployment, and certification triggers at zero or false, keeps the report partial, and points
     next to `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`.
-62. Records and configs can preserve exactly what was run.
+62. `paper_mapped_subset_newton_shape_runtime_builder_construction_contract` is now implemented as
+    a single-fixture offline/report-only Newton shape runtime builder-construction gate, not a
+    real Newton builder call and not Newton execution. It consumes that builder-preflight row,
+    reconstructs the repo-local mapping record, calls only the repo-local static shape dispatch
+    helper with a recording builder and fake Warp-like module, records exactly one JSON-safe
+    fake-builder `add_shape_box` call artifact, keeps real Newton imports, Newton `ModelBuilder`
+    instantiation, Newton engine shape objects, real Newton builder calls, Newton runtime,
+    real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
+    false, keeps the report partial, and points next to
+    `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`.
+63. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -902,7 +912,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset Newton shape runtime-boundary preflight contract, still partial and still without Newton shape object construction/Newton execution/real-USD
 -> mapped-subset Newton shape runtime-construction contract, still partial and still without Newton engine shape object construction/builder shape call/Newton execution/real-USD
 -> mapped-subset Newton shape runtime builder-preflight contract, still partial and still without builder shape call/Newton engine shape object construction/Newton execution/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_builder_construction_contract
+-> mapped-subset Newton shape runtime builder-construction contract, still partial and still without real Newton builder shape call/Newton engine shape object construction/Newton execution/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -1013,25 +1024,28 @@ offline/static Newton shape-mapping descriptor contract now also exist. The sing
 offline/static Newton shape runtime-boundary preflight contract and the single-fixture
 offline/report-scoped Newton shape runtime-construction contract now also exist. The
 single-fixture offline/static Newton shape runtime builder-preflight contract now also exists. The
-immediate next code slice should keep the same boundary and implement the bounded
-`paper_mapped_subset_newton_shape_runtime_builder_construction_contract` without running Newton
-task diagnostics:
+single-fixture offline/report-only Newton shape runtime builder-construction contract now also
+exists. The immediate next code slice should keep the same boundary and implement the bounded
+`paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract` without
+running Newton task diagnostics:
 
-1. Implement `paper_mapped_subset_newton_shape_runtime_builder_construction_contract` after the
-   builder-preflight contract has recorded one JSON-safe future box builder call plan for a
-   repo-local `NewtonShapeMapping.to_dict()` record.
+1. Implement `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`
+   after the builder-construction contract has recorded one JSON-safe repo-local
+   recording-builder `add_shape_box` call artifact for a repo-local `NewtonShapeMapping.to_dict()`
+   record.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
    runtime-admissibility row, shape-mapping preflight row, descriptor row, runtime-boundary
-   preflight row, repo-local mapping record, and builder-call-plan record for the deterministic
-   `paper_single_box` OBB/box source report-scoped until a later Newton execution gate exists.
+   preflight row, repo-local mapping record, builder-call-plan record, and recording-builder call
+   artifact for the deterministic `paper_single_box` OBB/box source report-scoped until a later
+   Newton execution gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton support/execution, real USD,
    benchmark, collision-quality, deployment readiness, and safety certification claims
-   unsupported; the next gate may only record one repo-local recording-builder `add_shape_box` call
-   artifact while keeping `newton_engine_shape_object_count: 0`, no runtime, no real USD,
-   no benchmark, and no quality boundary changes.
+   unsupported; the next gate may only preflight the real engine-builder boundary while keeping
+   `newton_engine_shape_object_count: 0`, no runtime, no real USD, no benchmark, and no quality
+   boundary changes.
 5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality

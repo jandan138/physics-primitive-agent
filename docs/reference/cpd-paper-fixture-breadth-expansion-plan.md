@@ -249,8 +249,13 @@ exactly one repo-local `NewtonShapeMapping.to_dict()` mapping record for that de
 still creating zero Newton engine shape objects, making zero builder shape calls, and running zero
 Newton code. The Newton shape runtime builder-preflight contract now records one JSON-safe future
 box builder call plan for that mapping record while still creating zero Newton engine shape
-objects, making zero builder shape calls, and running zero Newton code. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_builder_construction_contract`, not Newton execution.
+objects, making zero builder shape calls, and running zero Newton code. The Newton shape runtime
+builder-construction contract now records one JSON-safe repo-local recording-builder
+`add_shape_box` call artifact while still importing no real Newton runtime, creating zero Newton
+engine shape objects, making zero real Newton builder shape calls, and running zero Newton code.
+The current next gate is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`, not Newton
+execution.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -314,7 +319,11 @@ exactly one repo-local `NewtonShapeMapping.to_dict()` mapping record while still
 Newton engine shape objects, zero builder shape calls, and zero Newton runtime executions, plus a
 single-fixture offline/static Newton shape runtime builder-preflight contract that records exactly
 one JSON-safe future box builder call plan while still allowing zero builder calls, creating zero
-Newton engine shape objects, and running zero Newton runtime executions.
+Newton engine shape objects, and running zero Newton runtime executions, plus a single-fixture
+offline/report-only Newton shape runtime builder-construction contract that records one JSON-safe
+repo-local recording-builder `add_shape_box` call artifact while still importing no real Newton
+runtime, creating zero Newton engine shape objects, making zero real Newton builder shape calls,
+and running zero Newton runtime executions.
 ```
 
 It does not support:

@@ -82,11 +82,16 @@ Do not claim:
   row while still creating zero Newton engine shape objects, making zero builder shape calls, and
   running zero Newton code. The Newton shape runtime builder-preflight contract then records
   exactly one JSON-safe future box builder call plan while still making zero builder calls,
-  creating zero Newton engine shape objects, and running zero Newton code. It is still not package
-  readiness, not Newton readiness, not Newton support or execution, not full CPD reproduction, and
-  not safety evidence.
+  creating zero Newton engine shape objects, and running zero Newton code. The Newton shape
+  runtime builder-construction contract then calls only the repo-local static shape dispatch
+  helper with a recording builder and fake Warp-like module and records one JSON-safe fake
+  `add_shape_box` call artifact while still importing no real Newton runtime, instantiating no
+  `newton.ModelBuilder`, creating zero Newton engine shape objects, making zero real Newton
+  builder shape calls, and running zero Newton code. It is still not package readiness, not
+  Newton readiness, not Newton support or execution, not full CPD reproduction, and not safety
+  evidence.
   The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`.
 
 ## First 4-Week Proof Point
 
