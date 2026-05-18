@@ -74,10 +74,13 @@ Do not claim:
   synthetic box dict, with zero mapping attempts, zero Newton mapping records, and zero Newton
   runtime executions. The Newton shape-mapping contract then records exactly one offline/static
   report-scoped descriptor dict for target kind `box`, still with zero mapping attempts, zero
-  Newton mapping records, zero Newton shape objects, and zero Newton runtime executions. It is
-  still not package readiness, not Newton readiness, not Newton support or execution, not full CPD
-  reproduction, and not safety evidence. The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
+  Newton mapping records, zero Newton shape objects, and zero Newton runtime executions. The
+  Newton shape runtime-boundary preflight contract then records exactly one later
+  runtime-construction candidate for that descriptor row while still constructing zero Newton
+  shape objects and running zero Newton code. It is still not package readiness, not Newton
+  readiness, not Newton support or execution, not full CPD reproduction, and not safety evidence.
+  The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_construction_contract`.
 
 ## First 4-Week Proof Point
 

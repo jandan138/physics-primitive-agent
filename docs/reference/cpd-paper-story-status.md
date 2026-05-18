@@ -280,7 +280,15 @@ The repository has not reached that full result. It has reached the workbench st
     records, Newton shape objects, Newton runtime, real-USD, benchmark, collision-quality,
     deployment, and certification triggers at zero or false, keeps the report partial, and points
     next to `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
-59. Records and configs can preserve exactly what was run.
+59. `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract` is now implemented as a
+    single-fixture offline/static Newton shape runtime-boundary preflight, not Newton object
+    construction and not Newton execution. It consumes the descriptor row for the same synthetic
+    `paper_single_box` box artifact, records exactly one later runtime-construction candidate,
+    keeps mapping attempts, Newton mapping records, Newton shape objects, Newton runtime,
+    real-USD, benchmark, collision-quality, deployment, and certification triggers at zero or
+    false, keeps the report partial, and points next to
+    `paper_mapped_subset_newton_shape_runtime_construction_contract`.
+60. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -289,9 +297,9 @@ from 3 to 2 in a named report. The runtime roadmap now stays Newton-native first
 `cone`, and `ellipsoid` have dated synthetic diagnostic-path evidence before any paper-only
 primitive is considered for Newton tasks.
 
-This means the reproduction infrastructure is in place, and the first native primitive fitting
-hook exists for synthetic toy meshes. The paper-lane audit now has an explicit scope decision, but
-the paper-faithful decomposition and evaluation story still needs to be implemented.
+This means the workbench/reporting infrastructure is in place, and the first native primitive
+fitting hook exists for synthetic toy meshes. The paper-lane audit now has an explicit scope
+decision, but the paper-faithful decomposition and evaluation story still needs to be implemented.
 
 The 2026-05-16 four-block status audit summarized this position as an internal diagnostic
 workbench that was mostly missing integration/report ergonomics rather than Newton plumbing. The
@@ -875,7 +883,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset runtime-admissibility contract, still partial and still without Newton shape mapping/Newton/real-USD
 -> mapped-subset Newton shape-mapping preflight contract, still partial and still without Newton shape mapping/Newton/real-USD
 -> mapped-subset Newton shape-mapping contract, still partial and still without Newton shape object construction/Newton execution/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract
+-> mapped-subset Newton shape runtime-boundary preflight contract, still partial and still without Newton shape object construction/Newton execution/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_construction_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -982,14 +991,15 @@ The single-fixture package-generation preflight contract and single-fixture Coll
 generation contract now also exist. The single-fixture runtime-admissibility preflight contract
 and the single-fixture offline/static runtime-admissibility contract now also exist. The
 single-fixture offline/static Newton shape-mapping preflight contract and the single-fixture
-offline/static Newton shape-mapping descriptor contract now also exist. The immediate next code
-slice should keep the same boundary and implement the bounded
-`paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract` without running Newton task
+offline/static Newton shape-mapping descriptor contract now also exist. The single-fixture
+offline/static Newton shape runtime-boundary preflight contract now also exists. The immediate
+next code slice should keep the same boundary and implement the bounded
+`paper_mapped_subset_newton_shape_runtime_construction_contract` without running Newton task
 diagnostics:
 
-1. Implement `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract` after the
-   descriptor contract has proved one package-shaped artifact has a report-scoped static Newton
-   shape descriptor row.
+1. Implement `paper_mapped_subset_newton_shape_runtime_construction_contract` after the
+   runtime-boundary preflight contract has recorded one later runtime-construction candidate for a
+   report-scoped static Newton shape descriptor row.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
    runtime-admissibility row, shape-mapping preflight row, and descriptor row for the deterministic
@@ -998,8 +1008,9 @@ diagnostics:
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton support/execution, real USD,
    benchmark, collision-quality, deployment readiness, and safety certification claims
-   unsupported; the next gate may only preflight whether this one synthetic descriptor row may
-   approach a later Newton runtime boundary, not whether Newton has constructed or run it.
+   unsupported; the next gate may only construct a bounded single synthetic Newton shape object if
+   the implementation preserves the existing no-runtime, no-real-USD, no-benchmark, and no-quality
+   boundaries.
 5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality

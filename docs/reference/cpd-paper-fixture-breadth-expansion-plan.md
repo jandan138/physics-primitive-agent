@@ -242,8 +242,10 @@ package. The Newton shape-mapping preflight now records one offline/static mappe
 that same box artifact while still running zero mapping attempts and zero Newton code. The
 shape-mapping contract now records one offline/static report-scoped descriptor dict for that same
 box artifact while still running zero mapping attempts, creating zero Newton shape objects, and
-running zero Newton code. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`, not Newton execution.
+running zero Newton code. The Newton shape runtime-boundary preflight contract now records one
+later runtime-construction candidate for that descriptor row while still creating zero Newton shape
+objects and running zero Newton code. The current next gate is
+`paper_mapped_subset_newton_shape_runtime_construction_contract`, not Newton execution.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -299,7 +301,9 @@ Newton runtime executions, plus a single-fixture offline/static Newton shape-map
 contract that records exactly one mapper-handoff row while still generating zero Newton shape
 mappings and zero Newton runtime executions, plus a single-fixture offline/static Newton
 shape-mapping contract that records exactly one report-scoped descriptor dict while still creating
-zero Newton shape objects and zero Newton runtime executions.
+zero Newton shape objects and zero Newton runtime executions, plus a single-fixture offline/static
+Newton shape runtime-boundary preflight contract that records one later runtime-construction
+candidate while still creating zero Newton shape objects and zero Newton runtime executions.
 ```
 
 It does not support:
