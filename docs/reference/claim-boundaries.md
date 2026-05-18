@@ -141,9 +141,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   led to the builder-construction gate. The builder-construction contract then records one
   JSON-safe repo-local recording-builder `add_shape_box` call artifact while still importing no
   real Newton runtime, instantiating no `newton.ModelBuilder`, creating zero Newton engine shape
-  objects, making zero real Newton builder shape calls, and running zero Newton code. It advances
-  the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`.
+  objects, making zero real Newton builder shape calls, and running zero Newton code. The
+  following engine-builder boundary-preflight contract records one future-boundary checklist row
+  while still importing no real Newton runtime, instantiating no `newton.ModelBuilder`, making no
+  real builder calls, finalizing no model, creating no collision pipeline, and running zero Newton
+  code. It advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`.
   The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
@@ -203,7 +206,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract` after the
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
@@ -214,10 +217,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   runtime-boundary preflight, runtime-construction, collision-package generation preflight,
   collision-package generation, runtime-admissibility preflight, and offline/static
   runtime-admissibility contract, offline/static Newton shape-mapping preflight, offline/static
-  Newton shape-mapping descriptor, offline/static Newton shape runtime-boundary preflight, and
+  Newton shape-mapping descriptor, offline/static Newton shape runtime-boundary preflight,
   offline/report-scoped Newton shape runtime-construction, offline/static Newton shape runtime
-  builder-preflight, and offline/report-only Newton shape runtime recording-builder construction
-  slices.
+  builder-preflight, offline/report-only Newton shape runtime recording-builder construction, and
+  offline/static Newton engine-builder boundary-preflight slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -467,6 +470,17 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   keeping Newton support, real Newton shape object construction, Newton execution, USD,
   benchmark, collision-quality, `paper_faithful_offline`, deployment, and safety claims
   unsupported.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`, a
+  single-fixture offline/static Newton engine-builder boundary preflight contract. It consumes the
+  repo-local recording-builder artifact, records the future real `newton.ModelBuilder` /
+  `add_shape_box` boundary requirements and provenance checks needed before an environment probe,
+  keeps real Newton imports, Newton `ModelBuilder` instantiation, real Newton builder shape calls,
+  Newton engine shape objects, model finalization, collision pipeline calls, and Newton execution
+  at zero, and advances the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` while
+  keeping Newton support, real Newton execution, USD, benchmark, collision-quality,
+  `paper_faithful_offline`, deployment, and safety claims unsupported.
 - The partial `cpd_paper_offline_report` now includes
   `paper_mapped_subset_conversion_candidate_matrix`, a command-only offline candidate matrix, not a
   `CollisionPackage`. It records three future-family review rows, keeps the current 16
@@ -973,8 +987,19 @@ Use these only after broader benchmark records exist.
   artifact through a repo-local recording builder and fake Warp-like module for one synthetic
   `paper_single_box` box mapping record. It keeps real Newton imports, Newton `ModelBuilder`
   instantiation, Newton engine shape objects, real Newton builder shape calls, and runtime
-  counters zero, and marks the next runtime-lane gate as
+  counters zero, and at that stage marks the next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`.
+- Do not describe
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract` as Newton
+  readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
+  collision-quality validation, paper primitive vocabulary coverage, approximation support,
+  `paper_faithful_offline` support, full CPD reproduction, deployment readiness, safety
+  certification, real Newton environment success, or general package readiness. It records one
+  offline/static future-boundary checklist row for one synthetic `paper_single_box` box mapping
+  record. It keeps real Newton imports, Newton `ModelBuilder` instantiation, real Newton builder
+  shape calls, Newton engine shape objects, model finalization, collision pipeline calls, and
+  runtime counters zero, and marks the next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`.
 
 ## Wording Rules
 

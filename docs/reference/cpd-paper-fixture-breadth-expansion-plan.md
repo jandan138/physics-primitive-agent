@@ -253,8 +253,13 @@ objects, making zero builder shape calls, and running zero Newton code. The Newt
 builder-construction contract now records one JSON-safe repo-local recording-builder
 `add_shape_box` call artifact while still importing no real Newton runtime, creating zero Newton
 engine shape objects, making zero real Newton builder shape calls, and running zero Newton code.
+The Newton engine-builder boundary-preflight contract now records one offline/static checklist row
+for the future real `newton.ModelBuilder` / `add_shape_box` environment boundary while still
+importing no real Newton runtime, instantiating no real `newton.ModelBuilder`, making zero real
+builder shape calls, finalizing no model, creating no collision pipeline, and running zero Newton
+code.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`, not Newton
+`paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`, not Newton
 execution.
 Batch C
 stays important because it checks
@@ -323,7 +328,11 @@ Newton engine shape objects, and running zero Newton runtime executions, plus a 
 offline/report-only Newton shape runtime builder-construction contract that records one JSON-safe
 repo-local recording-builder `add_shape_box` call artifact while still importing no real Newton
 runtime, creating zero Newton engine shape objects, making zero real Newton builder shape calls,
-and running zero Newton runtime executions.
+and running zero Newton runtime executions, plus a single-fixture offline/static Newton
+engine-builder boundary-preflight contract that records one future-boundary checklist row while
+still importing no real Newton runtime, instantiating no real `newton.ModelBuilder`, making zero
+real builder shape calls, finalizing no model, creating no collision pipeline, and running zero
+Newton runtime executions.
 ```
 
 It does not support:

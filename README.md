@@ -249,12 +249,19 @@ half extents. It records `recording_builder_shape_call_count: 1`,
 `recorded_builder_call_count: 1`, and `repo_local_static_shape_helper_call_count: 1`, while
 keeping `real_newton_import_count: 0`, `newton_engine_shape_object_count: 0`,
 `newton_builder_shape_call_count: 0`, and `newton_runtime_execution_count: 0`. The current
-runtime-lane gate is now
-`paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`. The package dict,
+report now also includes
+`paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`, a
+single-fixture offline/static boundary-preflight checklist before any real Newton engine-builder
+boundary crossing. It consumes the recording-builder call artifact, records the future
+`newton.ModelBuilder` / `add_shape_box` boundary requirements and the provenance checks needed
+before a later environment probe, and keeps real Newton imports, Newton `ModelBuilder`
+instantiation, real Newton builder shape calls, model finalization, collision pipeline calls, and
+Newton execution at zero. The current runtime-lane gate is now
+`paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`. The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
-descriptor row, runtime-boundary preflight row, runtime-construction mapping record, and builder
-preflight plan and recording-builder call artifact are only serialized offline candidates for one
-box fixture: they are not general
+descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
+preflight plan, recording-builder call artifact, and engine-builder boundary preflight row are
+only serialized offline candidates for one box fixture: they are not general
 package readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD
 evidence, not benchmark evidence, not
 collision-quality evidence, not paper primitive vocabulary coverage, not `paper_faithful_offline`,

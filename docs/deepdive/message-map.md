@@ -89,9 +89,13 @@ Do not claim:
   `newton.ModelBuilder`, creating zero Newton engine shape objects, making zero real Newton
   builder shape calls, and running zero Newton code. It is still not package readiness, not
   Newton readiness, not Newton support or execution, not full CPD reproduction, and not safety
-  evidence.
+  evidence. The Newton shape runtime engine-builder boundary preflight contract then records one
+  offline/static checklist row for the future real `newton.ModelBuilder` / `add_shape_box`
+  boundary while still importing no real Newton runtime, instantiating no `newton.ModelBuilder`,
+  making zero real Newton builder shape calls, finalizing no model, creating no collision
+  pipeline, and running zero Newton code.
   The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`.
 
 ## First 4-Week Proof Point
 

@@ -407,8 +407,17 @@ Proposed | In progress | Complete | Failed | Superseded
   artifact through the repo-local static shape helper and fake Warp-like module, keeps real Newton
   imports, Newton `ModelBuilder` instantiation, Newton engine shape objects, real Newton builder
   shape calls, Newton runtime, real-USD, benchmark, and collision-quality evidence at zero or
-  false, and advances the runtime-lane next gate to
+  false, and at that stage advances the runtime-lane next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract`.
+- [2026-05-18 CPD Paper Mapped-Subset Newton Shape Runtime Engine-Builder Boundary Preflight Contract](2026-05-18-cpd-paper-mapped-subset-newton-shape-runtime-engine-builder-boundary-preflight-contract.md):
+  single-fixture offline/static Newton engine-builder boundary-preflight contract inside
+  `cpd_paper_offline_report`. It consumes the repo-local recording-builder call artifact, records
+  one future-boundary checklist row for the later real `newton.ModelBuilder` / `add_shape_box`
+  environment boundary, keeps real Newton imports, Newton `ModelBuilder` instantiation, real
+  builder shape calls, model finalization, collision pipeline calls, Newton runtime, real-USD,
+  benchmark, and collision-quality evidence at zero or false, and advances the runtime-lane next
+  gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
