@@ -1029,9 +1029,9 @@ task diagnostics:
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton support/execution, real USD,
    benchmark, collision-quality, deployment readiness, and safety certification claims
-   unsupported; the next gate may only construct a bounded single synthetic Newton shape object if
-   the implementation preserves the existing no-runtime, no-real-USD, no-benchmark, and no-quality
-   boundaries.
+   unsupported; the next gate may only record one repo-local recording-builder `add_shape_box` call
+   artifact while keeping `newton_engine_shape_object_count: 0`, no runtime, no real USD,
+   no benchmark, and no quality boundary changes.
 5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality
