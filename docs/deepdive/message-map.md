@@ -77,10 +77,13 @@ Do not claim:
   Newton mapping records, zero Newton shape objects, and zero Newton runtime executions. The
   Newton shape runtime-boundary preflight contract then records exactly one later
   runtime-construction candidate for that descriptor row while still constructing zero Newton
-  shape objects and running zero Newton code. It is still not package readiness, not Newton
-  readiness, not Newton support or execution, not full CPD reproduction, and not safety evidence.
+  shape objects and running zero Newton code. The Newton shape runtime-construction contract then
+  records exactly one repo-local `NewtonShapeMapping.to_dict()` mapping record for that descriptor
+  row while still creating zero Newton engine shape objects, making zero builder shape calls, and
+  running zero Newton code. It is still not package readiness, not Newton readiness, not Newton
+  support or execution, not full CPD reproduction, and not safety evidence.
   The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_construction_contract`.
+  `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
 
 ## First 4-Week Proof Point
 

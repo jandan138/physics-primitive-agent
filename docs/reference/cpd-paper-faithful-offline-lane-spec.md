@@ -302,8 +302,8 @@ Before `paper_faithful_offline` wording, record:
   serialization, runtime-boundary preflight, runtime-construction, collision-package generation
   preflight, collision-package generation, runtime-admissibility preflight, and offline/static
   runtime-admissibility contracts, plus the Newton shape-mapping preflight and descriptor
-  contracts, plus the Newton shape runtime-boundary preflight contract:
-  `paper_mapped_subset_newton_shape_runtime_construction_contract_missing`.
+  contracts, plus the Newton shape runtime-boundary preflight and runtime-construction contracts:
+  `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -601,7 +601,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_construction_contract
+-> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_builder_preflight_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -748,7 +748,7 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_construction_contract` after the later
+`paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` after the later
 single-fixture collision-package generation contract constructs one synthetic, report-scoped
 `CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract records one
 later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row, the
@@ -756,8 +756,10 @@ offline/static runtime-admissibility contract records one finite-geometry and bo
 the Newton shape-mapping preflight records one static mapper-handoff row, and the Newton
 shape-mapping contract records one static report-scoped descriptor dict. The Newton shape
 runtime-boundary preflight contract then records one later runtime-construction candidate for that
-descriptor. Those checks are still report-only; they are not real Newton shape object construction
-or Newton execution.
+descriptor. The Newton shape runtime-construction contract then records exactly one repo-local
+`NewtonShapeMapping.to_dict()` mapping record for that descriptor while keeping Newton engine
+shape objects, builder shape calls, and Newton execution at zero. Those checks are still
+report-only; they are not real Newton shape object construction or Newton execution.
 
 `paper_mapped_subset_primitivespec_validation_contract` closes only the offline PrimitiveSpec
 validation gate. It validates the dry-run contract field list, mapped future shape labels, six
@@ -862,3 +864,15 @@ Newton shape mapping, not Newton shape object creation, not Newton execution, no
 evidence, not benchmark or collision-quality evidence, not paper primitive vocabulary coverage,
 not approximation support, not full CPD reproduction, not `paper_faithful_offline`, and not
 deployment, safety, or certification evidence.
+The Newton shape runtime-construction contract now closes only the single-fixture
+offline/report-scoped construction gate, consumes that runtime-boundary candidate row, records
+exactly one repo-local `NewtonShapeMapping.to_dict()` mapping record for target kind `box`, and
+advances the current next gate to
+`paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`. It records
+`constructed_newton_shape_mapping_record_count: 1`, `newton_mapping_record_count: 1`,
+`newton_mapper_call_count: 0`, `newton_engine_shape_object_count: 0`,
+`newton_builder_shape_call_count: 0`, and `newton_runtime_execution_count: 0`. It is not Newton
+readiness, not Newton support, not real Newton shape object creation, not Newton execution, not
+real-USD evidence, not benchmark or collision-quality evidence, not paper primitive vocabulary
+coverage, not approximation support, not full CPD reproduction, not `paper_faithful_offline`, and
+not deployment, safety, or certification evidence.

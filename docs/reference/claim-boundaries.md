@@ -130,8 +130,13 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   records one offline/static report-scoped descriptor dict for the same synthetic box dict, keeps
   mapping attempts, Newton mapping records, Newton shape objects, and Newton execution at zero. The
   later Newton shape runtime-boundary preflight contract then records one later
-  runtime-construction candidate and advances the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_construction_contract`.
+  runtime-construction candidate and advances that stage to
+  `paper_mapped_subset_newton_shape_runtime_construction_contract`. The Newton shape
+  runtime-construction contract then consumes that runtime-boundary candidate and records exactly
+  one repo-local `NewtonShapeMapping.to_dict()` mapping record for the synthetic
+  `paper_single_box` box descriptor, with zero Newton mapper calls, zero Newton engine shape
+  objects, zero builder shape calls, and zero Newton runtime executions. It advances the current
+  next gate to `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
   The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
@@ -190,7 +195,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
-  gate as `paper_mapped_subset_newton_shape_runtime_construction_contract` after the
+  gate as `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
@@ -201,8 +206,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   runtime-boundary preflight, runtime-construction, collision-package generation preflight,
   collision-package generation, runtime-admissibility preflight, and offline/static
   runtime-admissibility contract, offline/static Newton shape-mapping preflight, offline/static
-  Newton shape-mapping descriptor, and offline/static Newton shape runtime-boundary preflight
-  slices.
+  Newton shape-mapping descriptor, offline/static Newton shape runtime-boundary preflight, and
+  offline/report-scoped Newton shape runtime-construction slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -421,6 +426,16 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   execution, real-USD evidence, benchmark evidence, collision-quality validation, paper primitive
   vocabulary coverage, approximation support, `paper_faithful_offline` support, full CPD
   reproduction, deployment readiness, safety certification, or general package readiness.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_mapped_subset_newton_shape_runtime_construction_contract`, a single-fixture
+  offline/report-scoped Newton shape runtime-construction contract. It consumes the
+  runtime-boundary candidate and records exactly one repo-local `NewtonShapeMapping.to_dict()`
+  mapping record for the synthetic `paper_single_box` box descriptor, with zero Newton mapper
+  calls, zero Newton engine shape objects, zero builder shape calls, and zero Newton runtime
+  executions. It advances the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` while keeping Newton
+  support, real Newton shape object construction, Newton execution, USD, benchmark,
+  collision-quality, `paper_faithful_offline`, deployment, and safety claims unsupported.
 - The partial `cpd_paper_offline_report` now includes
   `paper_mapped_subset_conversion_candidate_matrix`, a command-only offline candidate matrix, not a
   `CollisionPackage`. It records three future-family review rows, keeps the current 16
@@ -902,6 +917,15 @@ Use these only after broader benchmark records exist.
   runtime-construction candidate row for one synthetic `paper_single_box` box descriptor, keeps
   all Newton runtime/object counters zero, and marks the next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_construction_contract`.
+- Do not describe `paper_mapped_subset_newton_shape_runtime_construction_contract` as Newton
+  readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
+  collision-quality validation, paper primitive vocabulary coverage, approximation support,
+  `paper_faithful_offline` support, full CPD reproduction, deployment readiness, safety
+  certification, or general package readiness. It records one repo-local
+  `NewtonShapeMapping.to_dict()` mapping record for one synthetic `paper_single_box` box descriptor,
+  keeps all Newton engine shape object, builder shape call, and runtime counters zero, and marks
+  the next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
 
 ## Wording Rules
 
