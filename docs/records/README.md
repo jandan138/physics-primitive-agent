@@ -418,6 +418,14 @@ Proposed | In progress | Complete | Failed | Superseded
   benchmark, and collision-quality evidence at zero or false, and advances the runtime-lane next
   gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`.
+- [2026-05-19 CPD Paper Mapped-Subset Newton Shape Runtime Engine-Builder Environment Probe Contract](2026-05-19-cpd-paper-mapped-subset-newton-shape-runtime-engine-builder-environment-probe-contract.md):
+  single-fixture bounded Newton/Warp environment-provenance contract inside
+  `cpd_paper_offline_report`. It consumes the engine-builder boundary-preflight row, records
+  configured-source-dir status and JSON-safe `find_spec` provenance shape, keeps real runtime
+  imports, Newton `ModelBuilder` instantiation, real builder shape calls, model finalization,
+  collision pipeline calls, Newton runtime, real-USD, benchmark, and collision-quality evidence at
+  zero or false, and advances the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

@@ -93,9 +93,11 @@ Do not claim:
   offline/static checklist row for the future real `newton.ModelBuilder` / `add_shape_box`
   boundary while still importing no real Newton runtime, instantiating no `newton.ModelBuilder`,
   making zero real Newton builder shape calls, finalizing no model, creating no collision
-  pipeline, and running zero Newton code.
+  pipeline, and running zero Newton code. The bounded environment-probe contract then records
+  configured-source-dir status and JSON-safe Newton/Warp `find_spec` provenance shape while the
+  default report remains no-config and imports no real Newton or Warp runtime.
   The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`.
 
 ## First 4-Week Proof Point
 
