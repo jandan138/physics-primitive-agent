@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import importlib.util
 import subprocess
 import sys
 from pathlib import Path
@@ -30,6 +31,169 @@ def inspect_newton_environment(source_dir: str | Path) -> EnvironmentReport:
         source_commit=source_commit,
         checks=tuple(checks),
     )
+
+
+def inspect_newton_warp_provenance(
+    source_dir: str | Path | None = None,
+) -> dict[str, object]:
+    source_path = None if source_dir in (None, "") else Path(str(source_dir))
+    source_resolved = source_path.resolve() if source_path is not None else None
+    original_path = list(sys.path)
+    original_modules = _snapshot_runtime_modules(("newton", "warp"))
+    _clear_runtime_modules(("newton", "warp"))
+    inserted = False
+
+    try:
+        if source_path is None:
+            rows = [
+                _module_not_run_row(name, "not_run_source_dir_not_configured")
+                for name in ("newton", "warp")
+            ]
+            source_status = "not_configured"
+            probe_status = "not_run_source_dir_not_configured"
+        elif not source_path.exists():
+            rows = [
+                _module_not_run_row(name, "not_run_source_dir_missing")
+                for name in ("newton", "warp")
+            ]
+            source_status = "missing"
+            probe_status = "not_run_source_dir_missing"
+        else:
+            sys.path.insert(0, str(source_path))
+            inserted = True
+            rows = [
+                _module_find_spec_row(name, source_resolved)
+                for name in ("newton", "warp")
+            ]
+            source_status = "found"
+            probe_status = (
+                "provenance_checked"
+                if all(row["provenance_status"] == "found_within_source_dir" for row in rows)
+                else "dependency_gap"
+            )
+    finally:
+        if inserted:
+            try:
+                sys.path.remove(str(source_path))
+            except ValueError:
+                pass
+        sys.path[:] = original_path
+        _clear_runtime_modules(("newton", "warp"))
+        sys.modules.update(original_modules)
+
+    return {
+        "probe_mode": "find_spec_provenance_only",
+        "probe_status": probe_status,
+        "source_dir_configured": source_path is not None,
+        "source_dir": None if source_path is None else str(source_path),
+        "source_dir_resolved": None if source_resolved is None else str(source_resolved),
+        "source_dir_status": source_status,
+        "source_commit": _git_commit(source_path) if source_path is not None else None,
+        "module_probe_rows": rows,
+        "module_probe_row_count": len(rows),
+        "runtime_module_import_isolation_checked": True,
+        "sys_path_restored": sys.path == original_path,
+        "cached_runtime_modules_restored": _runtime_modules_restored(
+            original_modules,
+            ("newton", "warp"),
+        ),
+    }
+
+
+def _module_not_run_row(module_name: str, status: str) -> dict[str, object]:
+    detail = (
+        "newton.source_dir not configured for offline report"
+        if status == "not_run_source_dir_not_configured"
+        else "newton.source_dir does not exist"
+    )
+    return {
+        "module_name": module_name,
+        "module_available": False,
+        "module_origin": None,
+        "module_origin_resolved": None,
+        "module_search_locations": [],
+        "module_search_locations_resolved": [],
+        "provenance_status": status,
+        "provenance_detail": detail,
+        "resolved_within_source_dir": False,
+        "import_attempted": False,
+    }
+
+
+def _module_find_spec_row(
+    module_name: str,
+    source_resolved: Path | None,
+) -> dict[str, object]:
+    try:
+        spec = importlib.util.find_spec(module_name)
+    except (ImportError, AttributeError, ValueError) as exc:
+        return {
+            "module_name": module_name,
+            "module_available": False,
+            "module_origin": None,
+            "module_origin_resolved": None,
+            "module_search_locations": [],
+            "module_search_locations_resolved": [],
+            "provenance_status": "find_spec_error",
+            "provenance_detail": f"{type(exc).__name__}: {exc}",
+            "resolved_within_source_dir": False,
+            "import_attempted": False,
+        }
+
+    if spec is None:
+        return {
+            "module_name": module_name,
+            "module_available": False,
+            "module_origin": None,
+            "module_origin_resolved": None,
+            "module_search_locations": [],
+            "module_search_locations_resolved": [],
+            "provenance_status": "module_not_found",
+            "provenance_detail": f"{module_name} spec not found",
+            "resolved_within_source_dir": False,
+            "import_attempted": False,
+        }
+
+    origin = spec.origin
+    origin_resolved = _resolve_optional_path(origin)
+    locations = [str(path) for path in spec.submodule_search_locations or ()]
+    locations_resolved = [
+        str(Path(location).resolve()) for location in locations
+    ]
+    provenance_paths = [
+        Path(path)
+        for path in ([origin_resolved] if origin_resolved is not None else [])
+        + locations_resolved
+    ]
+    within_source = bool(
+        source_resolved is not None
+        and provenance_paths
+        and all(_is_relative_to(path, source_resolved) for path in provenance_paths)
+    )
+    return {
+        "module_name": module_name,
+        "module_available": True,
+        "module_origin": origin,
+        "module_origin_resolved": origin_resolved,
+        "module_search_locations": locations,
+        "module_search_locations_resolved": locations_resolved,
+        "provenance_status": (
+            "found_within_source_dir" if within_source else "found_outside_source_dir"
+        ),
+        "provenance_detail": (
+            "module spec resolved within source_dir"
+            if within_source
+            else "module spec resolved outside source_dir"
+        ),
+        "resolved_within_source_dir": within_source,
+        "import_attempted": False,
+    }
+
+
+def _resolve_optional_path(path: str | None) -> str | None:
+    if not path or path in {"built-in", "frozen", "namespace"}:
+        return None
+    return str(Path(path).resolve())
 
 
 def _inspect_import(source_path: Path, checks: list[EnvironmentCheck]) -> str:
@@ -86,10 +250,32 @@ def _snapshot_newton_modules() -> dict[str, object]:
     }
 
 
+def _snapshot_runtime_modules(roots: tuple[str, ...]) -> dict[str, object]:
+    return {
+        name: module
+        for name, module in sys.modules.items()
+        if any(name == root or name.startswith(f"{root}.") for root in roots)
+    }
+
+
 def _clear_newton_modules():
     for name in list(sys.modules):
         if name == "newton" or name.startswith("newton."):
             sys.modules.pop(name, None)
+
+
+def _clear_runtime_modules(roots: tuple[str, ...]):
+    for name in list(sys.modules):
+        if any(name == root or name.startswith(f"{root}.") for root in roots):
+            sys.modules.pop(name, None)
+
+
+def _runtime_modules_restored(
+    original_modules: dict[str, object],
+    roots: tuple[str, ...],
+) -> bool:
+    current = _snapshot_runtime_modules(roots)
+    return current == original_modules
 
 
 def _is_relative_to(path: Path, parent: Path) -> bool:

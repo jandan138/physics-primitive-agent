@@ -258,8 +258,12 @@ for the future real `newton.ModelBuilder` / `add_shape_box` environment boundary
 importing no real Newton runtime, instantiating no real `newton.ModelBuilder`, making zero real
 builder shape calls, finalizing no model, creating no collision pipeline, and running zero Newton
 code.
+The Newton engine-builder environment-probe contract now records one bounded environment-provenance
+row for the same synthetic box mapping, including configured-source-dir status and JSON-safe
+Newton/Warp `find_spec` provenance shape. The default report remains no-config and imports no real
+Newton or Warp runtime.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`, not Newton
+`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`, not Newton
 execution.
 Batch C
 stays important because it checks
@@ -332,7 +336,9 @@ and running zero Newton runtime executions, plus a single-fixture offline/static
 engine-builder boundary-preflight contract that records one future-boundary checklist row while
 still importing no real Newton runtime, instantiating no real `newton.ModelBuilder`, making zero
 real builder shape calls, finalizing no model, creating no collision pipeline, and running zero
-Newton runtime executions.
+Newton runtime executions, plus a single-fixture bounded Newton/Warp environment-probe contract
+that records configured-source-dir status and JSON-safe `find_spec` provenance shape while keeping
+real runtime imports and Newton execution at zero.
 ```
 
 It does not support:

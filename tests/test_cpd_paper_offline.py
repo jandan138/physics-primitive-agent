@@ -2,6 +2,8 @@ import ast
 import hashlib
 import inspect
 import json
+import sys
+import types
 from math import isfinite, pi, sqrt
 from pathlib import Path
 
@@ -9,6 +11,7 @@ import pytest
 
 import primitive_collision_compiler.baselines.cpd_paper.offline as cpd_paper_offline
 import primitive_collision_compiler.newton.diagnostics as newton_diagnostics
+import primitive_collision_compiler.newton.env as newton_env
 from primitive_collision_compiler.baselines.cpd_like.primitives import SUPPORTED_PRIMITIVES
 from primitive_collision_compiler.baselines.cpd_paper.offline import (
     CPD_PAPER_OFFLINE_CLAIM_BOUNDARY,
@@ -115,8 +118,11 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CO
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
 )
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
+)
 EXPECTED_CURRENT_REPORT_NEXT_GATE = (
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT
 )
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
@@ -133,7 +139,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -212,6 +218,9 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_REMAINING_GAPS = [
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT,
+]
+EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -2309,6 +2318,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2551,6 +2561,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -4749,6 +4760,17 @@ def _newton_shape_runtime_engine_builder_boundary_preflight_input() -> dict[str,
     )
 
 
+def _newton_shape_runtime_engine_builder_environment_probe_input() -> dict[str, object]:
+    report = build_cpd_paper_offline_report()
+    return json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
+            ]
+        )
+    )
+
+
 GENERATION_PREFLIGHT_ROW_FALSE_FLAGS = (
     "primitive_spec_generated",
     "collision_package_generated",
@@ -6485,6 +6507,137 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_ROW_REQUIRED_KEYS = {
     "newton_mapping_record_count",
     *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_FALSE_FLAGS,
     *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_TRUE_FLAGS,
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_FALSE_FLAGS = (
+    *(
+        flag
+        for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_FALSE_FLAGS
+        if flag != "newton_engine_builder_environment_probe_triggered"
+    ),
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_TRUE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_TRUE_FLAGS,
+    "newton_shape_runtime_engine_builder_environment_probe_recorded",
+    "newton_engine_builder_environment_probe_triggered",
+    "newton_source_dir_resolution_checked",
+    "newton_module_provenance_checked",
+    "warp_module_provenance_checked",
+    "runtime_module_import_isolation_checked",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_PAYLOAD_REQUIRED_KEYS = {
+    "gate_id",
+    "gate_status",
+    "closed_gate",
+    "input_gate_id",
+    "next_required_gate",
+    "decision",
+    "decision_reason",
+    "artifact_kind",
+    "schema_version",
+    "source_scope",
+    "implementation_boundary",
+    "environment_probe_action",
+    "environment_probe_contract",
+    "input_contract_summary",
+    "newton_shape_runtime_engine_builder_environment_probe_row_count",
+    "source_newton_shape_runtime_engine_builder_boundary_preflight_row_count",
+    "module_probe_row_count",
+    "source_dir_configured_count",
+    "newton_module_available_count",
+    "warp_module_available_count",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_model_finalized_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_runtime_execution_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "generated_runtime_primitive_spec_count",
+    "generated_primitive_spec_count",
+    "generated_collision_package_count",
+    "runtime_admissibility_check_count",
+    "offline_static_runtime_admissibility_check_count",
+    "report_scoped_newton_shape_descriptor_count",
+    "constructed_newton_shape_mapping_record_count",
+    "builder_call_plan_count",
+    "newton_shape_runtime_engine_builder_environment_probe_rows",
+    "coverage_summary",
+    "remaining_gaps",
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_TRUE_FLAGS,
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_ROW_REQUIRED_KEYS = {
+    "newton_shape_runtime_engine_builder_environment_probe_row_id",
+    "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id",
+    "source_newton_shape_runtime_builder_construction_row_id",
+    "source_newton_shape_runtime_builder_preflight_row_id",
+    "source_newton_shape_runtime_construction_row_id",
+    "source_newton_shape_runtime_boundary_preflight_row_id",
+    "source_shape_mapping_row_id",
+    "source_newton_shape_mapping_preflight_row_id",
+    "source_runtime_admissibility_row_id",
+    "source_package_id",
+    "source_asset_id",
+    "fixture_id",
+    "paper_primitive",
+    "primitive_spec_kind",
+    "primitive_id",
+    "target_newton_shape_kind",
+    "future_newton_builder_constructor_name",
+    "future_newton_builder_method_name",
+    "future_runtime_module_names",
+    "environment_probe_status",
+    "environment_probe_mode",
+    "environment_probe_claim_boundary",
+    "newton_source_dir_config_key",
+    "newton_source_dir_configured",
+    "newton_source_dir",
+    "newton_source_dir_resolved",
+    "newton_source_dir_status",
+    "module_probe_rows",
+    "module_probe_row_count",
+    "newton_module_name",
+    "newton_module_available",
+    "newton_module_origin",
+    "newton_module_origin_resolved",
+    "newton_module_provenance_status",
+    "warp_module_name",
+    "warp_module_available",
+    "warp_module_origin",
+    "warp_module_origin_resolved",
+    "warp_module_provenance_status",
+    "sys_path_restored",
+    "cached_runtime_modules_restored",
+    "runtime_module_import_isolation_checked",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_model_finalized_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_runtime_execution_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "generated_runtime_primitive_spec_count",
+    "generated_primitive_spec_count",
+    "generated_collision_package_count",
+    "runtime_admissibility_check_count",
+    "offline_static_runtime_admissibility_check_count",
+    "report_scoped_newton_shape_descriptor_count",
+    "constructed_newton_shape_mapping_record_count",
+    "newton_mapping_record_count",
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_TRUE_FLAGS,
 }
 
 
@@ -12520,7 +12673,7 @@ def test_cpd_paper_records_mapped_subset_runtime_admissibility_contract_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -12985,7 +13138,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_preflight_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -13466,7 +13619,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_contract_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT
@@ -13873,7 +14026,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_boundary_preflight
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
@@ -14524,7 +14677,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_construction_contr
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT
@@ -15181,7 +15334,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_preflight_
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
@@ -15929,7 +16082,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_constructi
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
@@ -16513,7 +16666,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_bou
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
@@ -16934,8 +17087,11 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_reject
     [
         ("newton_shape_runtime_builder_construction_row_id", "wrong_row"),
         ("source_newton_shape_runtime_builder_preflight_row_id", "wrong_row"),
+        ("source_newton_shape_mapping_preflight_row_id", "wrong_mapping_preflight"),
+        ("source_runtime_admissibility_row_id", "wrong_runtime_admissibility"),
         ("source_shape_mapping_row_id", "wrong_mapping_row"),
         ("source_package_id", "wrong_package"),
+        ("source_asset_id", "wrong_asset"),
         ("fixture_id", "wrong_fixture"),
         ("paper_primitive", "sphere"),
         ("primitive_spec_kind", "sphere"),
@@ -16999,6 +17155,650 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_static
         cpd_paper_offline._paper_newton_shape_runtime_engine_builder_boundary_preflight_source_row,
         cpd_paper_offline._paper_newton_shape_runtime_engine_builder_boundary_preflight_row,
         cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract_payload,
+    )
+    source = "\n".join(inspect.getsource(helper) for helper in helpers)
+
+    forbidden_patterns = (
+        'importlib.import_module("newton")',
+        'importlib.import_module("warp")',
+        "import newton",
+        "from newton",
+        "import warp",
+        "from warp",
+        "ModelBuilder(",
+        "CollisionPipeline(",
+        ".add_shape_box(",
+        ".finalize(",
+        ".collide(",
+        "run_newton_contact_smoke",
+        "run_newton_drop_settle",
+        "run_newton_sphere_rain",
+        "inspect_newton_environment",
+        "_import_newton_runtime",
+        "load_first_mesh",
+        "inspect_usd_asset",
+        "timeit",
+        "perf_counter",
+        "benchmark_metric",
+        "measure_collision_quality",
+    )
+    for pattern in forbidden_patterns:
+        assert pattern not in source
+
+    tree = ast.parse(source)
+    forbidden_import_roots = {"newton", "warp"}
+    forbidden_call_attrs = {
+        "ModelBuilder",
+        "CollisionPipeline",
+        "add_shape_box",
+        "finalize",
+        "collide",
+        "_import_newton_runtime",
+        "inspect_newton_environment",
+        "run_newton_contact_smoke",
+        "run_newton_drop_settle",
+        "run_newton_sphere_rain",
+    }
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                assert alias.name.split(".")[0] not in forbidden_import_roots
+        if isinstance(node, ast.ImportFrom) and node.module is not None:
+            assert node.module.split(".")[0] not in forbidden_import_roots
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+            assert node.func.attr not in forbidden_call_attrs
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            assert node.func.id not in forbidden_call_attrs
+
+
+def test_newton_warp_provenance_helper_records_specs_without_importing_modules(
+    tmp_path, monkeypatch
+):
+    source_dir = tmp_path / "newton-source"
+    (source_dir / "newton").mkdir(parents=True)
+    (source_dir / "warp").mkdir()
+    (source_dir / "newton" / "__init__.py").write_text("__version__ = 'fake'\n")
+    (source_dir / "warp" / "__init__.py").write_text("__version__ = 'fake'\n")
+    cached_newton = types.ModuleType("newton")
+    cached_warp = types.ModuleType("warp")
+    monkeypatch.setitem(sys.modules, "newton", cached_newton)
+    monkeypatch.setitem(sys.modules, "warp", cached_warp)
+
+    probe = newton_env.inspect_newton_warp_provenance(source_dir)
+
+    assert probe["probe_mode"] == "find_spec_provenance_only"
+    assert probe["source_dir_configured"] is True
+    assert probe["source_dir"] == str(source_dir)
+    assert probe["source_dir_resolved"] == str(source_dir.resolve())
+    assert probe["source_dir_status"] == "found"
+    assert probe["runtime_module_import_isolation_checked"] is True
+    assert probe["sys_path_restored"] is True
+    assert probe["cached_runtime_modules_restored"] is True
+    assert sys.modules["newton"] is cached_newton
+    assert sys.modules["warp"] is cached_warp
+    rows = {row["module_name"]: row for row in probe["module_probe_rows"]}
+    assert set(rows) == {"newton", "warp"}
+    for module_name, row in rows.items():
+        assert row["module_available"] is True
+        assert row["provenance_status"] == "found_within_source_dir"
+        assert row["resolved_within_source_dir"] is True
+        assert row["module_origin_resolved"].endswith(f"/{module_name}/__init__.py")
+        assert row["module_search_locations_resolved"] == [
+            str((source_dir / module_name).resolve())
+        ]
+        assert row["import_attempted"] is False
+    json.dumps(probe)
+
+
+def test_newton_warp_provenance_helper_records_unconfigured_source_without_lookup():
+    probe = newton_env.inspect_newton_warp_provenance(None)
+
+    assert probe["probe_mode"] == "find_spec_provenance_only"
+    assert probe["source_dir_configured"] is False
+    assert probe["source_dir"] is None
+    assert probe["source_dir_resolved"] is None
+    assert probe["source_dir_status"] == "not_configured"
+    assert probe["runtime_module_import_isolation_checked"] is True
+    assert probe["sys_path_restored"] is True
+    assert probe["cached_runtime_modules_restored"] is True
+    assert [row["module_name"] for row in probe["module_probe_rows"]] == [
+        "newton",
+        "warp",
+    ]
+    for row in probe["module_probe_rows"]:
+        assert row["module_available"] is False
+        assert row["module_origin"] is None
+        assert row["provenance_status"] == "not_run_source_dir_not_configured"
+        assert row["import_attempted"] is False
+
+
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
+    ]
+
+    assert report["next_required_gate"] == EXPECTED_CURRENT_REPORT_NEXT_GATE
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
+    )
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
+    )
+    assert payload["closed_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT
+    )
+    assert (
+        payload[
+            "newton_shape_runtime_engine_builder_environment_probe_row_count"
+        ]
+        == 1
+    )
+    assert (
+        payload[
+            "source_newton_shape_runtime_engine_builder_boundary_preflight_row_count"
+        ]
+        == 1
+    )
+    assert payload["module_probe_row_count"] == 2
+    assert payload["source_dir_configured_count"] == 0
+    assert payload["real_newton_import_count"] == 0
+    assert payload["real_warp_import_count"] == 0
+    assert payload["newton_model_builder_instantiated_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert (
+        payload["remaining_gaps"]
+        == EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS
+    )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_payload_schema_is_exact():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
+    ]
+    boundary = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
+    ]
+    source_row = boundary[
+        "newton_shape_runtime_engine_builder_boundary_preflight_rows"
+    ][0]
+
+    assert set(payload) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_PAYLOAD_REQUIRED_KEYS
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["gate_status"] == (
+        "implemented_single_fixture_newton_engine_builder_environment_probe_only_partial"
+    )
+    assert payload["decision"] == "remain_partial"
+    assert payload["decision_reason"] == (
+        "newton_engine_builder_environment_probe_complete_"
+        "api_surface_contract_missing"
+    )
+    assert payload["artifact_kind"] == (
+        "newton_engine_builder_environment_probe_record_not_runtime_execution"
+    )
+    assert payload["implementation_boundary"] == (
+        "single_synthetic_box_engine_builder_environment_probe_only_"
+        "no_model_builder_no_shape_call_no_finalize_no_collision_pipeline_no_runtime"
+    )
+    assert payload["environment_probe_action"] == (
+        "record_newton_warp_find_spec_provenance_without_importing_runtime_modules"
+    )
+    assert payload["environment_probe_contract"] == {
+        "input_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
+        ),
+        "closed_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
+        ),
+        "next_engine_builder_api_surface_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT
+        ),
+        "source_boundary_preflight_rows_required": 1,
+        "runtime_module_names_required": ["newton", "warp"],
+        "probe_method": "importlib_util_find_spec_without_import_module",
+        "real_runtime_import_allowed": False,
+        "newton_model_builder_allowed": False,
+        "newton_engine_shape_object_allowed": False,
+        "newton_builder_shape_call_allowed": False,
+        "newton_model_finalize_allowed": False,
+        "newton_collision_pipeline_allowed": False,
+        "newton_runtime_allowed": False,
+        "newton_support_claim_allowed": False,
+    }
+    assert payload["input_contract_summary"] == {
+        "input_gate_id": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
+        ),
+        "input_next_required_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
+        ),
+        "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id": source_row[
+            "newton_shape_runtime_engine_builder_boundary_preflight_row_id"
+        ],
+        "source_newton_shape_runtime_builder_construction_row_id": source_row[
+            "source_newton_shape_runtime_builder_construction_row_id"
+        ],
+        "source_shape_mapping_row_id": source_row["source_shape_mapping_row_id"],
+        "source_package_id": source_row["source_package_id"],
+        "source_fixture_id": "paper_single_box",
+        "source_primitive_id": source_row["primitive_id"],
+        "source_target_newton_shape_kind": "box",
+        "source_future_runtime_module_names": ["newton", "warp"],
+    }
+    assert payload["coverage_summary"] == {
+        "newton_shape_runtime_engine_builder_environment_probe_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_boundary_preflight_row_count": 1,
+        "module_probe_row_count": 2,
+        "source_dir_configured_count": 0,
+        "newton_module_available_count": 0,
+        "warp_module_available_count": 0,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "fixture_id_distribution": {"paper_single_box": 1},
+        "target_newton_shape_kind_distribution": {"box": 1},
+        "environment_probe_status_distribution": {
+            "not_run_source_dir_not_configured": 1
+        },
+    }
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_records_one_provenance_row():
+    report = build_cpd_paper_offline_report()
+    source_row = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
+    ]["newton_shape_runtime_engine_builder_boundary_preflight_rows"][0]
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
+    ]
+    rows = payload[
+        "newton_shape_runtime_engine_builder_environment_probe_rows"
+    ]
+
+    assert len(rows) == 1
+    row = rows[0]
+    assert set(row) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_ROW_REQUIRED_KEYS
+    )
+    assert row["newton_shape_runtime_engine_builder_environment_probe_row_id"] == (
+        "newton_shape_runtime_engine_builder_environment_probe__paper_single_box__box"
+    )
+    assert (
+        row["source_newton_shape_runtime_engine_builder_boundary_preflight_row_id"]
+        == source_row["newton_shape_runtime_engine_builder_boundary_preflight_row_id"]
+    )
+    assert row["source_newton_shape_runtime_builder_construction_row_id"] == (
+        source_row["source_newton_shape_runtime_builder_construction_row_id"]
+    )
+    assert row["source_shape_mapping_row_id"] == source_row[
+        "source_shape_mapping_row_id"
+    ]
+    assert row["source_package_id"] == source_row["source_package_id"]
+    assert row["fixture_id"] == "paper_single_box"
+    assert row["paper_primitive"] == "oriented_bounding_box"
+    assert row["primitive_spec_kind"] == "box"
+    assert row["primitive_id"] == (
+        "paper_single_box__oriented_bounding_box__box"
+    )
+    assert row["target_newton_shape_kind"] == "box"
+    assert row["future_newton_builder_constructor_name"] == "newton.ModelBuilder"
+    assert row["future_newton_builder_method_name"] == "add_shape_box"
+    assert row["future_runtime_module_names"] == ["newton", "warp"]
+    assert row["environment_probe_status"] == "not_run_source_dir_not_configured"
+    assert row["environment_probe_mode"] == "find_spec_provenance_only"
+    assert row["environment_probe_claim_boundary"] == (
+        "bounded_environment_provenance_probe_only_not_newton_runtime_execution"
+    )
+    assert row["newton_source_dir_config_key"] == "newton.source_dir"
+    assert row["newton_source_dir_configured"] is False
+    assert row["newton_source_dir"] is None
+    assert row["newton_source_dir_resolved"] is None
+    assert row["newton_source_dir_status"] == "not_configured"
+    assert row["module_probe_row_count"] == 2
+    assert row["newton_module_name"] == "newton"
+    assert row["newton_module_available"] is False
+    assert row["newton_module_origin"] is None
+    assert row["newton_module_origin_resolved"] is None
+    assert row["newton_module_provenance_status"] == (
+        "not_run_source_dir_not_configured"
+    )
+    assert row["warp_module_name"] == "warp"
+    assert row["warp_module_available"] is False
+    assert row["warp_module_origin"] is None
+    assert row["warp_module_origin_resolved"] is None
+    assert row["warp_module_provenance_status"] == (
+        "not_run_source_dir_not_configured"
+    )
+    assert row["module_probe_rows"] == [
+        {
+            "module_name": "newton",
+            "module_available": False,
+            "module_origin": None,
+            "module_origin_resolved": None,
+            "module_search_locations": [],
+            "module_search_locations_resolved": [],
+            "provenance_status": "not_run_source_dir_not_configured",
+            "provenance_detail": "newton.source_dir not configured for offline report",
+            "resolved_within_source_dir": False,
+            "import_attempted": False,
+        },
+        {
+            "module_name": "warp",
+            "module_available": False,
+            "module_origin": None,
+            "module_origin_resolved": None,
+            "module_search_locations": [],
+            "module_search_locations_resolved": [],
+            "provenance_status": "not_run_source_dir_not_configured",
+            "provenance_detail": "newton.source_dir not configured for offline report",
+            "resolved_within_source_dir": False,
+            "import_attempted": False,
+        },
+    ]
+    assert row["sys_path_restored"] is True
+    assert row["cached_runtime_modules_restored"] is True
+    assert row["runtime_module_import_isolation_checked"] is True
+    assert row["real_newton_import_count"] == 0
+    assert row["real_warp_import_count"] == 0
+    assert row["newton_model_builder_instantiated_count"] == 0
+    assert row["newton_builder_shape_call_count"] == 0
+    assert row["newton_runtime_execution_count"] == 0
+    assert list(_recursive_package_dicts(payload)) == []
+    json.dumps(row)
+    assert _contains_callable(row) is False
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_FALSE_FLAGS,
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_boundary_flags_stay_false(
+    field_name,
+):
+    payload = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
+    ]
+
+    assert payload[field_name] is False
+    assert payload[
+        "newton_shape_runtime_engine_builder_environment_probe_rows"
+    ][0][field_name] is False
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_TRUE_FLAGS,
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_record_flags_are_true(
+    field_name,
+):
+    payload = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
+    ]
+
+    assert payload[field_name] is True
+    assert payload[
+        "newton_shape_runtime_engine_builder_environment_probe_rows"
+    ][0][field_name] is True
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "error_label"),
+    [
+        (
+            "gate_id",
+            "stale_gate",
+            "newton_shape_runtime_engine_builder_environment_probe_input_gate_id_mismatch",
+        ),
+        (
+            "next_required_gate",
+            "stale_gate",
+            "newton_shape_runtime_engine_builder_environment_probe_input_next_gate_mismatch",
+        ),
+        (
+            "newton_shape_runtime_engine_builder_boundary_preflight_row_count",
+            2,
+            "newton_shape_runtime_engine_builder_environment_probe_input_count_mismatch:"
+            "newton_shape_runtime_engine_builder_boundary_preflight_row_count",
+        ),
+        (
+            "recorded_builder_call_count",
+            2,
+            "newton_shape_runtime_engine_builder_environment_probe_input_count_mismatch:"
+            "recorded_builder_call_count",
+        ),
+        (
+            "newton_builder_shape_call_count",
+            1,
+            "newton_shape_runtime_engine_builder_environment_probe_input_count_mismatch:"
+            "newton_builder_shape_call_count",
+        ),
+        (
+            "newton_engine_shape_object_count",
+            1,
+            "newton_shape_runtime_engine_builder_environment_probe_input_count_mismatch:"
+            "newton_engine_shape_object_count",
+        ),
+        (
+            "real_newton_import_count",
+            1,
+            "newton_shape_runtime_engine_builder_environment_probe_input_count_mismatch:"
+            "real_newton_import_count",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_rejects_input_drift(
+    field_name,
+    bad_value,
+    error_label,
+):
+    payload = _newton_shape_runtime_engine_builder_environment_probe_input()
+    payload[field_name] = bad_value
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_TRUE_FLAGS,
+)
+@pytest.mark.parametrize("scope", ("payload", "row"))
+@pytest.mark.parametrize(
+    ("mutation", "error_suffix"),
+    [
+        ("missing", "missing"),
+        ("false", "false"),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_rejects_input_true_flag_drift(
+    field_name,
+    scope,
+    mutation,
+    error_suffix,
+):
+    payload = _newton_shape_runtime_engine_builder_environment_probe_input()
+    target = payload
+    if scope == "row":
+        rows = [
+            json.loads(json.dumps(row))
+            for row in payload[
+                "newton_shape_runtime_engine_builder_boundary_preflight_rows"
+            ]
+        ]
+        target = rows[0]
+        payload[
+            "newton_shape_runtime_engine_builder_boundary_preflight_rows"
+        ] = rows
+    if mutation == "missing":
+        target.pop(field_name)
+    else:
+        target[field_name] = False
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "newton_shape_runtime_engine_builder_environment_probe_input_flag_"
+            f"{error_suffix}:{field_name}"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize("case", ("empty", "not_rows", "non_dict_row", "two_rows"))
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_rejects_row_list_drift(
+    case,
+):
+    payload = _newton_shape_runtime_engine_builder_environment_probe_input()
+    rows = [
+        json.loads(json.dumps(row))
+        for row in payload[
+            "newton_shape_runtime_engine_builder_boundary_preflight_rows"
+        ]
+    ]
+    if case == "empty":
+        payload["newton_shape_runtime_engine_builder_boundary_preflight_rows"] = []
+    elif case == "not_rows":
+        payload["newton_shape_runtime_engine_builder_boundary_preflight_rows"] = (
+            "not_rows"
+        )
+    elif case == "non_dict_row":
+        payload["newton_shape_runtime_engine_builder_boundary_preflight_rows"] = [None]
+    else:
+        payload["newton_shape_runtime_engine_builder_boundary_preflight_rows"] = (
+            rows + rows
+        )
+
+    with pytest.raises(
+        ValueError,
+        match="newton_shape_runtime_engine_builder_environment_probe_row_count_mismatch",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_FALSE_FLAGS,
+)
+@pytest.mark.parametrize("scope", ("payload", "row"))
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_rejects_input_flags(
+    field_name,
+    scope,
+):
+    payload = _newton_shape_runtime_engine_builder_environment_probe_input()
+    if scope == "payload":
+        payload[field_name] = True
+    else:
+        rows = [
+            json.loads(json.dumps(row))
+            for row in payload[
+                "newton_shape_runtime_engine_builder_boundary_preflight_rows"
+            ]
+        ]
+        rows[0][field_name] = True
+        payload[
+            "newton_shape_runtime_engine_builder_boundary_preflight_rows"
+        ] = rows
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "newton_shape_runtime_engine_builder_environment_probe_input_flag_true:"
+            f"{field_name}"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value"),
+    [
+        (
+            "newton_shape_runtime_engine_builder_boundary_preflight_row_id",
+            "wrong_row",
+        ),
+        ("source_newton_shape_runtime_builder_construction_row_id", "wrong_row"),
+        ("source_newton_shape_mapping_preflight_row_id", "wrong_mapping_preflight"),
+        ("source_runtime_admissibility_row_id", "wrong_runtime_admissibility"),
+        ("source_shape_mapping_row_id", "wrong_mapping_row"),
+        ("source_package_id", "wrong_package"),
+        ("source_asset_id", "wrong_asset"),
+        ("fixture_id", "wrong_fixture"),
+        ("paper_primitive", "sphere"),
+        ("primitive_spec_kind", "sphere"),
+        ("primitive_id", "wrong_primitive"),
+        ("target_newton_shape_kind", "sphere"),
+        ("future_newton_builder_constructor_name", "wrong.Builder"),
+        ("future_newton_builder_method_name", "add_shape_sphere"),
+        ("future_runtime_module_names", ["newton"]),
+        ("newton_builder_shape_call_count", 1),
+        ("newton_engine_shape_object_count", 1),
+        ("newton_runtime_execution_count", 1),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_rejects_source_row_drift(
+    field_name,
+    bad_value,
+):
+    payload = _newton_shape_runtime_engine_builder_environment_probe_input()
+    rows = [
+        json.loads(json.dumps(row))
+        for row in payload[
+            "newton_shape_runtime_engine_builder_boundary_preflight_rows"
+        ]
+    ]
+    rows[0][field_name] = bad_value
+    payload["newton_shape_runtime_engine_builder_boundary_preflight_rows"] = rows
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "newton_shape_runtime_engine_builder_environment_probe_source_row_mismatch:"
+            f"{field_name}"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_payload(
+            payload
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_static_boundary_is_environment_only():
+    helpers = (
+        newton_env.inspect_newton_warp_provenance,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_environment_probe_source_row,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_environment_probe_row,
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_payload,
     )
     source = "\n".join(inspect.getsource(helper) for helper in helpers)
 
