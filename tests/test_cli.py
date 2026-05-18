@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract_missing",
+        "paper_mapped_subset_newton_shape_runtime_construction_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
+        == "paper_mapped_subset_newton_shape_runtime_construction_contract"
     )
     assert payload["generated_collision_package_count"] == 1
     assert payload["runtime_admissibility_check_count"] == 1
@@ -1555,7 +1555,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "enclosed_primitive_postprocess",
     ]
     assert payload["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract",
+        "paper_mapped_subset_newton_shape_runtime_construction_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1580,6 +1580,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_runtime_admissibility_contract",
         "paper_mapped_subset_newton_shape_mapping_preflight_contract",
         "paper_mapped_subset_newton_shape_mapping_contract",
+        "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract",
     ]
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
@@ -2613,6 +2614,52 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
             "newton_shape_support_evidence_status"
         ]
         == "pending_later_mapping_contract_no_support_claim"
+    )
+    mapping_contract = payload[
+        "paper_mapped_subset_newton_shape_mapping_contract"
+    ]
+    assert mapping_contract["gate_id"] == (
+        "paper_mapped_subset_newton_shape_mapping_contract"
+    )
+    assert mapping_contract["next_required_gate"] == (
+        "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
+    )
+    assert mapping_contract["shape_mapping_contract_row_count"] == 1
+    assert mapping_contract["report_scoped_newton_shape_descriptor_count"] == 1
+    assert mapping_contract["newton_shape_object_count"] == 0
+    runtime_boundary = payload[
+        "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
+    ]
+    assert runtime_boundary["gate_id"] == (
+        "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
+    )
+    assert runtime_boundary["input_gate_id"] == (
+        "paper_mapped_subset_newton_shape_mapping_contract"
+    )
+    assert runtime_boundary["next_required_gate"] == (
+        "paper_mapped_subset_newton_shape_runtime_construction_contract"
+    )
+    assert (
+        runtime_boundary[
+            "newton_shape_runtime_boundary_preflight_row_count"
+        ]
+        == 1
+    )
+    assert (
+        runtime_boundary[
+            "later_newton_shape_runtime_construction_candidate_count"
+        ]
+        == 1
+    )
+    assert runtime_boundary["mapping_attempt_count"] == 0
+    assert runtime_boundary["newton_mapping_record_count"] == 0
+    assert runtime_boundary["newton_shape_object_count"] == 0
+    assert runtime_boundary["newton_runtime_execution_count"] == 0
+    assert (
+        runtime_boundary["newton_shape_runtime_boundary_preflight_rows"][0][
+            "target_newton_shape_kind"
+        ]
+        == "box"
     )
     assert changed_contract["real_usd_triggered"] is False
     assert changed_contract["benchmark_triggered"] is False
