@@ -186,6 +186,7 @@ The row must include:
   `method: add_shape_box`, `call_signature_fields: [body, xform, hx, hy, hz]`,
   `body_binding_policy`, deferred xform policy fields, and `dimension_arguments`
 - `builder_call_plan_count: 1`
+- `later_newton_shape_runtime_builder_candidate: true`
 - `runtime_builder_construction_contract_candidate: true`
 - `newton_mapping_record_count: 1`
 - `newton_mapper_call_count: 0`
