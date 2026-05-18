@@ -104,6 +104,9 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT = (
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
 )
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
+)
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
 )
@@ -119,7 +122,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -189,6 +192,9 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_BOUNDARY_PREFLIGHT_REMAINING_GAPS = [
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT,
+]
+EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -476,7 +482,7 @@ def test_cpd_paper_offline_report_next_gate_is_newton_shape_runtime_boundary_pre
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
 
 
@@ -1301,7 +1307,7 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1421,7 +1427,7 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1525,7 +1531,7 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -1607,7 +1613,7 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -1721,7 +1727,7 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -1959,7 +1965,7 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2136,7 +2142,7 @@ def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2252,7 +2258,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2283,6 +2289,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2491,7 +2498,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2522,6 +2529,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -2676,7 +2684,7 @@ def test_cpd_paper_records_unsupported_primitive_policy_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -2846,7 +2854,7 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -3036,7 +3044,7 @@ def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3247,7 +3255,7 @@ def test_cpd_paper_records_mapped_subset_adapter_preflight_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3553,7 +3561,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_dry_run_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3953,7 +3961,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_validation_contract_gate(
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -4682,6 +4690,17 @@ def _newton_shape_runtime_construction_input() -> dict[str, object]:
         json.dumps(
             report[
                 "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
+            ]
+        )
+    )
+
+
+def _newton_shape_runtime_builder_preflight_input() -> dict[str, object]:
+    report = build_cpd_paper_offline_report()
+    return json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_construction_contract"
             ]
         )
     )
@@ -6022,6 +6041,140 @@ NEWTON_SHAPE_RUNTIME_CONSTRUCTION_ROW_REQUIRED_KEYS = {
 }
 
 
+NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_FALSE_FLAGS = (
+    "paper_faithful_offline_allowed",
+    "paper_faithful_offline_supported",
+    "newton_support_claimed",
+    "approximation_policy_applied",
+    "real_usd_loaded",
+    "benchmark_run",
+    "collision_quality_measured",
+    "deployment_or_certification_claimed",
+    "package_generation_triggered",
+    "newton_runtime_triggered",
+    "real_usd_triggered",
+    "benchmark_triggered",
+    "newton_runtime_allowed",
+    "approximation_policy_enabled",
+    "silent_drop_allowed",
+    "mapping_attempted",
+    "newton_shape_mapping_triggered",
+    "newton_shape_object_created",
+    "newton_shape_runtime_construction_triggered",
+    "newton_shape_runtime_boundary_crossed",
+    "newton_engine_shape_object_created",
+    "newton_builder_shape_called",
+    "newton_runtime_builder_invoked",
+    "newton_model_builder_instantiated",
+    "newton_model_finalized",
+)
+
+
+NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_TRUE_FLAGS = (
+    "newton_shape_runtime_builder_preflight_recorded",
+    "repo_local_newton_builder_call_plan_record_created",
+)
+
+
+NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_PAYLOAD_REQUIRED_KEYS = {
+    "gate_id",
+    "gate_status",
+    "closed_gate",
+    "input_gate_id",
+    "next_required_gate",
+    "decision",
+    "decision_reason",
+    "artifact_kind",
+    "schema_version",
+    "source_scope",
+    "implementation_boundary",
+    "runtime_builder_preflight_action",
+    "newton_shape_runtime_builder_preflight_contract",
+    "input_contract_summary",
+    "newton_shape_runtime_builder_preflight_row_count",
+    "source_newton_shape_runtime_construction_row_count",
+    "source_newton_shape_mapping_record_count",
+    "runtime_builder_preflight_passed",
+    "runtime_builder_preflight_passed_count",
+    "builder_call_plan_count",
+    "builder_call_allowed_count",
+    "later_newton_shape_runtime_builder_candidate_count",
+    "newton_mapping_record_count",
+    "newton_mapper_call_count",
+    "newton_shape_object_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_runtime_execution_count",
+    "generated_runtime_primitive_spec_count",
+    "generated_primitive_spec_count",
+    "generated_collision_package_count",
+    "runtime_admissibility_check_count",
+    "offline_static_runtime_admissibility_check_count",
+    "report_scoped_newton_shape_descriptor_count",
+    "later_newton_shape_runtime_construction_candidate_count",
+    "constructed_newton_shape_mapping_record_count",
+    "newton_shape_runtime_builder_preflight_rows",
+    "coverage_summary",
+    "remaining_gaps",
+    *NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_TRUE_FLAGS,
+}
+
+
+NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_ROW_REQUIRED_KEYS = {
+    "newton_shape_runtime_builder_preflight_row_id",
+    "source_newton_shape_runtime_construction_row_id",
+    "source_newton_shape_runtime_boundary_preflight_row_id",
+    "source_shape_mapping_row_id",
+    "source_newton_shape_mapping_preflight_row_id",
+    "source_runtime_admissibility_row_id",
+    "source_package_id",
+    "source_asset_id",
+    "fixture_id",
+    "paper_primitive",
+    "primitive_spec_kind",
+    "primitive_id",
+    "target_newton_shape_kind",
+    "descriptor_kind",
+    "descriptor_center",
+    "descriptor_axes",
+    "descriptor_half_extents",
+    "constructed_newton_shape_mapping_dict",
+    "constructed_newton_shape_mapping_status",
+    "constructed_newton_shape_mapping_detail",
+    "mapping_constructor",
+    "mapping_constructor_input_kind",
+    "runtime_builder_preflight_passed",
+    "builder_call_allowed",
+    "builder_candidate_kind",
+    "builder_shape_kind",
+    "builder_method_name",
+    "call_signature_fields",
+    "body_binding_policy",
+    "deferred_xform_policy",
+    "deferred_translation_inputs",
+    "deferred_rotation_inputs",
+    "dimension_source",
+    "builder_center",
+    "builder_axes",
+    "builder_half_extents",
+    "builder_dimension_argument_schema",
+    "builder_call_plan",
+    "builder_call_plan_count",
+    "later_newton_shape_runtime_builder_candidate",
+    "runtime_builder_construction_contract_candidate",
+    "constructed_newton_shape_mapping_record_count",
+    "newton_mapping_record_count",
+    "newton_mapper_call_count",
+    "newton_shape_object_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_runtime_execution_count",
+    *NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_TRUE_FLAGS,
+}
+
+
 def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_contract_gate():
     report = build_cpd_paper_offline_report()
     payload = report[
@@ -6030,7 +6183,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_cont
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -6555,7 +6708,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_generation_contract_gate(
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -7325,7 +7478,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_candidate_source_contract
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -7889,7 +8042,7 @@ def test_cpd_paper_records_mapped_subset_native_current_fixture_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -8580,7 +8733,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_generation
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -8972,7 +9125,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_serializat
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -9306,7 +9459,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_runtime_boundary_prefligh
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -9775,6 +9928,26 @@ def _recursive_key_value_strings(value):
         yield value
 
 
+def _recursive_keys(value):
+    if isinstance(value, dict):
+        for key, nested_value in value.items():
+            yield str(key)
+            yield from _recursive_keys(nested_value)
+    elif isinstance(value, list | tuple):
+        for item in value:
+            yield from _recursive_keys(item)
+
+
+def _contains_callable(value: object) -> bool:
+    if callable(value):
+        return True
+    if isinstance(value, dict):
+        return any(_contains_callable(item) for item in value.values())
+    if isinstance(value, list | tuple):
+        return any(_contains_callable(item) for item in value)
+    return False
+
+
 def _recursive_package_dicts(value):
     if isinstance(value, dict):
         if {
@@ -9801,7 +9974,7 @@ def test_cpd_paper_records_mapped_subset_primitivespec_runtime_construction_cont
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -10350,7 +10523,7 @@ def test_cpd_paper_records_mapped_subset_collision_package_generation_preflight_
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -10948,7 +11121,7 @@ def test_cpd_paper_records_mapped_subset_collision_package_generation_contract_g
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert report["generated_collision_package_count"] == 1
@@ -11454,7 +11627,7 @@ def test_cpd_paper_records_mapped_subset_runtime_admissibility_preflight_contrac
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert report["generated_collision_package_count"] == 1
@@ -12024,7 +12197,7 @@ def test_cpd_paper_records_mapped_subset_runtime_admissibility_contract_gate():
 
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert report["generated_collision_package_count"] == 1
@@ -12034,7 +12207,7 @@ def test_cpd_paper_records_mapped_subset_runtime_admissibility_contract_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -12489,7 +12662,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_preflight_gate():
     ]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert report["generated_collision_package_count"] == 1
@@ -12499,7 +12672,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_preflight_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -12972,7 +13145,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_contract_gate():
     payload = report["paper_mapped_subset_newton_shape_mapping_contract"]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -12980,7 +13153,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_contract_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT
@@ -13379,7 +13552,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_boundary_preflight
     ]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -13387,7 +13560,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_boundary_preflight
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
@@ -14030,7 +14203,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_construction_contr
     ]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -14038,7 +14211,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_construction_contr
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT
@@ -14680,6 +14853,730 @@ def test_cpd_paper_newton_shape_runtime_construction_static_boundary_is_record_o
         assert pattern not in source
 
 
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_preflight_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
+    ]
+
+    assert report["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+    )
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS
+    )
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+    )
+    assert payload["newton_shape_runtime_builder_preflight_row_count"] == 1
+    assert payload["source_newton_shape_runtime_construction_row_count"] == 1
+    assert payload["source_newton_shape_mapping_record_count"] == 1
+    assert payload["runtime_builder_preflight_passed"] is True
+    assert payload["runtime_builder_preflight_passed_count"] == 1
+    assert payload["builder_call_plan_count"] == 1
+    assert payload["builder_call_allowed_count"] == 0
+    assert payload["later_newton_shape_runtime_builder_candidate_count"] == 1
+    assert payload["newton_mapping_record_count"] == 1
+    assert payload["newton_mapper_call_count"] == 0
+    assert payload["newton_shape_object_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert (
+        payload["remaining_gaps"]
+        == EXPECTED_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_REMAINING_GAPS
+    )
+
+
+def test_cpd_paper_newton_shape_runtime_builder_preflight_payload_schema_is_exact():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
+    ]
+    source_row = report[
+        "paper_mapped_subset_newton_shape_runtime_construction_contract"
+    ]["newton_shape_runtime_construction_rows"][0]
+
+    assert set(payload) == NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_PAYLOAD_REQUIRED_KEYS
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["gate_status"] == (
+        "implemented_single_fixture_newton_shape_runtime_builder_"
+        "preflight_only_partial"
+    )
+    assert payload["decision"] == "remain_partial"
+    assert payload["decision_reason"] == (
+        "newton_shape_runtime_builder_preflight_complete_"
+        "newton_shape_runtime_builder_construction_contract_missing"
+    )
+    assert payload["artifact_kind"] == (
+        "offline_static_newton_builder_call_plan_not_builder_call"
+    )
+    assert payload["implementation_boundary"] == (
+        "single_synthetic_box_newton_builder_preflight_only_no_builder_call_"
+        "no_engine_shape_no_runtime_no_real_usd_no_benchmark_no_metrics"
+    )
+    assert payload["runtime_builder_preflight_action"] == (
+        "record_one_newton_builder_call_plan_from_repo_local_mapping_dict_"
+        "without_builder_call_or_newton_runtime_execution"
+    )
+    assert payload["newton_shape_runtime_builder_preflight_contract"] == {
+        "input_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT
+        ),
+        "closed_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        ),
+        "next_newton_shape_runtime_builder_construction_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
+        ),
+        "source_runtime_construction_rows_required": 1,
+        "builder_call_plans_required": 1,
+        "newton_engine_shape_object_allowed": False,
+        "newton_builder_shape_call_allowed": False,
+        "newton_runtime_allowed": False,
+        "newton_support_claim_allowed": False,
+    }
+    assert payload["input_contract_summary"] == {
+        "input_gate_id": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT
+        ),
+        "input_next_required_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        ),
+        "source_newton_shape_runtime_construction_row_id": source_row[
+            "newton_shape_runtime_construction_row_id"
+        ],
+        "source_newton_shape_runtime_boundary_preflight_row_id": source_row[
+            "source_newton_shape_runtime_boundary_preflight_row_id"
+        ],
+        "source_shape_mapping_row_id": source_row["source_shape_mapping_row_id"],
+        "source_package_id": source_row["source_package_id"],
+        "source_fixture_id": "paper_single_box",
+        "source_primitive_id": source_row["primitive_id"],
+        "source_target_newton_shape_kind": "box",
+        "source_mapping_constructor": "NewtonShapeMapping",
+        "input_runtime_builder_preflight_candidate_count": 1,
+    }
+    assert payload["coverage_summary"] == {
+        "newton_shape_runtime_builder_preflight_row_count": 1,
+        "source_newton_shape_runtime_construction_row_count": 1,
+        "source_newton_shape_mapping_record_count": 1,
+        "runtime_builder_preflight_passed_count": 1,
+        "builder_call_plan_count": 1,
+        "builder_call_allowed_count": 0,
+        "later_newton_shape_runtime_builder_candidate_count": 1,
+        "constructed_newton_shape_mapping_record_count": 1,
+        "newton_mapping_record_count": 1,
+        "newton_mapper_call_count": 0,
+        "newton_shape_object_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "fixture_id_distribution": {"paper_single_box": 1},
+        "target_newton_shape_kind_distribution": {"box": 1},
+        "builder_method_distribution": {"add_shape_box": 1},
+    }
+
+
+def test_cpd_paper_newton_shape_runtime_builder_preflight_records_one_builder_plan():
+    report = build_cpd_paper_offline_report()
+    source_row = report[
+        "paper_mapped_subset_newton_shape_runtime_construction_contract"
+    ]["newton_shape_runtime_construction_rows"][0]
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
+    ]
+    rows = payload["newton_shape_runtime_builder_preflight_rows"]
+
+    assert len(rows) == 1
+    row = rows[0]
+    mapping = source_row["constructed_newton_shape_mapping_dict"]
+    half_extents = mapping["dimensions"]["half_extents"]
+    expected_plan = {
+        "method": "add_shape_box",
+        "call_signature_fields": ["body", "xform", "hx", "hy", "hz"],
+        "body_binding_policy": (
+            "static_package_or_probe_uses_body_minus_one_"
+            "drop_settle_uses_created_body_id"
+        ),
+        "deferred_xform_policy": (
+            "future_runtime_may_derive_xform_from_center_and_axes"
+        ),
+        "deferred_translation_inputs": (
+            "mapping_center_only_no_runtime_transform_constructed"
+        ),
+        "deferred_rotation_inputs": (
+            "mapping_axes_only_no_quat_or_runtime_rotation_constructed"
+        ),
+        "dimension_arguments": {
+            "hx": half_extents[0],
+            "hy": half_extents[1],
+            "hz": half_extents[2],
+        },
+    }
+    assert set(row) == NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_ROW_REQUIRED_KEYS
+    assert row["newton_shape_runtime_builder_preflight_row_id"] == (
+        "newton_shape_runtime_builder_preflight__paper_single_box__box"
+    )
+    assert row["source_newton_shape_runtime_construction_row_id"] == (
+        source_row["newton_shape_runtime_construction_row_id"]
+    )
+    assert row["source_newton_shape_runtime_boundary_preflight_row_id"] == (
+        source_row["source_newton_shape_runtime_boundary_preflight_row_id"]
+    )
+    assert row["source_shape_mapping_row_id"] == (
+        source_row["source_shape_mapping_row_id"]
+    )
+    assert row["source_newton_shape_mapping_preflight_row_id"] == (
+        source_row["source_newton_shape_mapping_preflight_row_id"]
+    )
+    assert row["source_runtime_admissibility_row_id"] == (
+        source_row["source_runtime_admissibility_row_id"]
+    )
+    assert row["source_package_id"] == source_row["source_package_id"]
+    assert row["source_asset_id"] == source_row["source_asset_id"]
+    assert row["fixture_id"] == "paper_single_box"
+    assert row["paper_primitive"] == "oriented_bounding_box"
+    assert row["primitive_spec_kind"] == "box"
+    assert row["primitive_id"] == (
+        "paper_single_box__oriented_bounding_box__box"
+    )
+    assert row["target_newton_shape_kind"] == "box"
+    assert row["descriptor_kind"] == "newton_shape_descriptor"
+    assert row["descriptor_center"] == source_row["descriptor_center"]
+    assert row["descriptor_axes"] == source_row["descriptor_axes"]
+    assert row["descriptor_half_extents"] == source_row["descriptor_half_extents"]
+    assert row["constructed_newton_shape_mapping_dict"] == mapping
+    assert row["constructed_newton_shape_mapping_status"] == "mapped"
+    assert row["constructed_newton_shape_mapping_detail"] == "mapped"
+    assert row["mapping_constructor"] == "NewtonShapeMapping"
+    assert row["mapping_constructor_input_kind"] == "static_descriptor_fields"
+    assert row["runtime_builder_preflight_passed"] is True
+    assert row["builder_call_allowed"] is False
+    assert row["builder_candidate_kind"] == "static_shape_builder_call"
+    assert row["builder_shape_kind"] == "box"
+    assert row["builder_method_name"] == "add_shape_box"
+    assert row["call_signature_fields"] == ["body", "xform", "hx", "hy", "hz"]
+    assert row["body_binding_policy"] == (
+        "static_package_or_probe_uses_body_minus_one_"
+        "drop_settle_uses_created_body_id"
+    )
+    assert row["deferred_xform_policy"] == (
+        "future_runtime_may_derive_xform_from_center_and_axes"
+    )
+    assert row["deferred_translation_inputs"] == (
+        "mapping_center_only_no_runtime_transform_constructed"
+    )
+    assert row["deferred_rotation_inputs"] == (
+        "mapping_axes_only_no_quat_or_runtime_rotation_constructed"
+    )
+    assert (
+        row["dimension_source"]
+        == "constructed_newton_shape_mapping_dict.dimensions.half_extents"
+    )
+    assert row["builder_center"] == mapping["center"]
+    assert row["builder_axes"] == mapping["axes"]
+    assert row["builder_half_extents"] == half_extents
+    assert row["builder_dimension_argument_schema"] == {
+        "hx": "half_extents[0]",
+        "hy": "half_extents[1]",
+        "hz": "half_extents[2]",
+    }
+    assert row["builder_call_plan"] == expected_plan
+    assert row["builder_call_plan_count"] == 1
+    assert row["later_newton_shape_runtime_builder_candidate"] is True
+    assert row["runtime_builder_construction_contract_candidate"] is True
+    assert row["constructed_newton_shape_mapping_record_count"] == 1
+    assert row["newton_mapping_record_count"] == 1
+    assert row["newton_mapper_call_count"] == 0
+    assert row["newton_shape_object_count"] == 0
+    assert row["newton_engine_shape_object_count"] == 0
+    assert row["newton_builder_shape_call_count"] == 0
+    assert row["newton_runtime_execution_count"] == 0
+    assert list(_recursive_package_dicts(payload)) == []
+    json.dumps(row["builder_call_plan"])
+    assert _contains_callable(row["builder_call_plan"]) is False
+    forbidden_runtime_pose_keys = {
+        "builder_xform",
+        "runtime_xform",
+        "xform_value",
+        "transform",
+        "runtime_transform",
+        "quat",
+        "quaternion",
+        "rotation_quat",
+        "orientation_quaternion",
+    }
+    assert forbidden_runtime_pose_keys.isdisjoint(set(_recursive_keys(row)))
+
+
+@pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_FALSE_FLAGS)
+def test_cpd_paper_newton_shape_runtime_builder_preflight_boundary_flags_stay_false(
+    field_name,
+):
+    payload = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
+    ]
+
+    assert payload[field_name] is False
+    assert payload["newton_shape_runtime_builder_preflight_rows"][0][
+        field_name
+    ] is False
+
+
+@pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_TRUE_FLAGS)
+def test_cpd_paper_newton_shape_runtime_builder_preflight_record_flags_are_true(
+    field_name,
+):
+    payload = build_cpd_paper_offline_report()[
+        "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
+    ]
+
+    assert payload[field_name] is True
+    assert payload["newton_shape_runtime_builder_preflight_rows"][0][
+        field_name
+    ] is True
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "error_label"),
+    [
+        (
+            "gate_id",
+            "stale_gate",
+            "newton_shape_runtime_builder_preflight_input_gate_id_mismatch",
+        ),
+        (
+            "next_required_gate",
+            "stale_gate",
+            "newton_shape_runtime_builder_preflight_input_next_gate_mismatch",
+        ),
+        (
+            "newton_shape_runtime_construction_row_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "newton_shape_runtime_construction_row_count",
+        ),
+        (
+            "source_newton_shape_runtime_boundary_preflight_row_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "source_newton_shape_runtime_boundary_preflight_row_count",
+        ),
+        (
+            "constructed_newton_shape_mapping_record_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "constructed_newton_shape_mapping_record_count",
+        ),
+        (
+            "newton_mapping_record_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "newton_mapping_record_count",
+        ),
+        (
+            "newton_mapper_call_count",
+            1,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "newton_mapper_call_count",
+        ),
+        (
+            "newton_shape_object_count",
+            1,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "newton_shape_object_count",
+        ),
+        (
+            "newton_engine_shape_object_count",
+            1,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "newton_engine_shape_object_count",
+        ),
+        (
+            "newton_builder_shape_call_count",
+            1,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "newton_builder_shape_call_count",
+        ),
+        (
+            "newton_runtime_execution_count",
+            1,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "newton_runtime_execution_count",
+        ),
+        (
+            "generated_runtime_primitive_spec_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "generated_runtime_primitive_spec_count",
+        ),
+        (
+            "generated_primitive_spec_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "generated_primitive_spec_count",
+        ),
+        (
+            "generated_collision_package_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "generated_collision_package_count",
+        ),
+        (
+            "runtime_admissibility_check_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "runtime_admissibility_check_count",
+        ),
+        (
+            "offline_static_runtime_admissibility_check_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "offline_static_runtime_admissibility_check_count",
+        ),
+        (
+            "report_scoped_newton_shape_descriptor_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "report_scoped_newton_shape_descriptor_count",
+        ),
+        (
+            "later_newton_shape_runtime_construction_candidate_count",
+            2,
+            "newton_shape_runtime_builder_preflight_input_count_mismatch:"
+            "later_newton_shape_runtime_construction_candidate_count",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_builder_preflight_rejects_input_drift(
+    field_name,
+    bad_value,
+    error_label,
+):
+    payload = _newton_shape_runtime_builder_preflight_input()
+    payload[field_name] = bad_value
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_CONSTRUCTION_FALSE_FLAGS)
+def test_cpd_paper_newton_shape_runtime_builder_preflight_rejects_input_flags(
+    field_name,
+):
+    payload = _newton_shape_runtime_builder_preflight_input()
+    payload[field_name] = True
+
+    with pytest.raises(
+        ValueError,
+        match=f"newton_shape_runtime_builder_preflight_input_flag_true:{field_name}",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_CONSTRUCTION_TRUE_FLAGS)
+@pytest.mark.parametrize("scope", ("payload", "row"))
+def test_cpd_paper_newton_shape_runtime_builder_preflight_rejects_missing_input_record_flags(
+    field_name,
+    scope,
+):
+    payload = _newton_shape_runtime_builder_preflight_input()
+    if scope == "payload":
+        del payload[field_name]
+    else:
+        rows = [
+            json.loads(json.dumps(row))
+            for row in payload["newton_shape_runtime_construction_rows"]
+        ]
+        del rows[0][field_name]
+        payload["newton_shape_runtime_construction_rows"] = rows
+
+    with pytest.raises(
+        ValueError,
+        match=f"newton_shape_runtime_builder_preflight_input_flag_missing:{field_name}",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_CONSTRUCTION_TRUE_FLAGS)
+@pytest.mark.parametrize("scope", ("payload", "row"))
+def test_cpd_paper_newton_shape_runtime_builder_preflight_rejects_false_input_record_flags(
+    field_name,
+    scope,
+):
+    payload = _newton_shape_runtime_builder_preflight_input()
+    if scope == "payload":
+        payload[field_name] = False
+    else:
+        rows = [
+            json.loads(json.dumps(row))
+            for row in payload["newton_shape_runtime_construction_rows"]
+        ]
+        rows[0][field_name] = False
+        payload["newton_shape_runtime_construction_rows"] = rows
+
+    with pytest.raises(
+        ValueError,
+        match=f"newton_shape_runtime_builder_preflight_input_flag_false:{field_name}",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize(
+    ("mutate_rows", "error_label"),
+    [
+        (
+            lambda rows: [],
+            "newton_shape_runtime_builder_preflight_row_count_mismatch",
+        ),
+        (
+            lambda rows: [rows[0], json.loads(json.dumps(rows[0]))],
+            "newton_shape_runtime_builder_preflight_row_count_mismatch",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_builder_preflight_rejects_row_count_drift(
+    mutate_rows,
+    error_label,
+):
+    payload = _newton_shape_runtime_builder_preflight_input()
+    payload["newton_shape_runtime_construction_rows"] = mutate_rows(
+        payload["newton_shape_runtime_construction_rows"]
+    )
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value"),
+    [
+        ("newton_shape_runtime_construction_row_id", "wrong_row"),
+        ("source_newton_shape_runtime_boundary_preflight_row_id", "wrong_row"),
+        ("source_shape_mapping_row_id", "wrong_mapping_row"),
+        ("source_newton_shape_mapping_preflight_row_id", "wrong_preflight_row"),
+        ("source_runtime_admissibility_row_id", "wrong_admissibility_row"),
+        ("source_package_id", "wrong_package"),
+        ("source_asset_id", "wrong_asset"),
+        ("fixture_id", "wrong_fixture"),
+        ("paper_primitive", "sphere"),
+        ("primitive_spec_kind", "sphere"),
+        ("primitive_id", "wrong_primitive"),
+        ("target_newton_shape_kind", "sphere"),
+        ("descriptor_kind", "wrong_descriptor"),
+        ("mapping_constructor", "wrong_constructor"),
+        ("mapping_constructor_input_kind", "wrong_input_kind"),
+        ("runtime_builder_preflight_candidate", False),
+        ("newton_builder_shape_call_count", 1),
+        ("newton_engine_shape_object_count", 1),
+        ("newton_runtime_execution_count", 1),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_builder_preflight_rejects_source_row_drift(
+    field_name,
+    bad_value,
+):
+    payload = _newton_shape_runtime_builder_preflight_input()
+    rows = [
+        json.loads(json.dumps(row))
+        for row in payload["newton_shape_runtime_construction_rows"]
+    ]
+    rows[0][field_name] = bad_value
+    payload["newton_shape_runtime_construction_rows"] = rows
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "newton_shape_runtime_builder_preflight_source_row_mismatch:"
+            f"{field_name}"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload(
+            payload
+        )
+
+
+@pytest.mark.parametrize(
+    ("mutate_mapping", "error_label"),
+    [
+        (
+            lambda mapping: None,
+            "newton_shape_runtime_builder_preflight_mapping_invalid:mapping",
+        ),
+        (
+            lambda mapping: {key: value for key, value in mapping.items() if key != "axes"},
+            "newton_shape_runtime_builder_preflight_mapping_key_mismatch",
+        ),
+        (
+            lambda mapping: {**mapping, "extra": True},
+            "newton_shape_runtime_builder_preflight_mapping_key_mismatch",
+        ),
+        (
+            lambda mapping: {**mapping, "dimensions": {}},
+            "newton_shape_runtime_builder_preflight_mapping_dimensions_key_mismatch",
+        ),
+        (
+            lambda mapping: {
+                **mapping,
+                "dimensions": {
+                    **mapping["dimensions"],
+                    "extra": True,
+                },
+            },
+            "newton_shape_runtime_builder_preflight_mapping_dimensions_key_mismatch",
+        ),
+        (
+            lambda mapping: {**mapping, "primitive_id": "wrong_primitive"},
+            "newton_shape_runtime_builder_preflight_mapping_mismatch:primitive_id",
+        ),
+        (
+            lambda mapping: {**mapping, "kind": "sphere"},
+            "newton_shape_runtime_builder_preflight_mapping_mismatch:kind",
+        ),
+        (
+            lambda mapping: {**mapping, "status": "mapping_gap"},
+            "newton_shape_runtime_builder_preflight_mapping_mismatch:status",
+        ),
+        (
+            lambda mapping: {**mapping, "detail": "gap"},
+            "newton_shape_runtime_builder_preflight_mapping_mismatch:detail",
+        ),
+        (
+            lambda mapping: {**mapping, "center": [1.0, 0.0, 0.0]},
+            "newton_shape_runtime_builder_preflight_mapping_mismatch:center",
+        ),
+        (
+            lambda mapping: {
+                **mapping,
+                "axes": [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]],
+            },
+            "newton_shape_runtime_builder_preflight_mapping_mismatch:axes",
+        ),
+        (
+            lambda mapping: {
+                **mapping,
+                "dimensions": {"half_extents": [0.1, 0.2, 0.3]},
+            },
+            "newton_shape_runtime_builder_preflight_mapping_mismatch:half_extents",
+        ),
+        (
+            lambda mapping: {**mapping, "center": [0.0, "bad", 0.0]},
+            "newton_shape_runtime_builder_preflight_mapping_invalid:center",
+        ),
+        (
+            lambda mapping: {
+                **mapping,
+                "axes": [[1.0, 0.0, 0.0], [0.0, "bad", 0.0], [0.0, 0.0, 1.0]],
+            },
+            "newton_shape_runtime_builder_preflight_mapping_invalid:axes",
+        ),
+        (
+            lambda mapping: {
+                **mapping,
+                "dimensions": {"half_extents": [1.0, 0.0, 0.25]},
+            },
+            "newton_shape_runtime_builder_preflight_mapping_invalid:half_extents",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_builder_preflight_rejects_mapping_drift(
+    mutate_mapping,
+    error_label,
+):
+    payload = _newton_shape_runtime_builder_preflight_input()
+    rows = [
+        json.loads(json.dumps(row))
+        for row in payload["newton_shape_runtime_construction_rows"]
+    ]
+    rows[0]["constructed_newton_shape_mapping_dict"] = mutate_mapping(
+        rows[0]["constructed_newton_shape_mapping_dict"]
+    )
+    payload["newton_shape_runtime_construction_rows"] = rows
+
+    with pytest.raises(ValueError, match=error_label):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload(
+            payload
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_builder_preflight_static_boundary_is_plan_only():
+    helpers = (
+        cpd_paper_offline._paper_newton_shape_runtime_builder_preflight_source_row,
+        cpd_paper_offline._paper_validate_runtime_builder_preflight_input_true_flags,
+        cpd_paper_offline._paper_validate_newton_shape_runtime_builder_preflight_mapping,
+        cpd_paper_offline._paper_newton_shape_runtime_builder_call_plan,
+        cpd_paper_offline._paper_newton_shape_runtime_builder_preflight_row,
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_builder_preflight_contract_payload,
+    )
+    source = "\n".join(inspect.getsource(helper) for helper in helpers)
+
+    forbidden_patterns = (
+        "primitive_collision_compiler.newton",
+        "import newton",
+        "from newton",
+        "import warp",
+        "from warp",
+        "import newton_warp",
+        "newton_warp",
+        "importlib",
+        "__import__",
+        "getattr(",
+        "callable(",
+        "eval(",
+        "exec(",
+        "newton.ModelBuilder",
+        "ModelBuilder",
+        "CollisionPipeline",
+        "add_shape_",
+        "builder.",
+        "model_builder.",
+        "finalize",
+        "pipeline.collide",
+        "wp.transform",
+        "wp.quat",
+        "warp.transform",
+        "warp.quat",
+        "transformf",
+        "quat_from",
+        "CollisionPackage(",
+        "PrimitiveSpec(",
+        "load_first_mesh",
+        "inspect_usd_asset",
+        "real_usd_comparison",
+        "timeit",
+        "perf_counter",
+        "benchmark_metric",
+        "collision_quality_score",
+        "run_benchmark",
+        "measure_collision_quality",
+    )
+    for pattern in forbidden_patterns:
+        assert pattern not in source
+
+
 def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_records():
     report = build_cpd_paper_offline_report()
     changed = dict(report["paper_offline_changed_decomposition_output_contract"])
@@ -14863,7 +15760,7 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         report["next_required_gate"]
-        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]

@@ -10,9 +10,10 @@ This slice consumes the existing single-fixture
 offline/static Newton builder-call candidate for the deterministic `paper_single_box` OBB/box
 artifact.
 
-It does not import Newton or warp, does not instantiate `ModelBuilder`, does not call
-`builder.add_shape_box`, does not create a Newton engine shape object, does not finalize a model,
-does not run contact/drop/sphere-rain diagnostics, does not load real USD, does not run a
+The builder-preflight helper block adds no new Newton/Warp import and invokes no Newton/Warp API;
+this is not a module-level no-Newton-import claim. It does not instantiate `ModelBuilder`, does
+not call `builder.add_shape_box`, does not create a Newton engine shape object, does not finalize a
+model, does not run contact/drop/sphere-rain diagnostics, does not load real USD, does not run a
 benchmark, and does not measure collision quality.
 
 ## Why This Slice Exists
@@ -123,7 +124,7 @@ The new payload must include:
 - `implementation_boundary:
   single_synthetic_box_newton_builder_preflight_only_no_builder_call_no_engine_shape_no_runtime_no_real_usd_no_benchmark_no_metrics`
 - `runtime_builder_preflight_action:
-  record_one_newton_builder_call_plan_from_repo_local_mapping_dict_without_newton_import_or_builder_call`
+  record_one_newton_builder_call_plan_from_repo_local_mapping_dict_without_builder_call_or_newton_runtime_execution`
 - `newton_shape_runtime_builder_preflight_contract`, a nested contract summary with the input
   gate, closed gate, next builder gate, required row count, required builder-call candidate count,
   and false builder/runtime permissions

@@ -44,12 +44,17 @@ constructing exactly one repo-local `NewtonShapeMapping.to_dict()` report record
 synthetic `paper_single_box` descriptor. It creates no Newton engine shape object, makes no
 builder shape call, runs no Newton runtime, and adds no USD, benchmark, collision-quality, Newton
 readiness/support, or `paper_faithful_offline` evidence.
+The report now also closes the single-fixture Newton shape runtime builder-preflight contract by
+recording exactly one JSON-safe future builder call plan for the same synthetic box mapping
+record. That plan records the future `box` builder method name and signature fields `body`,
+`xform`, `hx`, `hy`, and `hz`, plus body-binding and deferred transform policy text. It allows
+zero builder calls, creates zero Newton engine shape objects, and runs zero Newton runtime code.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`. This is still not package
+`paper_mapped_subset_newton_shape_runtime_builder_construction_contract`. This is still not package
 readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD evidence,
 not benchmark evidence, not collision-quality evidence, not deployment/safety evidence, not
 full-CPD evidence, not `paper_faithful_offline` evidence, and not paper primitive vocabulary
-coverage. The next step is the Newton shape builder-preflight contract for the same single
+coverage. The next step is the Newton shape builder-construction contract for the same single
 synthetic package, not a capped bed/Franka rerun and not Newton execution. A capped bed/Franka rerun remains blocked
 unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
@@ -193,8 +198,8 @@ runtime-construction, package-generation preflight, package-generation, runtime-
 preflight, offline/static runtime-admissibility contract, offline/static Newton shape-mapping
 preflight contract, offline/static Newton shape-mapping descriptor contract, and offline/static
 Newton shape runtime-boundary preflight contract, and offline/report-scoped Newton shape
-runtime-construction contract:
-`paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`. The serialization contract
+runtime-construction contract, and offline/static Newton shape runtime builder-preflight contract:
+`paper_mapped_subset_newton_shape_runtime_builder_construction_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
@@ -260,8 +265,9 @@ records exist.
   single-fixture offline/static Newton shape-mapping descriptor contract is now implemented, and
   the single-fixture offline/static Newton shape runtime-boundary preflight contract is now
   implemented, and the single-fixture offline/report-scoped Newton shape runtime-construction
-  contract is now implemented, while the next gate is
-  `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
+  contract is now implemented, and the single-fixture offline/static Newton shape runtime
+  builder-preflight contract is now implemented, while the next gate is
+  `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -436,6 +442,13 @@ records exist.
   `NewtonShapeMapping.to_dict()` report record, keeps Newton engine shape object construction,
   Newton builder shape calls, and Newton execution at zero or false, and advances the runtime-lane
   next gate to `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
+- [CPD paper mapped-subset Newton shape runtime builder-preflight contract record](records/2026-05-18-cpd-paper-mapped-subset-newton-shape-runtime-builder-preflight-contract.md):
+  dated implementation record for the single-fixture offline/static Newton shape runtime
+  builder-preflight contract. It consumes the repo-local `NewtonShapeMapping.to_dict()` record,
+  records one JSON-safe future box builder call plan, keeps Newton engine shape object
+  construction, Newton builder shape calls, and Newton execution at zero or false, and advances
+  the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -885,11 +898,13 @@ records exist.
   `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract` as one later
   runtime-construction candidate row, plus a Newton shape runtime-construction contract that
   closes only `paper_mapped_subset_newton_shape_runtime_construction_contract` as one repo-local
-  `NewtonShapeMapping.to_dict()` report record.
+  `NewtonShapeMapping.to_dict()` report record, plus a Newton shape runtime builder-preflight
+  contract that closes only `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`
+  as one JSON-safe future box builder call plan with no builder invocation.
   It keeps
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`,
+  `next_required_gate: paper_mapped_subset_newton_shape_runtime_builder_construction_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
   Newton mapping, runtime execution, or benchmarks.

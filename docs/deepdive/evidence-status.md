@@ -146,7 +146,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   table inside `cpd_paper_offline_report`. It closes only
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
-  gate as `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` after the
+  gate as `paper_mapped_subset_newton_shape_runtime_builder_construction_contract` after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
@@ -158,10 +158,13 @@ This file separates current evidence from future claims. See [message-map.md](me
   collision-package generation, runtime-admissibility preflight, and offline/static
   runtime-admissibility contract, offline/static Newton shape-mapping preflight,
   offline/static Newton shape-mapping descriptor, offline/static Newton shape runtime-boundary
-  preflight, and offline/report-scoped Newton shape runtime-construction slices. The
+  preflight, offline/report-scoped Newton shape runtime-construction, and offline/static Newton
+  shape runtime builder-preflight slices. The
   runtime-construction slice records exactly one repo-local `NewtonShapeMapping.to_dict()` report
   record for the synthetic `paper_single_box` box descriptor while keeping Newton engine shape
-  objects, builder shape calls, and Newton runtime execution at zero.
+  objects, builder shape calls, and Newton runtime execution at zero. The builder-preflight slice
+  records exactly one JSON-safe future box builder call plan while keeping builder calls, Newton
+  engine shape objects, and Newton runtime execution at zero.
 - The current executable surface can also run
   `paper_generalization_batch_a_source_policy` inside `cpd_paper_offline_report`. It closes only
   that source-policy gate by adding an offline source-policy matrix for deterministic synthetic
@@ -516,6 +519,18 @@ This file separates current evidence from future claims. See [message-map.md](me
   builder shape calls, and Newton execution at zero, and advances the next required runtime-lane
   gate to `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`. This is not
   Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not benchmark
+  evidence, not collision-quality validation, not paper primitive vocabulary coverage, not
+  approximation support, not `paper_faithful_offline`, not full CPD reproduction, not deployment
+  readiness, and not safety certification.
+- The current executable surface can also run
+  `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` inside
+  `cpd_paper_offline_report`. It closes only that single-fixture offline/static builder-preflight
+  gate by consuming the repo-local `NewtonShapeMapping.to_dict()` mapping record and recording one
+  JSON-safe future box builder call plan with signature fields `body`, `xform`, `hx`, `hy`, and
+  `hz`. It keeps builder calls, Newton engine shape object construction, and Newton execution at
+  zero, and advances the next required runtime-lane gate to
+  `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`. This is not Newton
+  readiness, not Newton support, not Newton execution, not real-USD evidence, not benchmark
   evidence, not collision-quality validation, not paper primitive vocabulary coverage, not
   approximation support, not `paper_faithful_offline`, not full CPD reproduction, not deployment
   readiness, and not safety certification.

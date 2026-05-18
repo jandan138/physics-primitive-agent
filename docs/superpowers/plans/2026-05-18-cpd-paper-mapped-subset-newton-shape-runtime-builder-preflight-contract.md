@@ -4,7 +4,7 @@
 
 **Goal:** Add the bounded offline/report-only `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` gate after the existing Newton shape runtime-construction gate.
 
-**Architecture:** Extend `build_cpd_paper_offline_report()` by consuming exactly one runtime-construction row and emitting exactly one data-only Newton builder-call plan for the existing `paper_single_box` box mapping record. The gate must remain offline/static: no Newton or warp import, no `ModelBuilder`, no `add_shape_*` call, no runtime pose construction, no model finalization, no USD, no benchmark, and no collision-quality measurement.
+**Architecture:** Extend `build_cpd_paper_offline_report()` by consuming exactly one runtime-construction row and emitting exactly one data-only Newton builder-call plan for the existing `paper_single_box` box mapping record. The gate must remain offline/static: the builder-preflight helper block adds no new Newton/Warp import and invokes no Newton/Warp API, but this is not a module-level no-Newton-import claim. It must still make no `ModelBuilder`, no `add_shape_*` call, no runtime pose construction, no model finalization, no USD, no benchmark, and no collision-quality measurement.
 
 **Tech Stack:** Python, pytest, Markdown docs, existing `primitive_collision_compiler.baselines.cpd_paper.offline` report builders, existing `NewtonShapeMapping.to_dict()` report records.
 
@@ -799,7 +799,7 @@ return {
     ),
     "runtime_builder_preflight_action": (
         "record_one_newton_builder_call_plan_from_repo_local_mapping_dict_"
-        "without_newton_import_or_builder_call"
+        "without_builder_call_or_newton_runtime_execution"
     ),
     "newton_shape_runtime_builder_preflight_contract": {
         "input_gate_required": (

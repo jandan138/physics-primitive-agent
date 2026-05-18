@@ -247,8 +247,10 @@ later runtime-construction candidate for that descriptor row while still creatin
 objects and running zero Newton code. The Newton shape runtime-construction contract now records
 exactly one repo-local `NewtonShapeMapping.to_dict()` mapping record for that descriptor row while
 still creating zero Newton engine shape objects, making zero builder shape calls, and running zero
-Newton code. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`, not Newton execution.
+Newton code. The Newton shape runtime builder-preflight contract now records one JSON-safe future
+box builder call plan for that mapping record while still creating zero Newton engine shape
+objects, making zero builder shape calls, and running zero Newton code. The current next gate is
+`paper_mapped_subset_newton_shape_runtime_builder_construction_contract`, not Newton execution.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -309,7 +311,10 @@ Newton shape runtime-boundary preflight contract that records one later runtime-
 candidate while still creating zero Newton shape objects and zero Newton runtime executions, plus a
 single-fixture offline/report-scoped Newton shape runtime-construction contract that records
 exactly one repo-local `NewtonShapeMapping.to_dict()` mapping record while still creating zero
-Newton engine shape objects, zero builder shape calls, and zero Newton runtime executions.
+Newton engine shape objects, zero builder shape calls, and zero Newton runtime executions, plus a
+single-fixture offline/static Newton shape runtime builder-preflight contract that records exactly
+one JSON-safe future box builder call plan while still allowing zero builder calls, creating zero
+Newton engine shape objects, and running zero Newton runtime executions.
 ```
 
 It does not support:

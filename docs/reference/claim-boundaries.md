@@ -135,8 +135,11 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   runtime-construction contract then consumes that runtime-boundary candidate and records exactly
   one repo-local `NewtonShapeMapping.to_dict()` mapping record for the synthetic
   `paper_single_box` box descriptor, with zero Newton mapper calls, zero Newton engine shape
-  objects, zero builder shape calls, and zero Newton runtime executions. It advances the current
-  next gate to `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
+  objects, zero builder shape calls, and zero Newton runtime executions. The builder-preflight
+  contract then records exactly one JSON-safe future box builder call plan while still allowing
+  zero builder calls, creating zero Newton engine shape objects, and running zero Newton code. It
+  advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`.
   The
   report remains `status: partial` with
   `paper_faithful_offline_supported: false`. This is fixture-scoped offline audit data for exact
@@ -195,7 +198,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
 - The partial `cpd_paper_offline_report` includes a command-only offline generalization planning
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
-  gate as `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` after the
+  gate as `paper_mapped_subset_newton_shape_runtime_builder_construction_contract` after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
@@ -434,6 +437,16 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   calls, zero Newton engine shape objects, zero builder shape calls, and zero Newton runtime
   executions. It advances the runtime-lane next gate to
   `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` while keeping Newton
+  support, real Newton shape object construction, Newton execution, USD, benchmark,
+  collision-quality, `paper_faithful_offline`, deployment, and safety claims unsupported.
+- The partial `cpd_paper_offline_report` now includes
+  `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`, a single-fixture
+  offline/static Newton shape runtime builder-preflight contract. It consumes the repo-local
+  `NewtonShapeMapping.to_dict()` mapping record, records exactly one JSON-safe future box builder
+  call plan with signature fields `body`, `xform`, `hx`, `hy`, and `hz`, keeps builder calls,
+  Newton engine shape object construction, and Newton execution at zero, and advances the
+  runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_builder_construction_contract` while keeping Newton
   support, real Newton shape object construction, Newton execution, USD, benchmark,
   collision-quality, `paper_faithful_offline`, deployment, and safety claims unsupported.
 - The partial `cpd_paper_offline_report` now includes
@@ -926,6 +939,14 @@ Use these only after broader benchmark records exist.
   keeps all Newton engine shape object, builder shape call, and runtime counters zero, and marks
   the next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
+- Do not describe `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract` as Newton
+  readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
+  collision-quality validation, paper primitive vocabulary coverage, approximation support,
+  `paper_faithful_offline` support, full CPD reproduction, deployment readiness, safety
+  certification, or general package readiness. It records one JSON-safe future builder call plan
+  for one synthetic `paper_single_box` box mapping record, keeps all Newton engine shape object,
+  builder shape call, and runtime counters zero, and marks the next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`.
 
 ## Wording Rules
 

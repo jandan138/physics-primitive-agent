@@ -393,6 +393,13 @@ Proposed | In progress | Complete | Failed | Superseded
   record, keeps Newton engine shape objects, builder shape calls, Newton runtime, real-USD,
   benchmark, and collision-quality evidence at zero or false, and advances the runtime-lane next
   gate to `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`.
+- [2026-05-18 CPD Paper Mapped-Subset Newton Shape Runtime Builder-Preflight Contract](2026-05-18-cpd-paper-mapped-subset-newton-shape-runtime-builder-preflight-contract.md):
+  partial single-fixture offline/static mapped-subset Newton shape runtime builder-preflight
+  contract inside `cpd_paper_offline_report`. It consumes the one repo-local
+  `NewtonShapeMapping.to_dict()` mapping record, records exactly one JSON-safe future box builder
+  call plan, keeps builder calls, Newton engine shape objects, Newton runtime, real-USD,
+  benchmark, and collision-quality evidence at zero or false, and advances the runtime-lane next
+  gate to `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.
