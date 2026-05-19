@@ -271,8 +271,10 @@ real builder shape calls, model finalization, collision pipeline calls, and Newt
 zero.
 The Newton engine-builder smoke contract now records one report-only skipped-smoke decision for
 the same synthetic box mapping. It keeps runtime-smoke attempts and Newton execution at zero.
-The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`, not a
+The Newton engine-builder runtime-execution contract now records one report-only
+skipped-runtime-execution decision for the same synthetic box mapping. It keeps
+runtime-execution attempts and Newton execution at zero. The current next gate is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`, not a
 Newton support or quality claim.
 Batch C
 stays important because it checks

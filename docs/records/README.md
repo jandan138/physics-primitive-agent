@@ -449,8 +449,18 @@ Proposed | In progress | Complete | Failed | Superseded
   `smoke_decision: skip_real_runtime_smoke`, keeps runtime-smoke attempts, real runtime imports,
   Newton `ModelBuilder` instantiation, Newton engine shape objects, real builder shape calls, model
   finalization, collision pipeline calls, Newton runtime, real-USD, benchmark, and
-  collision-quality evidence at zero or false, and advances the runtime-lane next gate to
+  collision-quality evidence at zero or false, and at that stage advanced the runtime-lane next
+  gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
+- [2026-05-20 CPD Paper Newton Engine-Builder Runtime-Execution Contract](2026-05-20-cpd-paper-newton-engine-builder-runtime-execution-contract.md):
+  single-fixture report-only Newton engine-builder skipped-runtime-execution decision inside
+  `cpd_paper_offline_report`. It consumes the smoke row, records
+  `runtime_execution_decision: skip_real_runtime_execution`, keeps runtime-execution attempts,
+  real runtime imports, Newton `ModelBuilder` instantiation, Newton engine shape objects, real
+  builder shape calls, model finalization, collision pipeline calls, Newton runtime, real-USD,
+  benchmark, and collision-quality evidence at zero or false, and advances the runtime-lane next
+  gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
 - [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
   anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
   boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate

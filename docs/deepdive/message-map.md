@@ -104,9 +104,11 @@ Do not claim:
   real Newton/Warp imports, zero `newton.ModelBuilder` instantiations, zero real builder calls,
   zero model finalization, zero collision pipeline calls, and zero Newton runtime executions.
   The report-only engine-builder smoke gate now records
-  `smoke_decision: skip_real_runtime_smoke` for the default no-runtime-entry path. The next
-  runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
+  `smoke_decision: skip_real_runtime_smoke` for the default no-runtime-entry path. The
+  report-only engine-builder runtime-execution gate now records
+  `runtime_execution_decision: skip_real_runtime_execution` for the default no-runtime-smoke path.
+  The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
 
 ## First 4-Week Proof Point
 

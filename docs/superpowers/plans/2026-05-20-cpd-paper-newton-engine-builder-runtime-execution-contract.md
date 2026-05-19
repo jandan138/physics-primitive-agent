@@ -24,7 +24,7 @@ gap to a claim-boundary review contract.
 - Modify: `tests/test_cli.py`
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add a test near the smoke-contract tests:
 
@@ -77,7 +77,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
 
 Update the CLI JSON test to expect the new top-level next gate and runtime-execution payload.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -87,7 +87,7 @@ python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_records_mapped_
 
 Expected: fail because the runtime-execution payload key does not exist.
 
-- [ ] **Step 3: Write the minimal implementation**
+- [x] **Step 3: Write the minimal implementation**
 
 Add the next-gate constant:
 
@@ -105,7 +105,7 @@ row, summarize coverage, and return the runtime-execution payload. Wire the payl
 `build_cpd_paper_offline_report()` after the smoke payload and use the runtime-execution remaining
 gaps for top-level `failure_labels` and `next_required_gate`.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run:
 
@@ -123,7 +123,7 @@ Expected: pass.
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 Add exact key-set constants:
 
@@ -137,7 +137,7 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_FALSE_FLAGS = (
 
 NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_TRUE_FLAGS = (
     *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_TRUE_FLAGS,
-    "newton_shape_runtime_engine_builder_runtime_execution_recorded",
+    "newton_shape_runtime_engine_builder_runtime_execution_decision_recorded",
     "smoke_decision_respected",
     "runtime_execution_source_lineage_checked",
 )
@@ -216,7 +216,7 @@ collision-quality calls. The forbidden text and AST call names must include at l
 )
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -226,13 +226,13 @@ python -m pytest tests/test_cpd_paper_offline.py -k "engine_builder_runtime_exec
 
 Expected: fail because the schema helpers and runtime-execution behavior do not exist.
 
-- [ ] **Step 3: Implement schema and validation**
+- [x] **Step 3: Implement schema and validation**
 
 Add runtime-execution false/true flag helpers, optional-false-field validation, source-row
 validation, row serialization validation, coverage summary, and the final runtime-execution
 payload function.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run:
 
@@ -260,18 +260,18 @@ Expected: all selected tests pass.
 - Modify: `docs/records/README.md`
 - Create: `docs/records/2026-05-20-cpd-paper-newton-engine-builder-runtime-execution-contract.md`
 
-- [ ] **Step 1: Update claim-boundary docs**
+- [x] **Step 1: Update claim-boundary docs**
 
 Replace wording that says the current next gate is the runtime-execution contract with wording
 that says the runtime-execution contract is implemented as a report-only skipped-runtime-execution
 decision and the current next gate is the runtime-lane claim-boundary review contract.
 
-- [ ] **Step 2: Add dated record**
+- [x] **Step 2: Add dated record**
 
 Add a record documenting scope, non-goals, current verification, and artifacts for the
 runtime-execution contract. Mark multi-agent review as pending until Task 4 completes.
 
-- [ ] **Step 3: Run docs checks**
+- [x] **Step 3: Run docs checks**
 
 Run:
 
@@ -289,23 +289,23 @@ Expected: all pass.
 
 - Review all changed files.
 
-- [ ] **Step 1: Request multi-agent review**
+- [x] **Step 1: Request multi-agent review**
 
 Ask at least two read-only review agents to inspect:
 
 - code schema/runtime-boundary correctness;
 - DeepDive and claim-boundary wording.
 
-- [ ] **Step 2: Fix accepted findings**
+- [x] **Step 2: Fix accepted findings**
 
 Apply only findings that improve contract correctness or claim boundaries.
 
-- [ ] **Step 3: Finalize the dated record after review**
+- [x] **Step 3: Finalize the dated record after review**
 
 Update `docs/records/2026-05-20-cpd-paper-newton-engine-builder-runtime-execution-contract.md` with
 the completed multi-agent review outcome, accepted fixes, and final verification commands.
 
-- [ ] **Step 4: Final verification**
+- [x] **Step 4: Final verification**
 
 Run:
 
@@ -320,7 +320,7 @@ git diff --check
 
 Expected: all pass.
 
-- [ ] **Step 5: Commit and merge**
+- [x] **Step 5: Commit and merge**
 
 Commit the implementation and documentation, then use `superpowers:finishing-a-development-branch`
 to merge, push, and clean up the worktree.
