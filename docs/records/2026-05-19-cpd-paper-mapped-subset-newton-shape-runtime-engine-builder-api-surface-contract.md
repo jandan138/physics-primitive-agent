@@ -198,6 +198,23 @@ PYTHONPATH=src python -m pytest -q
 
 Observed result: `2142 passed, 2 skipped in 2807.21s`.
 
+Post-merge `main` verification:
+
+```bash
+PYTHONPATH=src python -m py_compile \
+  src/primitive_collision_compiler/baselines/cpd_paper/offline.py \
+  src/primitive_collision_compiler/newton/env.py \
+  tests/test_cpd_paper_offline.py \
+  tests/test_cli.py
+python scripts/validate_docs.py
+python scripts/validate_site_claims.py
+git diff --check
+PYTHONPATH=src python -m pytest -q
+```
+
+Observed result: py_compile exited 0; docs validation passed; site claim validation passed;
+`git diff --check` exited 0; full test suite reported `2144 passed in 2923.24s`.
+
 ## Next Action
 
 Implement
