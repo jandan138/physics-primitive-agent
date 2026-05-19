@@ -152,8 +152,10 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   finalization, collision pipeline calls, and runtime execution at zero. The entry contract then
   records a report-only default no-runtime-entry decision for the same synthetic box lineage,
   keeps real runtime imports, `newton.ModelBuilder`, real builder calls, model finalization,
-  collision pipeline calls, and runtime execution at zero, and advances the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
+  collision pipeline calls, and runtime execution at zero. The smoke contract then records a
+  report-only `skip_real_runtime_smoke` decision for that same lineage, keeps real runtime-smoke
+  attempts and Newton execution at zero, and advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
   The entry gate is a consolidation boundary, not an extra claim. It combines the remaining
   import-boundary preconditions and the first Newton entry decision into one audit point instead
   of adding separate import-preflight and import-contract gates.
@@ -216,7 +218,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -1035,9 +1037,11 @@ Use these only after broader benchmark records exist.
   runtime counters zero. The later environment-probe slice marked the stage-local next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`; the later
   API-surface slice marked the stage-local next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`, and the later
-  entry slice marks the current next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`; the later
+  entry slice marked the stage-local next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`; the later smoke
+  slice marks the current next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
 - Do not describe
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` as Newton
   readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
@@ -1062,6 +1066,29 @@ Use these only after broader benchmark records exist.
   calls, and runtime counters zero. It marked the
   stage-local next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
+- Do not describe
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract` as Newton readiness,
+  Newton support, Newton execution, runtime compatibility, real-USD evidence, benchmark evidence,
+  collision-quality validation, paper primitive vocabulary coverage, approximation support,
+  `paper_faithful_offline` support, full CPD reproduction, deployment readiness, safety
+  certification, real Newton environment success, or general package readiness. It records one
+  report-only default no-runtime-entry decision for one synthetic `paper_single_box` lineage. It
+  keeps real runtime imports, `newton.ModelBuilder` instantiation, Newton engine shape objects,
+  real Newton builder shape calls, model finalization, collision pipeline calls, runtime entry
+  attempts, and runtime execution counters zero. It marked the stage-local next runtime-lane gate
+  as `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
+- Do not describe
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract` as Newton readiness,
+  Newton support, Newton execution, runtime compatibility, real-USD evidence, benchmark evidence,
+  collision-quality validation, paper primitive vocabulary coverage, approximation support,
+  `paper_faithful_offline` support, full CPD reproduction, deployment readiness, safety
+  certification, real Newton environment success, runtime smoke success, or general package
+  readiness. It records one report-only `skip_real_runtime_smoke` decision for one synthetic
+  `paper_single_box` lineage. It keeps real runtime imports, `newton.ModelBuilder` instantiation,
+  Newton engine shape objects, real Newton builder shape calls, model finalization, collision
+  pipeline calls, runtime-smoke attempts, and runtime execution counters zero. It marks the current
+  next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
 
 ## Wording Rules
 

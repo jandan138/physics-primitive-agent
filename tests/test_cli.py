@@ -1528,11 +1528,17 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_missing",
+        (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "runtime_execution_contract_missing"
+        ),
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
+        == (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "runtime_execution_contract"
+        )
     )
     assert payload["generated_collision_package_count"] == 1
     assert payload["runtime_admissibility_check_count"] == 1
@@ -1555,7 +1561,10 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "enclosed_primitive_postprocess",
     ]
     assert payload["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract",
+        (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "runtime_execution_contract"
+        ),
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1588,6 +1597,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract",
         "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract",
         "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract",
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract",
     ]
     builder_construction = payload[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
@@ -1679,9 +1689,41 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert entry["newton_model_builder_instantiated_count"] == 0
     assert entry["newton_builder_shape_call_count"] == 0
     assert entry["newton_model_finalized_count"] == 0
+    assert entry["newton_engine_shape_object_count"] == 0
     assert entry["newton_collision_pipeline_created_count"] == 0
     assert entry["newton_collision_pipeline_collide_count"] == 0
     assert entry["newton_runtime_execution_count"] == 0
+    smoke = payload[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
+    ]
+    assert (
+        smoke["gate_id"]
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
+    )
+    assert (
+        smoke["input_gate_id"]
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+    )
+    assert (
+        smoke["next_required_gate"]
+        == (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "runtime_execution_contract"
+        )
+    )
+    assert smoke["smoke_decision"] == "skip_real_runtime_smoke"
+    assert smoke["runtime_smoke_allowed_count"] == 0
+    assert smoke["runtime_smoke_attempted_count"] == 0
+    assert smoke["runtime_smoke_passed_count"] == 0
+    assert smoke["real_newton_import_count"] == 0
+    assert smoke["real_warp_import_count"] == 0
+    assert smoke["newton_model_builder_instantiated_count"] == 0
+    assert smoke["newton_builder_shape_call_count"] == 0
+    assert smoke["newton_model_finalized_count"] == 0
+    assert smoke["newton_engine_shape_object_count"] == 0
+    assert smoke["newton_collision_pipeline_created_count"] == 0
+    assert smoke["newton_collision_pipeline_collide_count"] == 0
+    assert smoke["newton_runtime_execution_count"] == 0
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False

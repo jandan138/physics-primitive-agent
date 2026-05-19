@@ -127,8 +127,11 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT = (
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
 )
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract"
+)
 EXPECTED_CURRENT_REPORT_NEXT_GATE = (
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
 )
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
@@ -145,7 +148,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -233,6 +236,9 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_REMAINING_GAPS = [
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
+]
+EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -2333,6 +2339,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2578,6 +2585,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -6842,6 +6850,7 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_PAYLOAD_REQUIRED_KEYS = {
     "newton_model_builder_instantiated_count",
     "newton_builder_shape_call_count",
     "newton_model_finalized_count",
+    "newton_engine_shape_object_count",
     "newton_collision_pipeline_created_count",
     "newton_collision_pipeline_collide_count",
     "newton_runtime_execution_count",
@@ -6886,6 +6895,107 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_ROW_REQUIRED_KEYS = {
     "newton_model_builder_instantiated_count",
     "newton_builder_shape_call_count",
     "newton_model_finalized_count",
+    "newton_engine_shape_object_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "newton_runtime_execution_count",
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_FALSE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_FALSE_FLAGS,
+    "runtime_smoke_allowed",
+    "runtime_smoke_attempted",
+    "runtime_smoke_passed",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_TRUE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_TRUE_FLAGS,
+    "newton_shape_runtime_engine_builder_smoke_recorded",
+    "entry_decision_respected",
+    "smoke_source_lineage_checked",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_PAYLOAD_REQUIRED_KEYS = {
+    "gate_id",
+    "gate_status",
+    "closed_gate",
+    "input_gate_id",
+    "next_required_gate",
+    "decision",
+    "decision_reason",
+    "artifact_kind",
+    "schema_version",
+    "source_scope",
+    "implementation_boundary",
+    "smoke_action",
+    "smoke_decision",
+    "smoke_contract",
+    "input_contract_summary",
+    "newton_shape_runtime_engine_builder_smoke_row_count",
+    "source_newton_shape_runtime_engine_builder_entry_row_count",
+    "runtime_smoke_allowed_count",
+    "runtime_smoke_attempted_count",
+    "runtime_smoke_passed_count",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_builder_shape_call_count",
+    "newton_model_finalized_count",
+    "newton_engine_shape_object_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "newton_runtime_execution_count",
+    "newton_shape_runtime_engine_builder_smoke_rows",
+    "coverage_summary",
+    "remaining_gaps",
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_TRUE_FLAGS,
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_ROW_REQUIRED_KEYS = {
+    "newton_shape_runtime_engine_builder_smoke_row_id",
+    "source_newton_shape_runtime_engine_builder_entry_row_id",
+    "source_newton_shape_runtime_engine_builder_api_surface_row_id",
+    "source_newton_shape_runtime_engine_builder_environment_probe_row_id",
+    "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id",
+    "source_newton_shape_runtime_builder_construction_row_id",
+    "source_newton_shape_runtime_builder_preflight_row_id",
+    "source_newton_shape_runtime_construction_row_id",
+    "source_newton_shape_runtime_boundary_preflight_row_id",
+    "source_shape_mapping_row_id",
+    "source_newton_shape_mapping_preflight_row_id",
+    "source_runtime_admissibility_row_id",
+    "source_package_id",
+    "source_asset_id",
+    "fixture_id",
+    "paper_primitive",
+    "primitive_spec_kind",
+    "primitive_id",
+    "target_newton_shape_kind",
+    "future_newton_builder_constructor_name",
+    "future_newton_builder_method_name",
+    "future_runtime_module_names",
+    "api_surface_probe_status",
+    "entry_decision",
+    "smoke_decision",
+    "smoke_decision_reason",
+    "smoke_observation_scope",
+    "runtime_smoke_allowed",
+    "runtime_smoke_attempted",
+    "runtime_smoke_passed",
+    "runtime_smoke_result_status",
+    "runtime_execution_gate_required",
+    "source_package_copy_forbidden",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_builder_shape_call_count",
+    "newton_model_finalized_count",
+    "newton_engine_shape_object_count",
     "newton_collision_pipeline_created_count",
     "newton_collision_pipeline_collide_count",
     "newton_runtime_execution_count",
@@ -12924,7 +13034,7 @@ def test_cpd_paper_records_mapped_subset_runtime_admissibility_contract_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -13389,7 +13499,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_preflight_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert (
         report["paper_faithfulness"]["missing_before_paper_faithful_offline"]
@@ -13870,7 +13980,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_contract_gate():
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_MAPPING_CONTRACT
@@ -14277,7 +14387,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_boundary_preflight
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BOUNDARY_PREFLIGHT_CONTRACT
@@ -14928,7 +15038,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_construction_contr
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_CONSTRUCTION_CONTRACT
@@ -15585,7 +15695,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_preflight_
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_CONTRACT
@@ -16333,7 +16443,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_constructi
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_CONTRACT
@@ -16917,7 +17027,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_bou
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_BOUNDARY_PREFLIGHT_CONTRACT
@@ -17643,7 +17753,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_env
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
@@ -18226,7 +18336,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_api
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT
@@ -18794,16 +18904,14 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_ent
         "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
     ]
 
-    assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
-    )
+    assert report["next_required_gate"] == EXPECTED_CURRENT_REPORT_NEXT_GATE
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
-        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
     )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
@@ -18822,6 +18930,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_ent
     assert payload["newton_model_builder_instantiated_count"] == 0
     assert payload["newton_builder_shape_call_count"] == 0
     assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
     assert payload["newton_collision_pipeline_created_count"] == 0
     assert payload["newton_collision_pipeline_collide_count"] == 0
     assert payload["newton_runtime_execution_count"] == 0
@@ -18829,6 +18938,279 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_ent
         payload["remaining_gaps"]
         == EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_REMAINING_GAPS
     )
+
+
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
+    ]
+
+    assert report["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+    )
+    assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
+    assert (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
+    )
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+    )
+    assert payload["smoke_decision"] == "skip_real_runtime_smoke"
+    assert payload["runtime_smoke_allowed_count"] == 0
+    assert payload["runtime_smoke_attempted_count"] == 0
+    assert payload["runtime_smoke_passed_count"] == 0
+    assert payload["real_newton_import_count"] == 0
+    assert payload["real_warp_import_count"] == 0
+    assert payload["newton_model_builder_instantiated_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_collision_pipeline_created_count"] == 0
+    assert payload["newton_collision_pipeline_collide_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
+    )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_payload_schema_is_exact():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
+    ]
+    entry = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+    ]
+    source_row = entry[
+        "newton_shape_runtime_engine_builder_entry_rows"
+    ][0]
+
+    assert set(payload) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_PAYLOAD_REQUIRED_KEYS
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+    )
+    assert payload["closed_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+    )
+    assert payload["gate_status"] == (
+        "implemented_single_fixture_newton_engine_builder_smoke_"
+        "report_only_partial"
+    )
+    assert payload["decision"] == "remain_partial"
+    assert payload["decision_reason"] == (
+        "newton_engine_builder_smoke_recorded_runtime_execution_contract_missing"
+    )
+    assert payload["artifact_kind"] == (
+        "newton_engine_builder_smoke_decision_record_not_runtime_execution"
+    )
+    assert payload["implementation_boundary"] == (
+        "single_synthetic_box_engine_builder_smoke_contract_"
+        "no_import_no_model_builder_no_shape_call_no_finalize_no_runtime"
+    )
+    assert payload["smoke_action"] == (
+        "record_default_no_runtime_smoke_decision_for_single_synthetic_box"
+    )
+    assert payload["smoke_decision"] == "skip_real_runtime_smoke"
+    assert payload["smoke_contract"] == {
+        "input_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
+        ),
+        "closed_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+        ),
+        "next_runtime_execution_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+        ),
+        "source_entry_rows_required": 1,
+        "entry_decision_required": "defer_real_runtime_entry",
+        "smoke_decision": "skip_real_runtime_smoke",
+        "runtime_smoke_allowed": False,
+        "runtime_smoke_attempted": False,
+        "runtime_smoke_passed": False,
+        "real_runtime_import_allowed": False,
+        "newton_model_builder_allowed": False,
+        "newton_engine_shape_object_allowed": False,
+        "newton_builder_shape_call_allowed": False,
+        "newton_model_finalize_allowed": False,
+        "newton_collision_pipeline_allowed": False,
+        "newton_runtime_allowed": False,
+        "newton_support_claim_allowed": False,
+    }
+    assert payload["input_contract_summary"] == {
+        "input_gate_id": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
+        ),
+        "input_next_required_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+        ),
+        "source_newton_shape_runtime_engine_builder_entry_row_id": source_row[
+            "newton_shape_runtime_engine_builder_entry_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_api_surface_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_api_surface_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_environment_probe_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_environment_probe_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id"
+        ],
+        "source_shape_mapping_row_id": source_row["source_shape_mapping_row_id"],
+        "source_package_id": source_row["source_package_id"],
+        "source_fixture_id": "paper_single_box",
+        "source_primitive_id": source_row["primitive_id"],
+        "source_target_newton_shape_kind": "box",
+        "source_entry_decision": "defer_real_runtime_entry",
+        "source_api_surface_probe_status": "not_run_source_dir_not_configured",
+    }
+    assert payload["newton_shape_runtime_engine_builder_smoke_row_count"] == 1
+    assert (
+        payload[
+            "source_newton_shape_runtime_engine_builder_entry_row_count"
+        ]
+        == 1
+    )
+    assert payload["runtime_smoke_allowed_count"] == 0
+    assert payload["runtime_smoke_attempted_count"] == 0
+    assert payload["runtime_smoke_passed_count"] == 0
+    assert payload["real_newton_import_count"] == 0
+    assert payload["real_warp_import_count"] == 0
+    assert payload["newton_model_builder_instantiated_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_collision_pipeline_created_count"] == 0
+    assert payload["newton_collision_pipeline_collide_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_REMAINING_GAPS
+    )
+    assert payload["coverage_summary"] == {
+        "newton_shape_runtime_engine_builder_smoke_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_entry_row_count": 1,
+        "runtime_smoke_allowed_count": 0,
+        "runtime_smoke_attempted_count": 0,
+        "runtime_smoke_passed_count": 0,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "smoke_decision_distribution": {"skip_real_runtime_smoke": 1},
+        "runtime_smoke_result_status_distribution": {
+            "not_run_default_no_runtime_entry": 1
+        },
+    }
+    assert payload["newton_shape_runtime_engine_builder_smoke_rows"] == [
+        {
+            "newton_shape_runtime_engine_builder_smoke_row_id": (
+                "newton_shape_runtime_engine_builder_smoke__paper_single_box__box"
+            ),
+            "source_newton_shape_runtime_engine_builder_entry_row_id": source_row[
+                "newton_shape_runtime_engine_builder_entry_row_id"
+            ],
+            "source_newton_shape_runtime_engine_builder_api_surface_row_id": source_row[
+                "source_newton_shape_runtime_engine_builder_api_surface_row_id"
+            ],
+            "source_newton_shape_runtime_engine_builder_environment_probe_row_id": source_row[
+                "source_newton_shape_runtime_engine_builder_environment_probe_row_id"
+            ],
+            "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id": source_row[
+                "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id"
+            ],
+            "source_newton_shape_runtime_builder_construction_row_id": source_row[
+                "source_newton_shape_runtime_builder_construction_row_id"
+            ],
+            "source_newton_shape_runtime_builder_preflight_row_id": source_row[
+                "source_newton_shape_runtime_builder_preflight_row_id"
+            ],
+            "source_newton_shape_runtime_construction_row_id": source_row[
+                "source_newton_shape_runtime_construction_row_id"
+            ],
+            "source_newton_shape_runtime_boundary_preflight_row_id": source_row[
+                "source_newton_shape_runtime_boundary_preflight_row_id"
+            ],
+            "source_shape_mapping_row_id": source_row[
+                "source_shape_mapping_row_id"
+            ],
+            "source_newton_shape_mapping_preflight_row_id": source_row[
+                "source_newton_shape_mapping_preflight_row_id"
+            ],
+            "source_runtime_admissibility_row_id": source_row[
+                "source_runtime_admissibility_row_id"
+            ],
+            "source_package_id": source_row["source_package_id"],
+            "source_asset_id": source_row["source_asset_id"],
+            "fixture_id": "paper_single_box",
+            "paper_primitive": "oriented_bounding_box",
+            "primitive_spec_kind": "box",
+            "primitive_id": source_row["primitive_id"],
+            "target_newton_shape_kind": "box",
+            "future_newton_builder_constructor_name": "newton.ModelBuilder",
+            "future_newton_builder_method_name": "add_shape_box",
+            "future_runtime_module_names": ["newton", "warp"],
+            "api_surface_probe_status": "not_run_source_dir_not_configured",
+            "entry_decision": "defer_real_runtime_entry",
+            "smoke_decision": "skip_real_runtime_smoke",
+            "smoke_decision_reason": (
+                "default_no_runtime_entry_decision_preserved"
+            ),
+            "smoke_observation_scope": (
+                "report_only_single_synthetic_box_lineage"
+            ),
+            "runtime_smoke_allowed": False,
+            "runtime_smoke_attempted": False,
+            "runtime_smoke_passed": False,
+            "runtime_smoke_result_status": (
+                "not_run_default_no_runtime_entry"
+            ),
+            "runtime_execution_gate_required": (
+                EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+            ),
+            "source_package_copy_forbidden": True,
+            "real_newton_import_count": 0,
+            "real_warp_import_count": 0,
+            "newton_model_builder_instantiated_count": 0,
+            "newton_builder_shape_call_count": 0,
+            "newton_model_finalized_count": 0,
+            "newton_engine_shape_object_count": 0,
+            "newton_collision_pipeline_created_count": 0,
+            "newton_collision_pipeline_collide_count": 0,
+            "newton_runtime_execution_count": 0,
+        }
+    ]
+    assert set(payload["newton_shape_runtime_engine_builder_smoke_rows"][0]) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_ROW_REQUIRED_KEYS
+    )
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_FALSE_FLAGS:
+        assert payload[flag] is False
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_TRUE_FLAGS:
+        assert payload[flag] is True
 
 
 def test_cpd_paper_newton_shape_runtime_engine_builder_entry_payload_schema_is_exact():
@@ -18937,6 +19319,7 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_entry_payload_schema_is_e
     assert payload["newton_model_builder_instantiated_count"] == 0
     assert payload["newton_builder_shape_call_count"] == 0
     assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
     assert payload["newton_collision_pipeline_created_count"] == 0
     assert payload["newton_collision_pipeline_collide_count"] == 0
     assert payload["newton_runtime_execution_count"] == 0
@@ -18953,6 +19336,7 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_entry_payload_schema_is_e
         "newton_model_builder_instantiated_count": 0,
         "newton_builder_shape_call_count": 0,
         "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
         "newton_collision_pipeline_created_count": 0,
         "newton_collision_pipeline_collide_count": 0,
         "newton_runtime_execution_count": 0,
@@ -19016,6 +19400,7 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_entry_payload_schema_is_e
             "newton_model_builder_instantiated_count": 0,
             "newton_builder_shape_call_count": 0,
             "newton_model_finalized_count": 0,
+            "newton_engine_shape_object_count": 0,
             "newton_collision_pipeline_created_count": 0,
             "newton_collision_pipeline_collide_count": 0,
             "newton_runtime_execution_count": 0,
@@ -19186,6 +19571,236 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_entry_static_boundary_is_
         "module_from_spec",
         "exec_module",
         "__import__",
+        "_import_newton_runtime",
+        "inspect_newton_environment",
+        "run_newton_contact_smoke",
+        "run_newton_drop_settle",
+        "run_newton_sphere_rain",
+        "inspect_newton_warp_provenance",
+    }
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                assert alias.name.split(".")[0] not in forbidden_import_roots
+        if isinstance(node, ast.ImportFrom) and node.module is not None:
+            assert node.module.split(".")[0] not in forbidden_import_roots
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+            assert node.func.attr not in forbidden_call_attrs
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            assert node.func.id not in forbidden_call_attrs
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("gate_id", "stale_gate", "smoke_input_gate_id_mismatch"),
+        ("next_required_gate", "stale_gate", "smoke_input_next_gate_mismatch"),
+        (
+            "entry_decision",
+            "allow_real_runtime_entry",
+            "smoke_input_entry_decision_mismatch",
+        ),
+        (
+            "remaining_gaps",
+            ["stale_gate"],
+            "smoke_input_remaining_gaps_mismatch",
+        ),
+        ("runtime_entry_attempted_count", 1, "smoke_input_count_mismatch"),
+        ("real_newton_import_count", 1, "smoke_input_count_mismatch"),
+        ("real_warp_import_count", 1, "smoke_input_count_mismatch"),
+        (
+            "newton_model_builder_instantiated_count",
+            1,
+            "smoke_input_count_mismatch",
+        ),
+        ("newton_engine_shape_object_count", 1, "smoke_input_count_mismatch"),
+        ("newton_builder_shape_call_count", 1, "smoke_input_count_mismatch"),
+        ("newton_model_finalized_count", 1, "smoke_input_count_mismatch"),
+        (
+            "newton_collision_pipeline_created_count",
+            1,
+            "smoke_input_count_mismatch",
+        ),
+        (
+            "newton_collision_pipeline_collide_count",
+            1,
+            "smoke_input_count_mismatch",
+        ),
+        ("newton_runtime_execution_count", 1, "smoke_input_count_mismatch"),
+        ("runtime_entry_allowed", True, "smoke_input_flag_true"),
+        ("real_runtime_import_allowed", True, "smoke_input_flag_true"),
+        ("newton_model_builder_allowed", True, "smoke_input_flag_true"),
+        ("newton_runtime_allowed", True, "smoke_input_flag_true"),
+        (
+            "newton_shape_runtime_engine_builder_entry_recorded",
+            False,
+            "smoke_input_flag_false",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_input_drift(
+    field, value, message
+):
+    report = build_cpd_paper_offline_report()
+    entry = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+            ]
+        )
+    )
+    entry[field] = value
+
+    with pytest.raises(ValueError, match=message):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+            entry
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_input_coverage_summary_drift():
+    report = build_cpd_paper_offline_report()
+    entry = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+            ]
+        )
+    )
+    entry["coverage_summary"]["newton_runtime_execution_count"] = 1
+
+    with pytest.raises(
+        ValueError,
+        match="smoke_input_coverage_summary_mismatch",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+            entry
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_source_row_drift_and_copies():
+    report = build_cpd_paper_offline_report()
+    entry = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+            ]
+        )
+    )
+
+    entry["newton_shape_runtime_engine_builder_entry_rows"] = []
+    with pytest.raises(ValueError, match="smoke_row_count_mismatch"):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+            entry
+        )
+
+    entry = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+            ]
+        )
+    )
+    entry["newton_shape_runtime_engine_builder_entry_rows"][0][
+        "source_package_id"
+    ] = "stale_package"
+    with pytest.raises(ValueError, match="smoke_source_row_mismatch"):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+            entry
+        )
+
+    entry = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+            ]
+        )
+    )
+    entry["newton_shape_runtime_engine_builder_entry_rows"][0][
+        "newton_engine_shape_object_count"
+    ] = 1
+    with pytest.raises(ValueError, match="smoke_source_row_mismatch"):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+            entry
+        )
+
+    entry = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
+            ]
+        )
+    )
+    entry["newton_shape_runtime_engine_builder_entry_rows"][0][
+        "source_package"
+    ] = {}
+    with pytest.raises(ValueError, match="smoke_source_package_copy_forbidden"):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+            entry
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_static_boundary_is_report_only():
+    helpers = (
+        cpd_paper_offline._paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_smoke,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_smoke_false_flags,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_smoke_true_flags,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_smoke_source_row,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_smoke_row,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_smoke_coverage_summary,
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload,
+    )
+    source = "\n".join(inspect.getsource(helper) for helper in helpers)
+
+    forbidden_patterns = (
+        "importlib.import_module",
+        "module_from_spec",
+        "exec_module",
+        "__import__",
+        "getattr(",
+        "eval(",
+        "exec(",
+        "compile(",
+        "import newton",
+        "from newton",
+        "import warp",
+        "from warp",
+        "ModelBuilder(",
+        "CollisionPipeline(",
+        ".add_shape_box(",
+        ".finalize(",
+        ".collide(",
+        "run_newton_contact_smoke",
+        "run_newton_drop_settle",
+        "run_newton_sphere_rain",
+        "inspect_newton_environment",
+        "_import_newton_runtime",
+        "inspect_newton_warp_provenance",
+        "load_first_mesh",
+        "inspect_usd_asset",
+        "timeit",
+        "perf_counter",
+        "benchmark_metric",
+        "measure_collision_quality",
+    )
+    for pattern in forbidden_patterns:
+        assert pattern not in source
+
+    tree = ast.parse(source)
+    forbidden_import_roots = {"newton", "warp"}
+    forbidden_call_attrs = {
+        "ModelBuilder",
+        "CollisionPipeline",
+        "add_shape_box",
+        "finalize",
+        "collide",
+        "import_module",
+        "module_from_spec",
+        "exec_module",
+        "__import__",
+        "getattr",
+        "eval",
+        "exec",
+        "compile",
         "_import_newton_runtime",
         "inspect_newton_environment",
         "run_newton_contact_smoke",

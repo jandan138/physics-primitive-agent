@@ -163,6 +163,9 @@ _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT = (
 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
 )
+_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract"
+)
 _PAPER_COLLISION_PACKAGE_GENERATION_CLAIM_BOUNDARY = (
     "single_fixture_box_only_offline_collision_package_artifact_"
     "not_paper_vocabulary_runtime_admissibility_or_newton"
@@ -887,6 +890,12 @@ def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builde
 def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_entry() -> list[str]:
     return [
         _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+    ]
+
+
+def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_smoke() -> list[str]:
+    return [
+        _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
     ]
 
 
@@ -14163,6 +14172,7 @@ def _paper_newton_shape_runtime_engine_builder_entry_row(
         "newton_model_builder_instantiated_count": 0,
         "newton_builder_shape_call_count": 0,
         "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
         "newton_collision_pipeline_created_count": 0,
         "newton_collision_pipeline_collide_count": 0,
         "newton_runtime_execution_count": 0,
@@ -14195,6 +14205,7 @@ def _paper_newton_shape_runtime_engine_builder_entry_coverage_summary(
         "newton_model_builder_instantiated_count": 0,
         "newton_builder_shape_call_count": 0,
         "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
         "newton_collision_pipeline_created_count": 0,
         "newton_collision_pipeline_collide_count": 0,
         "newton_runtime_execution_count": 0,
@@ -14310,6 +14321,7 @@ def _paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract_payl
         "newton_model_builder_instantiated_count": 0,
         "newton_builder_shape_call_count": 0,
         "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
         "newton_collision_pipeline_created_count": 0,
         "newton_collision_pipeline_collide_count": 0,
         "newton_runtime_execution_count": 0,
@@ -14318,6 +14330,438 @@ def _paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract_payl
         "remaining_gaps": remaining_gaps,
         **_paper_newton_shape_runtime_engine_builder_entry_false_flags(),
         **_paper_newton_shape_runtime_engine_builder_entry_true_flags(),
+    }
+
+
+_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_PAYLOAD_FALSE_FLAGS = (
+    *_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_PAYLOAD_FALSE_FLAGS,
+    "runtime_smoke_allowed",
+    "runtime_smoke_attempted",
+    "runtime_smoke_passed",
+)
+
+_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_TRUE_FLAGS = (
+    *_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_TRUE_FLAGS,
+    "newton_shape_runtime_engine_builder_smoke_recorded",
+    "entry_decision_respected",
+    "smoke_source_lineage_checked",
+)
+
+
+def _paper_newton_shape_runtime_engine_builder_smoke_false_flags() -> dict[str, bool]:
+    return {
+        flag: False
+        for flag in _NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_PAYLOAD_FALSE_FLAGS
+    }
+
+
+def _paper_newton_shape_runtime_engine_builder_smoke_true_flags() -> dict[str, bool]:
+    return {
+        flag: True
+        for flag in _NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_TRUE_FLAGS
+    }
+
+
+def _paper_validate_runtime_engine_builder_smoke_input_true_flags(
+    data: dict[str, object],
+) -> None:
+    for flag in _NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_TRUE_FLAGS:
+        if flag not in data:
+            raise ValueError(f"smoke_input_flag_missing:{flag}")
+        if data[flag] is not True:
+            raise ValueError(f"smoke_input_flag_false:{flag}")
+
+
+def _paper_validate_runtime_engine_builder_smoke_optional_false_fields(
+    data: dict[str, object],
+) -> None:
+    for flag in _NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_OPTIONAL_FALSE_FIELDS:
+        if data.get(flag) is True:
+            raise ValueError(f"smoke_input_flag_true:{flag}")
+
+
+def _paper_newton_shape_runtime_engine_builder_smoke_source_row(
+    entry: dict[str, object],
+) -> dict[str, object]:
+    if (
+        entry.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
+    ):
+        raise ValueError("smoke_input_gate_id_mismatch")
+    if (
+        entry.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+    ):
+        raise ValueError("smoke_input_next_gate_mismatch")
+    if entry.get("entry_decision") != "defer_real_runtime_entry":
+        raise ValueError("smoke_input_entry_decision_mismatch")
+    if entry.get("remaining_gaps") != [
+        _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+    ]:
+        raise ValueError("smoke_input_remaining_gaps_mismatch")
+    _paper_validate_primitivespec_runtime_construction_false_flags(
+        entry,
+        error_prefix="smoke_input_flag",
+        required_false_flags=(
+            _NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_PAYLOAD_FALSE_FLAGS
+        ),
+    )
+    _paper_validate_runtime_engine_builder_smoke_input_true_flags(entry)
+    _paper_validate_runtime_engine_builder_smoke_optional_false_fields(entry)
+    expected_counts = {
+        "newton_shape_runtime_engine_builder_entry_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_api_surface_row_count": 1,
+        "runtime_entry_allowed_count": 0,
+        "runtime_entry_attempted_count": 0,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+    }
+    for field_name, expected_value in expected_counts.items():
+        if entry.get(field_name) != expected_value:
+            raise ValueError(f"smoke_input_count_mismatch:{field_name}")
+    expected_coverage_summary = {
+        "newton_shape_runtime_engine_builder_entry_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_api_surface_row_count": 1,
+        "runtime_entry_allowed_count": 0,
+        "runtime_entry_attempted_count": 0,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "entry_decision_distribution": {"defer_real_runtime_entry": 1},
+    }
+    if entry.get("coverage_summary") != expected_coverage_summary:
+        raise ValueError("smoke_input_coverage_summary_mismatch")
+    rows = entry.get("newton_shape_runtime_engine_builder_entry_rows")
+    if not isinstance(rows, list | tuple) or len(rows) != 1:
+        raise ValueError("smoke_row_count_mismatch")
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError("smoke_row_count_mismatch")
+    if "source_package" in row:
+        raise ValueError("smoke_source_package_copy_forbidden")
+    expected_row_values = {
+        "newton_shape_runtime_engine_builder_entry_row_id": (
+            "newton_shape_runtime_engine_builder_entry__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_engine_builder_api_surface_row_id": (
+            "newton_shape_runtime_engine_builder_api_surface__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_engine_builder_environment_probe_row_id": (
+            "newton_shape_runtime_engine_builder_environment_probe__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id": (
+            "newton_shape_runtime_engine_builder_boundary_preflight__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_builder_construction_row_id": (
+            "newton_shape_runtime_builder_construction__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_builder_preflight_row_id": (
+            "newton_shape_runtime_builder_preflight__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_construction_row_id": (
+            "newton_shape_runtime_construction__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_boundary_preflight_row_id": (
+            "newton_shape_runtime_boundary_preflight__paper_single_box__box"
+        ),
+        "source_shape_mapping_row_id": "newton_shape_mapping__paper_single_box__box",
+        "source_newton_shape_mapping_preflight_row_id": (
+            "newton_shape_mapping_preflight__paper_single_box__box"
+        ),
+        "source_runtime_admissibility_row_id": (
+            "runtime_admissibility__paper_single_box__box"
+        ),
+        "source_package_id": (
+            "paper_single_box:"
+            f"{_PAPER_MAPPED_SUBSET_COLLISION_PACKAGE_GENERATION_CONTRACT}"
+        ),
+        "source_asset_id": "paper_single_box",
+        "fixture_id": "paper_single_box",
+        "paper_primitive": "oriented_bounding_box",
+        "primitive_spec_kind": "box",
+        "primitive_id": "paper_single_box__oriented_bounding_box__box",
+        "target_newton_shape_kind": "box",
+        "future_newton_builder_constructor_name": "newton.ModelBuilder",
+        "future_newton_builder_method_name": "add_shape_box",
+        "future_runtime_module_names": ["newton", "warp"],
+        "api_surface_probe_status": "not_run_source_dir_not_configured",
+        "entry_decision": "defer_real_runtime_entry",
+        "runtime_entry_allowed": False,
+        "runtime_entry_attempted": False,
+        "source_package_copy_forbidden": True,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_runtime_execution_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+    }
+    for field_name, expected_value in expected_row_values.items():
+        if row.get(field_name) != expected_value:
+            raise ValueError(f"smoke_source_row_mismatch:{field_name}")
+    if list(_paper_runtime_admissibility_preflight_package_dicts(entry)):
+        raise ValueError("smoke_source_package_copy_forbidden")
+    return row
+
+
+def _paper_newton_shape_runtime_engine_builder_smoke_row(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    row = {
+        "newton_shape_runtime_engine_builder_smoke_row_id": (
+            "newton_shape_runtime_engine_builder_smoke__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_engine_builder_entry_row_id": source_row[
+            "newton_shape_runtime_engine_builder_entry_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_api_surface_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_api_surface_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_environment_probe_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_environment_probe_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id"
+        ],
+        "source_newton_shape_runtime_builder_construction_row_id": source_row[
+            "source_newton_shape_runtime_builder_construction_row_id"
+        ],
+        "source_newton_shape_runtime_builder_preflight_row_id": source_row[
+            "source_newton_shape_runtime_builder_preflight_row_id"
+        ],
+        "source_newton_shape_runtime_construction_row_id": source_row[
+            "source_newton_shape_runtime_construction_row_id"
+        ],
+        "source_newton_shape_runtime_boundary_preflight_row_id": source_row[
+            "source_newton_shape_runtime_boundary_preflight_row_id"
+        ],
+        "source_shape_mapping_row_id": source_row["source_shape_mapping_row_id"],
+        "source_newton_shape_mapping_preflight_row_id": source_row[
+            "source_newton_shape_mapping_preflight_row_id"
+        ],
+        "source_runtime_admissibility_row_id": source_row[
+            "source_runtime_admissibility_row_id"
+        ],
+        "source_package_id": source_row["source_package_id"],
+        "source_asset_id": source_row["source_asset_id"],
+        "fixture_id": source_row["fixture_id"],
+        "paper_primitive": source_row["paper_primitive"],
+        "primitive_spec_kind": source_row["primitive_spec_kind"],
+        "primitive_id": source_row["primitive_id"],
+        "target_newton_shape_kind": source_row["target_newton_shape_kind"],
+        "future_newton_builder_constructor_name": source_row[
+            "future_newton_builder_constructor_name"
+        ],
+        "future_newton_builder_method_name": source_row[
+            "future_newton_builder_method_name"
+        ],
+        "future_runtime_module_names": source_row["future_runtime_module_names"],
+        "api_surface_probe_status": source_row["api_surface_probe_status"],
+        "entry_decision": source_row["entry_decision"],
+        "smoke_decision": "skip_real_runtime_smoke",
+        "smoke_decision_reason": "default_no_runtime_entry_decision_preserved",
+        "smoke_observation_scope": "report_only_single_synthetic_box_lineage",
+        "runtime_smoke_allowed": False,
+        "runtime_smoke_attempted": False,
+        "runtime_smoke_passed": False,
+        "runtime_smoke_result_status": "not_run_default_no_runtime_entry",
+        "runtime_execution_gate_required": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+        ),
+        "source_package_copy_forbidden": True,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+    }
+    try:
+        json.dumps(row)
+    except TypeError as exc:
+        raise ValueError(
+            "newton_shape_runtime_engine_builder_smoke_row_json_malformed"
+        ) from exc
+    return row
+
+
+def _paper_newton_shape_runtime_engine_builder_smoke_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "newton_shape_runtime_engine_builder_smoke_row_count": len(rows),
+        "source_newton_shape_runtime_engine_builder_entry_row_count": len(
+            rows
+        ),
+        "runtime_smoke_allowed_count": sum(
+            int(row["runtime_smoke_allowed"]) for row in rows
+        ),
+        "runtime_smoke_attempted_count": sum(
+            int(row["runtime_smoke_attempted"]) for row in rows
+        ),
+        "runtime_smoke_passed_count": sum(
+            int(row["runtime_smoke_passed"]) for row in rows
+        ),
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "smoke_decision_distribution": _paper_policy_distribution(
+            rows,
+            "smoke_decision",
+        ),
+        "runtime_smoke_result_status_distribution": _paper_policy_distribution(
+            rows,
+            "runtime_smoke_result_status",
+        ),
+    }
+
+
+def _paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+    entry: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_newton_shape_runtime_engine_builder_smoke_source_row(
+        entry
+    )
+    row = _paper_newton_shape_runtime_engine_builder_smoke_row(source_row)
+    rows = [row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_smoke()
+    )
+    coverage_summary = (
+        _paper_newton_shape_runtime_engine_builder_smoke_coverage_summary(rows)
+    )
+    return {
+        "gate_id": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+        ),
+        "gate_status": (
+            "implemented_single_fixture_newton_engine_builder_smoke_"
+            "report_only_partial"
+        ),
+        "closed_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+        ),
+        "input_gate_id": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
+        ),
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "newton_engine_builder_smoke_recorded_runtime_execution_contract_missing"
+        ),
+        "artifact_kind": (
+            "newton_engine_builder_smoke_decision_record_not_runtime_execution"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "single_synthetic_box_engine_builder_smoke_contract_"
+            "no_import_no_model_builder_no_shape_call_no_finalize_no_runtime"
+        ),
+        "smoke_action": (
+            "record_default_no_runtime_smoke_decision_for_single_synthetic_box"
+        ),
+        "smoke_decision": "skip_real_runtime_smoke",
+        "smoke_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
+            ),
+            "closed_gate": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT
+            ),
+            "next_runtime_execution_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT
+            ),
+            "source_entry_rows_required": 1,
+            "entry_decision_required": "defer_real_runtime_entry",
+            "smoke_decision": "skip_real_runtime_smoke",
+            "runtime_smoke_allowed": False,
+            "runtime_smoke_attempted": False,
+            "runtime_smoke_passed": False,
+            "real_runtime_import_allowed": False,
+            "newton_model_builder_allowed": False,
+            "newton_engine_shape_object_allowed": False,
+            "newton_builder_shape_call_allowed": False,
+            "newton_model_finalize_allowed": False,
+            "newton_collision_pipeline_allowed": False,
+            "newton_runtime_allowed": False,
+            "newton_support_claim_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": entry["gate_id"],
+            "input_next_required_gate": entry["next_required_gate"],
+            "source_newton_shape_runtime_engine_builder_entry_row_id": source_row[
+                "newton_shape_runtime_engine_builder_entry_row_id"
+            ],
+            "source_newton_shape_runtime_engine_builder_api_surface_row_id": source_row[
+                "source_newton_shape_runtime_engine_builder_api_surface_row_id"
+            ],
+            "source_newton_shape_runtime_engine_builder_environment_probe_row_id": source_row[
+                "source_newton_shape_runtime_engine_builder_environment_probe_row_id"
+            ],
+            "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id": source_row[
+                "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id"
+            ],
+            "source_shape_mapping_row_id": source_row[
+                "source_shape_mapping_row_id"
+            ],
+            "source_package_id": source_row["source_package_id"],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_id": source_row["primitive_id"],
+            "source_target_newton_shape_kind": source_row[
+                "target_newton_shape_kind"
+            ],
+            "source_entry_decision": source_row["entry_decision"],
+            "source_api_surface_probe_status": source_row[
+                "api_surface_probe_status"
+            ],
+        },
+        "newton_shape_runtime_engine_builder_smoke_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_entry_row_count": 1,
+        "runtime_smoke_allowed_count": 0,
+        "runtime_smoke_attempted_count": 0,
+        "runtime_smoke_passed_count": 0,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "newton_shape_runtime_engine_builder_smoke_rows": rows,
+        "coverage_summary": coverage_summary,
+        "remaining_gaps": remaining_gaps,
+        **_paper_newton_shape_runtime_engine_builder_smoke_false_flags(),
+        **_paper_newton_shape_runtime_engine_builder_smoke_true_flags(),
     }
 
 
@@ -14618,12 +15062,17 @@ def build_cpd_paper_offline_report(
             mapped_subset_newton_shape_runtime_engine_builder_api_surface
         )
     )
+    mapped_subset_newton_shape_runtime_engine_builder_smoke = (
+        _paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_payload(
+            mapped_subset_newton_shape_runtime_engine_builder_entry
+        )
+    )
     paper_faithful_scope_audit = _paper_faithful_offline_scope_audit_payload()
     missing_before_paper_faithful = paper_faithful_scope_audit[
         "blocking_criteria_ids"
     ]
     runtime_lane_remaining_gates = (
-        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_entry()
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_smoke()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -14710,6 +15159,7 @@ def build_cpd_paper_offline_report(
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT,
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT,
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT,
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
             "runtime_lane_remaining_gates": runtime_lane_remaining_gates,
@@ -14823,6 +15273,9 @@ def build_cpd_paper_offline_report(
         ),
         "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract": (
             mapped_subset_newton_shape_runtime_engine_builder_entry
+        ),
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract": (
+            mapped_subset_newton_shape_runtime_engine_builder_smoke
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

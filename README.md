@@ -273,14 +273,21 @@ report now also includes
 `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`, a
 single-fixture report-only engine-builder entry decision. It consumes the API-surface row,
 records the default no-config decision `defer_real_runtime_entry`, keeps real Newton/Warp
-imports, `newton.ModelBuilder`, real builder calls, model finalization, collision pipeline
-calls, and Newton execution at zero, and advances the current runtime-lane gate to
-`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`. The package dict,
+imports, `newton.ModelBuilder`, Newton engine shape objects, real builder calls, model
+finalization, collision pipeline calls, and Newton execution at zero. The report now also includes
+`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`, a
+single-fixture report-only skipped-smoke decision. It consumes the entry row, records
+`smoke_decision: skip_real_runtime_smoke` for the default no-runtime-entry path, keeps real
+Newton/Warp imports, `newton.ModelBuilder`, Newton engine shape objects, real builder calls, model
+finalization, collision pipeline calls, and Newton execution at zero, and advances the current
+runtime-lane gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`. The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
 descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
 preflight plan, recording-builder call artifact, engine-builder boundary preflight row, and
-environment-probe/API-surface/entry rows are only serialized offline candidates for one box fixture: they are not general
-package readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD
+environment-probe/API-surface/entry/smoke rows are only serialized offline candidates for one box
+fixture: they are not general package readiness, not Newton readiness, not Newton support, not
+Newton execution, not real-USD
 evidence, not benchmark evidence, not
 collision-quality evidence, not paper primitive vocabulary coverage, not `paper_faithful_offline`,
 not deployment readiness, and not safety certification. These
@@ -289,14 +296,15 @@ primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readin
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, mapped-subset
 planning/candidate-matrix/preflight/PrimitiveSpec/runtime/CollisionPackage/admissibility,
 Newton shape-mapping, Newton shape runtime, Newton engine-builder boundary-preflight, and
-Newton engine-builder environment-probe/API-surface/entry slices do not
+Newton engine-builder environment-probe/API-surface/entry/smoke slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
 certification. The consolidated entry gate is a deliberate anti-overdesign boundary: the earlier
 closed boundary-preflight, environment-probe, and API-surface rows remain as evidence, but the
 import-boundary preconditions and first Newton entry decision were reviewed together instead of
-split across another pair of small gates. The next gate is a future smoke contract, not a real
-Newton import in this slice. See
+split across another pair of small gates. The smoke gate is now closed as a skipped-smoke
+decision, not a real Newton import or runtime run. The next gate is a future runtime-execution
+contract. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

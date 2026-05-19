@@ -103,8 +103,10 @@ Do not claim:
   a report-only default no-runtime-entry decision for that same synthetic box lineage, with zero
   real Newton/Warp imports, zero `newton.ModelBuilder` instantiations, zero real builder calls,
   zero model finalization, zero collision pipeline calls, and zero Newton runtime executions.
-  The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
+  The report-only engine-builder smoke gate now records
+  `smoke_decision: skip_real_runtime_smoke` for the default no-runtime-entry path. The next
+  runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
 
 ## First 4-Week Proof Point
 

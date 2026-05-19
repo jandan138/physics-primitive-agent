@@ -269,9 +269,11 @@ The Newton engine-builder entry contract now records one report-only default no-
 decision for the same synthetic box mapping. It keeps real Newton imports, `newton.ModelBuilder`,
 real builder shape calls, model finalization, collision pipeline calls, and Newton execution at
 zero.
+The Newton engine-builder smoke contract now records one report-only skipped-smoke decision for
+the same synthetic box mapping. It keeps runtime-smoke attempts and Newton execution at zero.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`, not
-Newton execution.
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`, not a
+Newton support or quality claim.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive

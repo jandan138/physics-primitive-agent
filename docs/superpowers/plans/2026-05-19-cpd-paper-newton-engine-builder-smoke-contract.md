@@ -23,7 +23,7 @@ future runtime-execution contract.
 - Modify: `tests/test_cli.py`
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add a test near the entry-contract tests:
 
@@ -72,7 +72,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_smo
 
 Update the CLI JSON test to expect the new top-level next gate and the smoke payload.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -82,7 +82,7 @@ python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_records_mapped_
 
 Expected: fail because the smoke payload key does not exist.
 
-- [ ] **Step 3: Write the minimal implementation**
+- [x] **Step 3: Write the minimal implementation**
 
 Add the next-gate constant:
 
@@ -100,7 +100,7 @@ coverage, and return the smoke payload. Wire the payload into `build_cpd_paper_o
 after the entry payload and use the smoke remaining gaps for top-level `failure_labels` and
 `next_required_gate`.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run:
 
@@ -118,7 +118,7 @@ Expected: pass.
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 Add exact key-set constants:
 
@@ -182,7 +182,7 @@ Add a static-boundary test that inspects the smoke helpers and forbids imports, 
 real builder calls, finalization, collision calls, existing Newton task smokes, USD inspection, and
 benchmark timing APIs.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -192,12 +192,12 @@ python -m pytest tests/test_cpd_paper_offline.py -k "engine_builder_smoke" -q
 
 Expected: fail because the schema helpers and drift behavior do not exist.
 
-- [ ] **Step 3: Implement schema and validation**
+- [x] **Step 3: Implement schema and validation**
 
 Add smoke false/true flag helpers, optional-false-field validation, source-row validation, row
 serialization validation, coverage summary, and the final smoke payload function.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run:
 
@@ -225,18 +225,18 @@ Expected: all selected tests pass.
 - Modify: `docs/records/README.md`
 - Create: `docs/records/2026-05-19-cpd-paper-newton-engine-builder-smoke-contract.md`
 
-- [ ] **Step 1: Update claim-boundary docs**
+- [x] **Step 1: Update claim-boundary docs**
 
 Replace wording that says the current next gate is the smoke contract with wording that says the
 smoke contract is implemented as a report-only skipped-smoke decision and the current next gate is
 the future runtime-execution contract.
 
-- [ ] **Step 2: Add dated record**
+- [x] **Step 2: Add dated record**
 
 Add a record documenting scope, non-goals, verification, multi-agent review, and artifacts for the
 smoke contract.
 
-- [ ] **Step 3: Run docs checks**
+- [x] **Step 3: Run docs checks**
 
 Run:
 
@@ -254,7 +254,7 @@ Expected: all pass.
 
 - Review all changed files.
 
-- [ ] **Step 1: Request multi-agent review**
+- [x] **Step 1: Request multi-agent review**
 
 Ask three review agents to inspect:
 
@@ -262,11 +262,11 @@ Ask three review agents to inspect:
 - report schema and drift validation;
 - docs synchronization and stale next-gate wording.
 
-- [ ] **Step 2: Apply accepted review fixes**
+- [x] **Step 2: Apply accepted review fixes**
 
 Use the receiving-code-review skill before changing code for review comments.
 
-- [ ] **Step 3: Run final verification**
+- [x] **Step 3: Run final verification**
 
 Run:
 

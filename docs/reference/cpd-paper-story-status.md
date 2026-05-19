@@ -347,7 +347,15 @@ The repository has not reached that full result. It has reached the workbench st
     keeps runtime entry attempts and all real runtime counters at zero, keeps the report partial,
     and points next to
     `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
-67. Records and configs can preserve exactly what was run.
+67. `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract` is now implemented
+    as a single-fixture report-only skipped-smoke decision, not a real Newton import, not a
+    `newton.ModelBuilder` instantiation, not a real builder call, not model finalization, not a
+    collision pipeline, and not Newton execution. It consumes the entry row for the same
+    synthetic `paper_single_box` lineage, records `smoke_decision: skip_real_runtime_smoke`,
+    keeps runtime-smoke attempts and all real runtime counters at zero, keeps the report partial,
+    and points next to
+    `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
+68. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -714,8 +722,10 @@ dict for the same synthetic box dict while creating zero Newton shape objects an
 Newton code. The later runtime-boundary, runtime-construction, builder-preflight,
 builder-construction, engine-builder boundary-preflight, environment-probe, and API-surface
 contracts now also exist as bounded offline/report-only gates. The engine-builder entry contract
-now also exists as a report-only default no-runtime-entry decision. The next code slice is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
+now also exists as a report-only default no-runtime-entry decision. The engine-builder smoke
+contract now also exists as a report-only skipped-smoke decision for the same lineage. The next
+code slice is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -952,8 +962,9 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset Newton engine-builder boundary-preflight contract, still partial and still without real Newton import/ModelBuilder/builder shape call/finalize/collision pipeline/Newton execution/real-USD
 -> mapped-subset Newton engine-builder environment-probe contract, still partial and still without real Newton import/ModelBuilder/builder shape call/finalize/collision pipeline/Newton execution/real-USD
 -> mapped-subset Newton engine-builder API-surface contract, still partial and still without real Newton import/ModelBuilder/builder shape call/finalize/collision pipeline/Newton execution/real-USD
--> mapped-subset Newton engine-builder entry contract, still partial and still without real Newton import/ModelBuilder/builder shape call/finalize/collision pipeline/Newton execution/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract
+-> mapped-subset Newton engine-builder entry contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/real-USD
+-> mapped-subset Newton engine-builder smoke contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -1068,26 +1079,26 @@ single-fixture offline/report-only Newton shape runtime builder-construction con
 single-fixture offline/static Newton engine-builder boundary-preflight contract now also exist.
 The single-fixture bounded Newton/Warp environment-probe contract now also exists. The
 single-fixture bounded source-AST API-surface contract now also exists. The single-fixture
-report-only engine-builder entry contract now also exists. The immediate next code slice should
-keep the same boundary and implement the future
-`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`
+report-only engine-builder entry contract and report-only skipped-smoke contract now also exist.
+The immediate next code slice should keep the same boundary and implement the future
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`
 without broadening into real USD, benchmarks, or collision-quality claims:
 
-1. Implement `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`
-   only after the entry contract's default no-runtime-entry decision is reviewed. That future
-   smoke gate must still start from the single synthetic `paper_single_box` lineage.
+1. Implement `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`
+   only after the smoke contract's default skipped-smoke decision is reviewed. That future
+   runtime-execution gate must still start from the single synthetic `paper_single_box` lineage.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
    runtime-admissibility row, shape-mapping preflight row, descriptor row, runtime-boundary
    preflight row, repo-local mapping record, builder-call-plan record, and recording-builder call
-   artifact, engine-builder boundary-preflight row, environment-probe row, API-surface row, and
-   entry decision row for the deterministic `paper_single_box` OBB/box source report-scoped until
-   a later Newton execution gate exists.
+   artifact, engine-builder boundary-preflight row, environment-probe row, API-surface row, entry
+   decision row, and skipped-smoke row for the deterministic `paper_single_box` OBB/box source
+   report-scoped until a later Newton execution gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton support/execution, real USD,
    benchmark, collision-quality, deployment readiness, and safety certification claims
-   unsupported; the next gate may only design a bounded engine-builder smoke contract for this one
+   unsupported; the next gate may only design a bounded runtime-execution contract for this one
    synthetic lineage while preserving the no real import, no `newton.ModelBuilder` instantiation,
    no real builder shape call, no model finalization, no collision pipeline execution, no real USD,
    no benchmark, and no quality boundary changes until that future gate explicitly records them.

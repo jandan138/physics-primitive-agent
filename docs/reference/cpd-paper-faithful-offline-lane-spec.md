@@ -304,8 +304,8 @@ Before `paper_faithful_offline` wording, record:
   runtime-admissibility contracts, plus the Newton shape-mapping preflight and descriptor
   contracts, plus the Newton shape runtime-boundary preflight, runtime-construction, and
   builder-preflight, builder-construction, engine-builder boundary-preflight, and
-  engine-builder environment-probe, API-surface, and entry contracts:
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_missing`.
+  engine-builder environment-probe, API-surface, entry, and smoke contracts:
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -603,7 +603,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract
+-> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -750,7 +750,7 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract` after
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract` after
 the later single-fixture collision-package generation contract constructs one synthetic,
 report-scoped `CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract
 records one later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row,
@@ -946,9 +946,11 @@ The Newton engine-builder entry contract now closes only the single-fixture repo
 decision gate. It consumes the API-surface row, records the default no-config
 `defer_real_runtime_entry` decision, keeps real Newton/Warp imports, `newton.ModelBuilder`
 instantiation, real builder shape calls, model finalization, collision pipeline calls, Newton
-execution, real USD, benchmarks, and collision-quality measurements at zero, and advances the
-current next gate to
-`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
+execution, real USD, benchmarks, and collision-quality measurements at zero. The Newton
+engine-builder smoke contract now closes only a report-only skipped-smoke decision for the same
+lineage, records `smoke_decision: skip_real_runtime_smoke`, keeps runtime-smoke attempts and
+Newton execution at zero, and advances the current next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
 
 The entry contract is intentionally broader than the previously planned pair of small import
 gates. It reviews import-boundary preconditions and the first Newton entry decision together,

@@ -438,10 +438,19 @@ Proposed | In progress | Complete | Failed | Superseded
   single-fixture report-only Newton engine-builder entry decision inside
   `cpd_paper_offline_report`. It consumes the API-surface row, records
   `entry_decision: defer_real_runtime_entry`, keeps real runtime imports, Newton
-  `ModelBuilder` instantiation, real builder shape calls, model finalization, collision pipeline
-  calls, Newton runtime, real-USD, benchmark, and collision-quality evidence at zero or false, and
-  advances the runtime-lane next gate to
+  `ModelBuilder` instantiation, Newton engine shape objects, real builder shape calls, model
+  finalization, collision pipeline calls, Newton runtime, real-USD, benchmark, and
+  collision-quality evidence at zero or false, and at that stage advanced the stage-local
+  runtime-lane next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
+- [2026-05-19 CPD Paper Newton Engine-Builder Smoke Contract](2026-05-19-cpd-paper-newton-engine-builder-smoke-contract.md):
+  single-fixture report-only Newton engine-builder skipped-smoke decision inside
+  `cpd_paper_offline_report`. It consumes the entry row, records
+  `smoke_decision: skip_real_runtime_smoke`, keeps runtime-smoke attempts, real runtime imports,
+  Newton `ModelBuilder` instantiation, Newton engine shape objects, real builder shape calls, model
+  finalization, collision pipeline calls, Newton runtime, real-USD, benchmark, and
+  collision-quality evidence at zero or false, and advances the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`.
 - [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
   anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
   boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate
