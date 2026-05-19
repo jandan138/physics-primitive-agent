@@ -266,7 +266,7 @@ The Newton engine-builder API-surface contract now records one bounded source-AS
 for the same synthetic box mapping. The default report records no configured source directory; an
 explicit source directory may be read and parsed as AST only.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`, not
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`, not
 Newton execution.
 Batch C
 stays important because it checks

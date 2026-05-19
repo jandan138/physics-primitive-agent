@@ -270,7 +270,7 @@ directory is explicitly passed, this lane may read source files and parse AST on
 imports no Newton/Warp runtime, instantiates no `newton.ModelBuilder`, makes no real builder
 shape call, finalizes no model, creates no collision pipeline, and runs no Newton code. The
 current runtime-lane gate is now
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`. The package dict,
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`. The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
 descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
 preflight plan, recording-builder call artifact, engine-builder boundary preflight row, and
@@ -287,7 +287,10 @@ Newton shape-mapping, Newton shape runtime, Newton engine-builder boundary-prefl
 Newton engine-builder environment-probe/API-surface slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
-certification. See
+certification. The consolidated entry gate is a deliberate anti-overdesign boundary: the earlier
+closed boundary-preflight, environment-probe, and API-surface rows remain as evidence, but the
+future import-boundary preconditions and first Newton entry decision should be reviewed together
+instead of split across another pair of small gates. See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
 `docs/reference/cpd-paper-story-status.md` for where the repository sits in the broader CPD paper

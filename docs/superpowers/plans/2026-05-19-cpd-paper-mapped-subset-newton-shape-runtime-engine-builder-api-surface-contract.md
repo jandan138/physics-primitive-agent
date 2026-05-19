@@ -4,7 +4,7 @@
 
 **Goal:** Add a bounded offline/source-AST API-surface contract after the existing Newton/Warp environment-probe contract.
 
-**Architecture:** The new helper lives in `primitive_collision_compiler.newton.env` and returns JSON-safe source-inspection data without importing Newton or Warp. The CPD paper offline report consumes the existing environment-probe row, records one API-surface row, advances the next gate to an import-boundary preflight, and keeps every runtime counter at zero.
+**Architecture:** The new helper lives in `primitive_collision_compiler.newton.env` and returns JSON-safe source-inspection data without importing Newton or Warp. The CPD paper offline report consumes the existing environment-probe row, records one API-surface row, advances the next gate to an engine-builder entry contract, and keeps every runtime counter at zero.
 
 **Tech Stack:** Python, `ast`, pytest, existing `cpd_paper_offline_report` dict contracts, Markdown records.
 
@@ -68,7 +68,7 @@ gate.
 
 - [ ] **Step 3: Implement payload**
 
-Add the import-boundary-preflight next-gate constant, remaining-gap helper, API-surface false/true
+Add the consolidated engine-builder entry next-gate constant, remaining-gap helper, API-surface false/true
 flags, source-row validator, row builder, coverage summary, payload builder, and wire it into
 `build_cpd_paper_offline_report()`.
 
@@ -96,7 +96,7 @@ Run the same pytest command and expect pass.
 
 Update `test_cli_run_cpd_paper_offline_report_emits_json` to expect the new payload, the new
 implemented-output scope entry, and the next gate
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
 
 - [ ] **Step 2: Update docs**
 

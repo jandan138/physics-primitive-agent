@@ -62,12 +62,14 @@ when a Newton source directory is explicitly passed, this lane may read source f
 only. It still imports no Newton/Warp runtime, instantiates no `newton.ModelBuilder`, creates zero
 Newton engine shape objects, makes zero real Newton builder shape calls, finalizes no model,
 creates no collision pipeline, and runs zero Newton runtime code. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`. This is still not package
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`. This is still not package
 readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD evidence,
 not benchmark evidence, not collision-quality evidence, not deployment/safety evidence, not
 full-CPD evidence, not `paper_faithful_offline` evidence, and not paper primitive vocabulary
-coverage. The next step is an import-boundary preflight for the same single synthetic package
-boundary, not a capped bed/Franka rerun and not Newton execution. A capped bed/Franka rerun remains blocked
+coverage. The next step is an engine-builder entry contract for the same single synthetic package
+boundary, not a capped bed/Franka rerun and not Newton execution. This entry contract consolidates
+the planned import-boundary preconditions and first Newton entry decision into one gate to avoid
+splitting overlapping audit facts across low-value follow-on gates. A capped bed/Franka rerun remains blocked
 unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
 dated-record gates. The
@@ -214,7 +216,7 @@ runtime-construction contract, offline/static Newton shape runtime builder-prefl
 offline/report-only Newton shape runtime recording-builder construction contract, offline/static
 Newton engine-builder boundary-preflight contract, bounded Newton/Warp environment-probe
 contract, and bounded source-AST API-surface contract:
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`. The serialization contract
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
@@ -286,7 +288,7 @@ records exist.
   Newton engine-builder boundary-preflight contract is now implemented, and the single-fixture
   bounded Newton/Warp environment-probe contract is now implemented, and the single-fixture
   bounded source-AST API-surface contract is now implemented, while the next gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -497,7 +499,12 @@ records exist.
   `add_shape_box` boundary, keeps real runtime imports, `newton.ModelBuilder`, real builder shape
   calls, model finalization, collision pipeline calls, Newton execution, real USD, benchmarks, and
   collision-quality evidence at zero or false, and advances the runtime-lane next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
+- [CPD paper Newton engine-builder gate consolidation record](records/2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
+  dated anti-overdesign record that keeps the already closed boundary-preflight,
+  environment-probe, and API-surface slices as evidence, retires separate future
+  import-boundary-preflight/import-contract gates from the current plan, and makes the
+  consolidated engine-builder entry contract the next runtime-lane gate.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -967,7 +974,7 @@ records exist.
   It keeps
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`,
+  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
   real Newton engine shape construction, runtime execution, or benchmarks.

@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract_missing",
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract"
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
     )
     assert payload["generated_collision_package_count"] == 1
     assert payload["runtime_admissibility_check_count"] == 1
@@ -1555,7 +1555,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "enclosed_primitive_postprocess",
     ]
     assert payload["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract",
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1642,7 +1642,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     )
     assert (
         api_surface["next_required_gate"]
-        == "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract"
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
     )
     assert api_surface["newton_shape_runtime_engine_builder_api_surface_row_count"] == 1
     assert api_surface["api_surface_probe_count"] == 1

@@ -433,7 +433,13 @@ Proposed | In progress | Complete | Failed | Superseded
   `ModelBuilder` instantiation, real builder shape calls, model finalization, collision pipeline
   calls, Newton runtime, real-USD, benchmark, and collision-quality evidence at zero or false, and
   advances the runtime-lane next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
+- [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
+  anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
+  boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate
+  future import-boundary-preflight/import-contract gates from the current plan, and makes
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract` the consolidated next
+  runtime-lane gate.
 - [2026-05-15 CPD Latest Diagnostic Loop Explainer Docs](2026-05-15-cpd-latest-diagnostic-loop-explainer-docs.md):
   documentation update that explains the latest candidate-loss and cylinder-axis slice as a
   repeatable diagnostic loop in the CPD paper story.

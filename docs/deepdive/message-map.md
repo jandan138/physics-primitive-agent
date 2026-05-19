@@ -101,7 +101,7 @@ Do not claim:
   `newton.ModelBuilder`, making no real builder shape call, finalizing no model, creating no
   collision pipeline, and running no Newton code.
   The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
 
 ## First 4-Week Proof Point
 

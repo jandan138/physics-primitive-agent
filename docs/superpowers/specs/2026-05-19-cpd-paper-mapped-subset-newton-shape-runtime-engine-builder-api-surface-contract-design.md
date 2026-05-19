@@ -66,7 +66,7 @@ The offline report adds:
   collide, USD, benchmark, and quality code.
 
 Closing this gate advances the next runtime-lane gate to
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
 That next gate is only a future decision/preflight gate; this slice still does not import Newton.
 
 ## Tests

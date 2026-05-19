@@ -157,8 +157,8 @@ _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTR
 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
 )
-_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT = (
-    "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract"
+_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
 )
 _PAPER_COLLISION_PACKAGE_GENERATION_CLAIM_BOUNDARY = (
     "single_fixture_box_only_offline_collision_package_artifact_"
@@ -877,7 +877,7 @@ def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builde
 
 def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_api_surface() -> list[str]:
     return [
-        _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT
+        _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
     ]
 
 
@@ -13795,12 +13795,12 @@ def _paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contrac
             _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
         ),
         "next_required_gate": (
-            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
         ),
         "decision": "remain_partial",
         "decision_reason": (
             "newton_engine_builder_source_api_surface_recorded_"
-            "import_boundary_preflight_contract_missing"
+            "engine_builder_entry_contract_missing"
         ),
         "artifact_kind": (
             "newton_engine_builder_api_surface_record_not_runtime_execution"
@@ -13821,8 +13821,8 @@ def _paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contrac
             "closed_gate": (
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT
             ),
-            "next_engine_builder_import_boundary_preflight_gate_required": (
-                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT
+            "next_engine_builder_entry_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
             ),
             "source_environment_probe_rows_required": 1,
             "probe_method": "source_ast_only_no_import",

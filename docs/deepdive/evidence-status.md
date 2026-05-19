@@ -147,7 +147,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -568,7 +568,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   the next required runtime-lane gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`; the later
   environment-probe and API-surface slices below now advance the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
   This is
   not Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
@@ -584,7 +584,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   Newton code. At that stage it advanced the stage-local next required runtime-lane gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`; the later
   API-surface slice below advances the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
   This is not
   Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
@@ -599,7 +599,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   Newton or Warp runtime, instantiates no `newton.ModelBuilder`, makes no real builder shape
   calls, finalizes no model, creates no collision pipeline, and runs no Newton code. It advances
   the next required runtime-lane gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
+  That next gate is intentionally consolidated: it replaces separate future
+  import-boundary-preflight/import-contract slices with one engine-builder entry audit so the
+  remaining boundary questions are reviewed together.
   This is not Newton readiness, not Newton support, not Newton execution, not runtime
   compatibility, not real-USD evidence, not benchmark evidence, not collision-quality validation,
   not paper primitive vocabulary coverage, not approximation support, not `paper_faithful_offline`,

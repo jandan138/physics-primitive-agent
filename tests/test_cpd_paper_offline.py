@@ -121,11 +121,11 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CON
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
 )
-EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT = (
-    "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract"
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
 )
 EXPECTED_CURRENT_REPORT_NEXT_GATE = (
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
 )
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
@@ -142,7 +142,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -226,7 +226,7 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_REMAINING_GAPS = 
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT,
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_REMAINING_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -18141,7 +18141,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_api
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENVIRONMENT_PROBE_CONTRACT
     )
     assert payload["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
     )
     assert payload["newton_shape_runtime_engine_builder_api_surface_row_count"] == 1
     assert (
@@ -18189,7 +18189,7 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_payload_schem
     assert payload["decision"] == "remain_partial"
     assert payload["decision_reason"] == (
         "newton_engine_builder_source_api_surface_recorded_"
-        "import_boundary_preflight_contract_missing"
+        "engine_builder_entry_contract_missing"
     )
     assert payload["artifact_kind"] == (
         "newton_engine_builder_api_surface_record_not_runtime_execution"
@@ -18208,8 +18208,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_payload_schem
         "closed_gate": (
             EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_API_SURFACE_CONTRACT
         ),
-        "next_engine_builder_import_boundary_preflight_gate_required": (
-            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_IMPORT_BOUNDARY_PREFLIGHT_CONTRACT
+        "next_engine_builder_entry_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_ENTRY_CONTRACT
         ),
         "source_environment_probe_rows_required": 1,
         "probe_method": "source_ast_only_no_import",

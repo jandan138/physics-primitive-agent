@@ -10,7 +10,7 @@ The slice consumes the existing single-fixture
 `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` row for
 `paper_single_box` and records one JSON-safe source-AST API-surface row for the future
 `newton.ModelBuilder` / `add_shape_box` boundary. It advances the runtime-lane next gate to
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
 
 ## Scope
 
@@ -60,7 +60,7 @@ CollisionPackage.to_dict()
 -> API-surface row
 ```
 
-The next gate is import-boundary preflight, not a real Newton import.
+The next gate is engine-builder entry contract, not a real Newton import.
 
 ## Review Fixes
 
@@ -83,7 +83,7 @@ Fixes applied:
 - API-surface rows now carry `module_probe_row_count`, `newton_module_available`, and
   `warp_module_available`, and coverage summary now reports the matching counts;
 - live current-gate docs now point to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
 
 Second-review follow-up:
 
@@ -98,7 +98,7 @@ Allowed wording:
 - The report records a bounded source-AST API-surface row for one synthetic mapped-subset `box`
   fixture.
 - The default report remains no-config and imports no real Newton or Warp runtime.
-- The next runtime-lane gate is an import-boundary preflight.
+- The next runtime-lane gate is an engine-builder entry contract.
 
 Forbidden wording:
 
@@ -218,7 +218,7 @@ Observed result: py_compile exited 0; docs validation passed; site claim validat
 ## Next Action
 
 Implement
-`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract` as a
+`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract` as a
 bounded policy/preflight slice. It must still avoid real Newton/Warp imports, `newton.ModelBuilder`
 instantiation, real builder shape calls, model finalization, collision pipeline calls, runtime
 tasks, real USD, benchmark, and collision-quality claims.
