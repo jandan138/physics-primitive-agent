@@ -18,7 +18,7 @@ boundary. However, continuing with separate
 too many small records. The audit value would rise slowly while maintenance and review cost would
 rise quickly.
 
-The current next runtime-lane gate is consolidated to:
+At the time of this consolidation decision, the next runtime-lane gate was consolidated to:
 
 ```text
 paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract
@@ -31,8 +31,8 @@ Do not add separate top-level gates for:
 - a standalone Newton engine-builder import-boundary preflight;
 - a standalone Newton engine-builder import contract.
 
-Use one coarse engine-builder entry contract instead. That future contract should bundle the
-remaining meaningful boundary questions:
+Use one coarse engine-builder entry contract instead. That contract should bundle the remaining
+meaningful boundary questions:
 
 - whether the explicit Newton source/environment inputs are present and reviewable;
 - whether the package, PrimitiveSpec, shape-mapping, builder-plan, boundary-preflight,
@@ -42,7 +42,8 @@ remaining meaningful boundary questions:
   boundary in a later implementation step;
 - what the next post-entry gate is if and only if the entry boundary is justified.
 
-Until that contract is implemented and recorded, the report must remain partial.
+Until that contract is implemented and recorded, the report must remain partial. A later record may
+advance the live next gate after the entry decision is closed.
 
 ## What Stays
 
@@ -57,18 +58,19 @@ future Newton boundary crossing is attempted.
 
 ## What Changes
 
-The report, CLI JSON, tests, and live docs now advance from the API-surface gate to
+The report, CLI JSON, tests, and live docs should advance from the API-surface gate to
 `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
 
 The old planned import-boundary-preflight name is retired from current code and current live
 claim docs. Historical implementation records may still explain the API-surface step, but their
-current-next wording now points at the consolidated entry contract.
+current-next wording should point at the consolidated entry contract until that contract closes.
 
 ## Claim Boundary
 
 Allowed wording:
 
-- The current next gate is a consolidated Newton engine-builder entry contract.
+- The next gate after API-surface consolidation is a consolidated Newton engine-builder entry
+  contract.
 - The consolidation reduces future gate count by combining import-boundary preconditions and the
   first entry decision into one audit point.
 - The already closed engine-builder slices are offline/static or source-inspection evidence only.
@@ -92,8 +94,9 @@ Multi-agent review found two wording issues before final verification:
 - one story-status bullet used an ambiguous unsupported-import qualifier, which weakened the
   intended no-real-import boundary.
 
-Both were corrected. Current worker-facing and claim-boundary wording now says the next gate is
-the consolidated engine-builder entry contract and keeps `no real import` inside this slice.
+Both were corrected. Worker-facing and claim-boundary wording for this consolidation now says the
+post-API-surface gate is the consolidated engine-builder entry contract and keeps `no real import`
+inside this slice.
 
 ## Verification
 

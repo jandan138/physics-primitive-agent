@@ -99,9 +99,12 @@ Do not claim:
   API-surface contract then records default no-config source-AST API-surface status for the same
   future builder boundary while still importing no Newton/Warp runtime, instantiating no
   `newton.ModelBuilder`, making no real builder shape call, finalizing no model, creating no
-  collision pipeline, and running no Newton code.
+  collision pipeline, and running no Newton code. The engine-builder entry contract then records
+  a report-only default no-runtime-entry decision for that same synthetic box lineage, with zero
+  real Newton/Warp imports, zero `newton.ModelBuilder` instantiations, zero real builder calls,
+  zero model finalization, zero collision pipeline calls, and zero Newton runtime executions.
   The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`.
 
 ## First 4-Week Proof Point
 

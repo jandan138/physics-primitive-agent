@@ -265,8 +265,12 @@ Newton or Warp runtime.
 The Newton engine-builder API-surface contract now records one bounded source-AST API-surface row
 for the same synthetic box mapping. The default report records no configured source directory; an
 explicit source directory may be read and parsed as AST only.
+The Newton engine-builder entry contract now records one report-only default no-runtime-entry
+decision for the same synthetic box mapping. It keeps real Newton imports, `newton.ModelBuilder`,
+real builder shape calls, model finalization, collision pipeline calls, and Newton execution at
+zero.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract`, not
+`paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract`, not
 Newton execution.
 Batch C
 stays important because it checks
@@ -343,6 +347,9 @@ Newton runtime executions, plus a single-fixture bounded Newton/Warp environment
 that records configured-source-dir status and JSON-safe `find_spec` provenance shape while keeping
 real runtime imports and Newton execution at zero, plus a single-fixture bounded source-AST
 API-surface contract that records default no-config API-surface status while keeping real runtime
+imports, `newton.ModelBuilder` instantiation, real builder shape calls, model finalization,
+collision pipeline calls, and Newton execution at zero, plus a single-fixture report-only
+engine-builder entry contract that records `defer_real_runtime_entry` while keeping real runtime
 imports, `newton.ModelBuilder` instantiation, real builder shape calls, model finalization,
 collision pipeline calls, and Newton execution at zero.
 ```
