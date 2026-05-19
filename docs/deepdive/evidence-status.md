@@ -147,7 +147,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract` after the
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`
+  after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
   changed-decomposition output contract, offline package-adapter contract, offline
@@ -161,8 +162,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   offline/static Newton shape-mapping descriptor, offline/static Newton shape runtime-boundary
   preflight, offline/report-scoped Newton shape runtime-construction, offline/static Newton shape
   runtime builder-preflight, offline/report-only recording-builder construction,
-  offline/static Newton engine-builder boundary-preflight, and bounded Newton/Warp
-  environment-probe slices.
+  offline/static Newton engine-builder boundary-preflight, bounded Newton/Warp environment-probe,
+  and bounded source-AST API-surface slices.
   The
   runtime-construction slice records exactly one repo-local `NewtonShapeMapping.to_dict()` report
   record for the synthetic `paper_single_box` box descriptor while keeping Newton engine shape
@@ -566,7 +567,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   finalization, collision pipeline calls, and Newton execution at zero. At that stage it advanced
   the next required runtime-lane gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`; the later
-  environment-probe slice below now advances the current next gate to API-surface inspection. This is
+  environment-probe and API-surface slices below now advance the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  This is
   not Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
   not approximation support, not `paper_faithful_offline`, not full CPD reproduction, not
@@ -578,12 +581,29 @@ This file separates current evidence from future claims. See [message-map.md](me
   status plus JSON-safe Newton/Warp `find_spec` provenance shape. The default report remains
   no-config, imports no real Newton or Warp runtime, instantiates no `newton.ModelBuilder`, makes
   no real builder shape calls, finalizes no model, creates no collision pipeline, and runs no
-  Newton code. It advances the next required runtime-lane gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`. This is not
+  Newton code. At that stage it advanced the stage-local next required runtime-lane gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`; the later
+  API-surface slice below advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  This is not
   Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
   not approximation support, not `paper_faithful_offline`, not full CPD reproduction, not
   deployment readiness, and not safety certification.
+- The current executable surface can also run
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract` inside
+  `cpd_paper_offline_report`. It closes only that single-fixture bounded source-AST API-surface
+  gate by consuming the environment-probe row and recording default no-config API-surface status
+  for the future `newton.ModelBuilder` / `add_shape_box` boundary. When a Newton source directory
+  is explicitly passed, this lane may read source files and parse AST only. It imports no real
+  Newton or Warp runtime, instantiates no `newton.ModelBuilder`, makes no real builder shape
+  calls, finalizes no model, creates no collision pipeline, and runs no Newton code. It advances
+  the next required runtime-lane gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+  This is not Newton readiness, not Newton support, not Newton execution, not runtime
+  compatibility, not real-USD evidence, not benchmark evidence, not collision-quality validation,
+  not paper primitive vocabulary coverage, not approximation support, not `paper_faithful_offline`,
+  not full CPD reproduction, not deployment readiness, and not safety certification.
 - The current executable surface can convert the CPD-like geometry report into a common collision
   package and run `newton_contact_smoke`, a contact-only Newton canary for representative
   Newton-mapped primitive types.

@@ -331,7 +331,15 @@ The repository has not reached that full result. It has reached the workbench st
     provenance shape, keeps all real Newton, real-USD, benchmark, collision-quality, deployment,
     and certification triggers at zero or false, keeps the report partial, and points next to
     `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`.
-65. Records and configs can preserve exactly what was run.
+65. `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract` is now
+    implemented as a single-fixture bounded source-AST API-surface gate, not a real Newton import,
+    not a `newton.ModelBuilder` instantiation, not a real builder call, not model finalization, not
+    a collision pipeline, and not Newton execution. It consumes the environment-probe row, records
+    default no-config API-surface status for the future `newton.ModelBuilder` / `add_shape_box`
+    boundary, keeps all real Newton, real-USD, benchmark, collision-quality, deployment, and
+    certification triggers at zero or false, keeps the report partial, and points next to
+    `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
+66. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -695,8 +703,10 @@ single-fixture offline/static contract that records one mapper-handoff row for t
 box dict while running zero mapping attempts and zero Newton code. The shape-mapping contract now
 also exists as a single-fixture offline/static contract that records one report-scoped descriptor
 dict for the same synthetic box dict while creating zero Newton shape objects and running zero
-Newton code. The next code slice is
-`paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`.
+Newton code. The later runtime-boundary, runtime-construction, builder-preflight,
+builder-construction, engine-builder boundary-preflight, environment-probe, and API-surface
+contracts now also exist as bounded offline/report-only gates. The next code slice is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -932,7 +942,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset Newton shape runtime builder-construction contract, still partial and still without real Newton builder shape call/Newton engine shape object construction/Newton execution/real-USD
 -> mapped-subset Newton engine-builder boundary-preflight contract, still partial and still without real Newton import/ModelBuilder/builder shape call/finalize/collision pipeline/Newton execution/real-USD
 -> mapped-subset Newton engine-builder environment-probe contract, still partial and still without real Newton import/ModelBuilder/builder shape call/finalize/collision pipeline/Newton execution/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract
+-> mapped-subset Newton engine-builder API-surface contract, still partial and still without real Newton import/ModelBuilder/builder shape call/finalize/collision pipeline/Newton execution/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -1045,28 +1056,30 @@ offline/report-scoped Newton shape runtime-construction contract now also exist.
 single-fixture offline/static Newton shape runtime builder-preflight contract now also exists. The
 single-fixture offline/report-only Newton shape runtime builder-construction contract and the
 single-fixture offline/static Newton engine-builder boundary-preflight contract now also exist.
-The single-fixture bounded Newton/Warp environment-probe contract now also exists. The immediate
-next code slice should keep the same boundary and implement the bounded
-`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract` without running
-Newton task diagnostics:
+The single-fixture bounded Newton/Warp environment-probe contract now also exists. The
+single-fixture bounded source-AST API-surface contract now also exists. The immediate next code
+slice should keep the same boundary and implement the bounded
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`
+without running Newton task diagnostics:
 
-1. Implement `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`
-   after the environment-probe contract has recorded configured-source-dir status and JSON-safe
-   Newton/Warp `find_spec` provenance shape.
+1. Implement `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`
+   after the API-surface contract has recorded default no-config source-AST status for the future
+   `newton.ModelBuilder` / `add_shape_box` boundary.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
    runtime-admissibility row, shape-mapping preflight row, descriptor row, runtime-boundary
    preflight row, repo-local mapping record, builder-call-plan record, and recording-builder call
-   artifact, engine-builder boundary-preflight row, and environment-probe row for the deterministic
-   `paper_single_box` OBB/box source report-scoped until a later Newton execution gate exists.
+   artifact, engine-builder boundary-preflight row, environment-probe row, and API-surface row for
+   the deterministic `paper_single_box` OBB/box source report-scoped until a later Newton
+   execution gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
 4. Keep `paper_faithful_offline`, full CPD reproduction, Newton support/execution, real USD,
    benchmark, collision-quality, deployment readiness, and safety certification claims
-   unsupported; the next gate may only inspect API-surface facts such as constructor or method
-   visibility while keeping no `newton.ModelBuilder` instantiation, no real builder shape call,
-   no model finalization, no collision pipeline execution, no real USD, no benchmark, and no
-   quality boundary changes.
+   unsupported; the next gate may only preflight the policy for a later real import boundary while
+   keeping no real import, no `newton.ModelBuilder` instantiation, no real builder shape call, no
+   model finalization, no collision pipeline execution, no real USD, no benchmark, and no quality
+   boundary changes.
 5. Keep bed/Franka reruns blocked until a separate real package change passes full mapping,
    contact, task, and dated-record gates.
 6. Treat the gap matrix and offline lane spec as the review checklist, not as benchmark or quality

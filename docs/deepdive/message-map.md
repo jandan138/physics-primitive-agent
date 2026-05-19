@@ -95,9 +95,13 @@ Do not claim:
   making zero real Newton builder shape calls, finalizing no model, creating no collision
   pipeline, and running zero Newton code. The bounded environment-probe contract then records
   configured-source-dir status and JSON-safe Newton/Warp `find_spec` provenance shape while the
-  default report remains no-config and imports no real Newton or Warp runtime.
+  default report remains no-config and imports no real Newton or Warp runtime. The bounded
+  API-surface contract then records default no-config source-AST API-surface status for the same
+  future builder boundary while still importing no Newton/Warp runtime, instantiating no
+  `newton.ModelBuilder`, making no real builder shape call, finalizing no model, creating no
+  collision pipeline, and running no Newton code.
   The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
 
 ## First 4-Week Proof Point
 

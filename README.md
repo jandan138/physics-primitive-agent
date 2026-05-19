@@ -262,12 +262,19 @@ single-fixture bounded environment/provenance row for that future `newton.ModelB
 `add_shape_box` boundary. It records the configured-source-dir status and Newton/Warp
 `find_spec` provenance shape without returning live runtime modules, without importing Newton or
 Warp in the default no-config offline report, and without crossing into builder/runtime code. The
+report now also includes
+`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`, a
+single-fixture bounded source-AST API-surface row for the same future builder boundary. The
+default no-config report records `not_run_source_dir_not_configured`; when a Newton source
+directory is explicitly passed, this lane may read source files and parse AST only. It still
+imports no Newton/Warp runtime, instantiates no `newton.ModelBuilder`, makes no real builder
+shape call, finalizes no model, creates no collision pipeline, and runs no Newton code. The
 current runtime-lane gate is now
-`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`. The package dict,
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`. The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
 descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
 preflight plan, recording-builder call artifact, engine-builder boundary preflight row, and
-environment-probe row are only serialized offline candidates for one box fixture: they are not general
+environment-probe/API-surface rows are only serialized offline candidates for one box fixture: they are not general
 package readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD
 evidence, not benchmark evidence, not
 collision-quality evidence, not paper primitive vocabulary coverage, not `paper_faithful_offline`,
@@ -277,7 +284,7 @@ primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readin
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, mapped-subset
 planning/candidate-matrix/preflight/PrimitiveSpec/runtime/CollisionPackage/admissibility,
 Newton shape-mapping, Newton shape runtime, Newton engine-builder boundary-preflight, and
-Newton engine-builder environment-probe slices do not
+Newton engine-builder environment-probe/API-surface slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
 certification. See

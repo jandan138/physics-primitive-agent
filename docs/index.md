@@ -56,12 +56,17 @@ configured-source-dir status and JSON-safe Newton/Warp `find_spec` provenance sh
 offline report remains no-config and records no real Newton/Warp import. It still instantiates no
 `newton.ModelBuilder`, creates zero Newton engine shape objects, makes zero real Newton builder
 shape calls, finalizes no model, creates no collision pipeline, and runs zero Newton runtime code.
-The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`. This is still not package
+The report now also closes the single-fixture bounded source-AST API-surface contract for the same
+synthetic box mapping. The default no-config report records `not_run_source_dir_not_configured`;
+when a Newton source directory is explicitly passed, this lane may read source files and parse AST
+only. It still imports no Newton/Warp runtime, instantiates no `newton.ModelBuilder`, creates zero
+Newton engine shape objects, makes zero real Newton builder shape calls, finalizes no model,
+creates no collision pipeline, and runs zero Newton runtime code. The current next gate is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`. This is still not package
 readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD evidence,
 not benchmark evidence, not collision-quality evidence, not deployment/safety evidence, not
 full-CPD evidence, not `paper_faithful_offline` evidence, and not paper primitive vocabulary
-coverage. The next step is bounded API-surface inspection for the same single synthetic package
+coverage. The next step is an import-boundary preflight for the same single synthetic package
 boundary, not a capped bed/Franka rerun and not Newton execution. A capped bed/Franka rerun remains blocked
 unless a
 separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
@@ -207,9 +212,9 @@ preflight contract, offline/static Newton shape-mapping descriptor contract, off
 Newton shape runtime-boundary preflight contract, offline/report-scoped Newton shape
 runtime-construction contract, offline/static Newton shape runtime builder-preflight contract,
 offline/report-only Newton shape runtime recording-builder construction contract, offline/static
-Newton engine-builder boundary-preflight contract, and bounded Newton/Warp environment-probe
-contract:
-`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`. The serialization contract
+Newton engine-builder boundary-preflight contract, bounded Newton/Warp environment-probe
+contract, and bounded source-AST API-surface contract:
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
@@ -279,8 +284,9 @@ records exist.
   builder-preflight contract is now implemented, and the single-fixture offline/report-only
   recording-builder construction contract is now implemented, and the single-fixture offline/static
   Newton engine-builder boundary-preflight contract is now implemented, and the single-fixture
-  bounded Newton/Warp environment-probe contract is now implemented, while the next gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`.
+  bounded Newton/Warp environment-probe contract is now implemented, and the single-fixture
+  bounded source-AST API-surface contract is now implemented, while the next gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -483,8 +489,15 @@ records exist.
   contract. It records configured-source-dir status and JSON-safe `find_spec` provenance shape,
   keeps real runtime imports, `newton.ModelBuilder`, real builder shape calls, model finalization,
   collision pipeline calls, Newton execution, real USD, benchmarks, and collision-quality evidence
-  at zero or false, and advances the runtime-lane next gate to
+  at zero or false, and at that stage advanced the stage-local runtime-lane next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`.
+- [CPD paper mapped-subset Newton shape runtime engine-builder API-surface contract record](records/2026-05-19-cpd-paper-mapped-subset-newton-shape-runtime-engine-builder-api-surface-contract.md):
+  dated implementation record for the single-fixture bounded source-AST API-surface contract. It
+  records default no-config API-surface status for the future `newton.ModelBuilder` /
+  `add_shape_box` boundary, keeps real runtime imports, `newton.ModelBuilder`, real builder shape
+  calls, model finalization, collision pipeline calls, Newton execution, real USD, benchmarks, and
+  collision-quality evidence at zero or false, and advances the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -946,11 +959,15 @@ records exist.
   builder shape call, no model finalization, and no collision pipeline, plus a Newton/Warp
   environment-probe contract that closes only
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` as one
-  bounded provenance row with no runtime execution.
+  bounded provenance row with no runtime execution, plus a source-AST API-surface contract that
+  closes only `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract` as
+  one default no-config API-surface row with no real Newton/Warp import, no `newton.ModelBuilder`,
+  no real builder shape call, no model finalization, no collision pipeline, and no runtime
+  execution.
   It keeps
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`,
+  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
   real Newton engine shape construction, runtime execution, or benchmarks.

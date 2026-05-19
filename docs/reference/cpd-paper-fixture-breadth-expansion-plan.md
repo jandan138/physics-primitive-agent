@@ -262,9 +262,12 @@ The Newton engine-builder environment-probe contract now records one bounded env
 row for the same synthetic box mapping, including configured-source-dir status and JSON-safe
 Newton/Warp `find_spec` provenance shape. The default report remains no-config and imports no real
 Newton or Warp runtime.
+The Newton engine-builder API-surface contract now records one bounded source-AST API-surface row
+for the same synthetic box mapping. The default report records no configured source directory; an
+explicit source directory may be read and parsed as AST only.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`, not Newton
-execution.
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`, not
+Newton execution.
 Batch C
 stays important because it checks
 weighted-priority ordering, deterministic queue ties/eager-stale-prune events, and one positive
@@ -338,7 +341,10 @@ still importing no real Newton runtime, instantiating no real `newton.ModelBuild
 real builder shape calls, finalizing no model, creating no collision pipeline, and running zero
 Newton runtime executions, plus a single-fixture bounded Newton/Warp environment-probe contract
 that records configured-source-dir status and JSON-safe `find_spec` provenance shape while keeping
-real runtime imports and Newton execution at zero.
+real runtime imports and Newton execution at zero, plus a single-fixture bounded source-AST
+API-surface contract that records default no-config API-surface status while keeping real runtime
+imports, `newton.ModelBuilder` instantiation, real builder shape calls, model finalization,
+collision pipeline calls, and Newton execution at zero.
 ```
 
 It does not support:

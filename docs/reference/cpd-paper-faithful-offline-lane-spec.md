@@ -304,8 +304,8 @@ Before `paper_faithful_offline` wording, record:
   runtime-admissibility contracts, plus the Newton shape-mapping preflight and descriptor
   contracts, plus the Newton shape runtime-boundary preflight, runtime-construction, and
   builder-preflight, builder-construction, engine-builder boundary-preflight, and
-  engine-builder environment-probe contracts:
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract_missing`.
+  engine-builder environment-probe and API-surface contracts:
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -603,7 +603,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract
+-> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -750,12 +750,12 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract` after the later
-single-fixture collision-package generation contract constructs one synthetic, report-scoped
-`CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract records one
-later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row, the
-offline/static runtime-admissibility contract records one finite-geometry and box-schema check,
-the Newton shape-mapping preflight records one static mapper-handoff row, and the Newton
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract` after
+the later single-fixture collision-package generation contract constructs one synthetic,
+report-scoped `CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract
+records one later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row,
+the offline/static runtime-admissibility contract records one finite-geometry and box-schema
+check, the Newton shape-mapping preflight records one static mapper-handoff row, and the Newton
 shape-mapping contract records one static report-scoped descriptor dict. The Newton shape
 runtime-boundary preflight contract then records one later runtime-construction candidate for that
 descriptor. The Newton shape runtime-construction contract then records exactly one repo-local
@@ -921,7 +921,7 @@ collision-quality evidence, not full CPD reproduction, not `paper_faithful_offli
 deployment, safety, or certification evidence.
 The Newton engine-builder environment-probe contract now closes only the single-fixture bounded
 environment-provenance gate, consumes the boundary-preflight row, records configured-source-dir
-status and JSON-safe Newton/Warp `find_spec` provenance shape, and advances the current next gate
+status and JSON-safe Newton/Warp `find_spec` provenance shape, and at that stage advanced the next gate
 to `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`. The default
 report remains no-config and imports no real Newton or Warp runtime. It keeps
 `newton.ModelBuilder` instantiation, real builder shape calls, model finalization, collision
@@ -929,3 +929,15 @@ pipeline calls, Newton execution, real USD, benchmarks, and collision-quality me
 It is not Newton readiness, not Newton support, not real Newton execution, not real-USD evidence,
 not benchmark or collision-quality evidence, not full CPD reproduction, not
 `paper_faithful_offline`, and not deployment, safety, or certification evidence.
+The Newton engine-builder API-surface contract now closes only the single-fixture bounded
+source-AST API-surface gate, consumes the environment-probe row, records default no-config
+API-surface status for the future `newton.ModelBuilder` / `add_shape_box` boundary, and advances
+the current next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract`. When
+a Newton source directory is explicitly passed, this lane may read source files and parse AST only.
+It keeps real Newton/Warp imports, `newton.ModelBuilder` instantiation, real builder shape calls,
+model finalization, collision pipeline calls, Newton execution, real USD, benchmarks, and
+collision-quality measurements at zero. It is not Newton readiness, not runtime compatibility, not
+Newton support, not real Newton execution, not real-USD evidence, not benchmark or
+collision-quality evidence, not full CPD reproduction, not `paper_faithful_offline`, and not
+deployment, safety, or certification evidence.

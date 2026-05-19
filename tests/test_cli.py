@@ -1528,11 +1528,11 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["report_generation_status"] == "smoke_passed"
     assert payload["paper_faithfulness"]["status"] == "partial"
     assert payload["failure_labels"] == [
-        "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract_missing",
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract_missing",
     ]
     assert (
         payload["next_required_gate"]
-        == "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract"
     )
     assert payload["generated_collision_package_count"] == 1
     assert payload["runtime_admissibility_check_count"] == 1
@@ -1555,7 +1555,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "enclosed_primitive_postprocess",
     ]
     assert payload["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract",
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract",
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
         "paper_offline_changed_decomposition_output_contract",
@@ -1586,6 +1586,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract",
         "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract",
         "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract",
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract",
     ]
     builder_construction = payload[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
@@ -1628,6 +1629,32 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert environment_probe["newton_engine_shape_object_count"] == 0
     assert environment_probe["newton_builder_shape_call_count"] == 0
     assert environment_probe["newton_runtime_execution_count"] == 0
+    api_surface = payload[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
+    ]
+    assert (
+        api_surface["gate_id"]
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
+    )
+    assert (
+        api_surface["input_gate_id"]
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
+    )
+    assert (
+        api_surface["next_required_gate"]
+        == "paper_mapped_subset_newton_shape_runtime_engine_builder_import_boundary_preflight_contract"
+    )
+    assert api_surface["newton_shape_runtime_engine_builder_api_surface_row_count"] == 1
+    assert api_surface["api_surface_probe_count"] == 1
+    assert api_surface["source_dir_configured_count"] == 0
+    assert api_surface["newton_model_builder_symbol_found_count"] == 0
+    assert api_surface["newton_add_shape_box_symbol_found_count"] == 0
+    assert api_surface["real_newton_import_count"] == 0
+    assert api_surface["real_warp_import_count"] == 0
+    assert api_surface["newton_model_builder_instantiated_count"] == 0
+    assert api_surface["newton_engine_shape_object_count"] == 0
+    assert api_surface["newton_builder_shape_call_count"] == 0
+    assert api_surface["newton_runtime_execution_count"] == 0
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False

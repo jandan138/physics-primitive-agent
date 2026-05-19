@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import importlib
 import importlib.util
 import subprocess
@@ -100,6 +101,147 @@ def inspect_newton_warp_provenance(
     }
 
 
+def inspect_newton_engine_builder_api_surface(
+    source_dir: str | Path | None = None,
+) -> dict[str, object]:
+    source_path = None if source_dir in (None, "") else Path(str(source_dir))
+    source_resolved = source_path.resolve() if source_path is not None else None
+    base = {
+        "probe_mode": "source_ast_api_surface_only_no_import",
+        "source_dir_configured": source_path is not None,
+        "source_dir": None if source_path is None else str(source_path),
+        "source_dir_resolved": None if source_resolved is None else str(source_resolved),
+        "source_commit": None,
+        "source_files_checked": [],
+        "source_file_rows": [],
+        "model_builder_exported_from_newton_init": False,
+        "collision_pipeline_exported_from_newton_init": False,
+        "model_builder_class_found": False,
+        "model_builder_class_file": None,
+        "model_builder_constructor_found": False,
+        "model_builder_constructor_signature": {
+            "parameters": [],
+            "required_parameters": [],
+            "defaults": {},
+        },
+        "add_shape_box_found": False,
+        "add_shape_box_signature": {
+            "parameters": [],
+            "required_parameters": [],
+            "planned_call_fields_present": [],
+            "defaults": {},
+        },
+        "finalize_method_found": False,
+        "collision_pipeline_symbol_found": False,
+        "import_attempted": False,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_runtime_execution_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "real_usd_loaded": False,
+        "benchmark_triggered": False,
+        "collision_quality_measured": False,
+        "claim_boundary": (
+            "bounded_source_api_surface_probe_only_not_newton_runtime_execution"
+        ),
+    }
+
+    if source_path is None:
+        return {
+            **base,
+            "api_surface_status": "not_run_source_dir_not_configured",
+            "source_dir_status": "not_configured",
+        }
+    if not source_path.exists():
+        return {
+            **base,
+            "api_surface_status": "not_run_source_dir_missing",
+            "source_dir_status": "missing",
+        }
+
+    init_rel = Path("newton") / "__init__.py"
+    builder_rel = Path("newton") / "_src" / "sim" / "builder.py"
+    init_row, init_tree = _parse_source_ast(source_path, init_rel)
+    builder_row, builder_tree = _parse_source_ast(source_path, builder_rel)
+    source_file_rows = [init_row, builder_row]
+    checked_files = [
+        str(row["relative_path"])
+        for row in source_file_rows
+        if row["parse_status"] == "parsed"
+    ]
+
+    model_builder_exported = (
+        init_tree is not None and _module_exports_name(init_tree, "ModelBuilder")
+    )
+    collision_pipeline_exported = (
+        init_tree is not None and _module_exports_name(init_tree, "CollisionPipeline")
+    )
+    model_builder_class = (
+        _find_class_definition(builder_tree, "ModelBuilder")
+        if builder_tree is not None
+        else None
+    )
+    constructor = (
+        _find_class_method(model_builder_class, "__init__")
+        if model_builder_class is not None
+        else None
+    )
+    add_shape_box = (
+        _find_class_method(model_builder_class, "add_shape_box")
+        if model_builder_class is not None
+        else None
+    )
+    finalize = (
+        _find_class_method(model_builder_class, "finalize")
+        if model_builder_class is not None
+        else None
+    )
+    planned_fields = ("body", "xform", "hx", "hy", "hz")
+    add_shape_box_signature = _function_signature(add_shape_box)
+    constructor_signature = _function_signature(constructor)
+    add_shape_parameters = add_shape_box_signature["parameters"]
+    api_surface_found = bool(
+        model_builder_exported
+        and model_builder_class is not None
+        and add_shape_box is not None
+        and all(field in add_shape_parameters for field in planned_fields)
+    )
+
+    return {
+        **base,
+        "api_surface_status": (
+            "source_api_surface_checked"
+            if api_surface_found
+            else "source_api_surface_gap"
+        ),
+        "source_dir_status": "found",
+        "source_files_checked": checked_files,
+        "source_file_rows": source_file_rows,
+        "model_builder_exported_from_newton_init": model_builder_exported,
+        "collision_pipeline_exported_from_newton_init": collision_pipeline_exported,
+        "model_builder_class_found": model_builder_class is not None,
+        "model_builder_class_file": (
+            str(builder_rel) if model_builder_class is not None else None
+        ),
+        "model_builder_constructor_found": constructor is not None,
+        "model_builder_constructor_signature": constructor_signature,
+        "add_shape_box_found": add_shape_box is not None,
+        "add_shape_box_signature": {
+            **add_shape_box_signature,
+            "planned_call_fields_present": [
+                field for field in planned_fields if field in add_shape_parameters
+            ],
+        },
+        "finalize_method_found": finalize is not None,
+        "collision_pipeline_symbol_found": collision_pipeline_exported,
+    }
+
+
 def _module_not_run_row(module_name: str, status: str) -> dict[str, object]:
     detail = (
         "newton.source_dir not configured for offline report"
@@ -118,6 +260,123 @@ def _module_not_run_row(module_name: str, status: str) -> dict[str, object]:
         "resolved_within_source_dir": False,
         "import_attempted": False,
     }
+
+
+def _parse_source_ast(
+    source_path: Path,
+    relative_path: Path,
+) -> tuple[dict[str, object], ast.Module | None]:
+    path = source_path / relative_path
+    row = {
+        "relative_path": str(relative_path),
+        "path": str(path),
+        "path_resolved": str(path.resolve()),
+        "file_exists": path.exists(),
+        "parse_status": "missing",
+        "parse_error": None,
+        "import_attempted": False,
+    }
+    if not path.exists():
+        return row, None
+    try:
+        source = path.read_text()
+        tree = ast.parse(source)
+    except (OSError, SyntaxError, UnicodeDecodeError) as exc:
+        return {
+            **row,
+            "parse_status": "parse_error",
+            "parse_error": f"{type(exc).__name__}: {exc}",
+        }, None
+    return {**row, "parse_status": "parsed"}, tree
+
+
+def _module_exports_name(tree: ast.Module, name: str) -> bool:
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom):
+            if any(alias.name == name for alias in node.names):
+                return True
+        if isinstance(node, ast.Assign):
+            targets = [target.id for target in node.targets if isinstance(target, ast.Name)]
+            if "__all__" in targets and _literal_list_contains(node.value, name):
+                return True
+    return False
+
+
+def _literal_list_contains(node: ast.AST, value: str) -> bool:
+    if isinstance(node, ast.List | ast.Tuple):
+        return any(
+            isinstance(element, ast.Constant) and element.value == value
+            for element in node.elts
+        )
+    return False
+
+
+def _find_class_definition(
+    tree: ast.Module | None,
+    class_name: str,
+) -> ast.ClassDef | None:
+    if tree is None:
+        return None
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.name == class_name:
+            return node
+    return None
+
+
+def _find_class_method(
+    class_node: ast.ClassDef | None,
+    method_name: str,
+) -> ast.FunctionDef | ast.AsyncFunctionDef | None:
+    if class_node is None:
+        return None
+    for node in class_node.body:
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name == method_name:
+            return node
+    return None
+
+
+def _function_signature(
+    function: ast.FunctionDef | ast.AsyncFunctionDef | None,
+) -> dict[str, object]:
+    if function is None:
+        return {"parameters": [], "required_parameters": [], "defaults": {}}
+    positional = list(function.args.posonlyargs) + list(function.args.args)
+    kwonly = list(function.args.kwonlyargs)
+    parameters = [argument.arg for argument in positional + kwonly]
+    defaults: dict[str, str] = {}
+    positional_defaults = [None] * (
+        len(positional) - len(function.args.defaults)
+    ) + list(function.args.defaults)
+    for argument, default in zip(positional, positional_defaults):
+        if default is not None:
+            defaults[argument.arg] = _ast_default_label(default)
+    for argument, default in zip(kwonly, function.args.kw_defaults):
+        if default is not None:
+            defaults[argument.arg] = _ast_default_label(default)
+    required_parameters = [
+        argument.arg
+        for argument, default in zip(positional, positional_defaults)
+        if default is None
+    ]
+    required_parameters.extend(
+        argument.arg
+        for argument, default in zip(kwonly, function.args.kw_defaults)
+        if default is None
+    )
+    return {
+        "parameters": parameters,
+        "required_parameters": required_parameters,
+        "defaults": defaults,
+    }
+
+
+def _ast_default_label(node: ast.AST) -> str:
+    if isinstance(node, ast.Constant):
+        return repr(node.value)
+    try:
+        return ast.unparse(node)
+    except AttributeError:
+        return type(node).__name__
 
 
 def _module_find_spec_row(
