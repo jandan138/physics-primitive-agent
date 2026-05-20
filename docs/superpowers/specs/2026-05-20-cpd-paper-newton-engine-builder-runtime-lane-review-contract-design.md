@@ -29,7 +29,7 @@ runtime boundary and must not reinterpret skipped execution as runtime compatibi
 
 Add one bounded report-only runtime-lane review contract that consumes the skipped runtime-execution
 payload, records that the runtime lane remains blocked by claim boundaries, and advances to a
-future source/configuration preflight gate before any real Newton runtime work can be designed.
+future configured-runtime design contract before any real Newton runtime work can be designed.
 
 ## Non-Goals
 
@@ -64,10 +64,11 @@ The review payload records one row for the existing synthetic mapped-subset `pap
 OBB/box lineage. The row carries the upstream runtime-execution row ID and source lineage IDs, then
 records:
 
-- `runtime_lane_review_decision: keep_runtime_lane_blocked`;
+- `runtime_lane_review_decision: keep_real_runtime_execution_blocked`;
 - `runtime_lane_review_reason: skipped_runtime_execution_is_not_runtime_compatibility`;
 - `runtime_lane_review_status: claim_boundary_preserved`;
-- `runtime_lane_review_passed: true` only for the documentation/claim-boundary review;
+- `runtime_lane_review_recorded: true` for the report-only review record;
+- `runtime_lane_claim_boundary_preserved: true` for the documentation/claim-boundary review only;
 - `real_runtime_execution_evidence: false`;
 - `runtime_compatibility_validated: false`;
 - exact zero counters for real imports, `ModelBuilder`, engine shape objects, real builder shape
@@ -94,7 +95,7 @@ a real runtime import, real Newton execution, benchmark, or collision-quality ga
 Use TDD:
 
 1. Add a failing report/CLI test that expects the runtime-lane review payload and advances the
-   top-level next gate to the source/configuration preflight contract.
+   top-level next gate to the configured-runtime design contract.
 2. Add exact schema tests for the review payload and row.
 3. Add drift tests showing the review payload rejects stale or widened runtime-execution input,
    including stale metadata, stale nested contract, nonzero real runtime counters, copied source

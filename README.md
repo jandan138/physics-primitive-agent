@@ -204,14 +204,14 @@ checks only that the same `paper_single_box` box PrimitiveSpec-like dict has the
 later mapper would need: target kind `box`, center, axes, dimensions, and box half extents. It
 records `newton_shape_mapping_preflight_row_count: 1`, `mapping_attempt_count: 0`,
 `newton_mapping_record_count: 0`, and `newton_runtime_execution_count: 0`, keeps Newton support
-claims false, and advances the current runtime-lane gate to
+claims false, and at that stage advanced the runtime-lane gate to
 `paper_mapped_subset_newton_shape_mapping_contract`. The report now also includes
 `paper_mapped_subset_newton_shape_mapping_contract`, a single-fixture offline/static Newton shape
 descriptor contract, not Newton object construction and not Newton execution. It consumes that
 preflight row, records exactly one report-scoped `newton_shape_descriptor_dict` for target kind
 `box`, keeps `mapping_attempt_count: 0`, `newton_mapping_record_count: 0`,
 `newton_shape_object_count: 0`, and `newton_runtime_execution_count: 0`, keeps Newton support
-claims false, and advances the current runtime-lane gate to
+claims false, and at that stage advanced the runtime-lane gate to
 `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`. The report now also
 includes `paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract`, a single-fixture
 offline/static Newton shape runtime-boundary preflight, not Newton shape object construction and
@@ -219,7 +219,7 @@ not Newton execution. It consumes the descriptor row, records exactly one later 
 runtime-construction candidate for the same synthetic `paper_single_box` box descriptor, keeps
 `mapping_attempt_count: 0`, `newton_mapping_record_count: 0`,
 `newton_shape_object_count: 0`, and `newton_runtime_execution_count: 0`, keeps Newton support
-claims false, and advances the current runtime-lane gate to
+claims false, and at that stage advanced the runtime-lane gate to
 `paper_mapped_subset_newton_shape_runtime_construction_contract`. The report now also includes
 `paper_mapped_subset_newton_shape_runtime_construction_contract`, a single-fixture
 offline/report-scoped Newton shape mapping-record construction contract, not a Newton engine
@@ -229,7 +229,7 @@ the same synthetic `paper_single_box` box descriptor, records
 `constructed_newton_shape_mapping_record_count: 1` and `newton_mapping_record_count: 1`, keeps
 `newton_shape_object_count: 0`, `newton_engine_shape_object_count: 0`,
 `newton_builder_shape_call_count: 0`, and `newton_runtime_execution_count: 0`, keeps Newton
-support claims false, and advances the current runtime-lane gate to
+support claims false, and at that stage advanced the runtime-lane gate to
 `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`. The report now also
 includes `paper_mapped_subset_newton_shape_runtime_builder_preflight_contract`, a single-fixture
 offline/static Newton builder-call-plan preflight, not a Newton builder call and not Newton
@@ -237,7 +237,7 @@ execution. It consumes that repo-local `NewtonShapeMapping.to_dict()` record, re
 JSON-safe plan for the future `box` builder signature fields `body`, `xform`, `hx`, `hy`, and
 `hz`, keeps `builder_call_allowed_count: 0`, `newton_engine_shape_object_count: 0`,
 `newton_builder_shape_call_count: 0`, and `newton_runtime_execution_count: 0`, keeps Newton
-support claims false, and advances the current runtime-lane gate to
+support claims false, and at that stage advanced the runtime-lane gate to
 `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`. The report now also
 includes `paper_mapped_subset_newton_shape_runtime_builder_construction_contract`, a
 single-fixture offline/report-only recording-builder construction contract, not a real Newton
@@ -287,8 +287,15 @@ now also includes
 single-fixture report-only skipped-runtime-execution decision. It consumes the smoke row, records
 `runtime_execution_decision: skip_real_runtime_execution`, keeps real Newton/Warp imports,
 `newton.ModelBuilder`, Newton engine shape objects, real builder calls, model finalization,
-collision pipeline calls, and Newton execution at zero, and advances the current runtime-lane gate
-to `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`. The package dict,
+collision pipeline calls, and Newton execution at zero, and at that stage advanced the runtime-lane
+follow-up gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`. It now also
+includes `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`, a
+single-fixture report-only claim-boundary review. It records
+`runtime_lane_review_decision: keep_real_runtime_execution_blocked`, confirms that skipped runtime
+execution is not runtime compatibility, keeps all real runtime/import/builder/finalization/collision
+counters at zero, and advances the current runtime-lane gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`. The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
 descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
 preflight plan, recording-builder call artifact, engine-builder boundary preflight row, and
@@ -303,7 +310,7 @@ primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readin
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, mapped-subset
 planning/candidate-matrix/preflight/PrimitiveSpec/runtime/CollisionPackage/admissibility,
 Newton shape-mapping, Newton shape runtime, Newton engine-builder boundary-preflight, and
-Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution slices do not
+Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
 certification. The consolidated entry gate is a deliberate anti-overdesign boundary: the earlier
@@ -311,7 +318,8 @@ closed boundary-preflight, environment-probe, and API-surface rows remain as evi
 import-boundary preconditions and first Newton entry decision were reviewed together instead of
 split across another pair of small gates. The smoke gate is now closed as a skipped-smoke
 decision, not a real Newton import or runtime run. The runtime-execution gate is now closed as a
-skipped-runtime-execution decision, and the next gate is a future runtime-lane review contract.
+skipped-runtime-execution decision, and the runtime-lane review gate is now closed as a report-only
+claim-boundary review; the next gate is a future configured-runtime design contract.
 See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See

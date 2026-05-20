@@ -361,8 +361,10 @@ The repository has not reached that full result. It has reached the workbench st
     finalization, not a collision pipeline, and not Newton execution. It consumes the smoke row
     for the same synthetic `paper_single_box` lineage, records
     `runtime_execution_decision: skip_real_runtime_execution`, keeps runtime-execution attempts
-    and all real runtime counters at zero, keeps the report partial, and points next to
-    `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+    and all real runtime counters at zero, keeps the report partial, and points next to the
+    runtime-lane review contract. That review is now closed as a report-only claim-boundary record,
+    keeps runtime compatibility unvalidated, and points next to
+    `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
 69. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
@@ -733,8 +735,9 @@ contracts now also exist as bounded offline/report-only gates. The engine-builde
 now also exists as a report-only default no-runtime-entry decision. The engine-builder smoke
 contract now also exists as a report-only skipped-smoke decision for the same lineage. The
 engine-builder runtime-execution contract now also exists as a report-only
-skipped-runtime-execution decision. The next code slice is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+skipped-runtime-execution decision. The engine-builder runtime-lane review contract now also
+exists as a report-only claim-boundary review. The next code slice is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -974,7 +977,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset Newton engine-builder entry contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/real-USD
 -> mapped-subset Newton engine-builder smoke contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/real-USD
 -> mapped-subset Newton engine-builder runtime-execution contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract
+-> mapped-subset Newton engine-builder runtime-lane review contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -1089,16 +1093,17 @@ single-fixture offline/report-only Newton shape runtime builder-construction con
 single-fixture offline/static Newton engine-builder boundary-preflight contract now also exist.
 The single-fixture bounded Newton/Warp environment-probe contract now also exists. The
 single-fixture bounded source-AST API-surface contract now also exists. The single-fixture
-report-only engine-builder entry contract, report-only skipped-smoke contract, and report-only
-skipped-runtime-execution contract now also exist. The immediate next code slice should keep the
-same boundary and implement the future
-`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`
+report-only engine-builder entry contract, report-only skipped-smoke contract, report-only
+skipped-runtime-execution contract, and report-only runtime-lane review contract now also exist.
+The immediate next code slice should keep the same boundary and implement the future
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`
 without broadening into real USD, benchmarks, or collision-quality claims:
 
-1. Implement `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`
-   only after the runtime-execution contract's default skipped-runtime-execution decision is
-   reviewed. That future runtime-lane review gate must still start from the single synthetic
-   `paper_single_box` lineage.
+1. Implement
+   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`
+   only after the runtime-lane review contract's claim-boundary decision is recorded. That future
+   configured-runtime design gate must still start from the single synthetic `paper_single_box`
+   lineage.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
    runtime-admissibility row, shape-mapping preflight row, descriptor row, runtime-boundary

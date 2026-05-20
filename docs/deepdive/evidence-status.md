@@ -147,7 +147,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -164,7 +164,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   runtime builder-preflight, offline/report-only recording-builder construction,
   offline/static Newton engine-builder boundary-preflight, bounded Newton/Warp environment-probe,
   bounded source-AST API-surface, report-only engine-builder entry, report-only skipped-smoke,
-  and report-only skipped-runtime-execution contracts.
+  report-only skipped-runtime-execution, and report-only runtime-lane review contracts.
   The
   runtime-construction slice records exactly one repo-local `NewtonShapeMapping.to_dict()` report
   record for the synthetic `paper_single_box` box descriptor while keeping Newton engine shape
@@ -568,9 +568,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   finalization, collision pipeline calls, and Newton execution at zero. At that stage it advanced
   the next required runtime-lane gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`; the later
-  environment-probe, API-surface, entry, smoke, and runtime-execution slices below now advance the
+  environment-probe, API-surface, entry, smoke, runtime-execution, and runtime-lane review slices below now advance the
   current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
   This is
   not Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
@@ -585,8 +585,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   no real builder shape calls, finalizes no model, creates no collision pipeline, and runs no
   Newton code. At that stage it advanced the stage-local next required runtime-lane gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`; the later
-  API-surface, entry, smoke, and runtime-execution slices below advance the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+  API-surface, entry, smoke, runtime-execution, and runtime-lane review slices below advance the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
   This is not
   Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
@@ -609,8 +609,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   `smoke_decision: skip_real_runtime_smoke`, keeps all real runtime-smoke attempts and Newton
   engine shape objects/runtime execution at zero. The bounded runtime-execution slice records
   `runtime_execution_decision: skip_real_runtime_execution`, keeps all real runtime-execution
-  attempts and Newton execution at zero, and advances the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+  attempts and Newton execution at zero. The bounded runtime-lane review slice then records
+  `runtime_lane_review_decision: keep_real_runtime_execution_blocked`, keeps skipped execution out
+  of runtime-compatibility wording, and advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
   This is not Newton readiness, not Newton support, not Newton execution, not runtime
   compatibility, not real-USD evidence, not benchmark evidence, not collision-quality validation,
   not paper primitive vocabulary coverage, not approximation support, not `paper_faithful_offline`,

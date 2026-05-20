@@ -72,11 +72,14 @@ runtime-execution contract as a report-only skipped-runtime-execution decision. 
 `runtime_execution_decision: skip_real_runtime_execution`, imports no Newton/Warp runtime,
 instantiates no `newton.ModelBuilder`, makes zero real builder shape calls, finalizes no model,
 creates no collision pipeline, and runs zero Newton runtime code. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`. This is still not package
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract` after
+the report-only runtime-lane review contract. That review records
+`runtime_lane_review_decision: keep_real_runtime_execution_blocked`, preserves the claim boundary,
+and does not treat skipped runtime execution as runtime compatibility. This is still not package
 readiness, not Newton readiness, not Newton support, not Newton execution, not real-USD evidence,
 not benchmark evidence, not collision-quality evidence, not deployment/safety evidence, not
 full-CPD evidence, not `paper_faithful_offline` evidence, and not paper primitive vocabulary
-coverage. The next step is a future runtime-lane review contract for the same single synthetic
+coverage. The next step is a future configured-runtime design contract for the same single synthetic
 package boundary, not a capped bed/Franka rerun and not a Newton-support claim. The entry contract
 consolidated the planned import-boundary preconditions and first Newton entry decision into one
 gate to avoid splitting overlapping audit facts across low-value follow-on gates. A capped
@@ -227,8 +230,8 @@ runtime-construction contract, offline/static Newton shape runtime builder-prefl
 offline/report-only Newton shape runtime recording-builder construction contract, offline/static
 Newton engine-builder boundary-preflight contract, bounded Newton/Warp environment-probe
 contract, bounded source-AST API-surface contract, report-only engine-builder entry contract, and
-report-only skipped-smoke and skipped-runtime-execution contracts:
-`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`. The serialization contract
+report-only skipped-smoke, skipped-runtime-execution, and runtime-lane review contracts:
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
@@ -300,9 +303,10 @@ records exist.
   Newton engine-builder boundary-preflight contract is now implemented, and the single-fixture
   bounded Newton/Warp environment-probe contract is now implemented, and the single-fixture
   bounded source-AST API-surface contract is now implemented, and the report-only
-  engine-builder entry decision is now implemented, and the report-only skipped-smoke
-  decision and skipped-runtime-execution decision are now implemented, while the next gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+  engine-builder entry decision is now implemented, and the report-only skipped-smoke,
+  skipped-runtime-execution, and runtime-lane review decisions are now implemented, while the next
+  gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -998,7 +1002,7 @@ records exist.
   It keeps
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`,
+  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
   real Newton engine shape construction, runtime execution, or benchmarks.

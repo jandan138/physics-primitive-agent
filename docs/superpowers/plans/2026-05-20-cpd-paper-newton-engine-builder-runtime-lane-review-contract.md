@@ -24,7 +24,7 @@ claim-boundary review decision, and advances the runtime lane to a configured-ru
 - Modify: `tests/test_cli.py`
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] **Step 1: Write the failing report/CLI tests**
+- [x] **Step 1: Write the failing report/CLI tests**
 
 Add constants near the existing runtime-execution constants:
 
@@ -81,7 +81,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
     assert payload["runtime_lane_review_status"] == "claim_boundary_preserved"
     assert payload["real_runtime_execution_evidence"] is False
     assert payload["runtime_compatibility_validated"] is False
-    assert payload["runtime_lane_review_passed_count"] == 1
+    assert payload["runtime_lane_review_recorded_count"] == 1
+    assert payload["runtime_lane_claim_boundary_preserved_count"] == 1
     assert payload["real_newton_import_count"] == 0
     assert payload["real_warp_import_count"] == 0
     assert payload["newton_model_builder_instantiated_count"] == 0
@@ -97,7 +98,7 @@ Update `tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json` to 
 top-level next gate, the new failure label, the new payload key, the new implemented-output scope
 entry, and zero real runtime/build/collision counters.
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -107,7 +108,7 @@ python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_records_mapped_
 
 Expected: fail because the runtime-lane review payload key does not exist.
 
-- [ ] **Step 3: Write the minimal implementation**
+- [x] **Step 3: Write the minimal implementation**
 
 Add the next-gate constant:
 
@@ -125,7 +126,7 @@ one runtime-lane review row, summarize coverage, and return the runtime-lane rev
 the payload into `build_cpd_paper_offline_report()` after the runtime-execution payload and use the
 runtime-lane review remaining gaps for top-level `failure_labels` and `next_required_gate`.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run:
 
@@ -135,6 +136,13 @@ python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_records_mapped_
 
 Expected: pass.
 
+Task 1 execution evidence:
+
+- RED: `python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract_gate -q`
+  failed before implementation with the runtime-lane review payload key missing.
+- GREEN: `python -m pytest tests/test_cpd_paper_offline.py::test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract_gate tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json -q`
+  passed with `2 passed`.
+
 ### Task 2: Exact Schema, Drift, And Static Boundary
 
 **Files:**
@@ -142,7 +150,7 @@ Expected: pass.
 - Modify: `tests/test_cpd_paper_offline.py`
 - Modify: `src/primitive_collision_compiler/baselines/cpd_paper/offline.py`
 
-- [ ] **Step 1: Write failing schema and drift tests**
+- [x] **Step 1: Write failing schema and drift tests**
 
 Add exact key-set constants:
 
@@ -169,7 +177,8 @@ that asserts the payload and one row exactly contain:
 - `runtime_lane_review_decision: keep_real_runtime_execution_blocked`;
 - `runtime_lane_review_reason: skipped_runtime_execution_is_not_runtime_compatibility`;
 - `runtime_lane_review_status: claim_boundary_preserved`;
-- `runtime_lane_review_passed_count: 1`;
+- `runtime_lane_review_recorded_count: 1`;
+- `runtime_lane_claim_boundary_preserved_count: 1`;
 - `real_runtime_execution_evidence: False`;
 - `runtime_compatibility_validated: False`;
 - exact zero real runtime/import/build/finalize/collision counters;
@@ -269,7 +278,7 @@ Add a static-boundary test that inspects the runtime-lane review helpers and for
 )
 ```
 
-- [ ] **Step 2: Run RED**
+- [x] **Step 2: Run RED**
 
 Run:
 
@@ -277,15 +286,16 @@ Run:
 python -m pytest tests/test_cpd_paper_offline.py -k "runtime_lane_review" -q
 ```
 
-Expected: fail because the runtime-lane review schema helpers and payload do not exist.
+Expected: fail because the runtime-lane review schema helpers and exact payload fields do not
+exist.
 
-- [ ] **Step 3: Implement schema and validation**
+- [x] **Step 3: Implement schema and validation**
 
 Add runtime-lane review false/true flag helpers, exact input key validation, required-key-first
 validation, source-row validation, source-package copy rejection, row serialization validation,
 coverage summary, and the final runtime-lane review payload function.
 
-- [ ] **Step 4: Run GREEN**
+- [x] **Step 4: Run GREEN**
 
 Run:
 
@@ -313,7 +323,7 @@ Expected: all selected tests pass.
 - Modify: `docs/records/README.md`
 - Create: `docs/records/2026-05-20-cpd-paper-newton-engine-builder-runtime-lane-review-contract.md`
 
-- [ ] **Step 1: Update claim-boundary docs**
+- [x] **Step 1: Update claim-boundary docs**
 
 Replace wording that says the current next gate is the runtime-lane review contract with wording
 that says the runtime-lane review contract is implemented as a report-only claim-boundary review
@@ -329,13 +339,13 @@ builder calls, model finalization, collision pipeline creation/collision, runtim
 runtime-execution attempts, simulation-checked wording, real USD, benchmark, collision-quality,
 deployment, or safety evidence.
 
-- [ ] **Step 2: Add dated record**
+- [x] **Step 2: Add dated record**
 
 Add a record documenting scope, non-goals, current verification, artifacts, and multi-agent review
 for the runtime-lane review contract. Mark final full-regression verification as pending until Task
 4 completes.
 
-- [ ] **Step 3: Run docs checks**
+- [x] **Step 3: Run docs checks**
 
 Run:
 
@@ -353,23 +363,23 @@ Expected: all pass.
 
 - Review all changed files.
 
-- [ ] **Step 1: Request multi-agent review**
+- [x] **Step 1: Request multi-agent review**
 
 Ask at least two read-only review agents to inspect:
 
 - code schema/runtime-boundary correctness;
 - DeepDive and claim-boundary wording.
 
-- [ ] **Step 2: Fix accepted findings**
+- [x] **Step 2: Fix accepted findings**
 
 Apply only findings that improve contract correctness or claim boundaries.
 
-- [ ] **Step 3: Finalize the dated record after review**
+- [x] **Step 3: Finalize the dated record after review**
 
 Update `docs/records/2026-05-20-cpd-paper-newton-engine-builder-runtime-lane-review-contract.md`
 with the completed multi-agent review outcome, accepted fixes, and final verification commands.
 
-- [ ] **Step 4: Final verification**
+- [x] **Step 4: Final verification**
 
 Run:
 

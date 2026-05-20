@@ -107,8 +107,10 @@ Do not claim:
   `smoke_decision: skip_real_runtime_smoke` for the default no-runtime-entry path. The
   report-only engine-builder runtime-execution gate now records
   `runtime_execution_decision: skip_real_runtime_execution` for the default no-runtime-smoke path.
-  The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+  The report-only runtime-lane review gate now records
+  `runtime_lane_review_decision: keep_real_runtime_execution_blocked`, preserves the skipped-runtime
+  claim boundary, and keeps runtime compatibility unvalidated. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
 
 ## First 4-Week Proof Point
 

@@ -273,8 +273,11 @@ The Newton engine-builder smoke contract now records one report-only skipped-smo
 the same synthetic box mapping. It keeps runtime-smoke attempts and Newton execution at zero.
 The Newton engine-builder runtime-execution contract now records one report-only
 skipped-runtime-execution decision for the same synthetic box mapping. It keeps
-runtime-execution attempts and Newton execution at zero. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`, not a
+runtime-execution attempts and Newton execution at zero. The Newton engine-builder runtime-lane
+review contract now records one report-only claim-boundary review for that skipped-runtime row,
+keeps runtime compatibility unvalidated, and keeps all real runtime counters at zero. The current
+next gate is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`, not a
 Newton support or quality claim.
 Batch C
 stays important because it checks

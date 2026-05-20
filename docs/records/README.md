@@ -461,6 +461,13 @@ Proposed | In progress | Complete | Failed | Superseded
   benchmark, and collision-quality evidence at zero or false, and advances the runtime-lane next
   gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`.
+- [2026-05-20 CPD Paper Newton Engine-Builder Runtime-Lane Review Contract](2026-05-20-cpd-paper-newton-engine-builder-runtime-lane-review-contract.md):
+  single-fixture report-only Newton engine-builder runtime-lane claim-boundary review inside
+  `cpd_paper_offline_report`. It consumes the skipped-runtime-execution row, records
+  `runtime_lane_review_decision: keep_real_runtime_execution_blocked`, keeps runtime compatibility
+  unvalidated, keeps runtime/import/builder/finalization/collision counters at zero, and advances
+  the runtime-lane next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
 - [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
   anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
   boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate
