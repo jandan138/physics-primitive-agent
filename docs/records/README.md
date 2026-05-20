@@ -502,7 +502,12 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Execution Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-execution-contract.md):
   single-fixture report-only skipped-execution decision inside `cpd_paper_offline_report`. It
   consumes the configured-runtime smoke row, keeps runtime execution false, keeps all real runtime
-  counters at zero, and advances the current next gate to configured-runtime lane review.
+  counters at zero, and at that stage advanced the next gate to configured-runtime lane review.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Lane-Review Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-lane-review-contract.md):
+  single-fixture report-only claim-boundary review inside `cpd_paper_offline_report`. It consumes
+  the configured-runtime execution row, keeps real runtime evidence and runtime compatibility
+  false, keeps all real runtime counters at zero, and advances the current next gate to
+  configured-runtime run.
 - [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
   anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
   boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate

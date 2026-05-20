@@ -277,13 +277,13 @@ runtime-execution attempts and Newton execution at zero. The Newton engine-build
 review contract now records one report-only claim-boundary review for that skipped-runtime row,
 keeps runtime compatibility unvalidated, and keeps all real runtime counters at zero. The
 configured-runtime preflight, validation, source-resolution, device-resolution, entry-decision,
-smoke, and execution contracts now
+smoke, execution, and lane-review contracts now
 record report-only preflight, default missing-config validation, default missing-source, and default
 missing-device rows plus default no-runtime-entry, skipped-smoke, and skipped-execution decisions
 while keeping runtime source/device resolution, runtime entry, runtime smoke, runtime execution, and
 all real runtime counters false or zero.
 The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_lane_review_contract`;
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_run_contract`;
 this is not a Newton support or quality claim.
 Batch C
 stays important because it checks
