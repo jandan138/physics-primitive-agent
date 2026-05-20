@@ -365,8 +365,11 @@ The repository has not reached that full result. It has reached the workbench st
     runtime-lane review contract. That review is now closed as a report-only claim-boundary record,
     keeps runtime compatibility unvalidated, and points next to the configured-runtime design
     contract. That design contract is now closed as a report-only runtime input design record, keeps
-    runtime config validation false, keeps all real runtime counters at zero, and points next to
-    `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+    runtime config validation false and keeps all real runtime counters at zero. The
+    configured-runtime preflight contract is now closed as a report-only preflight record, keeps
+    runtime config validation false, keeps runtime source/device resolution false, keeps all real
+    runtime counters at zero, and points next to
+    `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
 69. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
@@ -740,8 +743,10 @@ engine-builder runtime-execution contract now also exists as a report-only
 skipped-runtime-execution decision. The engine-builder runtime-lane review contract now also
 exists as a report-only claim-boundary review. The engine-builder configured-runtime design
 contract now also exists as a report-only runtime input design record with runtime config
-validation still false. The next code slice is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+validation still false. The engine-builder configured-runtime preflight contract now also exists
+as a report-only preflight record with runtime config validation still false. The next code slice
+is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -983,7 +988,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset Newton engine-builder runtime-execution contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/real-USD
 -> mapped-subset Newton engine-builder runtime-lane review contract, still partial and still without real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
 -> mapped-subset Newton engine-builder configured-runtime design contract, still partial and still without runtime config validation/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract
+-> mapped-subset Newton engine-builder configured-runtime preflight contract, still partial and still without runtime config validation/runtime source resolution/runtime device resolution/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -1100,15 +1106,15 @@ The single-fixture bounded Newton/Warp environment-probe contract now also exist
 single-fixture bounded source-AST API-surface contract now also exists. The single-fixture
 report-only engine-builder entry contract, report-only skipped-smoke contract, report-only
 skipped-runtime-execution contract, report-only runtime-lane review contract, and report-only
-configured-runtime design contract now also exist. The immediate next code slice should keep the
-same boundary and implement the future
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`
+configured-runtime design/preflight contracts now also exist. The immediate next code slice should
+keep the same boundary and implement the future
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`
 without broadening into runtime config validation, real USD, benchmarks, or collision-quality
 claims:
 
 1. Implement
-   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`
-   only after the report-only configured-runtime design row exists. That future preflight gate
+   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`
+   only after the report-only configured-runtime preflight row exists. That future validation gate
    must still start from the single synthetic `paper_single_box` lineage.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static

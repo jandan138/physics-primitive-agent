@@ -303,12 +303,22 @@ runtime-source, runtime-device, entry-decision, smoke-policy, execution-policy, 
 inputs for the same synthetic lineage; it does not validate a runtime config, read config files,
 import Newton/Warp, instantiate `newton.ModelBuilder`, call a real builder shape method, finalize a
 model, create a collision pipeline, run Newton, run real USD, run benchmarks, or measure
-collision quality. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`. The package dict,
+collision quality. That design gate points to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+The report now also includes
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`, a
+single-fixture report-only configured-runtime preflight record. It consumes the configured-runtime
+design row, records `configured_runtime_preflight_decision:
+record_configured_runtime_preflight_keep_real_runtime_blocked`, keeps runtime config validation,
+runtime source/device resolution, real Newton/Warp imports, `newton.ModelBuilder`, real builder
+calls, model finalization, collision pipeline calls, and Newton execution at zero or false, and
+advances the current next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
+The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
 descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
 preflight plan, recording-builder call artifact, engine-builder boundary preflight row, and
-environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design rows are only serialized offline candidates for one box
+environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight rows are only serialized offline candidates for one box
 fixture: they are not general package readiness, not Newton readiness, not Newton support, not
 Newton execution, not real-USD
 evidence, not benchmark evidence, not
@@ -319,7 +329,7 @@ primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readin
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, mapped-subset
 planning/candidate-matrix/preflight/PrimitiveSpec/runtime/CollisionPackage/admissibility,
 Newton shape-mapping, Newton shape runtime, Newton engine-builder boundary-preflight, and
-Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design slices do not
+Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
 certification. The consolidated entry gate is a deliberate anti-overdesign boundary: the earlier
@@ -329,7 +339,8 @@ split across another pair of small gates. The smoke gate is now closed as a skip
 decision, not a real Newton import or runtime run. The runtime-execution gate is now closed as a
 skipped-runtime-execution decision, and the runtime-lane review gate is now closed as a report-only
 claim-boundary review. The configured-runtime design gate is now closed as a report-only runtime
-input design record; the next gate is a future configured-runtime preflight contract.
+input design record. The configured-runtime preflight gate is now closed as a report-only
+preflight record; the next gate is a future configured-runtime validation contract.
 See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See

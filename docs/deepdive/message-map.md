@@ -111,9 +111,11 @@ Do not claim:
   `runtime_lane_review_decision: keep_real_runtime_execution_blocked`, preserves the skipped-runtime
   claim boundary, and keeps runtime compatibility unvalidated. The report-only configured-runtime
   design gate now records the required runtime input design for the same synthetic lineage while
-  keeping runtime config validation false and all real runtime counters zero. The next runtime-lane
-  gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+  keeping runtime config validation false and all real runtime counters zero. The report-only
+  configured-runtime preflight gate now consumes that design row and records the bounded preflight
+  decision while still reading no config, resolving no runtime source/device, importing no
+  Newton/Warp runtime, and running no Newton code. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
 
 ## First 4-Week Proof Point
 
