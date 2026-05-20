@@ -117,8 +117,11 @@ Do not claim:
   Newton/Warp runtime, and running no Newton code. The report-only configured-runtime validation
   gate now consumes the preflight row, records the default missing-config validation result while
   reading no config file or environment, resolves no runtime source/device, imports no
+  Newton/Warp runtime, and runs no Newton code. The report-only configured-runtime
+  source-resolution gate now consumes that validation row, records that `newton.source_dir` is not
+  configured, attempts no filesystem probe, resolves no runtime source/device, imports no
   Newton/Warp runtime, and runs no Newton code. The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`.
 
 ## First 4-Week Proof Point
 

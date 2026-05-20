@@ -372,8 +372,12 @@ The repository has not reached that full result. It has reached the workbench st
     `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
     The configured-runtime validation contract is now closed as a report-only missing-config
     validation record, reads no config file or environment, keeps runtime source/device resolution
-    false, keeps all real runtime counters at zero, and points next to
+    false, keeps all real runtime counters at zero, and at that stage pointed next to
     `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`.
+    The configured-runtime source-resolution contract is now closed as a report-only missing-source
+    record, performs no filesystem probe, keeps runtime source/device resolution false, keeps all
+    real runtime counters at zero, and points next to
+    `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`.
 69. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
@@ -750,8 +754,10 @@ contract now also exists as a report-only runtime input design record with runti
 validation still false. The engine-builder configured-runtime preflight contract now also exists
 as a report-only preflight record with runtime config validation still false. The engine-builder
 configured-runtime validation contract now also exists as a report-only missing-config validation
-record with runtime source/device resolution still false. The next code slice is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`.
+record with runtime source/device resolution still false. The engine-builder configured-runtime
+source-resolution contract now also exists as a report-only missing-source record with runtime
+source/device resolution still false. The next code slice is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -995,7 +1001,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset Newton engine-builder configured-runtime design contract, still partial and still without runtime config validation/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
 -> mapped-subset Newton engine-builder configured-runtime preflight contract, still partial and still without runtime config validation/runtime source resolution/runtime device resolution/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
 -> mapped-subset Newton engine-builder configured-runtime validation contract, still partial and still without runtime source resolution/runtime device resolution/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract
+-> mapped-subset Newton engine-builder configured-runtime source-resolution contract, still partial and still without runtime source resolution/runtime device resolution/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -1112,23 +1119,23 @@ The single-fixture bounded Newton/Warp environment-probe contract now also exist
 single-fixture bounded source-AST API-surface contract now also exists. The single-fixture
 report-only engine-builder entry contract, report-only skipped-smoke contract, report-only
 skipped-runtime-execution contract, report-only runtime-lane review contract, and report-only
-configured-runtime design/preflight/validation contracts now also exist. The immediate next code
+configured-runtime design/preflight/validation/source-resolution contracts now also exist. The immediate next code
 slice should keep the same boundary and implement the future
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`
 without broadening into real Newton runtime import, real USD, benchmarks, or collision-quality
 claims:
 
 1. Implement
-   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`
-   only after the report-only configured-runtime validation row exists. That future
-   source-resolution gate must still start from the single synthetic `paper_single_box` lineage.
+   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`
+   only after the report-only configured-runtime source-resolution row exists. That future
+   device-resolution gate must still start from the single synthetic `paper_single_box` lineage.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
    runtime-admissibility row, shape-mapping preflight row, descriptor row, runtime-boundary
    preflight row, repo-local mapping record, builder-call-plan record, and recording-builder call
    artifact, engine-builder boundary-preflight row, environment-probe row, API-surface row, entry
    decision row, skipped-smoke row, skipped-runtime-execution row, runtime-lane review row, and
-   configured-runtime design/preflight/validation rows for the deterministic `paper_single_box`
+   configured-runtime design/preflight/validation/source-resolution rows for the deterministic `paper_single_box`
    OBB/box source report-scoped until a later reviewed Newton execution gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated
    records justify narrower bounded wording.
