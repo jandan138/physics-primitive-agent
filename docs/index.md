@@ -80,12 +80,15 @@ synthetic lineage. It defines required runtime-source, runtime-device, entry-dec
 smoke-policy, execution-policy, and review-decision inputs without validating a runtime config,
 reading config files, importing Newton/Warp, instantiating `newton.ModelBuilder`, calling a real
 builder shape method, finalizing a model, creating a collision pipeline, running Newton, running
-real USD, running benchmarks, or measuring collision quality. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+real USD, running benchmarks, or measuring collision quality. The configured-runtime
+preflight/validation/source-resolution/device-resolution/entry-decision gates are now also closed
+as report-only missing-config, missing-source, missing-device, and no-runtime-entry records. The
+current next gate is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
 This is still not package readiness, not Newton readiness, not Newton support, not Newton
 execution, not real-USD evidence, not benchmark evidence, not collision-quality evidence, not
 deployment/safety evidence, not full-CPD evidence, not `paper_faithful_offline` evidence, and not
-paper primitive vocabulary coverage. The next step is a future configured-runtime preflight
+paper primitive vocabulary coverage. The next step is a future configured-runtime smoke
 contract for the same single synthetic package boundary, not a capped bed/Franka rerun and not a
 Newton-support claim. The entry contract
 consolidated the planned import-boundary preconditions and first Newton entry decision into one
@@ -238,8 +241,8 @@ offline/report-only Newton shape runtime recording-builder construction contract
 Newton engine-builder boundary-preflight contract, bounded Newton/Warp environment-probe
 contract, bounded source-AST API-surface contract, report-only engine-builder entry contract, and
 report-only skipped-smoke, skipped-runtime-execution, runtime-lane review, and configured-runtime
-design contracts:
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`. The serialization contract
+design/preflight/validation/source-resolution/device-resolution/entry-decision contracts:
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`. The serialization contract
 validates strict canonical JSON and round-trip equality for the one report-only `paper_single_box`
 OBB/box PrimitiveSpec-like dict; the runtime-boundary preflight records one later runtime
 construction candidate for that row; and the runtime-construction contract constructs exactly one
@@ -312,9 +315,10 @@ records exist.
   bounded Newton/Warp environment-probe contract is now implemented, and the single-fixture
   bounded source-AST API-surface contract is now implemented, and the report-only
   engine-builder entry decision is now implemented, and the report-only skipped-smoke,
-  skipped-runtime-execution, runtime-lane review, and configured-runtime design decisions are now
+  skipped-runtime-execution, runtime-lane review, and configured-runtime
+  design/preflight/validation/source-resolution/device-resolution/entry-decision decisions are now
   implemented, while the next gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
 - [CPD paper generalization Batch A source-policy record](records/2026-05-16-cpd-paper-generalization-batch-a-source-policy.md):
   dated implementation record for the offline report-only source-policy matrix. It keeps the report
   partial and does not add package generation, Newton runtime, real-USD, or benchmark evidence.
@@ -536,8 +540,14 @@ records exist.
   dated implementation record for the single-fixture report-only configured-runtime input design
   contract. It consumes the runtime-lane review row, defines the required runtime inputs for the
   later preflight gate, keeps runtime config validation false, keeps all real runtime counters at
-  zero, and advances the current next gate to
+  zero, and advanced the stage-local next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Entry-Decision Contract](records/2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-entry-decision-contract.md):
+  dated implementation record for the single-fixture report-only configured-runtime entry-decision
+  contract. It consumes the device-resolution row, records the default no-runtime-entry decision,
+  keeps runtime entry false, keeps all real runtime counters at zero, and advances the current next
+  gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
 - [Claim Boundaries](reference/claim-boundaries.md): current allowed wording and the boundary for
   the planned `paper_faithful_offline` status.
 - [CPD paper gap matrix and offline lane spec record](records/2026-05-16-cpd-paper-gap-matrix-and-offline-lane-spec.md):
@@ -1015,17 +1025,17 @@ records exist.
   zero Newton engine shape objects, plus a runtime-lane review contract that closes only
   `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract` as one
   report-only claim-boundary review with runtime compatibility unvalidated, plus a
-  configured-runtime design contract that closes only
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract` as
-  one report-only runtime input design record with runtime config validation still false.
+  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision
+  contract sequence that closes only the corresponding configured-runtime report-only contracts as
+  one single-fixture missing-config, missing-source, missing-device, no-runtime-entry path.
   It keeps
   scope-audit table
   with `decision: remain_partial`, reports
-  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`,
+  `next_required_gate: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`,
   keeps
   `paper_faithful_offline_supported: false`, and does not run Newton, real USD,
-  real Newton engine shape construction, runtime execution, runtime config validation, or
-  benchmarks.
+  real Newton engine shape construction, runtime entry, runtime execution, runtime config
+  validation, or benchmarks.
 - `npc-compile --run-cpd-like-expected-failure-workbench`: command-only deterministic
   expected-failure synthetic workbench, recorded in `experiments/registry.yaml` without a config
   file.

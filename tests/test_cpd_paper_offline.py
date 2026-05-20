@@ -151,8 +151,11 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DE
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract"
 )
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+)
 EXPECTED_CURRENT_REPORT_NEXT_GATE = (
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
 )
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
@@ -169,7 +172,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -281,6 +284,9 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTIO
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT,
+]
+EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -2389,6 +2395,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2642,6 +2649,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -8096,6 +8104,139 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_ROW_REQ
     "newton_collision_pipeline_collide_count",
     "newton_runtime_execution_count",
 }
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_FALSE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_FALSE_FLAGS,
+    "runtime_entry_allowed",
+    "runtime_entry_attempted",
+    "runtime_entry_passed",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_TRUE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_TRUE_FLAGS,
+    "newton_shape_runtime_engine_builder_configured_runtime_entry_decision_recorded",
+    "configured_runtime_device_resolution_contract_respected",
+    "configured_runtime_entry_decision_ready",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_PAYLOAD_REQUIRED_KEYS = {
+    "gate_id",
+    "gate_status",
+    "closed_gate",
+    "input_gate_id",
+    "next_required_gate",
+    "decision",
+    "decision_reason",
+    "artifact_kind",
+    "schema_version",
+    "source_scope",
+    "implementation_boundary",
+    "configured_runtime_entry_decision_action",
+    "configured_runtime_entry_decision",
+    "configured_runtime_entry_decision_status",
+    "configured_runtime_entry_decision_reason",
+    "configured_runtime_entry_decision_contract",
+    "input_contract_summary",
+    "newton_shape_runtime_engine_builder_configured_runtime_entry_decision_row_count",
+    "source_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_count",
+    "configured_runtime_source_resolution_recorded_count",
+    "configured_runtime_source_resolution_passed_count",
+    "configured_runtime_source_resolution_failed_count",
+    "configured_runtime_device_resolution_recorded_count",
+    "configured_runtime_device_resolution_passed_count",
+    "configured_runtime_device_resolution_failed_count",
+    "configured_runtime_entry_decision_recorded_count",
+    "configured_runtime_entry_decision_passed_count",
+    "configured_runtime_entry_decision_failed_count",
+    "runtime_config_validated_count",
+    "runtime_source_config_resolved_count",
+    "runtime_device_config_resolved_count",
+    "runtime_entry_allowed_count",
+    "runtime_entry_attempted_count",
+    "runtime_entry_passed_count",
+    "newton_source_dir_resolution_attempted_count",
+    "newton_source_dir_configured_count",
+    "newton_source_dir_resolved_count",
+    "newton_diagnostic_device_resolution_attempted_count",
+    "newton_diagnostic_device_configured_count",
+    "newton_diagnostic_device_resolved_count",
+    "required_config_keys",
+    "required_runtime_inputs",
+    "required_config_key_count",
+    "required_runtime_input_count",
+    "runtime_entry_decision_policy",
+    "runtime_smoke_policy",
+    "runtime_execution_policy",
+    "configured_runtime_preflight_ready",
+    "configured_runtime_validation_ready",
+    "configured_runtime_source_resolution_ready",
+    "configured_runtime_device_resolution_ready",
+    "configured_runtime_entry_decision_ready",
+    "runtime_config_validated",
+    "runtime_source_config_resolved",
+    "runtime_device_config_resolved",
+    "runtime_entry_allowed",
+    "runtime_entry_attempted",
+    "runtime_entry_passed",
+    "newton_source_dir_config_key",
+    "newton_source_dir_configured",
+    "newton_source_dir",
+    "newton_source_dir_status",
+    "newton_source_dir_resolution_attempted",
+    "newton_source_dir_resolution_status",
+    "newton_source_dir_resolution_reason",
+    "newton_source_dir_filesystem_probe_allowed",
+    "newton_source_dir_exists",
+    "newton_diagnostic_device_config_key",
+    "newton_diagnostic_device_configured",
+    "newton_diagnostic_device",
+    "newton_diagnostic_device_status",
+    "newton_diagnostic_device_allowed_values",
+    "newton_diagnostic_device_resolution_attempted",
+    "newton_diagnostic_device_resolution_status",
+    "newton_diagnostic_device_resolution_reason",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_model_finalized_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "newton_runtime_execution_count",
+    "newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rows",
+    "coverage_summary",
+    "remaining_gaps",
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_TRUE_FLAGS,
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_ROW_REQUIRED_KEYS = (
+    NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_ROW_REQUIRED_KEYS
+    - {
+        "newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id",
+        "configured_runtime_entry_decision_gate_required",
+    }
+    | {
+        "newton_shape_runtime_engine_builder_configured_runtime_entry_decision_row_id",
+        "source_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id",
+        "configured_runtime_entry_decision",
+        "configured_runtime_entry_decision_reason",
+        "configured_runtime_entry_decision_status",
+        "configured_runtime_entry_decision_recorded",
+        "configured_runtime_entry_decision_passed",
+        "configured_runtime_entry_decision_failed",
+        "configured_runtime_entry_decision_ready",
+        "runtime_entry_allowed",
+        "runtime_entry_attempted",
+        "runtime_entry_passed",
+        "configured_runtime_smoke_gate_required",
+    }
+)
 
 
 def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_contract_gate():
@@ -21237,13 +21378,11 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
     ]
 
-    assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
-    )
+    assert report["next_required_gate"] == EXPECTED_CURRENT_REPORT_NEXT_GATE
     assert report["failure_labels"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_entry_decision_contract_missing"
+            "configured_runtime_smoke_contract_missing"
         ),
     ]
     assert (
@@ -21251,7 +21390,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
     ]
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT
@@ -21543,6 +21682,388 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device
     ):
         cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract_payload(
             configured_runtime_source_resolution
+        )
+
+
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract"
+    ]
+
+    assert report["next_required_gate"] == EXPECTED_CURRENT_REPORT_NEXT_GATE
+    assert report["failure_labels"] == [
+        (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "configured_runtime_smoke_contract_missing"
+        ),
+    ]
+    assert (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
+    ]
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
+    )
+    assert payload["configured_runtime_entry_decision"] == (
+        "defer_real_runtime_entry_missing_configured_runtime_source_or_device"
+    )
+    assert payload["configured_runtime_entry_decision_status"] == (
+        "runtime_entry_deferred_missing_configured_runtime_source_or_device"
+    )
+    assert payload["configured_runtime_entry_decision_recorded_count"] == 1
+    assert payload["configured_runtime_entry_decision_passed_count"] == 0
+    assert payload["configured_runtime_entry_decision_failed_count"] == 1
+    assert payload["runtime_entry_allowed_count"] == 0
+    assert payload["runtime_entry_attempted_count"] == 0
+    assert payload["runtime_entry_passed_count"] == 0
+    assert payload["runtime_entry_allowed"] is False
+    assert payload["runtime_entry_attempted"] is False
+    assert payload["runtime_entry_passed"] is False
+    assert payload["runtime_config_validated_count"] == 0
+    assert payload["runtime_source_config_resolved_count"] == 0
+    assert payload["runtime_device_config_resolved_count"] == 0
+    assert payload["newton_source_dir_configured"] is False
+    assert payload["newton_source_dir"] is None
+    assert payload["newton_diagnostic_device_configured"] is False
+    assert payload["newton_diagnostic_device"] is None
+    assert payload["real_newton_import_count"] == 0
+    assert payload["real_warp_import_count"] == 0
+    assert payload["newton_model_builder_instantiated_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_collision_pipeline_created_count"] == 0
+    assert payload["newton_collision_pipeline_collide_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_REMAINING_GAPS
+    )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_payload_schema_is_exact():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract"
+    ]
+    configured_runtime_device_resolution = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+    ]
+    source_row = configured_runtime_device_resolution[
+        "newton_shape_runtime_engine_builder_configured_runtime_device_resolution_rows"
+    ][0]
+
+    assert set(payload) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_PAYLOAD_REQUIRED_KEYS
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["gate_status"] == (
+        "implemented_single_fixture_newton_engine_builder_configured_"
+        "runtime_entry_decision_report_only_partial"
+    )
+    assert payload["decision"] == "remain_partial"
+    assert payload["decision_reason"] == (
+        "newton_engine_builder_configured_runtime_entry_decision_recorded_"
+        "smoke_contract_missing"
+    )
+    assert payload["artifact_kind"] == (
+        "newton_engine_builder_configured_runtime_entry_decision_record_"
+        "not_runtime_smoke"
+    )
+    assert payload["implementation_boundary"] == (
+        "single_synthetic_box_engine_builder_configured_runtime_entry_decision_"
+        "contract_no_config_file_read_no_env_read_no_filesystem_probe_no_import_"
+        "no_model_builder_no_shape_call_no_finalize_no_runtime"
+    )
+    assert payload["configured_runtime_entry_decision_contract"] == {
+        "input_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT
+        ),
+        "closed_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
+        ),
+        "next_configured_runtime_smoke_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
+        ),
+        "entry_decision_mode": (
+            "report_only_missing_source_or_device_runtime_entry_decision"
+        ),
+        "runtime_entry_allowed_when": (
+            "runtime_config_validated_and_source_and_device_resolved"
+        ),
+        "config_file_read_allowed": False,
+        "environment_variable_read_allowed": False,
+        "filesystem_probe_allowed": False,
+        "real_runtime_import_allowed": False,
+        "newton_runtime_allowed": False,
+    }
+    assert payload["input_contract_summary"] == {
+        "input_gate_id": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT
+        ),
+        "input_next_required_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
+        ),
+        "source_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id": source_row[
+            "newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_row_id"
+        ],
+        "source_package_id": source_row["source_package_id"],
+        "source_fixture_id": "paper_single_box",
+        "source_primitive_id": source_row["primitive_id"],
+        "source_target_newton_shape_kind": "box",
+        "source_configured_runtime_device_resolution_status": (
+            "runtime_device_resolution_failed_missing_newton_diagnostic_device"
+        ),
+        "source_runtime_source_config_resolved": False,
+        "source_runtime_device_config_resolved": False,
+    }
+    assert payload["coverage_summary"] == {
+        "newton_shape_runtime_engine_builder_configured_runtime_entry_decision_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_count": 1,
+        "configured_runtime_source_resolution_recorded_count": 1,
+        "configured_runtime_source_resolution_passed_count": 0,
+        "configured_runtime_source_resolution_failed_count": 1,
+        "configured_runtime_device_resolution_recorded_count": 1,
+        "configured_runtime_device_resolution_passed_count": 0,
+        "configured_runtime_device_resolution_failed_count": 1,
+        "configured_runtime_entry_decision_recorded_count": 1,
+        "configured_runtime_entry_decision_passed_count": 0,
+        "configured_runtime_entry_decision_failed_count": 1,
+        "runtime_config_validated_count": 0,
+        "runtime_source_config_resolved_count": 0,
+        "runtime_device_config_resolved_count": 0,
+        "runtime_entry_allowed_count": 0,
+        "runtime_entry_attempted_count": 0,
+        "runtime_entry_passed_count": 0,
+        "newton_source_dir_resolution_attempted_count": 0,
+        "newton_source_dir_configured_count": 0,
+        "newton_source_dir_resolved_count": 0,
+        "newton_diagnostic_device_resolution_attempted_count": 0,
+        "newton_diagnostic_device_configured_count": 0,
+        "newton_diagnostic_device_resolved_count": 0,
+        "required_config_key_count": 2,
+        "required_runtime_input_count": 6,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "configured_runtime_entry_decision_distribution": {
+            "defer_real_runtime_entry_missing_configured_runtime_source_or_device": 1
+        },
+        "configured_runtime_entry_decision_status_distribution": {
+            "runtime_entry_deferred_missing_configured_runtime_source_or_device": 1
+        },
+    }
+    row = payload[
+        "newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rows"
+    ][0]
+    assert set(row) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_ROW_REQUIRED_KEYS
+    )
+    assert row["source_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id"] == (
+        source_row[
+            "newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id"
+        ]
+    )
+    assert row["configured_runtime_entry_decision"] == (
+        "defer_real_runtime_entry_missing_configured_runtime_source_or_device"
+    )
+    assert row["configured_runtime_entry_decision_reason"] == (
+        "configured_runtime_source_or_device_not_resolved"
+    )
+    assert row["configured_runtime_entry_decision_status"] == (
+        "runtime_entry_deferred_missing_configured_runtime_source_or_device"
+    )
+    assert row["configured_runtime_entry_decision_recorded"] is True
+    assert row["configured_runtime_entry_decision_passed"] is False
+    assert row["configured_runtime_entry_decision_failed"] is True
+    assert row["configured_runtime_entry_decision_ready"] is True
+    assert row["runtime_entry_allowed"] is False
+    assert row["runtime_entry_attempted"] is False
+    assert row["runtime_entry_passed"] is False
+    assert row["runtime_config_validated"] is False
+    assert row["runtime_source_config_resolved"] is False
+    assert row["runtime_device_config_resolved"] is False
+    assert row["configured_runtime_smoke_gate_required"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
+    )
+    assert row["source_package_copy_forbidden"] is True
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_REMAINING_GAPS
+    )
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_FALSE_FLAGS:
+        assert payload[flag] is False
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_TRUE_FLAGS:
+        assert payload[flag] is True
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rejects_input_schema_drift():
+    report = build_cpd_paper_offline_report()
+    configured_runtime_device_resolution = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+            ]
+        )
+    )
+    configured_runtime_device_resolution[
+        "unexpected_configured_runtime_entry_decision_input_key"
+    ] = True
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_entry_decision_input_unexpected_keys",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_payload(
+            configured_runtime_device_resolution
+        )
+
+    configured_runtime_device_resolution = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+            ]
+        )
+    )
+    configured_runtime_device_resolution.pop("coverage_summary")
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "configured_runtime_entry_decision_input_missing_keys:"
+            "coverage_summary"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_payload(
+            configured_runtime_device_resolution
+        )
+
+    configured_runtime_device_resolution = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+            ]
+        )
+    )
+    configured_runtime_device_resolution["coverage_summary"][
+        "real_newton_import_count"
+    ] = 1
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "configured_runtime_entry_decision_input_nested_mismatch:"
+            "coverage_summary"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_payload(
+            configured_runtime_device_resolution
+        )
+
+    configured_runtime_device_resolution = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+            ]
+        )
+    )
+    configured_runtime_device_resolution["input_contract_summary"][
+        "input_gate_id"
+    ] = "stale_gate"
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "configured_runtime_entry_decision_input_nested_mismatch:"
+            "input_contract_summary"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_payload(
+            configured_runtime_device_resolution
+        )
+
+    configured_runtime_device_resolution = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+            ]
+        )
+    )
+    configured_runtime_device_resolution["configured_runtime_device_resolution_contract"][
+        "real_runtime_import_allowed"
+    ] = True
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "configured_runtime_entry_decision_input_nested_mismatch:"
+            "configured_runtime_device_resolution_contract"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_payload(
+            configured_runtime_device_resolution
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rejects_source_row_schema_drift():
+    report = build_cpd_paper_offline_report()
+    configured_runtime_device_resolution = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+            ]
+        )
+    )
+    configured_runtime_device_resolution[
+        "newton_shape_runtime_engine_builder_configured_runtime_device_resolution_rows"
+    ][0]["unexpected_configured_runtime_entry_decision_source_row_key"] = True
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_entry_decision_source_row_unexpected_keys",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_payload(
+            configured_runtime_device_resolution
+        )
+
+    configured_runtime_device_resolution = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
+            ]
+        )
+    )
+    configured_runtime_device_resolution[
+        "newton_shape_runtime_engine_builder_configured_runtime_device_resolution_rows"
+    ][0].pop("configured_runtime_device_resolution_reason")
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "configured_runtime_entry_decision_source_row_missing_keys:"
+            "configured_runtime_device_resolution_reason"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_payload(
+            configured_runtime_device_resolution
         )
 
 

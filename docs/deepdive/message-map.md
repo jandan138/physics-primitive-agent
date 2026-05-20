@@ -123,8 +123,10 @@ Do not claim:
   Newton/Warp runtime, and runs no Newton code. The report-only configured-runtime device-resolution
   gate now consumes that source-resolution row, records that `newton_diagnostic.device` is not
   configured, creates no runtime device object, imports no Newton/Warp runtime, and runs no Newton
-  code. The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
+  code. The report-only configured-runtime entry-decision gate now consumes that device-resolution
+  row, records the default no-runtime-entry decision, attempts no runtime entry, imports no
+  Newton/Warp runtime, and runs no Newton code. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
 
 ## First 4-Week Proof Point
 

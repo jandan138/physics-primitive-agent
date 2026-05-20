@@ -7,7 +7,8 @@ Closed the next DeepDive report-only Newton runtime-lane gate:
 
 The slice records the default missing-device decision for the single synthetic `paper_single_box`
 lineage. It consumes the configured-runtime source-resolution row, records that
-`newton_diagnostic.device` is not configured, and advances the report-level next required gate to
+`newton_diagnostic.device` is not configured, and at that stage advanced the report-level next
+required gate to
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
 
 ## Scope
@@ -21,8 +22,8 @@ lineage. It consumes the configured-runtime source-resolution row, records that
   construction, builder shape calls, model finalization, collision pipeline calls, Newton execution,
   runtime compatibility, real-USD evaluation, benchmarks, and collision-quality validation at false
   or zero.
-- Updates DeepDive-facing docs, claim-boundary docs, and story/status references so the current
-  next runtime-lane gate is entry decision, not device resolution.
+- Updates DeepDive-facing docs, claim-boundary docs, and story/status references so the
+  stage-local next runtime-lane gate is entry decision, not device resolution.
 
 ## Not Implemented
 
@@ -76,9 +77,10 @@ python -m pytest -q --ignore=tests/test_cpd_paper_offline.py
 
 Review before merge:
 
-- Documentation review found no stale current-gate wording or overclaims. It confirmed the current
-  next runtime-lane gate is the configured-runtime entry-decision contract, while device resolution
-  is documented only as a closed report-only missing-device slice.
+- Documentation review found no stale current-gate wording or overclaims at the time of the slice.
+  It confirmed the stage-local next runtime-lane gate was the configured-runtime entry-decision
+  contract, while device resolution was documented only as a closed report-only missing-device
+  slice.
 - Code/test review found no high-severity issues in the narrowed slice. It confirmed the
   device-resolution gate consumes source resolution, advances to entry decision, keeps config/env,
   filesystem, import, and runtime work disallowed, and updates exact implemented-output scope

@@ -181,9 +181,13 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`.
   The configured-runtime device-resolution contract then records the default missing-device
   resolution result for that same lineage, creates no runtime device object, keeps runtime
-  source/device resolution false, keeps all real runtime counters at zero, and advances the current
-  next gate to
+  source/device resolution false, keeps all real runtime counters at zero, and at that stage
+  advanced the next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
+  The configured-runtime entry-decision contract then records the default no-runtime-entry decision
+  for that same lineage, keeps runtime entry allowed/attempted/passed false, keeps all real runtime
+  counters at zero, and advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
   The entry gate is a consolidation boundary, not an extra claim. It combines the remaining
   import-boundary preconditions and the first Newton entry decision into one audit point instead
   of adding separate import-preflight and import-contract gates.
@@ -246,7 +250,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -264,7 +268,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   offline/static Newton engine-builder boundary-preflight, bounded Newton/Warp environment-probe,
   bounded source-AST API-surface, report-only engine-builder entry, report-only skipped-smoke,
   report-only skipped-runtime-execution, report-only runtime-lane review, report-only
-  configured-runtime design/preflight/validation/source-resolution/device-resolution slices.
+  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision
+  slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -1084,8 +1089,10 @@ Use these only after broader benchmark records exist.
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`;
   the later configured-runtime source-resolution slice marked the stage-local next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`;
-  the later configured-runtime device-resolution slice marks the current next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
+  the later configured-runtime device-resolution slice marked the stage-local next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`;
+  the later configured-runtime entry-decision slice marks the current next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
 - Do not describe
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` as Newton
   readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
@@ -1173,9 +1180,10 @@ Use these only after broader benchmark records exist.
   resolution false and reads no config file or environment. The follow-on configured-runtime
   source-resolution record keeps runtime source/device resolution false and performs no filesystem
   probe. The follow-on configured-runtime device-resolution record keeps runtime source/device
-  resolution false and creates no runtime device object. It marks the current next runtime-lane gate
-  as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
+  resolution false and creates no runtime device object. The follow-on configured-runtime
+  entry-decision record keeps runtime entry allowed/attempted/passed false and attempts no runtime
+  entry. It marks the current next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
 
 ## Wording Rules
 

@@ -475,6 +475,26 @@ Proposed | In progress | Complete | Failed | Superseded
   keeps runtime config validation false, keeps runtime/import/builder/finalization/collision
   counters at zero, and advances the current next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Preflight Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-preflight-contract.md):
+  single-fixture report-only configured-runtime preflight inside `cpd_paper_offline_report`. It
+  consumes the configured-runtime design row, reads no config, resolves no runtime source/device,
+  and advances the stage-local next gate to configured-runtime validation.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Validation Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-validation-contract.md):
+  single-fixture report-only missing-config validation inside `cpd_paper_offline_report`. It reads
+  no config file or environment, keeps runtime source/device resolution false, and advances the
+  stage-local next gate to configured-runtime source resolution.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Source-Resolution Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-source-resolution-contract.md):
+  single-fixture report-only missing-source resolution inside `cpd_paper_offline_report`. It
+  performs no filesystem probe, keeps all real runtime counters at zero, and advances the
+  stage-local next gate to configured-runtime device resolution.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Device-Resolution Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-device-resolution-contract.md):
+  single-fixture report-only missing-device resolution inside `cpd_paper_offline_report`. It
+  creates no runtime device object, keeps all real runtime counters at zero, and advances the
+  stage-local next gate to configured-runtime entry decision.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Entry-Decision Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-entry-decision-contract.md):
+  single-fixture report-only no-runtime-entry decision inside `cpd_paper_offline_report`. It
+  consumes the configured-runtime device-resolution row, keeps runtime entry false, keeps all real
+  runtime counters at zero, and advances the current next gate to configured-runtime smoke.
 - [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
   anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
   boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate

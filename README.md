@@ -333,13 +333,19 @@ The report now also includes
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`,
 a single-fixture report-only device-resolution record. It consumes the source-resolution row,
 records that `newton_diagnostic.device` is not configured, creates no runtime device object,
-imports no Newton/Warp runtime, runs no Newton code, and advances the current next gate to
+imports no Newton/Warp runtime, runs no Newton code, and at that stage advanced the next gate to
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
+The report now also includes
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`,
+a single-fixture report-only entry-decision record. It consumes the device-resolution row, records
+`defer_real_runtime_entry_missing_configured_runtime_source_or_device`, attempts no runtime entry,
+imports no Newton/Warp runtime, runs no Newton code, and advances the current next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
 The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
 descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
 preflight plan, recording-builder call artifact, engine-builder boundary preflight row, and
-environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution/configured-runtime-device-resolution rows are only serialized offline candidates for one box
+environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution/configured-runtime-device-resolution/configured-runtime-entry-decision rows are only serialized offline candidates for one box
 fixture: they are not general package readiness, not Newton readiness, not Newton support, not
 Newton execution, not real-USD
 evidence, not benchmark evidence, not
@@ -350,7 +356,7 @@ primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readin
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, mapped-subset
 planning/candidate-matrix/preflight/PrimitiveSpec/runtime/CollisionPackage/admissibility,
 Newton shape-mapping, Newton shape runtime, Newton engine-builder boundary-preflight, and
-Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution/configured-runtime-device-resolution slices do not
+Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution/configured-runtime-device-resolution/configured-runtime-entry-decision slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
 certification. The consolidated entry gate is a deliberate anti-overdesign boundary: the earlier
@@ -364,8 +370,9 @@ input design record. The configured-runtime preflight gate is now closed as a re
 preflight record. The configured-runtime validation gate is now also closed as a report-only
 missing-config validation record. The configured-runtime source-resolution gate is now also closed
 as a report-only missing-source record. The configured-runtime device-resolution gate is now also
-closed as a report-only missing-device record; the next gate is a future configured-runtime
-entry-decision contract.
+closed as a report-only missing-device record. The configured-runtime entry-decision gate is now
+also closed as a report-only no-runtime-entry decision; the next gate is a future
+configured-runtime smoke contract.
 See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See
