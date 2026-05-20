@@ -7,7 +7,7 @@ Closed the next DeepDive report-only Newton runtime-lane gate:
 
 The slice records the default skipped configured-runtime smoke decision for the single synthetic
 `paper_single_box` lineage. It consumes the configured-runtime entry-decision row, records
-`skip_real_runtime_smoke_missing_configured_runtime_entry`, and advances the report-level next
+`skip_real_runtime_smoke_missing_configured_runtime_entry`, and at that stage advanced the
 required gate to
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
 
@@ -19,8 +19,8 @@ required gate to
 - Keeps Newton/Warp import, `ModelBuilder` construction, builder shape calls, model finalization,
   collision pipeline calls, Newton execution, runtime compatibility, real-USD evaluation,
   benchmarks, and collision-quality validation at false or zero.
-- Updates DeepDive-facing docs, claim-boundary docs, and story/status references so the current
-  next runtime-lane gate is configured-runtime execution, not configured-runtime smoke.
+- Updates DeepDive-facing docs, claim-boundary docs, and story/status references so the stage-local
+  next runtime-lane gate after smoke is configured-runtime execution, not configured-runtime smoke.
 
 ## Not Implemented
 

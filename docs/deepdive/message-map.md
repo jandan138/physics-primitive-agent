@@ -128,8 +128,11 @@ Do not claim:
   Newton/Warp runtime, and runs no Newton code. The report-only configured-runtime smoke gate now
   consumes that entry-decision row, records
   `skip_real_runtime_smoke_missing_configured_runtime_entry`, attempts no runtime smoke, imports no
-  Newton/Warp runtime, and runs no Newton code. The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
+  Newton/Warp runtime, and runs no Newton code. The report-only configured-runtime execution gate
+  now consumes that skipped-smoke row, records
+  `skip_real_runtime_execution_configured_runtime_smoke_not_allowed`, attempts no runtime execution,
+  imports no Newton/Warp runtime, and runs no Newton code. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_lane_review_contract`.
 
 ## First 4-Week Proof Point
 

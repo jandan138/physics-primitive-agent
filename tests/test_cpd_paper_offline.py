@@ -157,8 +157,11 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SM
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract"
 )
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_lane_review_contract"
+)
 EXPECTED_CURRENT_REPORT_NEXT_GATE = (
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT
 )
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
@@ -175,7 +178,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -293,6 +296,9 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_R
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT,
+]
+EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -2403,6 +2409,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2658,6 +2665,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -8385,6 +8393,156 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_ROW_REQUIRED_KEYS =
         "configured_runtime_smoke_allowed",
         "configured_runtime_smoke_attempted",
         "configured_runtime_execution_gate_required",
+    }
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_FALSE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_FALSE_FLAGS,
+    "configured_runtime_execution_allowed",
+    "configured_runtime_execution_attempted",
+    "configured_runtime_execution_passed",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_TRUE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_TRUE_FLAGS,
+    "newton_shape_runtime_engine_builder_configured_runtime_execution_recorded",
+    "configured_runtime_smoke_contract_respected",
+    "configured_runtime_execution_ready",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_PAYLOAD_REQUIRED_KEYS = {
+    "gate_id",
+    "gate_status",
+    "closed_gate",
+    "input_gate_id",
+    "next_required_gate",
+    "decision",
+    "decision_reason",
+    "artifact_kind",
+    "schema_version",
+    "source_scope",
+    "implementation_boundary",
+    "configured_runtime_execution_action",
+    "configured_runtime_execution_decision",
+    "configured_runtime_execution_status",
+    "configured_runtime_execution_reason",
+    "configured_runtime_execution_contract",
+    "input_contract_summary",
+    "newton_shape_runtime_engine_builder_configured_runtime_execution_row_count",
+    "source_newton_shape_runtime_engine_builder_configured_runtime_smoke_row_count",
+    "configured_runtime_source_resolution_recorded_count",
+    "configured_runtime_source_resolution_passed_count",
+    "configured_runtime_source_resolution_failed_count",
+    "configured_runtime_device_resolution_recorded_count",
+    "configured_runtime_device_resolution_passed_count",
+    "configured_runtime_device_resolution_failed_count",
+    "configured_runtime_entry_decision_recorded_count",
+    "configured_runtime_entry_decision_passed_count",
+    "configured_runtime_entry_decision_failed_count",
+    "configured_runtime_smoke_recorded_count",
+    "configured_runtime_smoke_passed_count",
+    "configured_runtime_smoke_failed_count",
+    "configured_runtime_execution_recorded_count",
+    "configured_runtime_execution_passed_count",
+    "configured_runtime_execution_failed_count",
+    "runtime_config_validated_count",
+    "runtime_source_config_resolved_count",
+    "runtime_device_config_resolved_count",
+    "runtime_entry_allowed_count",
+    "runtime_entry_attempted_count",
+    "runtime_entry_passed_count",
+    "configured_runtime_smoke_allowed_count",
+    "configured_runtime_smoke_attempted_count",
+    "configured_runtime_execution_allowed_count",
+    "configured_runtime_execution_attempted_count",
+    "newton_source_dir_resolution_attempted_count",
+    "newton_source_dir_configured_count",
+    "newton_source_dir_resolved_count",
+    "newton_diagnostic_device_resolution_attempted_count",
+    "newton_diagnostic_device_configured_count",
+    "newton_diagnostic_device_resolved_count",
+    "required_config_keys",
+    "required_runtime_inputs",
+    "required_config_key_count",
+    "required_runtime_input_count",
+    "runtime_entry_decision_policy",
+    "runtime_smoke_policy",
+    "runtime_execution_policy",
+    "configured_runtime_preflight_ready",
+    "configured_runtime_validation_ready",
+    "configured_runtime_source_resolution_ready",
+    "configured_runtime_device_resolution_ready",
+    "configured_runtime_entry_decision_ready",
+    "configured_runtime_smoke_ready",
+    "configured_runtime_execution_ready",
+    "runtime_config_validated",
+    "runtime_source_config_resolved",
+    "runtime_device_config_resolved",
+    "runtime_entry_allowed",
+    "runtime_entry_attempted",
+    "runtime_entry_passed",
+    "configured_runtime_smoke_allowed",
+    "configured_runtime_smoke_attempted",
+    "configured_runtime_smoke_passed",
+    "configured_runtime_execution_allowed",
+    "configured_runtime_execution_attempted",
+    "configured_runtime_execution_passed",
+    "newton_source_dir_config_key",
+    "newton_source_dir_configured",
+    "newton_source_dir",
+    "newton_source_dir_status",
+    "newton_source_dir_resolution_attempted",
+    "newton_source_dir_resolution_status",
+    "newton_source_dir_resolution_reason",
+    "newton_source_dir_filesystem_probe_allowed",
+    "newton_source_dir_exists",
+    "newton_diagnostic_device_config_key",
+    "newton_diagnostic_device_configured",
+    "newton_diagnostic_device",
+    "newton_diagnostic_device_status",
+    "newton_diagnostic_device_allowed_values",
+    "newton_diagnostic_device_resolution_attempted",
+    "newton_diagnostic_device_resolution_status",
+    "newton_diagnostic_device_resolution_reason",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_model_finalized_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "newton_runtime_execution_count",
+    "newton_shape_runtime_engine_builder_configured_runtime_execution_rows",
+    "coverage_summary",
+    "remaining_gaps",
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_TRUE_FLAGS,
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_ROW_REQUIRED_KEYS = (
+    NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_ROW_REQUIRED_KEYS
+    - {
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_row_id",
+        "configured_runtime_execution_gate_required",
+    }
+    | {
+        "newton_shape_runtime_engine_builder_configured_runtime_execution_row_id",
+        "source_newton_shape_runtime_engine_builder_configured_runtime_smoke_row_id",
+        "configured_runtime_execution_decision",
+        "configured_runtime_execution_reason",
+        "configured_runtime_execution_status",
+        "configured_runtime_execution_recorded",
+        "configured_runtime_execution_passed",
+        "configured_runtime_execution_failed",
+        "configured_runtime_execution_ready",
+        "configured_runtime_execution_allowed",
+        "configured_runtime_execution_attempted",
+        "configured_runtime_lane_review_gate_required",
     }
 )
 
@@ -21532,16 +21690,16 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     assert report["failure_labels"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_execution_contract_missing"
+            "configured_runtime_lane_review_contract_missing"
         ),
     ]
     assert (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
-    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
-    ]
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_REMAINING_GAPS
+    )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DEVICE_RESOLUTION_CONTRACT
     )
@@ -21845,16 +22003,16 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     assert report["failure_labels"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_execution_contract_missing"
+            "configured_runtime_lane_review_contract_missing"
         ),
     ]
     assert (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
-    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
-    ]
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_REMAINING_GAPS
+    )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_ENTRY_DECISION_CONTRACT
     )
@@ -22227,16 +22385,16 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     assert report["failure_labels"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_execution_contract_missing"
+            "configured_runtime_lane_review_contract_missing"
         ),
     ]
     assert (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
-    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
-    ]
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_REMAINING_GAPS
+    )
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
     )
@@ -22765,6 +22923,584 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
     with pytest.raises(ValueError, match=message):
         cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract_payload(
             configured_runtime_entry_decision
+        )
+
+
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract"
+    ]
+
+    assert (
+        report["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT
+    )
+    assert report["failure_labels"] == [
+        (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT
+            + "_missing"
+        )
+    ]
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_REMAINING_GAPS
+    )
+    assert (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert (
+        report[
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+        ]["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
+    )
+    assert (
+        payload["gate_id"]
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
+    )
+    assert (
+        payload["input_gate_id"]
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
+    )
+    assert (
+        payload["next_required_gate"]
+        == EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT
+    )
+    assert payload["configured_runtime_execution_decision"] == (
+        "skip_real_runtime_execution_configured_runtime_smoke_not_allowed"
+    )
+    assert payload["configured_runtime_execution_recorded_count"] == 1
+    assert payload["configured_runtime_execution_passed_count"] == 0
+    assert payload["configured_runtime_execution_failed_count"] == 1
+    assert payload["configured_runtime_execution_allowed_count"] == 0
+    assert payload["configured_runtime_execution_attempted_count"] == 0
+    assert payload["configured_runtime_smoke_allowed_count"] == 0
+    assert payload["configured_runtime_smoke_attempted_count"] == 0
+    assert payload["runtime_entry_allowed_count"] == 0
+    assert payload["runtime_entry_attempted_count"] == 0
+    assert payload["runtime_entry_passed_count"] == 0
+    assert payload["configured_runtime_execution_allowed"] is False
+    assert payload["configured_runtime_execution_attempted"] is False
+    assert payload["configured_runtime_execution_passed"] is False
+    assert payload["configured_runtime_smoke_allowed"] is False
+    assert payload["configured_runtime_smoke_attempted"] is False
+    assert payload["configured_runtime_smoke_passed"] is False
+    assert payload["runtime_entry_allowed"] is False
+    assert payload["runtime_entry_attempted"] is False
+    assert payload["runtime_entry_passed"] is False
+    assert payload["runtime_source_config_resolved"] is False
+    assert payload["runtime_device_config_resolved"] is False
+    assert payload["newton_source_dir"] is None
+    assert payload["newton_diagnostic_device"] is None
+    assert payload["real_newton_import_count"] == 0
+    assert payload["real_warp_import_count"] == 0
+    assert payload["newton_model_builder_instantiated_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_collision_pipeline_created_count"] == 0
+    assert payload["newton_collision_pipeline_collide_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_REMAINING_GAPS
+    )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_payload_schema_is_exact():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract"
+    ]
+    configured_runtime_smoke = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+    ]
+    source_row = configured_runtime_smoke[
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_rows"
+    ][0]
+
+    assert set(payload) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_PAYLOAD_REQUIRED_KEYS
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["gate_status"] == (
+        "implemented_single_fixture_newton_engine_builder_configured_"
+        "runtime_execution_report_only_partial"
+    )
+    assert payload["decision"] == "remain_partial"
+    assert payload["decision_reason"] == (
+        "newton_engine_builder_configured_runtime_execution_recorded_"
+        "lane_review_contract_missing"
+    )
+    assert payload["artifact_kind"] == (
+        "newton_engine_builder_configured_runtime_execution_record_not_runtime_execution"
+    )
+    assert payload["implementation_boundary"] == (
+        "single_synthetic_box_engine_builder_configured_runtime_execution_contract_"
+        "no_config_file_read_no_env_read_no_filesystem_probe_no_import_"
+        "no_model_builder_no_shape_call_no_finalize_no_runtime"
+    )
+    assert payload["configured_runtime_execution_contract"] == {
+        "input_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
+        ),
+        "closed_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
+        ),
+        "next_configured_runtime_lane_review_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT
+        ),
+        "execution_mode": "report_only_skip_smoke_not_allowed",
+        "runtime_execution_allowed_when": (
+            "configured_runtime_smoke_allowed_and_attempted_and_passed"
+        ),
+        "config_file_read_allowed": False,
+        "environment_variable_read_allowed": False,
+        "filesystem_probe_allowed": False,
+        "real_runtime_import_allowed": False,
+        "newton_runtime_allowed": False,
+    }
+    assert payload["input_contract_summary"] == {
+        "input_gate_id": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SMOKE_CONTRACT
+        ),
+        "input_next_required_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_CONTRACT
+        ),
+        "source_newton_shape_runtime_engine_builder_configured_runtime_smoke_row_id": source_row[
+            "newton_shape_runtime_engine_builder_configured_runtime_smoke_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_row_id"
+        ],
+        "source_package_id": source_row["source_package_id"],
+        "source_fixture_id": "paper_single_box",
+        "source_primitive_id": source_row["primitive_id"],
+        "source_target_newton_shape_kind": "box",
+        "source_configured_runtime_smoke_status": (
+            "runtime_smoke_skipped_missing_configured_runtime_entry"
+        ),
+        "source_configured_runtime_smoke_allowed": False,
+        "source_configured_runtime_smoke_passed": False,
+    }
+    assert payload["coverage_summary"] == {
+        "newton_shape_runtime_engine_builder_configured_runtime_execution_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_configured_runtime_smoke_row_count": 1,
+        "configured_runtime_source_resolution_recorded_count": 1,
+        "configured_runtime_source_resolution_passed_count": 0,
+        "configured_runtime_source_resolution_failed_count": 1,
+        "configured_runtime_device_resolution_recorded_count": 1,
+        "configured_runtime_device_resolution_passed_count": 0,
+        "configured_runtime_device_resolution_failed_count": 1,
+        "configured_runtime_entry_decision_recorded_count": 1,
+        "configured_runtime_entry_decision_passed_count": 0,
+        "configured_runtime_entry_decision_failed_count": 1,
+        "configured_runtime_smoke_recorded_count": 1,
+        "configured_runtime_smoke_passed_count": 0,
+        "configured_runtime_smoke_failed_count": 1,
+        "configured_runtime_execution_recorded_count": 1,
+        "configured_runtime_execution_passed_count": 0,
+        "configured_runtime_execution_failed_count": 1,
+        "runtime_config_validated_count": 0,
+        "runtime_source_config_resolved_count": 0,
+        "runtime_device_config_resolved_count": 0,
+        "runtime_entry_allowed_count": 0,
+        "runtime_entry_attempted_count": 0,
+        "runtime_entry_passed_count": 0,
+        "configured_runtime_smoke_allowed_count": 0,
+        "configured_runtime_smoke_attempted_count": 0,
+        "configured_runtime_execution_allowed_count": 0,
+        "configured_runtime_execution_attempted_count": 0,
+        "newton_source_dir_resolution_attempted_count": 0,
+        "newton_source_dir_configured_count": 0,
+        "newton_source_dir_resolved_count": 0,
+        "newton_diagnostic_device_resolution_attempted_count": 0,
+        "newton_diagnostic_device_configured_count": 0,
+        "newton_diagnostic_device_resolved_count": 0,
+        "required_config_key_count": 2,
+        "required_runtime_input_count": 6,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "configured_runtime_execution_decision_distribution": {
+            "skip_real_runtime_execution_configured_runtime_smoke_not_allowed": 1
+        },
+        "configured_runtime_execution_status_distribution": {
+            "runtime_execution_skipped_configured_runtime_smoke_not_allowed": 1
+        },
+    }
+    row = payload[
+        "newton_shape_runtime_engine_builder_configured_runtime_execution_rows"
+    ][0]
+    assert set(row) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_ROW_REQUIRED_KEYS
+    )
+    assert row["source_newton_shape_runtime_engine_builder_configured_runtime_smoke_row_id"] == (
+        source_row[
+            "newton_shape_runtime_engine_builder_configured_runtime_smoke_row_id"
+        ]
+    )
+    assert row["configured_runtime_execution_decision"] == (
+        "skip_real_runtime_execution_configured_runtime_smoke_not_allowed"
+    )
+    assert row["configured_runtime_execution_reason"] == (
+        "configured_runtime_smoke_not_allowed"
+    )
+    assert row["configured_runtime_execution_status"] == (
+        "runtime_execution_skipped_configured_runtime_smoke_not_allowed"
+    )
+    assert row["configured_runtime_execution_recorded"] is True
+    assert row["configured_runtime_execution_passed"] is False
+    assert row["configured_runtime_execution_failed"] is True
+    assert row["configured_runtime_execution_ready"] is True
+    assert row["configured_runtime_execution_allowed"] is False
+    assert row["configured_runtime_execution_attempted"] is False
+    assert row["configured_runtime_smoke_allowed"] is False
+    assert row["configured_runtime_smoke_attempted"] is False
+    assert row["configured_runtime_smoke_passed"] is False
+    assert row["runtime_entry_allowed"] is False
+    assert row["runtime_entry_attempted"] is False
+    assert row["runtime_entry_passed"] is False
+    assert row["real_newton_import_count"] == 0
+    assert row["real_warp_import_count"] == 0
+    assert row["newton_model_builder_instantiated_count"] == 0
+    assert row["newton_engine_shape_object_count"] == 0
+    assert row["newton_builder_shape_call_count"] == 0
+    assert row["newton_model_finalized_count"] == 0
+    assert row["newton_collision_pipeline_created_count"] == 0
+    assert row["newton_collision_pipeline_collide_count"] == 0
+    assert row["newton_runtime_execution_count"] == 0
+    assert row["configured_runtime_lane_review_gate_required"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_CONTRACT
+    )
+    assert row["source_package_copy_forbidden"] is True
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_REMAINING_GAPS
+    )
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_FALSE_FLAGS:
+        assert payload[flag] is False
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_EXECUTION_TRUE_FLAGS:
+        assert payload[flag] is True
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_input_schema_drift():
+    report = build_cpd_paper_offline_report()
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke[
+        "unexpected_configured_runtime_execution_input_key"
+    ] = True
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_execution_input_unexpected_keys",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke.pop("coverage_summary")
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_execution_input_missing_keys:coverage_summary",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "message"),
+    [
+        (
+            "gate_id",
+            "stale_gate",
+            "configured_runtime_execution_input_gate_id_mismatch",
+        ),
+        (
+            "next_required_gate",
+            "stale_gate",
+            "configured_runtime_execution_input_next_gate_mismatch",
+        ),
+        (
+            "remaining_gaps",
+            ["stale_gate"],
+            "configured_runtime_execution_input_remaining_gaps_mismatch",
+        ),
+        (
+            "configured_runtime_smoke_status",
+            "runtime_smoke_allowed",
+            "configured_runtime_execution_input_metadata_mismatch:"
+            "configured_runtime_smoke_status",
+        ),
+        (
+            "configured_runtime_smoke_allowed_count",
+            1,
+            "configured_runtime_execution_input_metadata_mismatch:"
+            "configured_runtime_smoke_allowed_count",
+        ),
+        (
+            "newton_runtime_execution_count",
+            1,
+            "configured_runtime_execution_input_count_mismatch:"
+            "newton_runtime_execution_count",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_input_value_drift(
+    field_name,
+    bad_value,
+    message,
+):
+    report = build_cpd_paper_offline_report()
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke[field_name] = bad_value
+
+    with pytest.raises(ValueError, match=message):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "message"),
+    [
+        (
+            "configured_runtime_smoke_allowed",
+            True,
+            "configured_runtime_execution_input_flag_true:"
+            "configured_runtime_smoke_allowed",
+        ),
+        (
+            "configured_runtime_smoke_ready",
+            False,
+            "configured_runtime_execution_input_flag_false:"
+            "configured_runtime_smoke_ready",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_input_flag_drift(
+    field_name,
+    bad_value,
+    message,
+):
+    report = build_cpd_paper_offline_report()
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke[field_name] = bad_value
+
+    with pytest.raises(ValueError, match=message):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_source_row_schema_drift():
+    report = build_cpd_paper_offline_report()
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke[
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_rows"
+    ][0]["unexpected_configured_runtime_execution_source_row_key"] = True
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_execution_source_row_unexpected_keys",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke[
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_rows"
+    ][0].pop("configured_runtime_smoke_reason")
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "configured_runtime_execution_source_row_missing_keys:"
+            "configured_runtime_smoke_reason"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+
+@pytest.mark.parametrize(
+    ("rows_value", "message"),
+    [
+        ([], "configured_runtime_execution_row_count_mismatch"),
+        ("not_rows", "configured_runtime_execution_row_count_mismatch"),
+        ([None], "configured_runtime_execution_row_count_mismatch"),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_row_count_drift(
+    rows_value,
+    message,
+):
+    report = build_cpd_paper_offline_report()
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke[
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_rows"
+    ] = rows_value
+
+    with pytest.raises(ValueError, match=message):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_duplicate_source_rows():
+    report = build_cpd_paper_offline_report()
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    row = configured_runtime_smoke[
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_rows"
+    ][0]
+    configured_runtime_smoke[
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_rows"
+    ] = [row, json.loads(json.dumps(row))]
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_execution_row_count_mismatch",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
+        )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "bad_value", "message"),
+    [
+        (
+            "source_package_id",
+            "stale_package",
+            "configured_runtime_execution_source_row_mismatch:"
+            "source_package_id",
+        ),
+        (
+            "configured_runtime_smoke_reason",
+            "runtime_smoke_allowed",
+            "configured_runtime_execution_source_row_mismatch:"
+            "configured_runtime_smoke_reason",
+        ),
+        (
+            "configured_runtime_smoke_allowed",
+            True,
+            "configured_runtime_execution_source_row_mismatch:"
+            "configured_runtime_smoke_allowed",
+        ),
+        (
+            "configured_runtime_source_resolution_passed",
+            True,
+            "configured_runtime_execution_source_row_mismatch:"
+            "configured_runtime_source_resolution_passed",
+        ),
+        (
+            "configured_runtime_device_resolution_passed",
+            True,
+            "configured_runtime_execution_source_row_mismatch:"
+            "configured_runtime_device_resolution_passed",
+        ),
+        (
+            "runtime_source_config_resolved",
+            True,
+            "configured_runtime_execution_source_row_mismatch:"
+            "runtime_source_config_resolved",
+        ),
+        (
+            "runtime_device_config_resolved",
+            True,
+            "configured_runtime_execution_source_row_mismatch:"
+            "runtime_device_config_resolved",
+        ),
+        (
+            "newton_runtime_execution_count",
+            1,
+            "configured_runtime_execution_source_row_count_mismatch:"
+            "newton_runtime_execution_count",
+        ),
+    ],
+)
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_source_row_value_drift(
+    field_name,
+    bad_value,
+    message,
+):
+    report = build_cpd_paper_offline_report()
+    configured_runtime_smoke = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
+            ]
+        )
+    )
+    configured_runtime_smoke[
+        "newton_shape_runtime_engine_builder_configured_runtime_smoke_rows"
+    ][0][field_name] = bad_value
+
+    with pytest.raises(ValueError, match=message):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload(
+            configured_runtime_smoke
         )
 
 
@@ -25485,6 +26221,132 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design
         cpd_paper_offline._paper_newton_shape_runtime_engine_builder_configured_runtime_design_row,
         cpd_paper_offline._paper_newton_shape_runtime_engine_builder_configured_runtime_design_coverage_summary,
         cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract_payload,
+    )
+    source = "\n".join(inspect.getsource(helper) for helper in helpers)
+
+    forbidden_patterns = (
+        "importlib.import_module",
+        "module_from_spec",
+        "exec_module",
+        "__import__",
+        "getattr(",
+        "eval(",
+        "exec(",
+        "compile(",
+        "import newton",
+        "from newton",
+        "import warp",
+        "from warp",
+        "import pxr",
+        "from pxr",
+        "import yaml",
+        "from yaml",
+        "import tomllib",
+        "from tomllib",
+        "import configparser",
+        "from configparser",
+        "ConfigParser",
+        "os.environ",
+        "getenv",
+        "open(",
+        ".read_text(",
+        ".read_bytes(",
+        ".open(",
+        ".load(",
+        ".safe_load(",
+        "ModelBuilder(",
+        "CollisionPipeline(",
+        ".add_shape_box(",
+        ".finalize(",
+        ".collide(",
+        "run_newton_contact_smoke",
+        "run_newton_drop_settle",
+        "run_newton_sphere_rain",
+        "inspect_newton_environment",
+        "_import_newton_runtime",
+        "inspect_newton_warp_provenance",
+        "inspect_real_usd",
+        "load_first_mesh",
+        "inspect_usd_asset",
+        "timeit",
+        "perf_counter",
+        "process_time",
+        "benchmark_metric",
+        "measure_collision_quality",
+        "collision_quality",
+    )
+    for pattern in forbidden_patterns:
+        assert pattern not in source
+
+    tree = ast.parse(source)
+    forbidden_import_roots = {
+        "configparser",
+        "newton",
+        "tomllib",
+        "warp",
+        "yaml",
+        "pxr",
+    }
+    forbidden_call_attrs = {
+        "ModelBuilder",
+        "CollisionPipeline",
+        "add_shape_box",
+        "finalize",
+        "collide",
+        "ConfigParser",
+        "import_module",
+        "module_from_spec",
+        "exec_module",
+        "__import__",
+        "getattr",
+        "eval",
+        "exec",
+        "compile",
+        "getenv",
+        "open",
+        "load",
+        "safe_load",
+        "read_text",
+        "read_bytes",
+        "_import_newton_runtime",
+        "inspect_newton_environment",
+        "run_newton_contact_smoke",
+        "run_newton_drop_settle",
+        "run_newton_sphere_rain",
+        "inspect_newton_warp_provenance",
+        "inspect_real_usd",
+        "inspect_usd_asset",
+        "perf_counter",
+        "process_time",
+        "collision_quality",
+    }
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                assert alias.name.split(".")[0] not in forbidden_import_roots
+        if isinstance(node, ast.ImportFrom) and node.module is not None:
+            assert node.module.split(".")[0] not in forbidden_import_roots
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+            assert node.func.attr not in forbidden_call_attrs
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            assert node.func.id not in forbidden_call_attrs
+        if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name):
+            assert (node.value.id, node.attr) != ("os", "environ")
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_static_boundary_is_report_only():
+    helpers = (
+        cpd_paper_offline._paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_configured_runtime_execution_false_flags,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_configured_runtime_execution_true_flags,
+        cpd_paper_offline._paper_validate_runtime_engine_builder_configured_runtime_execution_input_keys,
+        cpd_paper_offline._paper_validate_runtime_engine_builder_configured_runtime_execution_source_row_keys,
+        cpd_paper_offline._paper_validate_runtime_engine_builder_configured_runtime_execution_input_true_flags,
+        cpd_paper_offline._paper_validate_runtime_engine_builder_configured_runtime_execution_input_nested_values,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_configured_runtime_execution_source_row,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_configured_runtime_execution_row,
+        cpd_paper_offline._paper_newton_shape_runtime_engine_builder_configured_runtime_execution_coverage_summary,
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_payload,
     )
     source = "\n".join(inspect.getsource(helper) for helper in helpers)
 
