@@ -326,14 +326,20 @@ The report now also includes
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`,
 a single-fixture report-only source-resolution record. It consumes the validation row, records
 that `newton.source_dir` is not configured, attempts no filesystem probe, resolves no runtime
-source/device, imports no Newton/Warp runtime, runs no Newton code, and advances the current next
-gate to
+source/device, imports no Newton/Warp runtime, runs no Newton code, and at that stage advanced the
+next gate to
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`.
+The report now also includes
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`,
+a single-fixture report-only device-resolution record. It consumes the source-resolution row,
+records that `newton_diagnostic.device` is not configured, creates no runtime device object,
+imports no Newton/Warp runtime, runs no Newton code, and advances the current next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
 The package dict,
 preflight row, static runtime-admissibility row, shape-mapping preflight row, static shape
 descriptor row, runtime-boundary preflight row, runtime-construction mapping record, builder
 preflight plan, recording-builder call artifact, engine-builder boundary preflight row, and
-environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution rows are only serialized offline candidates for one box
+environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution/configured-runtime-device-resolution rows are only serialized offline candidates for one box
 fixture: they are not general package readiness, not Newton readiness, not Newton support, not
 Newton execution, not real-USD
 evidence, not benchmark evidence, not
@@ -344,7 +350,7 @@ primitive-fit-engine, search-engine, postprocess-policy, package-boundary-readin
 changed-decomposition-contract, adapter-contract, unsupported-primitive-policy, mapped-subset
 planning/candidate-matrix/preflight/PrimitiveSpec/runtime/CollisionPackage/admissibility,
 Newton shape-mapping, Newton shape runtime, Newton engine-builder boundary-preflight, and
-Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution slices do not
+Newton engine-builder environment-probe/API-surface/entry/smoke/runtime-execution/runtime-lane-review/configured-runtime-design/configured-runtime-preflight/configured-runtime-validation/configured-runtime-source-resolution/configured-runtime-device-resolution slices do not
 support `paper_faithful_offline`, full CPD reproduction, Newton runtime execution, real-USD
 evidence, collision-quality evidence, benchmark evidence, deployment readiness, or safety
 certification. The consolidated entry gate is a deliberate anti-overdesign boundary: the earlier
@@ -357,8 +363,9 @@ claim-boundary review. The configured-runtime design gate is now closed as a rep
 input design record. The configured-runtime preflight gate is now closed as a report-only
 preflight record. The configured-runtime validation gate is now also closed as a report-only
 missing-config validation record. The configured-runtime source-resolution gate is now also closed
-as a report-only missing-source record; the next gate is a future configured-runtime
-device-resolution contract.
+as a report-only missing-source record. The configured-runtime device-resolution gate is now also
+closed as a report-only missing-device record; the next gate is a future configured-runtime
+entry-decision contract.
 See
 `docs/reference/cpd-like-face-merge-explainer.md` for the
 plain-language boundary between the current baseline and a full CPD paper reproduction. See

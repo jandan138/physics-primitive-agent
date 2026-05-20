@@ -306,8 +306,9 @@ Before `paper_faithful_offline` wording, record:
   builder-preflight, builder-construction, engine-builder boundary-preflight, and
   engine-builder environment-probe, API-surface, entry, smoke, runtime-execution,
   runtime-lane review, configured-runtime design, configured-runtime preflight,
-  configured-runtime validation, and configured-runtime source-resolution contracts:
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract_missing`.
+  configured-runtime validation, configured-runtime source-resolution, and configured-runtime
+  device-resolution contracts:
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -605,7 +606,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract
+-> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -752,7 +753,7 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`
 after the later single-fixture collision-package generation contract constructs one synthetic,
 report-scoped `CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract
 records one later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row,
@@ -974,8 +975,12 @@ runtime counters false or zero, and at that stage advanced the next gate to
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`.
 The configured-runtime source-resolution contract now closes only a report-only missing-source
 resolution record, performs no filesystem probe, keeps runtime source/device resolution and all
-real runtime counters false or zero, and advances the current next gate to
+real runtime counters false or zero, and at that stage advanced the next gate to
 `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`.
+The configured-runtime device-resolution contract now closes only a report-only missing-device
+resolution record, creates no runtime device object, keeps runtime source/device resolution and all
+real runtime counters false or zero, and advances the current next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
 
 The entry contract is intentionally broader than the previously planned pair of small import
 gates. It reviews import-boundary preconditions and the first Newton entry decision together,

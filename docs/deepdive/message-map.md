@@ -120,8 +120,11 @@ Do not claim:
   Newton/Warp runtime, and runs no Newton code. The report-only configured-runtime
   source-resolution gate now consumes that validation row, records that `newton.source_dir` is not
   configured, attempts no filesystem probe, resolves no runtime source/device, imports no
-  Newton/Warp runtime, and runs no Newton code. The next runtime-lane gate is
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`.
+  Newton/Warp runtime, and runs no Newton code. The report-only configured-runtime device-resolution
+  gate now consumes that source-resolution row, records that `newton_diagnostic.device` is not
+  configured, creates no runtime device object, imports no Newton/Warp runtime, and runs no Newton
+  code. The next runtime-lane gate is
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
 
 ## First 4-Week Proof Point
 
