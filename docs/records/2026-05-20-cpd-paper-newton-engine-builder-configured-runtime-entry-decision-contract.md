@@ -21,8 +21,8 @@ report-level next required gate to
 - Keeps Newton/Warp import, `ModelBuilder` construction, builder shape calls, model finalization,
   collision pipeline calls, Newton execution, runtime compatibility, real-USD evaluation,
   benchmarks, and collision-quality validation at false or zero.
-- Updates DeepDive-facing docs, claim-boundary docs, and story/status references so the current
-  next runtime-lane gate is configured-runtime smoke, not entry decision.
+- Updates DeepDive-facing docs, claim-boundary docs, and story/status references so the stage-local
+  next runtime-lane gate after entry decision is configured-runtime smoke, not entry decision.
 
 ## Not Implemented
 
@@ -84,8 +84,9 @@ Review fixes before merge:
   `configured_runtime_device_resolution_contract` values. The validator now rejects those nested
   mismatches, and the entry-decision drift test mutates each nested object.
 - Final documentation review found stale current-state wording in `docs/index.md` that still pointed
-  the current next gate at configured-runtime preflight. The index now distinguishes historical
-  stage-local design/preflight wording from the current report next gate, configured-runtime smoke.
+  the then-current next gate at configured-runtime preflight. The index then distinguished
+  historical stage-local design/preflight wording from the report next gate at that time,
+  configured-runtime smoke.
 
 Post-review verification:
 
@@ -116,7 +117,7 @@ site claim validation passed
 git diff --check
 passed
 rg -n 'current next gate|next step is a future configured-runtime|configured_runtime_preflight_contract|configured-runtime preflight' docs/index.md docs/records/2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-entry-decision-contract.md docs/records/2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-device-resolution-contract.md
-only current configured-runtime smoke references and historical stage-local preflight references remain
+only then-current configured-runtime smoke references and historical stage-local preflight references remain
 python -m pytest tests/test_cpd_paper_offline.py -k "configured_runtime_entry_decision" -q
 4 passed, 1901 deselected in 7.09s
 python -m pytest tests/test_cli.py::test_cli_run_cpd_paper_offline_report_emits_json -q

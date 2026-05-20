@@ -386,7 +386,15 @@ The repository has not reached that full result. It has reached the workbench st
     decision, keeps runtime entry allowed/attempted/passed false, keeps all real runtime counters at
     zero, and points next to
     `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
-69. Records and configs can preserve exactly what was run.
+69. `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract` is
+    now implemented as a single-fixture report-only skipped-smoke decision, not a real Newton import,
+    not a `newton.ModelBuilder` instantiation, not a real builder call, not model finalization, not a
+    collision pipeline, and not Newton execution. It consumes the configured-runtime entry-decision
+    row for the same synthetic `paper_single_box` lineage, records
+    `skip_real_runtime_smoke_missing_configured_runtime_entry`, keeps runtime-smoke attempts and all
+    real runtime counters at zero, keeps the report partial, and points next to
+    `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
+70. Records and configs can preserve exactly what was run.
 
 The capped-cylinder proxy change is small but important in this story, but it is not the runtime
 roadmap. It responds to the expected-failure workbench's primitive-vocabulary gap by adding one
@@ -767,9 +775,10 @@ source-resolution contract now also exists as a report-only missing-source recor
 source/device resolution still false. The engine-builder configured-runtime device-resolution
 contract now also exists as a report-only missing-device record with runtime source/device
 resolution still false. The engine-builder configured-runtime entry-decision contract now also
-exists as a report-only no-runtime-entry decision with runtime entry still false. The next code
-slice is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
+exists as a report-only no-runtime-entry decision with runtime entry still false. The engine-builder
+configured-runtime smoke contract now also exists as a report-only skipped-smoke decision with
+runtime smoke still false. The next code slice is
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
 
 ## What The Newton-Native Policy Changes
 
@@ -1016,7 +1025,8 @@ local USD mirrors or synthetic fixtures
 -> mapped-subset Newton engine-builder configured-runtime source-resolution contract, still partial and still without runtime source resolution/runtime device resolution/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
 -> mapped-subset Newton engine-builder configured-runtime device-resolution contract, still partial and still without runtime source resolution/runtime device resolution/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
 -> mapped-subset Newton engine-builder configured-runtime entry-decision contract, still partial and still without runtime entry/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
--> next: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract
+-> mapped-subset Newton engine-builder configured-runtime smoke contract, still partial and still without runtime smoke/real Newton import/ModelBuilder/engine shape object/builder shape call/finalize/collision pipeline/Newton execution/runtime compatibility/real-USD
+-> next: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract
 -> bed/Franka rerun under full mapping, contact, task, and dated-record gates only after a real
    package change is explicit
 ```
@@ -1133,25 +1143,25 @@ The single-fixture bounded Newton/Warp environment-probe contract now also exist
 single-fixture bounded source-AST API-surface contract now also exists. The single-fixture
 report-only engine-builder entry contract, report-only skipped-smoke contract, report-only
 skipped-runtime-execution contract, report-only runtime-lane review contract, and report-only
-configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision
+configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision/smoke
 contracts now also exist. The immediate next code slice should keep the same boundary and implement
 the future
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`
 without broadening into real Newton runtime import, real USD, benchmarks, or collision-quality
 claims:
 
 1. Implement
-   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`
-   only after the report-only configured-runtime entry-decision row exists. That future smoke gate
-   must still start from the single synthetic `paper_single_box` lineage and keep real runtime
-   execution blocked unless configured source/device resolution has passed.
+   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`
+   only after the report-only configured-runtime smoke row exists. That future execution gate must
+   still start from the single synthetic `paper_single_box` lineage and keep real runtime execution
+   blocked unless configured source/device resolution and runtime entry/smoke have passed.
 2. Keep the constructed runtime `PrimitiveSpec` object, preflight candidate, synthetic
    `CollisionPackage.to_dict()` artifact, runtime-admissibility preflight row, static
    runtime-admissibility row, shape-mapping preflight row, descriptor row, runtime-boundary
    preflight row, repo-local mapping record, builder-call-plan record, and recording-builder call
    artifact, engine-builder boundary-preflight row, environment-probe row, API-surface row, entry
    decision row, skipped-smoke row, skipped-runtime-execution row, runtime-lane review row, and
-   configured-runtime design/preflight/validation/source-resolution/device-resolution rows for the
+   configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision/smoke rows for the
    deterministic `paper_single_box` OBB/box source report-scoped until a later reviewed Newton
    execution gate exists.
 3. Keep the lane `partial` and keep `paper_faithful_offline_supported: false` until later dated

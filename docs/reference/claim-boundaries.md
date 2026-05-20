@@ -186,8 +186,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`.
   The configured-runtime entry-decision contract then records the default no-runtime-entry decision
   for that same lineage, keeps runtime entry allowed/attempted/passed false, keeps all real runtime
-  counters at zero, and advances the current next gate to
+  counters at zero, and at that stage advanced the next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
+  The configured-runtime smoke contract then records the default skipped real-runtime-smoke decision
+  for that same lineage, keeps runtime smoke allowed/attempted/passed false, keeps all real runtime
+  counters at zero, and advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
   The entry gate is a consolidation boundary, not an extra claim. It combines the remaining
   import-boundary preconditions and the first Newton entry decision into one audit point instead
   of adding separate import-preflight and import-contract gates.
@@ -250,7 +254,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -268,7 +272,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   offline/static Newton engine-builder boundary-preflight, bounded Newton/Warp environment-probe,
   bounded source-AST API-surface, report-only engine-builder entry, report-only skipped-smoke,
   report-only skipped-runtime-execution, report-only runtime-lane review, report-only
-  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision
+  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision/smoke
   slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
@@ -1091,8 +1095,10 @@ Use these only after broader benchmark records exist.
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract`;
   the later configured-runtime device-resolution slice marked the stage-local next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract`;
-  the later configured-runtime entry-decision slice marks the current next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
+  the later configured-runtime entry-decision slice marked the stage-local next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`;
+  the later configured-runtime smoke slice marks the current next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
 - Do not describe
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` as Newton
   readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
@@ -1182,8 +1188,10 @@ Use these only after broader benchmark records exist.
   probe. The follow-on configured-runtime device-resolution record keeps runtime source/device
   resolution false and creates no runtime device object. The follow-on configured-runtime
   entry-decision record keeps runtime entry allowed/attempted/passed false and attempts no runtime
-  entry. It marks the current next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
+  entry. The follow-on configured-runtime smoke record keeps runtime smoke
+  allowed/attempted/passed false and attempts no runtime smoke. It marks the current next
+  runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
 
 ## Wording Rules
 

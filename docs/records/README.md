@@ -473,7 +473,7 @@ Proposed | In progress | Complete | Failed | Superseded
   `cpd_paper_offline_report`. It consumes the runtime-lane review row, records
   `configured_runtime_design_decision: define_configured_runtime_inputs_keep_real_runtime_blocked`,
   keeps runtime config validation false, keeps runtime/import/builder/finalization/collision
-  counters at zero, and advances the current next gate to
+  counters at zero, and advanced the stage-local next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
 - [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Preflight Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-preflight-contract.md):
   single-fixture report-only configured-runtime preflight inside `cpd_paper_offline_report`. It
@@ -494,7 +494,11 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Entry-Decision Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-entry-decision-contract.md):
   single-fixture report-only no-runtime-entry decision inside `cpd_paper_offline_report`. It
   consumes the configured-runtime device-resolution row, keeps runtime entry false, keeps all real
-  runtime counters at zero, and advances the current next gate to configured-runtime smoke.
+  runtime counters at zero, and at that stage advanced the next gate to configured-runtime smoke.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Smoke Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-smoke-contract.md):
+  single-fixture report-only skipped-smoke decision inside `cpd_paper_offline_report`. It consumes
+  the configured-runtime entry-decision row, keeps runtime smoke false, keeps all real runtime
+  counters at zero, and advances the current next gate to configured-runtime execution.
 - [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
   anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
   boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate

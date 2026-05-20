@@ -147,7 +147,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   `paper_faithful_offline_generalization_plan`, keeps the report partial, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -165,7 +165,7 @@ This file separates current evidence from future claims. See [message-map.md](me
   offline/static Newton engine-builder boundary-preflight, bounded Newton/Warp environment-probe,
   bounded source-AST API-surface, report-only engine-builder entry, report-only skipped-smoke,
   report-only skipped-runtime-execution, report-only runtime-lane review, and report-only
-  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision
+  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision/smoke
   contracts.
   The
   runtime-construction slice records exactly one repo-local `NewtonShapeMapping.to_dict()` report
@@ -571,9 +571,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   the next required runtime-lane gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract`; the later
   environment-probe, API-surface, entry, smoke, runtime-execution, runtime-lane review, and
-  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision slices below now advance the
+  configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision/smoke slices below now advance the
   current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
   This is
   not Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
@@ -588,9 +588,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   no real builder shape calls, finalizes no model, creates no collision pipeline, and runs no
   Newton code. At that stage it advanced the stage-local next required runtime-lane gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract`; the later
-  API-surface, entry, smoke, runtime-execution, runtime-lane review, and configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision
+  API-surface, entry, smoke, runtime-execution, runtime-lane review, and configured-runtime design/preflight/validation/source-resolution/device-resolution/entry-decision/smoke
   slices below advance the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
   This is not
   Newton readiness, not Newton support, not Newton execution, not real-USD evidence, not
   benchmark evidence, not collision-quality validation, not paper primitive vocabulary coverage,
@@ -629,9 +629,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   `newton_diagnostic.device` result, creates no runtime device object, resolves no runtime source or
   device, imports no Newton/Warp runtime, and runs no Newton code. The bounded
   configured-runtime entry-decision slice then records the default no-runtime-entry decision,
-  attempts no runtime entry, imports no Newton/Warp runtime, and runs no Newton code; it advances
-  the current next gate to
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract`.
+  attempts no runtime entry, imports no Newton/Warp runtime, and runs no Newton code. The bounded
+  configured-runtime smoke slice then records
+  `skip_real_runtime_smoke_missing_configured_runtime_entry`, attempts no runtime smoke, imports no
+  Newton/Warp runtime, and runs no Newton code; it advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract`.
   This is not Newton readiness, not Newton support, not Newton execution, not runtime
   compatibility, not real-USD evidence, not benchmark evidence, not collision-quality validation,
   not paper primitive vocabulary coverage, not approximation support, not `paper_faithful_offline`,
