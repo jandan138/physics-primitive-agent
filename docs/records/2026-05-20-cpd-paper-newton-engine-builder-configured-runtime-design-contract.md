@@ -6,9 +6,8 @@
 
 ## Status
 
-Implementation, focused schema hardening, documentation sync, Task 3 documentation validation, and
-Task 3 multi-agent documentation review are complete. Final full-regression verification, commit,
-merge, push, and worktree cleanup remain pending.
+Implementation, focused schema hardening, documentation sync, final multi-agent review, and
+full-regression verification are complete. Merge, push, and worktree cleanup remain pending.
 
 ## Summary
 
@@ -178,7 +177,17 @@ Observed results after replacing stale current-gate wording, narrowing Newton pr
 and extending the report-scoped preservation list: docs validation passed; site claim validation
 passed; whitespace check passed.
 
-Final full-regression verification remains pending.
+Final verification after final multi-agent review:
+
+```bash
+python -m pytest -q
+python scripts/validate_docs.py
+python scripts/validate_site_claims.py
+git diff --check
+```
+
+Observed results: `2294 passed, 2 skipped in 3099.97s (0:51:39)`; docs validation passed; site
+claim validation passed; whitespace check passed.
 
 ## Multi-Agent Review
 
@@ -209,8 +218,17 @@ Task 3 documentation review:
 - the same reviewer found that the preservation list omitted the runtime-lane review row and
   configured-runtime design row. The list now includes both and keeps them report-scoped until a
   configured-runtime preflight and later reviewed Newton runtime gate allow broader runtime work.
-- the claim-boundary reviewer re-reviewed those fixes and approved them, including the dated record
-  update that keeps final full-regression verification pending.
+- the claim-boundary reviewer re-reviewed those fixes and approved them, including the interim
+  dated record update that kept final full-regression verification pending at that stage.
+
+Final review:
+
+- one code/schema reviewer approved the configured-runtime design implementation with no findings
+  after inspecting the code/test diff and running targeted schema, CLI, next-gate, real-runtime
+  counter, docs, and whitespace probes;
+- one docs/claim reviewer approved the final documentation and claim-boundary diff with no
+  findings, noting that historical Newton diagnostic-smoke and mapping wording remains bounded as
+  dated diagnostic evidence and is not used as configured-runtime support.
 
 ## Artifacts
 
