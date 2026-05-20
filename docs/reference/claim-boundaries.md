@@ -167,8 +167,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
   The configured-runtime preflight contract then records the bounded preflight row for that same
   lineage, keeps runtime config validation false, keeps runtime source/device resolution false,
-  keeps all real runtime counters at zero, and advances the current next gate to
+  keeps all real runtime counters at zero, and at that stage advanced the next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
+  The configured-runtime validation contract then records the default missing-config validation
+  result for that same lineage, reads no config file or environment, keeps runtime source/device
+  resolution false, keeps all real runtime counters at zero, and advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`.
   The entry gate is a consolidation boundary, not an extra claim. It combines the remaining
   import-boundary preconditions and the first Newton entry decision into one audit point instead
   of adding separate import-preflight and import-contract gates.
@@ -231,7 +235,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -248,7 +252,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   builder-preflight, offline/report-only Newton shape runtime recording-builder construction, and
   offline/static Newton engine-builder boundary-preflight, bounded Newton/Warp environment-probe,
   bounded source-AST API-surface, report-only engine-builder entry, report-only skipped-smoke,
-  and report-only skipped-runtime-execution slices.
+  report-only skipped-runtime-execution, report-only runtime-lane review, report-only
+  configured-runtime design/preflight, and report-only configured-runtime validation slices.
 - The partial `cpd_paper_offline_report` now includes
   `paper_generalization_batch_a_source_policy`, an offline report-only source-policy matrix for
   deterministic synthetic meshes. It records exact-coordinate dedup policy, source-face
@@ -1062,8 +1067,10 @@ Use these only after broader benchmark records exist.
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`;
   the later configured-runtime design slice marked the stage-local next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`;
-  the later configured-runtime preflight slice marks the current next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
+  the later configured-runtime preflight slice marked the stage-local next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`;
+  the later configured-runtime validation slice marks the current next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`.
 - Do not describe
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` as Newton
   readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
@@ -1147,8 +1154,10 @@ Use these only after broader benchmark records exist.
   Newton engine shape objects, real Newton builder shape calls, model finalization, collision
   pipeline calls, runtime-execution attempts, and runtime execution counters zero. The follow-on
   configured-runtime preflight record keeps runtime config validation and runtime source/device
-  resolution false. It marks the current next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract`.
+  resolution false. The follow-on configured-runtime validation record keeps runtime source/device
+  resolution false and reads no config file or environment. It marks the current next runtime-lane
+  gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract`.
 
 ## Wording Rules
 

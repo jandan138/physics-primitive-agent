@@ -142,8 +142,11 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PR
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract"
 )
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract"
+)
 EXPECTED_CURRENT_REPORT_NEXT_GATE = (
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
 )
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
@@ -160,7 +163,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -263,6 +266,9 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_REMAINING
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT,
+]
+EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -2368,6 +2374,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2618,6 +2625,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -7511,6 +7519,168 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_ROW_REQUIRED_KE
     "runtime_source_config_resolved",
     "runtime_device_config_resolved",
     "configured_runtime_validation_gate_required",
+    "source_package_copy_forbidden",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_model_finalized_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "newton_runtime_execution_count",
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_FALSE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_FALSE_FLAGS,
+    "runtime_config_validated",
+    "runtime_source_config_resolved",
+    "runtime_device_config_resolved",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_TRUE_FLAGS = (
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_TRUE_FLAGS,
+    "newton_shape_runtime_engine_builder_configured_runtime_validation_recorded",
+    "configured_runtime_preflight_contract_respected",
+    "configured_runtime_validation_ready",
+)
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_PAYLOAD_REQUIRED_KEYS = {
+    "gate_id",
+    "gate_status",
+    "closed_gate",
+    "input_gate_id",
+    "next_required_gate",
+    "decision",
+    "decision_reason",
+    "artifact_kind",
+    "schema_version",
+    "source_scope",
+    "implementation_boundary",
+    "configured_runtime_validation_action",
+    "configured_runtime_validation_decision",
+    "configured_runtime_validation_status",
+    "configured_runtime_validation_reason",
+    "configured_runtime_validation_contract",
+    "input_contract_summary",
+    "newton_shape_runtime_engine_builder_configured_runtime_validation_row_count",
+    "source_newton_shape_runtime_engine_builder_configured_runtime_preflight_row_count",
+    "configured_runtime_preflight_recorded_count",
+    "configured_runtime_preflight_passed_count",
+    "configured_runtime_validation_recorded_count",
+    "configured_runtime_validation_passed_count",
+    "configured_runtime_validation_failed_count",
+    "runtime_config_validated_count",
+    "runtime_source_config_resolved_count",
+    "runtime_device_config_resolved_count",
+    "required_config_keys",
+    "required_runtime_inputs",
+    "required_config_key_count",
+    "required_runtime_input_count",
+    "runtime_entry_decision_policy",
+    "runtime_smoke_policy",
+    "runtime_execution_policy",
+    "configured_runtime_preflight_ready",
+    "configured_runtime_validation_ready",
+    "runtime_config_validated",
+    "runtime_source_config_resolved",
+    "runtime_device_config_resolved",
+    "newton_source_dir_config_key",
+    "newton_source_dir_configured",
+    "newton_source_dir",
+    "newton_source_dir_status",
+    "newton_diagnostic_device_config_key",
+    "newton_diagnostic_device_configured",
+    "newton_diagnostic_device",
+    "newton_diagnostic_device_status",
+    "newton_diagnostic_device_allowed_values",
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_model_finalized_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "newton_runtime_execution_count",
+    "newton_shape_runtime_engine_builder_configured_runtime_validation_rows",
+    "coverage_summary",
+    "remaining_gaps",
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_FALSE_FLAGS,
+    *NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_TRUE_FLAGS,
+}
+
+
+NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_ROW_REQUIRED_KEYS = {
+    "newton_shape_runtime_engine_builder_configured_runtime_validation_row_id",
+    "source_newton_shape_runtime_engine_builder_configured_runtime_preflight_row_id",
+    "source_newton_shape_runtime_engine_builder_configured_runtime_design_row_id",
+    "source_newton_shape_runtime_engine_builder_runtime_lane_review_row_id",
+    "source_newton_shape_runtime_engine_builder_runtime_execution_row_id",
+    "source_newton_shape_runtime_engine_builder_smoke_row_id",
+    "source_newton_shape_runtime_engine_builder_entry_row_id",
+    "source_newton_shape_runtime_engine_builder_api_surface_row_id",
+    "source_newton_shape_runtime_engine_builder_environment_probe_row_id",
+    "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id",
+    "source_newton_shape_runtime_builder_construction_row_id",
+    "source_newton_shape_runtime_builder_preflight_row_id",
+    "source_newton_shape_runtime_construction_row_id",
+    "source_newton_shape_runtime_boundary_preflight_row_id",
+    "source_shape_mapping_row_id",
+    "source_newton_shape_mapping_preflight_row_id",
+    "source_runtime_admissibility_row_id",
+    "source_package_id",
+    "source_asset_id",
+    "fixture_id",
+    "paper_primitive",
+    "primitive_spec_kind",
+    "primitive_id",
+    "target_newton_shape_kind",
+    "future_newton_builder_constructor_name",
+    "future_newton_builder_method_name",
+    "future_runtime_module_names",
+    "runtime_lane_review_decision",
+    "runtime_lane_review_status",
+    "configured_runtime_design_decision",
+    "configured_runtime_design_status",
+    "configured_runtime_design_recorded",
+    "configured_runtime_preflight_decision",
+    "configured_runtime_preflight_status",
+    "configured_runtime_preflight_recorded",
+    "configured_runtime_preflight_passed",
+    "configured_runtime_validation_decision",
+    "configured_runtime_validation_reason",
+    "configured_runtime_validation_status",
+    "configured_runtime_validation_recorded",
+    "configured_runtime_validation_passed",
+    "configured_runtime_validation_failed",
+    "configured_runtime_validation_ready",
+    "runtime_source_configuration_required",
+    "runtime_device_configuration_required",
+    "runtime_entry_decision_required",
+    "runtime_smoke_policy_required",
+    "runtime_execution_policy_required",
+    "required_config_keys",
+    "required_runtime_inputs",
+    "runtime_entry_decision_policy",
+    "runtime_smoke_policy",
+    "runtime_execution_policy",
+    "runtime_config_validated",
+    "runtime_source_config_resolved",
+    "runtime_device_config_resolved",
+    "newton_source_dir_config_key",
+    "newton_source_dir_configured",
+    "newton_source_dir",
+    "newton_source_dir_status",
+    "newton_diagnostic_device_config_key",
+    "newton_diagnostic_device_configured",
+    "newton_diagnostic_device",
+    "newton_diagnostic_device_status",
+    "newton_diagnostic_device_allowed_values",
+    "configured_runtime_source_resolution_gate_required",
     "source_package_copy_forbidden",
     "real_newton_import_count",
     "real_warp_import_count",
@@ -19561,7 +19731,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
     ]
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT
@@ -19608,7 +19778,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
     ]
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
@@ -19863,12 +20033,12 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     ]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
     )
     assert report["failure_labels"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_validation_contract_missing"
+            "configured_runtime_source_resolution_contract_missing"
         ),
     ]
     assert (
@@ -19876,7 +20046,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
     ]
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
@@ -20129,6 +20299,306 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_prefli
     ):
         cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract_payload(
             configured_runtime_design
+        )
+
+
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract"
+    ]
+
+    assert report["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
+    )
+    assert report["failure_labels"] == [
+        (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "configured_runtime_source_resolution_contract_missing"
+        ),
+    ]
+    assert (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
+    ]
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
+    )
+    assert payload["configured_runtime_validation_decision"] == (
+        "record_configured_runtime_validation_keep_real_runtime_blocked"
+    )
+    assert payload["configured_runtime_validation_status"] == (
+        "runtime_config_validation_failed_missing_required_config"
+    )
+    assert payload["configured_runtime_validation_recorded_count"] == 1
+    assert payload["configured_runtime_validation_passed_count"] == 0
+    assert payload["configured_runtime_validation_failed_count"] == 1
+    assert payload["runtime_config_validated_count"] == 0
+    assert payload["runtime_source_config_resolved_count"] == 0
+    assert payload["runtime_device_config_resolved_count"] == 0
+    assert payload["newton_source_dir_configured"] is False
+    assert payload["newton_source_dir"] is None
+    assert payload["newton_source_dir_status"] == "not_configured"
+    assert payload["newton_diagnostic_device_configured"] is False
+    assert payload["newton_diagnostic_device"] is None
+    assert payload["newton_diagnostic_device_status"] == "not_configured"
+    assert payload["runtime_config_validated"] is False
+    assert payload["runtime_source_config_resolved"] is False
+    assert payload["runtime_device_config_resolved"] is False
+    assert payload["real_newton_import_count"] == 0
+    assert payload["real_warp_import_count"] == 0
+    assert payload["newton_model_builder_instantiated_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_collision_pipeline_created_count"] == 0
+    assert payload["newton_collision_pipeline_collide_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_REMAINING_GAPS
+    )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_payload_schema_is_exact():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract"
+    ]
+    configured_runtime_preflight = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
+    ]
+    source_row = configured_runtime_preflight[
+        "newton_shape_runtime_engine_builder_configured_runtime_preflight_rows"
+    ][0]
+
+    assert set(payload) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_PAYLOAD_REQUIRED_KEYS
+    )
+    assert payload["schema_version"] == 1
+    assert payload["source_scope"] == "synthetic_toy_fixtures_only"
+    assert payload["gate_status"] == (
+        "implemented_single_fixture_newton_engine_builder_configured_"
+        "runtime_validation_report_only_partial"
+    )
+    assert payload["decision"] == "remain_partial"
+    assert payload["decision_reason"] == (
+        "newton_engine_builder_configured_runtime_validation_recorded_"
+        "source_resolution_contract_missing"
+    )
+    assert payload["artifact_kind"] == (
+        "newton_engine_builder_configured_runtime_validation_record_not_runtime_source_resolution"
+    )
+    assert payload["implementation_boundary"] == (
+        "single_synthetic_box_engine_builder_configured_runtime_validation_contract_"
+        "no_config_file_read_no_env_read_no_import_no_model_builder_no_shape_call_"
+        "no_finalize_no_runtime"
+    )
+    assert payload["configured_runtime_validation_contract"] == {
+        "input_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+        ),
+        "closed_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+        ),
+        "next_configured_runtime_source_resolution_gate_required": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_SOURCE_RESOLUTION_CONTRACT
+        ),
+        "required_config_keys": [
+            "newton.source_dir",
+            "newton_diagnostic.device",
+        ],
+        "required_runtime_inputs": [
+            "newton_source_dir",
+            "newton_diagnostic_device",
+            "runtime_entry_decision",
+            "runtime_smoke_policy",
+            "runtime_execution_policy",
+            "package_lineage_id",
+        ],
+        "validation_mode": "report_only_explicit_argument_presence_check",
+        "config_file_read_allowed": False,
+        "environment_variable_read_allowed": False,
+        "source_resolution_allowed": False,
+        "real_runtime_import_allowed": False,
+        "newton_runtime_allowed": False,
+    }
+    assert payload["input_contract_summary"] == {
+        "input_gate_id": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+        ),
+        "input_next_required_gate": (
+            EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_CONTRACT
+        ),
+        "source_newton_shape_runtime_engine_builder_configured_runtime_preflight_row_id": source_row[
+            "newton_shape_runtime_engine_builder_configured_runtime_preflight_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_configured_runtime_design_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_configured_runtime_design_row_id"
+        ],
+        "source_package_id": source_row["source_package_id"],
+        "source_fixture_id": "paper_single_box",
+        "source_primitive_id": source_row["primitive_id"],
+        "source_target_newton_shape_kind": "box",
+        "source_configured_runtime_preflight_decision": (
+            "record_configured_runtime_preflight_keep_real_runtime_blocked"
+        ),
+        "source_configured_runtime_preflight_status": (
+            "preflight_recorded_config_validation_missing"
+        ),
+    }
+    assert payload["coverage_summary"] == {
+        "newton_shape_runtime_engine_builder_configured_runtime_validation_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_configured_runtime_preflight_row_count": 1,
+        "configured_runtime_preflight_recorded_count": 1,
+        "configured_runtime_preflight_passed_count": 1,
+        "configured_runtime_validation_recorded_count": 1,
+        "configured_runtime_validation_passed_count": 0,
+        "configured_runtime_validation_failed_count": 1,
+        "runtime_config_validated_count": 0,
+        "runtime_source_config_resolved_count": 0,
+        "runtime_device_config_resolved_count": 0,
+        "required_config_key_count": 2,
+        "required_runtime_input_count": 6,
+        "newton_source_dir_configured_count": 0,
+        "newton_diagnostic_device_configured_count": 0,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "configured_runtime_validation_decision_distribution": {
+            "record_configured_runtime_validation_keep_real_runtime_blocked": 1
+        },
+        "configured_runtime_validation_status_distribution": {
+            "runtime_config_validation_failed_missing_required_config": 1
+        },
+    }
+    row = payload[
+        "newton_shape_runtime_engine_builder_configured_runtime_validation_rows"
+    ][0]
+    assert set(row) == (
+        NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_ROW_REQUIRED_KEYS
+    )
+    assert row["source_newton_shape_runtime_engine_builder_configured_runtime_preflight_row_id"] == (
+        source_row["newton_shape_runtime_engine_builder_configured_runtime_preflight_row_id"]
+    )
+    assert row["configured_runtime_validation_recorded"] is True
+    assert row["configured_runtime_validation_passed"] is False
+    assert row["configured_runtime_validation_failed"] is True
+    assert row["configured_runtime_validation_ready"] is True
+    assert row["runtime_config_validated"] is False
+    assert row["runtime_source_config_resolved"] is False
+    assert row["runtime_device_config_resolved"] is False
+    assert row["newton_source_dir_configured"] is False
+    assert row["newton_source_dir"] is None
+    assert row["newton_source_dir_status"] == "not_configured"
+    assert row["newton_diagnostic_device_configured"] is False
+    assert row["newton_diagnostic_device"] is None
+    assert row["newton_diagnostic_device_status"] == "not_configured"
+    assert row["newton_diagnostic_device_allowed_values"] == ["cpu", "cuda"]
+    assert row["source_package_copy_forbidden"] is True
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_REMAINING_GAPS
+    )
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_FALSE_FLAGS:
+        assert payload[flag] is False
+    for flag in NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_VALIDATION_TRUE_FLAGS:
+        assert payload[flag] is True
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_rejects_input_schema_drift():
+    report = build_cpd_paper_offline_report()
+    configured_runtime_preflight = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
+            ]
+        )
+    )
+    configured_runtime_preflight[
+        "unexpected_configured_runtime_validation_input_key"
+    ] = True
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_validation_input_unexpected_keys",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract_payload(
+            configured_runtime_preflight
+        )
+
+    configured_runtime_preflight = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
+            ]
+        )
+    )
+    configured_runtime_preflight.pop("coverage_summary")
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_validation_input_missing_keys:coverage_summary",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract_payload(
+            configured_runtime_preflight
+        )
+
+
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_rejects_source_row_schema_drift():
+    report = build_cpd_paper_offline_report()
+    configured_runtime_preflight = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
+            ]
+        )
+    )
+    configured_runtime_preflight[
+        "newton_shape_runtime_engine_builder_configured_runtime_preflight_rows"
+    ][0]["unexpected_configured_runtime_validation_source_row_key"] = True
+
+    with pytest.raises(
+        ValueError,
+        match="configured_runtime_validation_source_row_unexpected_keys",
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract_payload(
+            configured_runtime_preflight
+        )
+
+    configured_runtime_preflight = json.loads(
+        json.dumps(
+            report[
+                "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
+            ]
+        )
+    )
+    configured_runtime_preflight[
+        "newton_shape_runtime_engine_builder_configured_runtime_preflight_rows"
+    ][0].pop("configured_runtime_preflight_reason")
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "configured_runtime_validation_source_row_missing_keys:"
+            "configured_runtime_preflight_reason"
+        ),
+    ):
+        cpd_paper_offline._paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract_payload(
+            configured_runtime_preflight
         )
 
 
