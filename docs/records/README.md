@@ -468,6 +468,13 @@ Proposed | In progress | Complete | Failed | Superseded
   unvalidated, keeps runtime/import/builder/finalization/collision counters at zero, and advances
   the runtime-lane next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
+- [2026-05-20 CPD Paper Newton Engine-Builder Configured-Runtime Design Contract](2026-05-20-cpd-paper-newton-engine-builder-configured-runtime-design-contract.md):
+  single-fixture report-only Newton engine-builder configured-runtime input design inside
+  `cpd_paper_offline_report`. It consumes the runtime-lane review row, records
+  `configured_runtime_design_decision: define_configured_runtime_inputs_keep_real_runtime_blocked`,
+  keeps runtime config validation false, keeps runtime/import/builder/finalization/collision
+  counters at zero, and advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
 - [2026-05-19 CPD Paper Newton Engine-Builder Gate Consolidation](2026-05-19-cpd-paper-newton-engine-builder-gate-consolidation.md):
   anti-overdesign decision record for the Newton engine-builder lane. It keeps the already closed
   boundary-preflight, environment-probe, and API-surface slices as evidence, retires separate

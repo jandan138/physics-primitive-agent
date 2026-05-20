@@ -304,9 +304,9 @@ Before `paper_faithful_offline` wording, record:
   runtime-admissibility contracts, plus the Newton shape-mapping preflight and descriptor
   contracts, plus the Newton shape runtime-boundary preflight, runtime-construction, and
   builder-preflight, builder-construction, engine-builder boundary-preflight, and
-  engine-builder environment-probe, API-surface, entry, smoke, runtime-execution, and
-  runtime-lane review contracts:
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract_missing`.
+  engine-builder environment-probe, API-surface, entry, smoke, runtime-execution,
+  runtime-lane review, and configured-runtime design contracts:
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract_missing`.
 
 ### Duplicate Vertex Preprocessing Audit
 
@@ -604,7 +604,7 @@ paper_faithful_offline_generalization_plan
 -> keep report status partial
 -> keep paper_faithful_offline_supported false
 -> keep runtime admissibility, Newton, real USD, and benchmarks out of scope
--> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract
+-> current next gate after the later closed gates: paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract
 ```
 
 Batch A broadens mesh policy, source-face accounting, and operator evidence. Batch B broadens
@@ -751,8 +751,8 @@ JSON SHA-256 fingerprint, and stores only `PrimitiveSpec.to_dict()` in the repor
 collision-package generation preflight contract is now implemented as a single-fixture offline
 preflight that records one later package-generation candidate from that dict while still creating
 zero CollisionPackages and zero runtime-admissibility checks. The current next gate is
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract` after
-the later single-fixture collision-package generation contract constructs one synthetic,
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`
+after the later single-fixture collision-package generation contract constructs one synthetic,
 report-scoped `CollisionPackage.to_dict()` artifact, the runtime-admissibility preflight contract
 records one later runtime-admissibility candidate row for the same `paper_single_box` OBB/box row,
 the offline/static runtime-admissibility contract records one finite-geometry and box-schema
@@ -957,8 +957,12 @@ report-only skipped-runtime-execution decision for the same lineage, records
 Newton execution at zero. The Newton engine-builder runtime-lane review contract now closes only a
 report-only claim-boundary review for the same skipped-runtime-execution row, records
 `runtime_lane_review_decision: keep_real_runtime_execution_blocked`, keeps runtime compatibility
-unvalidated, and advances the current next gate to
-`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
+unvalidated, and advances the stage-local next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`. The
+Newton engine-builder configured-runtime design contract now closes only a report-only runtime
+input design record, keeps runtime config validation false, keeps all real runtime counters zero,
+and advances the current next gate to
+`paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
 
 The entry contract is intentionally broader than the previously planned pair of small import
 gates. It reviews import-boundary preconditions and the first Newton entry decision together,

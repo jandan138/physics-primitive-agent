@@ -159,8 +159,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   runtime-execution attempts and Newton execution at zero. The runtime-lane review contract then
   records a report-only claim-boundary review for that skipped-runtime-execution row, keeps
   runtime compatibility unvalidated, keeps all real runtime counters at zero, and advances the
-  current next gate to
+  stage-local next gate to
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
+  The configured-runtime design contract then records report-only runtime input requirements for
+  that same lineage, keeps runtime config validation false, keeps all real runtime counters at
+  zero, and advances the current next gate to
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
   The entry gate is a consolidation boundary, not an extra claim. It combines the remaining
   import-boundary preconditions and the first Newton entry decision into one audit point instead
   of adding separate import-preflight and import-contract gates.
@@ -223,7 +227,7 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   table. It closes only `paper_faithful_offline_generalization_plan`, keeps
   `paper_faithful_offline_supported: false`, and now reports the first unresolved runtime-lane
   gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`
   after the
   source-policy,
   primitive-fit engine, search-engine, postprocess-policy, package-boundary readiness, offline
@@ -1050,8 +1054,10 @@ Use these only after broader benchmark records exist.
   `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract`; the later
   runtime-execution slice marked the stage-local next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract`; the later
-  runtime-lane review slice marks the current next runtime-lane gate as
-  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
+  runtime-lane review slice marked the stage-local next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`;
+  the later configured-runtime design slice marks the current next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
 - Do not describe
   `paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract` as Newton
   readiness, Newton support, Newton execution, real-USD evidence, benchmark evidence,
@@ -1121,8 +1127,21 @@ Use these only after broader benchmark records exist.
   `paper_single_box` skipped-runtime-execution lineage. It keeps real runtime imports,
   `newton.ModelBuilder` instantiation, Newton engine shape objects, real Newton builder shape
   calls, model finalization, collision pipeline calls, runtime-execution attempts, and runtime
-  execution counters zero. It marks the current next runtime-lane gate as
+  execution counters zero. It marked the stage-local next runtime-lane gate as
   `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract`.
+- Do not describe
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract` as
+  Newton readiness, Newton support, Newton execution, runtime config validation, runtime
+  compatibility, real-USD evidence, benchmark evidence, collision-quality validation, paper
+  primitive vocabulary coverage, approximation support, `paper_faithful_offline` support, full
+  CPD reproduction, deployment readiness, safety certification, real Newton environment success,
+  runtime execution success, or general package readiness. It records one report-only configured
+  runtime input design for one synthetic `paper_single_box` skipped-runtime lineage. It keeps
+  runtime config validation false, real runtime imports, `newton.ModelBuilder` instantiation,
+  Newton engine shape objects, real Newton builder shape calls, model finalization, collision
+  pipeline calls, runtime-execution attempts, and runtime execution counters zero. It marks the
+  current next runtime-lane gate as
+  `paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract`.
 
 ## Wording Rules
 
