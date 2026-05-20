@@ -172,6 +172,9 @@ _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CON
 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract"
 )
+_PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
+)
 _PAPER_COLLISION_PACKAGE_GENERATION_CLAIM_BOUNDARY = (
     "single_fixture_box_only_offline_collision_package_artifact_"
     "not_paper_vocabulary_runtime_admissibility_or_newton"
@@ -914,6 +917,12 @@ def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builde
 def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review() -> list[str]:
     return [
         _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+    ]
+
+
+def _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design() -> list[str]:
+    return [
+        _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
     ]
 
 
@@ -16359,6 +16368,490 @@ def _paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review
     }
 
 
+_CONFIGURED_RUNTIME_DESIGN_REQUIRED_CONFIG_KEYS = (
+    "newton.source_dir",
+    "newton_diagnostic.device",
+)
+_CONFIGURED_RUNTIME_DESIGN_REQUIRED_RUNTIME_INPUTS = (
+    "newton_source_dir",
+    "newton_diagnostic_device",
+    "runtime_entry_decision",
+    "runtime_smoke_policy",
+    "runtime_execution_policy",
+    "package_lineage_id",
+)
+_CONFIGURED_RUNTIME_DESIGN_ZERO_COUNT_FIELDS = (
+    "real_newton_import_count",
+    "real_warp_import_count",
+    "newton_model_builder_instantiated_count",
+    "newton_engine_shape_object_count",
+    "newton_builder_shape_call_count",
+    "newton_model_finalized_count",
+    "newton_collision_pipeline_created_count",
+    "newton_collision_pipeline_collide_count",
+    "newton_runtime_execution_count",
+)
+_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_PAYLOAD_FALSE_FLAGS = (
+    *_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_PAYLOAD_FALSE_FLAGS,
+    "configured_runtime_preflight_ready",
+    "runtime_config_validated",
+    "runtime_source_config_resolved",
+    "runtime_device_config_resolved",
+)
+_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_TRUE_FLAGS = (
+    *_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_TRUE_FLAGS,
+    "newton_shape_runtime_engine_builder_configured_runtime_design_recorded",
+    "runtime_lane_review_decision_respected",
+    "configured_runtime_input_requirements_recorded",
+)
+
+
+def _paper_newton_shape_runtime_engine_builder_configured_runtime_design_false_flags() -> dict[str, bool]:
+    return {
+        flag: False
+        for flag in _NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_PAYLOAD_FALSE_FLAGS
+    }
+
+
+def _paper_newton_shape_runtime_engine_builder_configured_runtime_design_true_flags() -> dict[str, bool]:
+    return {
+        flag: True
+        for flag in _NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_TRUE_FLAGS
+    }
+
+
+def _paper_validate_runtime_engine_builder_configured_runtime_design_source_package_copies_absent(
+    data: dict[str, object],
+) -> None:
+    if _paper_runtime_engine_builder_runtime_lane_review_has_source_package_key(
+        data
+    ):
+        raise ValueError(
+            "configured_runtime_design_source_package_copy_forbidden"
+        )
+    if list(_paper_runtime_admissibility_preflight_package_dicts(data)):
+        raise ValueError(
+            "configured_runtime_design_source_package_copy_forbidden"
+        )
+
+
+def _paper_newton_shape_runtime_engine_builder_configured_runtime_design_source_row(
+    runtime_lane_review: dict[str, object],
+) -> dict[str, object]:
+    _paper_validate_runtime_engine_builder_configured_runtime_design_source_package_copies_absent(
+        runtime_lane_review
+    )
+    if (
+        runtime_lane_review.get("gate_id")
+        != _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT
+    ):
+        raise ValueError("configured_runtime_design_input_gate_id_mismatch")
+    if (
+        runtime_lane_review.get("next_required_gate")
+        != _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+    ):
+        raise ValueError(
+            "configured_runtime_design_input_next_gate_mismatch"
+        )
+    if runtime_lane_review.get("remaining_gaps") != (
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review()
+    ):
+        raise ValueError(
+            "configured_runtime_design_input_remaining_gaps_mismatch"
+        )
+    if (
+        runtime_lane_review.get("runtime_lane_review_decision")
+        != "keep_real_runtime_execution_blocked"
+    ):
+        raise ValueError(
+            "configured_runtime_design_input_review_decision_mismatch"
+        )
+    if (
+        runtime_lane_review.get("runtime_lane_review_status")
+        != "claim_boundary_preserved"
+    ):
+        raise ValueError(
+            "configured_runtime_design_input_review_status_mismatch"
+        )
+    if runtime_lane_review.get("runtime_lane_review_recorded_count") != 1:
+        raise ValueError("configured_runtime_design_input_count_mismatch")
+    for field_name in _CONFIGURED_RUNTIME_DESIGN_ZERO_COUNT_FIELDS:
+        if runtime_lane_review.get(field_name) != 0:
+            raise ValueError(
+                f"configured_runtime_design_input_count_mismatch:{field_name}"
+            )
+    rows = runtime_lane_review.get(
+        "newton_shape_runtime_engine_builder_runtime_lane_review_rows"
+    )
+    if not isinstance(rows, list) or len(rows) != 1:
+        raise ValueError("configured_runtime_design_row_count_mismatch")
+    row = rows[0]
+    if not isinstance(row, dict):
+        raise ValueError("configured_runtime_design_source_row_malformed")
+    if row.get("runtime_lane_review_recorded") is not True:
+        raise ValueError(
+            "configured_runtime_design_source_row_review_not_recorded"
+        )
+    if row.get("runtime_lane_claim_boundary_preserved") is not True:
+        raise ValueError(
+            "configured_runtime_design_source_row_claim_boundary_mismatch"
+        )
+    if row.get("configured_runtime_design_ready") is not False:
+        raise ValueError(
+            "configured_runtime_design_source_row_ready_flag_mismatch"
+        )
+    for field_name in _CONFIGURED_RUNTIME_DESIGN_ZERO_COUNT_FIELDS:
+        if row.get(field_name) != 0:
+            raise ValueError(
+                f"configured_runtime_design_source_row_count_mismatch:{field_name}"
+            )
+    return row
+
+
+def _paper_newton_shape_runtime_engine_builder_configured_runtime_design_row(
+    source_row: dict[str, object],
+) -> dict[str, object]:
+    row = {
+        "newton_shape_runtime_engine_builder_configured_runtime_design_row_id": (
+            "newton_shape_runtime_engine_builder_configured_runtime_design__paper_single_box__box"
+        ),
+        "source_newton_shape_runtime_engine_builder_runtime_lane_review_row_id": source_row[
+            "newton_shape_runtime_engine_builder_runtime_lane_review_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_runtime_execution_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_runtime_execution_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_smoke_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_smoke_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_entry_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_entry_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_api_surface_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_api_surface_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_environment_probe_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_environment_probe_row_id"
+        ],
+        "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id": source_row[
+            "source_newton_shape_runtime_engine_builder_boundary_preflight_row_id"
+        ],
+        "source_newton_shape_runtime_builder_construction_row_id": source_row[
+            "source_newton_shape_runtime_builder_construction_row_id"
+        ],
+        "source_newton_shape_runtime_builder_preflight_row_id": source_row[
+            "source_newton_shape_runtime_builder_preflight_row_id"
+        ],
+        "source_newton_shape_runtime_construction_row_id": source_row[
+            "source_newton_shape_runtime_construction_row_id"
+        ],
+        "source_newton_shape_runtime_boundary_preflight_row_id": source_row[
+            "source_newton_shape_runtime_boundary_preflight_row_id"
+        ],
+        "source_shape_mapping_row_id": source_row["source_shape_mapping_row_id"],
+        "source_newton_shape_mapping_preflight_row_id": source_row[
+            "source_newton_shape_mapping_preflight_row_id"
+        ],
+        "source_runtime_admissibility_row_id": source_row[
+            "source_runtime_admissibility_row_id"
+        ],
+        "source_package_id": source_row["source_package_id"],
+        "source_asset_id": source_row["source_asset_id"],
+        "fixture_id": source_row["fixture_id"],
+        "paper_primitive": source_row["paper_primitive"],
+        "primitive_spec_kind": source_row["primitive_spec_kind"],
+        "primitive_id": source_row["primitive_id"],
+        "target_newton_shape_kind": source_row["target_newton_shape_kind"],
+        "future_newton_builder_constructor_name": source_row[
+            "future_newton_builder_constructor_name"
+        ],
+        "future_newton_builder_method_name": source_row[
+            "future_newton_builder_method_name"
+        ],
+        "future_runtime_module_names": source_row["future_runtime_module_names"],
+        "runtime_lane_review_decision": source_row[
+            "runtime_lane_review_decision"
+        ],
+        "runtime_lane_review_status": source_row[
+            "runtime_lane_review_status"
+        ],
+        "configured_runtime_design_decision": (
+            "define_configured_runtime_inputs_keep_real_runtime_blocked"
+        ),
+        "configured_runtime_design_reason": (
+            "runtime_input_design_recorded_preflight_missing"
+        ),
+        "configured_runtime_design_status": "input_design_recorded",
+        "configured_runtime_design_recorded": True,
+        "configured_runtime_preflight_ready": False,
+        "runtime_source_configuration_required": True,
+        "runtime_device_configuration_required": True,
+        "runtime_entry_decision_required": True,
+        "runtime_smoke_policy_required": True,
+        "runtime_execution_policy_required": True,
+        "required_config_keys": list(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_CONFIG_KEYS
+        ),
+        "required_runtime_inputs": list(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_RUNTIME_INPUTS
+        ),
+        "runtime_entry_decision_policy": (
+            "require_configured_runtime_preflight_before_entry"
+        ),
+        "runtime_smoke_policy": (
+            "skip_until_configured_runtime_preflight_passes"
+        ),
+        "runtime_execution_policy": (
+            "skip_until_configured_runtime_preflight_passes"
+        ),
+        "configured_runtime_preflight_gate_required": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+        ),
+        "source_package_copy_forbidden": True,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+    }
+    try:
+        json.dumps(row)
+    except TypeError as exc:
+        raise ValueError(
+            "newton_shape_runtime_engine_builder_configured_runtime_design_row_json_malformed"
+        ) from exc
+    return row
+
+
+def _paper_newton_shape_runtime_engine_builder_configured_runtime_design_coverage_summary(
+    rows: list[dict[str, object]],
+) -> dict[str, object]:
+    return {
+        "newton_shape_runtime_engine_builder_configured_runtime_design_row_count": len(
+            rows
+        ),
+        "source_newton_shape_runtime_engine_builder_runtime_lane_review_row_count": len(
+            rows
+        ),
+        "configured_runtime_design_recorded_count": sum(
+            int(row["configured_runtime_design_recorded"]) for row in rows
+        ),
+        "configured_runtime_preflight_ready_count": sum(
+            int(row["configured_runtime_preflight_ready"]) for row in rows
+        ),
+        "runtime_source_configuration_required_count": sum(
+            int(row["runtime_source_configuration_required"]) for row in rows
+        ),
+        "runtime_device_configuration_required_count": sum(
+            int(row["runtime_device_configuration_required"]) for row in rows
+        ),
+        "runtime_entry_decision_required_count": sum(
+            int(row["runtime_entry_decision_required"]) for row in rows
+        ),
+        "runtime_smoke_policy_required_count": sum(
+            int(row["runtime_smoke_policy_required"]) for row in rows
+        ),
+        "runtime_execution_policy_required_count": sum(
+            int(row["runtime_execution_policy_required"]) for row in rows
+        ),
+        "required_config_key_count": len(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_CONFIG_KEYS
+        ),
+        "required_runtime_input_count": len(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_RUNTIME_INPUTS
+        ),
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "configured_runtime_design_decision_distribution": _paper_policy_distribution(
+            rows,
+            "configured_runtime_design_decision",
+        ),
+        "configured_runtime_design_status_distribution": _paper_policy_distribution(
+            rows,
+            "configured_runtime_design_status",
+        ),
+    }
+
+
+def _paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract_payload(
+    runtime_lane_review: dict[str, object],
+) -> dict[str, object]:
+    source_row = _paper_newton_shape_runtime_engine_builder_configured_runtime_design_source_row(
+        runtime_lane_review
+    )
+    row = (
+        _paper_newton_shape_runtime_engine_builder_configured_runtime_design_row(
+            source_row
+        )
+    )
+    rows = [row]
+    remaining_gaps = (
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design()
+    )
+    coverage_summary = (
+        _paper_newton_shape_runtime_engine_builder_configured_runtime_design_coverage_summary(
+            rows
+        )
+    )
+    return {
+        "gate_id": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+        ),
+        "gate_status": (
+            "implemented_single_fixture_newton_engine_builder_configured_"
+            "runtime_design_report_only_partial"
+        ),
+        "closed_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+        ),
+        "input_gate_id": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT
+        ),
+        "next_required_gate": (
+            _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+        ),
+        "decision": "remain_partial",
+        "decision_reason": (
+            "newton_engine_builder_configured_runtime_design_recorded_"
+            "configured_runtime_preflight_contract_missing"
+        ),
+        "artifact_kind": (
+            "newton_engine_builder_configured_runtime_design_record_not_runtime_preflight"
+        ),
+        "schema_version": 1,
+        "source_scope": "synthetic_toy_fixtures_only",
+        "implementation_boundary": (
+            "single_synthetic_box_engine_builder_configured_runtime_design_"
+            "no_import_no_model_builder_no_shape_call_no_finalize_no_runtime"
+        ),
+        "configured_runtime_design_action": (
+            "record_configured_runtime_inputs_for_single_synthetic_box_runtime_lane"
+        ),
+        "configured_runtime_design_decision": (
+            "define_configured_runtime_inputs_keep_real_runtime_blocked"
+        ),
+        "configured_runtime_design_status": "input_design_recorded",
+        "configured_runtime_design_reason": (
+            "runtime_input_design_recorded_preflight_missing"
+        ),
+        "configured_runtime_design_contract": {
+            "input_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT
+            ),
+            "closed_gate": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+            ),
+            "next_configured_runtime_preflight_gate_required": (
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+            ),
+            "required_config_keys": list(
+                _CONFIGURED_RUNTIME_DESIGN_REQUIRED_CONFIG_KEYS
+            ),
+            "required_runtime_inputs": list(
+                _CONFIGURED_RUNTIME_DESIGN_REQUIRED_RUNTIME_INPUTS
+            ),
+            "runtime_entry_decision_policy": (
+                "require_configured_runtime_preflight_before_entry"
+            ),
+            "runtime_smoke_policy": (
+                "skip_until_configured_runtime_preflight_passes"
+            ),
+            "runtime_execution_policy": (
+                "skip_until_configured_runtime_preflight_passes"
+            ),
+            "runtime_lane_review_decision_required": (
+                "keep_real_runtime_execution_blocked"
+            ),
+            "runtime_config_validated": False,
+            "configured_runtime_preflight_ready": False,
+            "newton_runtime_allowed": False,
+        },
+        "input_contract_summary": {
+            "input_gate_id": runtime_lane_review["gate_id"],
+            "input_next_required_gate": runtime_lane_review[
+                "next_required_gate"
+            ],
+            "source_newton_shape_runtime_engine_builder_runtime_lane_review_row_id": source_row[
+                "newton_shape_runtime_engine_builder_runtime_lane_review_row_id"
+            ],
+            "source_newton_shape_runtime_engine_builder_runtime_execution_row_id": source_row[
+                "source_newton_shape_runtime_engine_builder_runtime_execution_row_id"
+            ],
+            "source_package_id": source_row["source_package_id"],
+            "source_fixture_id": source_row["fixture_id"],
+            "source_primitive_id": source_row["primitive_id"],
+            "source_target_newton_shape_kind": source_row[
+                "target_newton_shape_kind"
+            ],
+            "source_runtime_lane_review_decision": source_row[
+                "runtime_lane_review_decision"
+            ],
+            "source_runtime_lane_review_status": source_row[
+                "runtime_lane_review_status"
+            ],
+        },
+        "newton_shape_runtime_engine_builder_configured_runtime_design_row_count": 1,
+        "source_newton_shape_runtime_engine_builder_runtime_lane_review_row_count": 1,
+        "configured_runtime_design_recorded_count": 1,
+        "configured_runtime_preflight_ready_count": 0,
+        "runtime_source_configuration_required_count": 1,
+        "runtime_device_configuration_required_count": 1,
+        "runtime_entry_decision_required_count": 1,
+        "runtime_smoke_policy_required_count": 1,
+        "runtime_execution_policy_required_count": 1,
+        "required_config_keys": list(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_CONFIG_KEYS
+        ),
+        "required_runtime_inputs": list(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_RUNTIME_INPUTS
+        ),
+        "required_config_key_count": len(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_CONFIG_KEYS
+        ),
+        "required_runtime_input_count": len(
+            _CONFIGURED_RUNTIME_DESIGN_REQUIRED_RUNTIME_INPUTS
+        ),
+        "runtime_entry_decision_policy": (
+            "require_configured_runtime_preflight_before_entry"
+        ),
+        "runtime_smoke_policy": (
+            "skip_until_configured_runtime_preflight_passes"
+        ),
+        "runtime_execution_policy": (
+            "skip_until_configured_runtime_preflight_passes"
+        ),
+        "configured_runtime_preflight_ready": False,
+        "runtime_config_validated": False,
+        "runtime_source_config_resolved": False,
+        "runtime_device_config_resolved": False,
+        "real_newton_import_count": 0,
+        "real_warp_import_count": 0,
+        "newton_model_builder_instantiated_count": 0,
+        "newton_engine_shape_object_count": 0,
+        "newton_builder_shape_call_count": 0,
+        "newton_model_finalized_count": 0,
+        "newton_collision_pipeline_created_count": 0,
+        "newton_collision_pipeline_collide_count": 0,
+        "newton_runtime_execution_count": 0,
+        "newton_shape_runtime_engine_builder_configured_runtime_design_rows": rows,
+        "coverage_summary": coverage_summary,
+        "remaining_gaps": remaining_gaps,
+        **_paper_newton_shape_runtime_engine_builder_configured_runtime_design_false_flags(),
+        **_paper_newton_shape_runtime_engine_builder_configured_runtime_design_true_flags(),
+    }
+
+
 def _paper_source_policy_generalization_payload(
     cases: list[dict[str, object]],
 ) -> dict[str, object]:
@@ -16671,12 +17164,17 @@ def build_cpd_paper_offline_report(
             mapped_subset_newton_shape_runtime_engine_builder_runtime_execution
         )
     )
+    mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design = (
+        _paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract_payload(
+            mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review
+        )
+    )
     paper_faithful_scope_audit = _paper_faithful_offline_scope_audit_payload()
     missing_before_paper_faithful = paper_faithful_scope_audit[
         "blocking_criteria_ids"
     ]
     runtime_lane_remaining_gates = (
-        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review()
+        _paper_remaining_gaps_after_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design()
     )
     return {
         "stage": "cpd_paper_offline_report",
@@ -16766,6 +17264,7 @@ def build_cpd_paper_offline_report(
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT,
                 _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT,
+                _PAPER_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT,
             ],
             "missing_before_paper_faithful_offline": missing_before_paper_faithful,
             "runtime_lane_remaining_gates": runtime_lane_remaining_gates,
@@ -16888,6 +17387,9 @@ def build_cpd_paper_offline_report(
         ),
         "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract": (
             mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review
+        ),
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract": (
+            mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design
         ),
         "paper_weights": PAPER_PRIMITIVE_WEIGHTS,
         "cases": cases,

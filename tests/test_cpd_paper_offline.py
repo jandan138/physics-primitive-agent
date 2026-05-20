@@ -136,8 +136,11 @@ EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_C
 EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT = (
     "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract"
 )
+EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT = (
+    "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
+)
 EXPECTED_CURRENT_REPORT_NEXT_GATE = (
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
 )
 EXPECTED_CLOSED_CHANGED_DECOMPOSITION_CONTRACT = (
     "paper_offline_changed_decomposition_output_contract"
@@ -154,7 +157,7 @@ EXPECTED_CURRENT_GENERALIZATION_GATES = [
     EXPECTED_PACKAGE_GENERATION_CONTRACT,
 ]
 EXPECTED_CURRENT_OUTPUT_CONTRACT_GAPS = [
-    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT,
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_ADAPTER_REMAINING_GAPS = [
     EXPECTED_PACKAGE_ADAPTER_UNSUPPORTED_PRIMITIVE_POLICY,
@@ -251,6 +254,9 @@ EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_REMAINING_GAPS = 
 ]
 EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_REMAINING_GAPS = [
     EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT,
+]
+EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_REMAINING_GAPS = [
+    EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT,
 ]
 EXPECTED_PACKAGE_BOUNDARY_REMAINING_GAPS = [
     EXPECTED_NEXT_AFTER_PACKAGE_BOUNDARY,
@@ -2354,6 +2360,7 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT,
     ]
     assert (
         report["paper_faithfulness"]["implemented_generalization_scope"]
@@ -2602,6 +2609,7 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_SMOKE_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_EXECUTION_CONTRACT,
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT,
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT,
     ]
     assert report["paper_faithful_offline_supported"] is False
     assert report["status"] == "partial"
@@ -19270,12 +19278,12 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
     ]
 
     assert report["next_required_gate"] == (
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
     )
     assert report["failure_labels"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_design_contract_missing"
+            "configured_runtime_preflight_contract_missing"
         )
     ]
     assert (
@@ -19283,7 +19291,7 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
         in report["paper_faithfulness"]["implemented_output_contract_scope"]
     )
     assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
-        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
     ]
     assert payload["gate_id"] == (
         EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT
@@ -19314,6 +19322,69 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
     assert payload["newton_runtime_execution_count"] == 0
     assert payload["remaining_gaps"] == (
         EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_REMAINING_GAPS
+    )
+
+
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract_gate():
+    report = build_cpd_paper_offline_report()
+    payload = report[
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract"
+    ]
+
+    assert report["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+    )
+    assert report["failure_labels"] == [
+        (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "configured_runtime_preflight_contract_missing"
+        ),
+    ]
+    assert (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+        in report["paper_faithfulness"]["implemented_output_contract_scope"]
+    )
+    assert report["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+    ]
+    assert payload["gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_CONTRACT
+    )
+    assert payload["input_gate_id"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_RUNTIME_LANE_REVIEW_CONTRACT
+    )
+    assert payload["next_required_gate"] == (
+        EXPECTED_MAPPED_SUBSET_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_PREFLIGHT_CONTRACT
+    )
+    assert payload["configured_runtime_design_decision"] == (
+        "define_configured_runtime_inputs_keep_real_runtime_blocked"
+    )
+    assert payload["configured_runtime_design_status"] == (
+        "input_design_recorded"
+    )
+    assert payload["configured_runtime_design_recorded_count"] == 1
+    assert payload["configured_runtime_preflight_ready_count"] == 0
+    assert payload["runtime_source_configuration_required_count"] == 1
+    assert payload["runtime_device_configuration_required_count"] == 1
+    assert payload["runtime_entry_decision_required_count"] == 1
+    assert payload["runtime_smoke_policy_required_count"] == 1
+    assert payload["runtime_execution_policy_required_count"] == 1
+    assert payload["required_config_keys"] == [
+        "newton.source_dir",
+        "newton_diagnostic.device",
+    ]
+    assert payload["required_runtime_input_count"] == 6
+    assert payload["real_newton_import_count"] == 0
+    assert payload["real_warp_import_count"] == 0
+    assert payload["newton_model_builder_instantiated_count"] == 0
+    assert payload["newton_engine_shape_object_count"] == 0
+    assert payload["newton_builder_shape_call_count"] == 0
+    assert payload["newton_model_finalized_count"] == 0
+    assert payload["newton_collision_pipeline_created_count"] == 0
+    assert payload["newton_collision_pipeline_collide_count"] == 0
+    assert payload["newton_runtime_execution_count"] == 0
+    assert payload["remaining_gaps"] == (
+        EXPECTED_NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_DESIGN_REMAINING_GAPS
     )
 
 

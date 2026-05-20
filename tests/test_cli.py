@@ -1530,14 +1530,14 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["failure_labels"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_design_contract_missing"
+            "configured_runtime_preflight_contract_missing"
         ),
     ]
     assert (
         payload["next_required_gate"]
         == (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_design_contract"
+            "configured_runtime_preflight_contract"
         )
     )
     assert payload["generated_collision_package_count"] == 1
@@ -1563,7 +1563,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert payload["paper_faithfulness"]["runtime_lane_remaining_gates"] == [
         (
             "paper_mapped_subset_newton_shape_runtime_engine_builder_"
-            "configured_runtime_design_contract"
+            "configured_runtime_preflight_contract"
         ),
     ]
     assert payload["paper_faithfulness"]["implemented_output_contract_scope"] == [
@@ -1600,6 +1600,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract",
         "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract",
         "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract",
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract",
     ]
     builder_construction = payload[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
@@ -1797,6 +1798,46 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert runtime_lane_review["newton_collision_pipeline_created_count"] == 0
     assert runtime_lane_review["newton_collision_pipeline_collide_count"] == 0
     assert runtime_lane_review["newton_runtime_execution_count"] == 0
+    configured_runtime_design = payload[
+        (
+            "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+            "configured_runtime_design_contract"
+        )
+    ]
+    assert configured_runtime_design["gate_id"] == (
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+        "configured_runtime_design_contract"
+    )
+    assert configured_runtime_design["input_gate_id"] == (
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+        "runtime_lane_review_contract"
+    )
+    assert configured_runtime_design["next_required_gate"] == (
+        "paper_mapped_subset_newton_shape_runtime_engine_builder_"
+        "configured_runtime_preflight_contract"
+    )
+    assert configured_runtime_design["configured_runtime_design_decision"] == (
+        "define_configured_runtime_inputs_keep_real_runtime_blocked"
+    )
+    assert configured_runtime_design["configured_runtime_design_status"] == (
+        "input_design_recorded"
+    )
+    assert configured_runtime_design["configured_runtime_design_recorded_count"] == 1
+    assert configured_runtime_design["configured_runtime_preflight_ready_count"] == 0
+    assert configured_runtime_design["required_config_keys"] == [
+        "newton.source_dir",
+        "newton_diagnostic.device",
+    ]
+    assert configured_runtime_design["required_runtime_input_count"] == 6
+    assert configured_runtime_design["real_newton_import_count"] == 0
+    assert configured_runtime_design["real_warp_import_count"] == 0
+    assert configured_runtime_design["newton_model_builder_instantiated_count"] == 0
+    assert configured_runtime_design["newton_engine_shape_object_count"] == 0
+    assert configured_runtime_design["newton_builder_shape_call_count"] == 0
+    assert configured_runtime_design["newton_model_finalized_count"] == 0
+    assert configured_runtime_design["newton_collision_pipeline_created_count"] == 0
+    assert configured_runtime_design["newton_collision_pipeline_collide_count"] == 0
+    assert configured_runtime_design["newton_runtime_execution_count"] == 0
     assert payload["package_generation_triggered"] is False
     assert payload["newton_runtime_triggered"] is False
     assert payload["real_usd_triggered"] is False
