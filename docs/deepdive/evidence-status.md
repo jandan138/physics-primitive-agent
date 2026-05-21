@@ -763,6 +763,15 @@ This file separates current evidence from future claims. See [message-map.md](me
   `3` cylinders; both roles pass contact-gated drop/settle plus sphere-rain in the clean Newton
   environment. This is one explicitly configured diagnostic package, not a default policy,
   calibrated threshold, collision-quality validation, or safety result.
+- The [2026-05-22 package body-state guard task-path record](../records/2026-05-22-package-body-state-guard-task-path.md)
+  wires the package COM/inertia proxy guard into the explicit native-opt-in task path. In one
+  capped bed/Franka config, fitting first creates cylinder-bearing native-opt-in candidates for
+  both roles: bed selects `31` boxes plus `1` cylinder and Franka selects `23` boxes plus `9`
+  cylinders. The real Newton task report then falls back only the flagged bed package to the
+  native `32`-box package while keeping the unflagged Franka `23`-box plus `9`-cylinder package;
+  both effective packages pass drop/settle and sphere-rain task smokes. This is explicit
+  diagnostic task-path evidence, not a default policy, threshold calibration, physical root-cause
+  proof, collision-quality validation, or safety result.
 - The [2026-05-21 Franka cost-guided merge opt-in probe](../records/2026-05-21-franka-cost-guided-merge-opt-in-probe.md)
   adds a separate capped Franka opt-in merge-search slice. The default capped Franka legacy/native
   lanes keep `topology_then_virtual` and select `32` boxes; the `native_opt_in` lane uses
@@ -1184,10 +1193,11 @@ post-run delta audit links those rows to the primitive-6 target shape-scale rows
 native selector diagnostic guard uses this diagnosis as one controlled package-changing slice:
 the guarded bed opt-in config rejects large flat cylinder candidates and passes the recorded
 task smokes, while guarded Franka keeps its small selected cylinders and also passes. These remain
-one-config diagnostic controls. The package body-state guard-candidate report now makes the same
-bed/Franka direction package-level and COM/inertia-proxy based: flagged bed recommends fallback to
-the recorded passing native package, while unflagged Franka recommends keeping the recorded
-passing native-opt-in package. This does not change default support-aware lane claims.
+one-config diagnostic controls. The package body-state guard-candidate report made the same
+bed/Franka direction package-level and COM/inertia-proxy based, and the package body-state
+guard task-path record now applies that decision inside an explicit real-USD Newton task path:
+flagged bed runs the native `32`-box package, while unflagged Franka runs the native-opt-in
+`23`-box plus `9`-cylinder package. This does not change default support-aware lane claims.
 
 ## Current Non-Goals
 

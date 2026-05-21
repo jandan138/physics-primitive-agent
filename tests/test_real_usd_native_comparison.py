@@ -929,6 +929,155 @@ def test_real_usd_native_task_comparison_threads_opt_in_selection_guard(
     assert report["cases"][0]["native_opt_in_contact"]["type_counts"] == {"box": 1}
 
 
+def test_real_usd_native_task_comparison_applies_opt_in_package_body_state_guard(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_cylinder_near_miss(tmp_path)
+    calls = {"contact": [], "drop": [], "sphere": []}
+
+    def fake_contact(package, *, source_dir, device, claim_boundary):
+        calls["contact"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_contact_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="contact_canary",
+            claim_boundary=claim_boundary,
+        )
+
+    def fake_drop(package, *, source_dir, device, options, claim_boundary):
+        calls["drop"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_drop_settle",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="drop_settle",
+            claim_boundary=claim_boundary,
+        )
+
+    def fake_sphere(package, *, source_dir, device, options, claim_boundary):
+        calls["sphere"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_sphere_rain",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="sphere_rain",
+            claim_boundary=claim_boundary,
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "run_newton_contact_smoke", fake_contact)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_drop_settle", fake_drop)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_sphere_rain", fake_sphere)
+
+    report = build_real_usd_native_task_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_score_multipliers={"cylinder": 0.5},
+        native_opt_in_package_body_state_guard={
+            "enabled": True,
+            "thresholds": {
+                "min_large_cylinder_radius_m": 0.0,
+                "max_flat_half_height_radius_ratio": 999.0,
+                "min_com_delta_norm_m": 0.0,
+                "min_inertia_frobenius_delta": 0.0,
+            },
+        },
+        source_dir="/tmp/newton-source",
+        device="cpu",
+    )
+
+    assert calls["contact"] == [
+        "bed_dev_smoke_legacy",
+        "bed_dev_smoke_native",
+        "bed_dev_smoke_native",
+    ]
+    assert calls["drop"][-1] == "bed_dev_smoke_native"
+    assert calls["sphere"][-1] == "bed_dev_smoke_native"
+    case = report["cases"][0]
+    assert case["native_opt_in"]["primitive_kind_counts"] == {"cylinder": 1}
+    guard = case["native_opt_in_package_body_state_guard"]
+    assert guard["decision"] == "fallback_to_native_package"
+    assert guard["effective_lane"] == "native"
+    assert guard["effective_package_id"] == case["native"]["collision_package"]["package_id"]
+    assert guard["candidate_package_id"] == case["native_opt_in"]["collision_package"][
+        "package_id"
+    ]
+    assert case["native_opt_in_contact"]["asset_id"] == "bed_dev_smoke_native"
+    assert case["native_opt_in_tasks"]["drop_settle"]["asset_id"] == "bed_dev_smoke_native"
+
+
+def test_real_usd_native_task_comparison_package_body_state_guard_keeps_unflagged_opt_in(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_low_support_patch(tmp_path)
+    calls = {"contact": [], "drop": [], "sphere": []}
+
+    def fake_contact(package, *, source_dir, device, claim_boundary):
+        calls["contact"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_contact_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="contact_canary",
+            claim_boundary=claim_boundary,
+        )
+
+    def fake_task(package, *, source_dir, device, options, claim_boundary):
+        calls["drop"].append(package.asset_id)
+        calls["sphere"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_task_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="task_smoke",
+            claim_boundary=claim_boundary,
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "run_newton_contact_smoke", fake_contact)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_drop_settle", fake_task)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_sphere_rain", fake_task)
+
+    report = build_real_usd_native_task_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("franka_import_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"franka_import_smoke": 4},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_support_thresholds={
+            "min_extension_source_faces": 2,
+            "min_extension_unique_points": 4,
+        },
+        native_opt_in_package_body_state_guard={"enabled": True},
+        source_dir="/tmp/newton-source",
+        device="cpu",
+    )
+
+    assert calls["contact"][-1] == "franka_import_smoke_native_opt_in"
+    assert calls["drop"][-1] == "franka_import_smoke_native_opt_in"
+    case = report["cases"][0]
+    assert case["native_opt_in"]["primitive_kind_counts"] == {"cylinder": 1}
+    guard = case["native_opt_in_package_body_state_guard"]
+    assert guard["decision"] == "keep_native_opt_in_package"
+    assert guard["effective_lane"] == "native_opt_in"
+    assert guard["effective_package_id"] == case["native_opt_in"]["collision_package"][
+        "package_id"
+    ]
+
+
 def test_real_usd_native_task_comparison_threads_opt_in_support_thresholds(
     tmp_path,
     monkeypatch,

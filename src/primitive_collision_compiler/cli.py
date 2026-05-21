@@ -1447,6 +1447,10 @@ def _real_usd_native_comparison_options(config):
             cpd_like_section.get("native_opt_in_merge_search_policy"),
             "cpd_like.native_opt_in_merge_search_policy",
         ),
+        "native_opt_in_package_body_state_guard": _package_body_state_guard_option(
+            cpd_like_section.get("native_opt_in_package_body_state_guard"),
+            "cpd_like.native_opt_in_package_body_state_guard",
+        ),
     }
 
 
@@ -1533,6 +1537,14 @@ def _native_opt_in_merge_search_policy_option(value, key):
     if not policy:
         raise ValueError(f"{key} must be a non-empty string")
     return policy
+
+
+def _package_body_state_guard_option(value, key):
+    if value in (None, ""):
+        return None
+    if not isinstance(value, dict):
+        raise ValueError(f"{key} must be a mapping")
+    return dict(value)
 
 
 def _primitive_score_multipliers_option(value, key):

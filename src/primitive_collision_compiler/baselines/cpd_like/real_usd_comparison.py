@@ -30,6 +30,10 @@ from primitive_collision_compiler.baselines.cpd_like.synthetic import (
 )
 from primitive_collision_compiler.baselines.cpd_like.usd import load_first_mesh
 from primitive_collision_compiler.contracts import CollisionPackage
+from primitive_collision_compiler.diagnostics.cylinder_package_risk import (
+    DEFAULT_THRESHOLDS as PACKAGE_BODY_STATE_GUARD_DEFAULT_THRESHOLDS,
+    package_body_state_guard_assessment,
+)
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
 from primitive_collision_compiler.newton.diagnostics import run_newton_contact_smoke
 from primitive_collision_compiler.newton.drop_settle import (
@@ -212,6 +216,7 @@ def build_real_usd_native_fitting_comparison_report(
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
     native_opt_in_merge_search_policy: str | None = None,
+    native_opt_in_package_body_state_guard: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -344,6 +349,7 @@ def build_real_usd_native_contact_comparison_report(
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
     native_opt_in_merge_search_policy: str | None = None,
+    native_opt_in_package_body_state_guard: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_CONTACT_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_CONTACT_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -391,8 +397,16 @@ def build_real_usd_native_contact_comparison_report(
             "native_contact": native_contact,
         }
         if artifact.native_opt_in is not None:
+            guard_assessment = _native_opt_in_package_body_state_guard_assessment(
+                artifact,
+                native_opt_in_package_body_state_guard,
+            )
+            effective_native_opt_in = _effective_native_opt_in_artifact(
+                artifact,
+                guard_assessment,
+            )
             native_opt_in_contact = _contact_or_mapping_gap(
-                artifact.native_opt_in,
+                effective_native_opt_in,
                 source_dir=source_dir,
                 device=device,
                 claim_boundary=claim_boundary,
@@ -403,6 +417,14 @@ def build_real_usd_native_contact_comparison_report(
                 artifact.legacy,
                 artifact.native_opt_in,
             )
+            if guard_assessment is not None:
+                case["native_opt_in_package_body_state_guard"] = (
+                    _native_opt_in_package_body_state_guard_payload(
+                        artifact,
+                        guard_assessment=guard_assessment,
+                        effective_artifact=effective_native_opt_in,
+                    )
+                )
             case["native_opt_in_contact"] = native_opt_in_contact
         cases.append(case)
 
@@ -435,6 +457,7 @@ def build_real_usd_native_task_comparison_report(
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
     native_opt_in_merge_search_policy: str | None = None,
+    native_opt_in_package_body_state_guard: Mapping[str, object] | None = None,
     drop_settle_options: DropSettleOptions | None = None,
     sphere_rain_options: SphereRainOptions | None = None,
     claim_boundary: str = REAL_USD_NATIVE_TASK_CLAIM_BOUNDARY,
@@ -504,8 +527,16 @@ def build_real_usd_native_task_comparison_report(
             "native_tasks": native_tasks,
         }
         if artifact.native_opt_in is not None:
+            guard_assessment = _native_opt_in_package_body_state_guard_assessment(
+                artifact,
+                native_opt_in_package_body_state_guard,
+            )
+            effective_native_opt_in = _effective_native_opt_in_artifact(
+                artifact,
+                guard_assessment,
+            )
             native_opt_in_contact, native_opt_in_tasks = _task_probe_payloads(
-                artifact.native_opt_in,
+                effective_native_opt_in,
                 source_dir=source_dir,
                 device=device,
                 contact_claim_boundary=contact_claim_boundary,
@@ -525,6 +556,14 @@ def build_real_usd_native_task_comparison_report(
                 artifact.legacy,
                 artifact.native_opt_in,
             )
+            if guard_assessment is not None:
+                case["native_opt_in_package_body_state_guard"] = (
+                    _native_opt_in_package_body_state_guard_payload(
+                        artifact,
+                        guard_assessment=guard_assessment,
+                        effective_artifact=effective_native_opt_in,
+                    )
+                )
             case["native_opt_in_contact"] = native_opt_in_contact
             case["native_opt_in_tasks"] = native_opt_in_tasks
         cases.append(case)
@@ -540,6 +579,109 @@ def build_real_usd_native_task_comparison_report(
         "source_dir": source_dir,
         "device": device,
         "cases": cases,
+    }
+
+
+def _native_opt_in_package_body_state_guard_assessment(
+    artifact: RealUsdComparisonArtifact,
+    native_opt_in_package_body_state_guard: Mapping[str, object] | None,
+) -> dict[str, object] | None:
+    if artifact.native_opt_in is None:
+        return None
+    guard = _normalized_native_opt_in_package_body_state_guard(
+        native_opt_in_package_body_state_guard
+    )
+    if not guard:
+        return None
+    return package_body_state_guard_assessment(
+        native=artifact.native.package,
+        native_opt_in=artifact.native_opt_in.package,
+        thresholds=guard["thresholds"],
+        claim_boundary=str(guard["claim_boundary"]),
+    )
+
+
+def _effective_native_opt_in_artifact(
+    artifact: RealUsdComparisonArtifact,
+    guard_assessment: Mapping[str, object] | None,
+) -> NativeLaneArtifact:
+    if artifact.native_opt_in is None:
+        return artifact.native
+    if not guard_assessment:
+        return artifact.native_opt_in
+    guard = guard_assessment.get("package_body_state_guard", {})
+    if isinstance(guard, Mapping) and guard.get("decision") == "fallback_to_native_package":
+        return artifact.native
+    return artifact.native_opt_in
+
+
+def _native_opt_in_package_body_state_guard_payload(
+    artifact: RealUsdComparisonArtifact,
+    *,
+    guard_assessment: Mapping[str, object],
+    effective_artifact: NativeLaneArtifact,
+) -> dict[str, object]:
+    if artifact.native_opt_in is None:
+        raise ValueError("native_opt_in package body-state guard requires native_opt_in artifact")
+    guard = dict(guard_assessment.get("package_body_state_guard", {}))
+    effective_lane = "native" if effective_artifact is artifact.native else "native_opt_in"
+    return {
+        **guard,
+        "candidate_lane": "native_opt_in",
+        "candidate_package_id": artifact.native_opt_in.package.package_id,
+        "effective_lane": effective_lane,
+        "effective_package_id": effective_artifact.package.package_id,
+        "package_risk_class": guard_assessment.get("package_risk_class"),
+        "risk_flags": guard_assessment.get("risk_flags"),
+        "package_delta_proxy": guard_assessment.get("package_delta_proxy"),
+    }
+
+
+def _normalized_native_opt_in_package_body_state_guard(
+    native_opt_in_package_body_state_guard: Mapping[str, object] | None,
+) -> dict[str, object]:
+    if (
+        native_opt_in_package_body_state_guard is None
+        or native_opt_in_package_body_state_guard == ""
+        or native_opt_in_package_body_state_guard is False
+        or native_opt_in_package_body_state_guard == {}
+    ):
+        return {}
+    if not isinstance(native_opt_in_package_body_state_guard, Mapping):
+        raise ValueError("native opt-in package body-state guard must be a mapping")
+    enabled = bool(native_opt_in_package_body_state_guard.get("enabled", True))
+    if not enabled:
+        return {}
+    mode = str(
+        native_opt_in_package_body_state_guard.get("mode", "fallback_to_native_package")
+    )
+    if mode != "fallback_to_native_package":
+        raise ValueError(
+            "native opt-in package body-state guard mode must be fallback_to_native_package"
+        )
+    raw_thresholds = native_opt_in_package_body_state_guard.get("thresholds", {})
+    if raw_thresholds in (None, ""):
+        raw_thresholds = {}
+    if not isinstance(raw_thresholds, Mapping):
+        raise ValueError("native opt-in package body-state guard thresholds must be a mapping")
+    thresholds = dict(PACKAGE_BODY_STATE_GUARD_DEFAULT_THRESHOLDS)
+    for key, value in raw_thresholds.items():
+        threshold_key = str(key)
+        if threshold_key not in PACKAGE_BODY_STATE_GUARD_DEFAULT_THRESHOLDS:
+            raise ValueError(
+                f"unknown native opt-in package body-state guard threshold: {threshold_key}"
+            )
+        thresholds[threshold_key] = float(value)
+    return {
+        "enabled": True,
+        "mode": mode,
+        "thresholds": thresholds,
+        "claim_boundary": str(
+            native_opt_in_package_body_state_guard.get(
+                "claim_boundary",
+                "cylinder_package_body_state_guard_not_validated_repair_or_default_policy",
+            )
+        ),
     }
 
 

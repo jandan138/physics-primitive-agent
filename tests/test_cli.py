@@ -5256,6 +5256,50 @@ def test_cli_run_real_usd_native_task_comparison_passes_custom_claim_boundary(
     assert json.loads(capsys.readouterr().out)["status"] == "smoke_passed"
 
 
+def test_cli_run_real_usd_native_task_comparison_reads_package_body_state_guard(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = _write_real_usd_native_config(tmp_path, _write_two_mesh_manifest(tmp_path))
+
+    def fake_task_report(**kwargs):
+        assert kwargs["native_opt_in_package_body_state_guard"] == {
+            "enabled": True,
+            "mode": "fallback_to_native_package",
+            "thresholds": {"min_large_cylinder_radius_m": 0.25},
+            "claim_boundary": "diagnostic_package_body_state_guard_not_collision_quality",
+        }
+        return {
+            "stage": "newton_real_usd_native_task_comparison",
+            "status": "smoke_passed",
+            "cases": [],
+        }
+
+    monkeypatch.setattr(cli, "build_real_usd_native_task_comparison_report", fake_task_report)
+
+    config_data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config_data["cpd_like"]["native_opt_in_package_body_state_guard"] = {
+        "enabled": True,
+        "mode": "fallback_to_native_package",
+        "thresholds": {"min_large_cylinder_radius_m": 0.25},
+        "claim_boundary": "diagnostic_package_body_state_guard_not_collision_quality",
+    }
+    config_path.write_text(yaml.safe_dump(config_data), encoding="utf-8")
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-task-comparison",
+            ]
+        )
+        == 0
+    )
+    assert json.loads(capsys.readouterr().out)["status"] == "smoke_passed"
+
+
 def test_cli_run_newton_contact_smoke_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

@@ -74,6 +74,33 @@ def build_cylinder_package_body_state_risk_report(
     }
 
 
+def package_body_state_guard_assessment(
+    *,
+    native: CollisionPackage,
+    native_opt_in: CollisionPackage,
+    thresholds: Mapping[str, float] | None = None,
+    claim_boundary: str = GUARD_CLAIM_BOUNDARY,
+    native_drop_evidence: Mapping[str, object] | None = None,
+    native_opt_in_drop_evidence: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    active_thresholds = dict(DEFAULT_THRESHOLDS)
+    active_thresholds.update(thresholds or {})
+    assessment = _case_assessment(
+        "native_opt_in_package_body_state_guard",
+        {
+            "native": native,
+            "native_opt_in": native_opt_in,
+            "native_drop_evidence": native_drop_evidence or {},
+            "native_opt_in_drop_evidence": native_opt_in_drop_evidence or {},
+        },
+        active_thresholds,
+    )
+    guard = dict(assessment["package_body_state_guard"])
+    guard["claim_boundary"] = claim_boundary
+    assessment["package_body_state_guard"] = guard
+    return assessment
+
+
 def _case_assessment(
     case_name: str,
     payload: Mapping[str, Any],

@@ -730,6 +730,16 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   for unflagged capped Franka. This is diagnostic guard-candidate evidence, not physical
   root-cause proof, a validated repair, a default selector policy, threshold calibration,
   collision-quality validation, or safety evidence.
+- The current code can run an explicit package body-state guard inside the real-USD
+  native-opt-in task path through
+  [2026-05-22 package body-state guard task path](../records/2026-05-22-package-body-state-guard-task-path.md).
+  In the recorded capped bed/Franka config, fitting first creates cylinder-bearing
+  native-opt-in candidates for both roles, then the task path falls back only the flagged bed
+  candidate to the native `32`-box package while preserving the unflagged Franka
+  `23`-box plus `9`-cylinder package; both effective packages pass the recorded drop/settle and
+  sphere-rain task smokes. This is explicitly configured diagnostic task-path evidence, not
+  default behavior, calibrated threshold evidence, physical root-cause proof, a validated repair,
+  collision-quality validation, or safety evidence.
 - The current code can run a separate capped Franka opt-in support-threshold diagnostic through
   [2026-05-21 Franka native opt-in support-threshold probe](../records/2026-05-21-franka-native-opt-in-support-threshold-probe.md).
   The default capped Franka native lane remains box-only; the support-threshold opt-in lane lowers
@@ -1234,6 +1244,10 @@ Use these only after broader benchmark records exist.
   inertial repair, a calibrated risk threshold, contact/floor closure, a default selector policy,
   broad cylinder stability evidence, benchmark evidence, collision-quality validation, or safety
   evidence. It is a report-only geometry proxy over one recorded capped bed/Franka contrast.
+- Do not describe the package body-state guard task path as root-cause proof, a validated
+  inertial repair, calibrated guard thresholds, contact/floor closure, a default selector policy,
+  broad cylinder stability evidence, benchmark evidence, collision-quality validation, or safety
+  evidence. It is one explicitly configured real-USD Newton task-path diagnostic.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

@@ -186,6 +186,10 @@ Proposed | In progress | Complete | Failed | Superseded
   fallback to the recorded passing native package for flagged bed and keeping the recorded passing
   native-opt-in package for unflagged Franka, plus a fresh real Newton rerun of the existing
   guarded support-threshold task smoke.
+- [2026-05-22 Package Body-State Guard Task Path](2026-05-22-package-body-state-guard-task-path.md):
+  explicitly opt-in real-USD task path that first creates cylinder-bearing native-opt-in
+  candidates for capped bed and capped Franka, then falls back only the flagged bed package while
+  preserving the unflagged Franka cylinder package through real Newton task smokes.
 - [2026-05-21 Native Selector Diagnostic Guard](2026-05-21-native-selector-diagnostic-guard.md):
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller
