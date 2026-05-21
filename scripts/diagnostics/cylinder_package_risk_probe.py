@@ -74,14 +74,20 @@ def build_package_risk_probe_report(
                 "native_opt_in": _package_from_payload(
                     bed_case["native_opt_in"]["collision_package"]
                 ),
-                "drop_evidence": _drop_summary(bed_case["native_opt_in_tasks"]),
+                "native_drop_evidence": _drop_summary(bed_case.get("native_tasks", {})),
+                "native_opt_in_drop_evidence": _drop_summary(
+                    bed_case["native_opt_in_tasks"]
+                ),
             },
             "franka": {
                 "native": _package_from_payload(franka_case["native"]["collision_package"]),
                 "native_opt_in": _package_from_payload(
                     franka_case["native_opt_in"]["collision_package"]
                 ),
-                "drop_evidence": _drop_summary(franka_case["native_opt_in_tasks"]),
+                "native_drop_evidence": _drop_summary(franka_case.get("native_tasks", {})),
+                "native_opt_in_drop_evidence": _drop_summary(
+                    franka_case["native_opt_in_tasks"]
+                ),
             },
         },
     )

@@ -140,12 +140,18 @@ def test_package_risk_report_flags_bed_like_case_not_franka_like():
             "bed": {
                 "native": bed_native,
                 "native_opt_in": bed_opt_in,
-                "drop_evidence": _drop("runtime_failure", ["not_settled"], 0.082304),
+                "native_drop_evidence": _drop("smoke_passed", speed=0.0404565),
+                "native_opt_in_drop_evidence": _drop(
+                    "runtime_failure",
+                    ["not_settled"],
+                    0.082304,
+                ),
             },
             "franka": {
                 "native": franka_native,
                 "native_opt_in": franka_opt_in,
-                "drop_evidence": _drop("smoke_passed", speed=0.0007108),
+                "native_drop_evidence": _drop("smoke_passed", speed=0.0007530),
+                "native_opt_in_drop_evidence": _drop("smoke_passed", speed=0.0007108),
             },
         },
     )
@@ -163,6 +169,32 @@ def test_package_risk_report_flags_bed_like_case_not_franka_like():
         "package_inertia_delta": True,
     }
     assert report["case_assessments"]["franka"]["package_risk_class"] == "not_flagged"
+    assert report["case_assessments"]["bed"]["package_body_state_guard"] == {
+        "claim_boundary": (
+            "cylinder_package_body_state_guard_not_validated_repair_or_default_policy"
+        ),
+        "decision": "fallback_to_native_package",
+        "recommended_lane": "native",
+        "recommended_package_id": "bed_native",
+        "rejected_lane": "native_opt_in",
+        "rejected_package_id": "bed_opt_in",
+        "reason": "large_flat_cylinder_body_state_delta_risk",
+        "recommended_lane_recorded_task_status": "smoke_passed",
+        "uses_newton_model_arrays": False,
+    }
+    assert report["case_assessments"]["franka"]["package_body_state_guard"] == {
+        "claim_boundary": (
+            "cylinder_package_body_state_guard_not_validated_repair_or_default_policy"
+        ),
+        "decision": "keep_native_opt_in_package",
+        "recommended_lane": "native_opt_in",
+        "recommended_package_id": "franka_opt_in",
+        "rejected_lane": None,
+        "rejected_package_id": None,
+        "reason": "package_body_state_risk_not_flagged",
+        "recommended_lane_recorded_task_status": "smoke_passed",
+        "uses_newton_model_arrays": False,
+    }
     assert report["contrast_assessment"]["assessment"] == (
         "bed_flagged_franka_not_flagged_matches_recorded_drop_contrast"
     )

@@ -277,6 +277,17 @@ def test_cylinder_package_risk_probe_builds_bed_franka_report(tmp_path, capsys):
                         "asset_role": "bed_dev_smoke",
                         "native": {"collision_package": bed_native.to_dict()},
                         "native_opt_in": {"collision_package": bed_opt_in.to_dict()},
+                        "native_tasks": {
+                            "drop_settle": {
+                                "status": "smoke_passed",
+                                "drop_settle_runs": [
+                                    {
+                                        "failure_labels": [],
+                                        "final_linear_speed_mps": 0.0404565,
+                                    }
+                                ],
+                            }
+                        },
                         "native_opt_in_tasks": {
                             "drop_settle": {
                                 "status": "runtime_failure",
@@ -302,6 +313,17 @@ def test_cylinder_package_risk_probe_builds_bed_franka_report(tmp_path, capsys):
                         "asset_role": "franka_import_smoke",
                         "native": {"collision_package": franka_native.to_dict()},
                         "native_opt_in": {"collision_package": franka_opt_in.to_dict()},
+                        "native_tasks": {
+                            "drop_settle": {
+                                "status": "smoke_passed",
+                                "drop_settle_runs": [
+                                    {
+                                        "failure_labels": [],
+                                        "final_linear_speed_mps": 0.000753,
+                                    }
+                                ],
+                            }
+                        },
                         "native_opt_in_tasks": {
                             "drop_settle": {
                                 "status": "smoke_passed",
@@ -338,7 +360,16 @@ def test_cylinder_package_risk_probe_builds_bed_franka_report(tmp_path, capsys):
     assert file_payload["case_assessments"]["bed"]["package_risk_class"] == (
         "large_flat_cylinder_body_state_delta_risk"
     )
+    assert file_payload["case_assessments"]["bed"]["package_body_state_guard"][
+        "decision"
+    ] == "fallback_to_native_package"
+    assert file_payload["case_assessments"]["bed"]["package_body_state_guard"][
+        "recommended_lane_recorded_task_status"
+    ] == "smoke_passed"
     assert file_payload["case_assessments"]["franka"]["package_risk_class"] == "not_flagged"
+    assert file_payload["case_assessments"]["franka"]["package_body_state_guard"][
+        "decision"
+    ] == "keep_native_opt_in_package"
 
 
 def test_body_com_blend_array_interpolates_selected_axes():

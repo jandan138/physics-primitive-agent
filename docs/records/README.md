@@ -181,6 +181,11 @@ Proposed | In progress | Complete | Failed | Superseded
   package-geometry COM/inertia proxy that flags the recorded capped bed large-flat-cylinder
   package and does not flag the recorded capped Franka cost-guided cylinder package, without
   reading or copying Newton model arrays.
+- [2026-05-22 Cylinder Package Body-State Guard Candidate](2026-05-22-cylinder-package-body-state-guard-candidate.md):
+  opt-in package-level guard-candidate decision over the same bed/Franka reports; it recommends
+  fallback to the recorded passing native package for flagged bed and keeping the recorded passing
+  native-opt-in package for unflagged Franka, plus a fresh real Newton rerun of the existing
+  guarded support-threshold task smoke.
 - [2026-05-21 Native Selector Diagnostic Guard](2026-05-21-native-selector-diagnostic-guard.md):
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller

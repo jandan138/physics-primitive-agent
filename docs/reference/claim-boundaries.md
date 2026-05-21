@@ -722,6 +722,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   evidence, not a calibrated threshold, default policy, broad asset rule, collision-quality
   validation, or proof that boxes are better than cylinders. The reviewer-facing plain-language
   story is [Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
+- The current code can run an opt-in package body-state guard-candidate report through
+  [2026-05-22 cylinder package body-state guard candidate](../records/2026-05-22-cylinder-package-body-state-guard-candidate.md).
+  The report computes package-geometry COM/inertia proxy deltas without reading or copying Newton
+  model arrays, recommends fallback to the recorded passing native package for the flagged capped
+  bed opt-in cylinder package, and recommends keeping the recorded passing native-opt-in package
+  for unflagged capped Franka. This is diagnostic guard-candidate evidence, not physical
+  root-cause proof, a validated repair, a default selector policy, threshold calibration,
+  collision-quality validation, or safety evidence.
 - The current code can run a separate capped Franka opt-in support-threshold diagnostic through
   [2026-05-21 Franka native opt-in support-threshold probe](../records/2026-05-21-franka-native-opt-in-support-threshold-probe.md).
   The default capped Franka native lane remains box-only; the support-threshold opt-in lane lowers

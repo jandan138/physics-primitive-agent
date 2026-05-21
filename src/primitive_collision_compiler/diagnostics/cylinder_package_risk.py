@@ -13,7 +13,13 @@ STAGE = "cylinder_package_body_state_risk_probe"
 CLAIM_BOUNDARY = (
     "cylinder_package_body_state_risk_probe_not_root_cause_proof_or_validated_repair"
 )
+GUARD_CLAIM_BOUNDARY = (
+    "cylinder_package_body_state_guard_not_validated_repair_or_default_policy"
+)
 EVIDENCE_LEVEL = "package_geometry_proxy_bed_franka_cylinder_body_state_risk"
+RISK_CLASS_LARGE_FLAT_CYLINDER_BODY_STATE_DELTA = (
+    "large_flat_cylinder_body_state_delta_risk"
+)
 
 DEFAULT_THRESHOLDS = {
     "min_large_cylinder_radius_m": 0.5,
@@ -82,7 +88,11 @@ def _case_assessment(
     delta = _body_state_delta(native_state, opt_in_state)
     cylinder_summary = _cylinder_summary(opt_in)
     risk_flags = _risk_flags(cylinder_summary, delta, thresholds)
-    drop_evidence = _drop_evidence(payload.get("drop_evidence"))
+    native_drop_evidence = _drop_evidence(payload.get("native_drop_evidence"))
+    opt_in_drop_evidence = _drop_evidence(
+        payload.get("native_opt_in_drop_evidence", payload.get("drop_evidence"))
+    )
+    risk_class = _package_risk_class(risk_flags)
     return {
         "native_package_id": native.package_id,
         "native_opt_in_package_id": opt_in.package_id,
@@ -90,8 +100,50 @@ def _case_assessment(
         "native_opt_in_proxy": package_body_state_proxy(opt_in),
         "package_delta_proxy": delta,
         "risk_flags": risk_flags,
-        "package_risk_class": _package_risk_class(risk_flags),
-        "drop_evidence": drop_evidence,
+        "package_risk_class": risk_class,
+        "package_body_state_guard": _package_body_state_guard_decision(
+            native=native,
+            opt_in=opt_in,
+            risk_class=risk_class,
+            native_drop_evidence=native_drop_evidence,
+            opt_in_drop_evidence=opt_in_drop_evidence,
+        ),
+        "native_drop_evidence": native_drop_evidence,
+        "native_opt_in_drop_evidence": opt_in_drop_evidence,
+        "drop_evidence": opt_in_drop_evidence,
+    }
+
+
+def _package_body_state_guard_decision(
+    *,
+    native: CollisionPackage,
+    opt_in: CollisionPackage,
+    risk_class: str,
+    native_drop_evidence: Mapping[str, object],
+    opt_in_drop_evidence: Mapping[str, object],
+) -> dict[str, object]:
+    if risk_class == RISK_CLASS_LARGE_FLAT_CYLINDER_BODY_STATE_DELTA:
+        return {
+            "claim_boundary": GUARD_CLAIM_BOUNDARY,
+            "decision": "fallback_to_native_package",
+            "recommended_lane": "native",
+            "recommended_package_id": native.package_id,
+            "rejected_lane": "native_opt_in",
+            "rejected_package_id": opt_in.package_id,
+            "reason": risk_class,
+            "recommended_lane_recorded_task_status": _status(native_drop_evidence),
+            "uses_newton_model_arrays": False,
+        }
+    return {
+        "claim_boundary": GUARD_CLAIM_BOUNDARY,
+        "decision": "keep_native_opt_in_package",
+        "recommended_lane": "native_opt_in",
+        "recommended_package_id": opt_in.package_id,
+        "rejected_lane": None,
+        "rejected_package_id": None,
+        "reason": "package_body_state_risk_not_flagged",
+        "recommended_lane_recorded_task_status": _status(opt_in_drop_evidence),
+        "uses_newton_model_arrays": False,
     }
 
 
@@ -246,7 +298,7 @@ def _risk_flags(
 
 def _package_risk_class(risk_flags: Mapping[str, bool]) -> str:
     if all(risk_flags.values()):
-        return "large_flat_cylinder_body_state_delta_risk"
+        return RISK_CLASS_LARGE_FLAT_CYLINDER_BODY_STATE_DELTA
     return "not_flagged"
 
 

@@ -827,6 +827,17 @@ This file separates current evidence from future claims. See [message-map.md](me
   about `0.000744 m`, matching the recorded bed `not_settled` / Franka pass contrast. This is
   report-only diagnostic risk evidence, not root-cause proof, a validated repair,
   contact/floor closure, or a default selector policy.
+- The [2026-05-22 cylinder package body-state guard candidate](../records/2026-05-22-cylinder-package-body-state-guard-candidate.md)
+  extends that package-risk report with an opt-in guard-candidate decision. The recorded capped
+  bed package is flagged and recommends `fallback_to_native_package`; that recommended native
+  lane has recorded Newton task status `smoke_passed`. The recorded capped Franka cost-guided
+  package is not flagged and recommends `keep_native_opt_in_package`; that recommended lane also
+  has recorded Newton task status `smoke_passed`. A fresh real Newton rerun of the existing
+  guarded support-threshold config exits `0` with report `status: smoke_passed`, capped bed
+  guarded native-opt-in at `32` boxes, and capped Franka guarded support-threshold native-opt-in at
+  `29` boxes plus `3` cylinders. This is still one opt-in diagnostic guard-candidate and one
+  configured Newton smoke slice, not a validated repair, default selector policy, threshold
+  calibration, contact/floor closure, or broad asset evidence.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
@@ -1173,7 +1184,10 @@ post-run delta audit links those rows to the primitive-6 target shape-scale rows
 native selector diagnostic guard uses this diagnosis as one controlled package-changing slice:
 the guarded bed opt-in config rejects large flat cylinder candidates and passes the recorded
 task smokes, while guarded Franka keeps its small selected cylinders and also passes. These remain
-one-config diagnostic controls. This does not change default support-aware lane claims.
+one-config diagnostic controls. The package body-state guard-candidate report now makes the same
+bed/Franka direction package-level and COM/inertia-proxy based: flagged bed recommends fallback to
+the recorded passing native package, while unflagged Franka recommends keeping the recorded
+passing native-opt-in package. This does not change default support-aware lane claims.
 
 ## Current Non-Goals
 
