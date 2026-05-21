@@ -4,6 +4,12 @@
 
 2026-05-22
 
+## Status
+
+Superseded for goal-status purposes by
+[2026-05-22 Cylinder Goal Completion Audit After Contact Closure](2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md).
+This record remains useful for the pre-contact-closure audit state.
+
 ## Objective Audited
 
 Resolve why the capped bed selected cylinder records `not_settled` while recorded Franka cylinders
@@ -73,4 +79,3 @@ Newton model arrays:
 - check that it does not block the recorded capped Franka cost-guided cylinder package;
 - run the existing bed/Franka task smokes only after the risk rule is explicitly opt-in and
   claim-bounded.
-

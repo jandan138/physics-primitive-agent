@@ -812,10 +812,18 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   validation, or safety evidence.
 - The current documentation includes a cylinder goal completion audit through
   [2026-05-22 cylinder goal completion audit](../records/2026-05-22-cylinder-goal-completion-audit.md).
-  The audit may say that the diagnostic-mechanism answer is strong while the goal remains active
-  under strict completion rules. It may identify missing evidence categories such as physical
-  root-cause proof, validated package-level repair or selector-policy evidence, and stronger
-  contact/floor closure. It must not be used as evidence that the goal is complete.
+  That audit is superseded for goal-status purposes by the after-contact-closure audit below. It
+  remains a record of the pre-contact-closure state and may identify the evidence categories that
+  were still missing at that point.
+- The current documentation includes a cylinder goal completion audit after contact/floor closure
+  through
+  [2026-05-22 cylinder goal completion audit after contact closure](../records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md).
+  The audit may say that the active bed-vs-Franka cylinder mechanism question is answered for the
+  recorded capped scope: the bed `not_settled` label is best explained as a full-compound
+  COM/inertia body-state sensitivity introduced by one large flat selected cylinder, while
+  Franka cylinders pass in much smaller, unflagged package contexts. It must keep repair
+  validation, selector calibration, broad cylinder stability, benchmark evidence,
+  collision-quality validation, and safety evidence out of scope.
 - The current code can run a report-only cylinder package body-state risk probe through
   [2026-05-22 cylinder package body-state risk probe](../records/2026-05-22-cylinder-package-body-state-risk-probe.md).
   It may say that a volume-weighted COM/inertia proxy computed from `CollisionPackage` geometry
@@ -1252,7 +1260,12 @@ Use these only after broader benchmark records exist.
   evidence. It is a claim-bounded synthesis over the current recorded reports.
 - Do not describe the cylinder goal completion audit as completion evidence, a fix, a validated
   repair plan, a default selector policy, broad cylinder evidence, benchmark evidence,
-  collision-quality validation, or safety evidence. It records remaining gaps.
+  collision-quality validation, or safety evidence. It records the pre-contact-closure remaining
+  gaps and is superseded for goal-status purposes by the after-closure audit.
+- Do not describe the cylinder goal completion audit after contact closure as a validated repair,
+  calibrated selector policy, default behavior, broad cylinder stability evidence, benchmark
+  evidence, collision-quality validation, or safety evidence. It completes the recorded
+  bed-vs-Franka diagnostic mechanism question only.
 - Do not describe the cylinder package body-state risk probe as root-cause proof, a validated
   inertial repair, a calibrated risk threshold, contact/floor closure, a default selector policy,
   broad cylinder stability evidence, benchmark evidence, collision-quality validation, or safety

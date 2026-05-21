@@ -809,6 +809,15 @@ This file separates current evidence from future claims. See [message-map.md](me
   full-package mechanism for the recorded bed blocker, while preserving compact pair-level
   contact/floor anomalies as secondary local-context evidence. It is still not physical root-cause
   proof, a validated repair, broad cylinder evidence, or safety evidence.
+- The [2026-05-22 cylinder goal completion audit after contact closure](../records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
+  records the active bed-vs-Franka cylinder mechanism goal as answered for the recorded capped
+  scope. The final diagnostic answer is that the bed `not_settled` label is a full-compound
+  package effect from one large flat selected cylinder changing COM/inertia body-state accounting
+  enough to leave residual final speed above the recorded drop/settle gate. Franka cylinders pass
+  because their recorded package contexts contain much smaller cylinders and do not show the same
+  body-state risk or residual-speed failure. The audit keeps repair validation, selector
+  calibration, broad cylinder evidence, benchmark evidence, collision-quality validation, and
+  safety evidence out of scope.
 - The [2026-05-22 cylinder repair-candidate controls](../records/2026-05-22-cylinder-repair-candidate-controls.md)
   rerun the capped bed full-compound trace with the opt-in cylinder geometry retained and selected
   native all-box Newton body-state arrays applied before solver creation. The recorded opt-in
@@ -1211,7 +1220,9 @@ flagged bed runs the native `32`-box package, while unflagged Franka runs the na
 secondary contact/floor gap for the recorded full-package bed blocker: same-report failing and
 passing full-package variants share final contact count `4`, contact suffixes `12,15,15,26`, and
 near-zero support heights, so contact/floor is no longer the likely primary full-package
-mechanism. This does not change default support-aware lane claims.
+mechanism. The after-closure completion audit records this thread's diagnostic mechanism question
+as answered for the recorded capped bed/Franka scope. This does not change default support-aware
+lane claims.
 
 ## Current Non-Goals
 

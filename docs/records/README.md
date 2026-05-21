@@ -175,13 +175,18 @@ Proposed | In progress | Complete | Failed | Superseded
   COM, inertia, mass, contact/floor, and full-compound context.
 - [2026-05-22 Cylinder Goal Completion Audit](2026-05-22-cylinder-goal-completion-audit.md):
   strict completion audit for the active bed-vs-Franka cylinder mechanism goal. It records that
-  the diagnostic answer is strong, but the goal remains active because root-cause proof, validated
-  repair/policy evidence, and stronger contact/floor closure are not yet recorded.
+  the diagnostic answer was strong before contact/floor closure, but the goal remained active at
+  that point because root-cause proof, validated repair/policy evidence, and stronger
+  contact/floor closure were not yet recorded.
 - [2026-05-22 Cylinder Contact/Floor Closure Audit](2026-05-22-cylinder-contact-floor-closure-audit.md):
   same-report contact/support audit over the capped-bed full-compound controls; failing and
   passing variants share the final contact count and primitive suffixes, so contact/floor is no
   longer the likely full-package primary mechanism, while pair-level floor controls remain
   secondary local-context evidence.
+- [2026-05-22 Cylinder Goal Completion Audit After Contact Closure](2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md):
+  final requirement-by-requirement audit for the active bed-vs-Franka cylinder mechanism goal; it
+  records the diagnostic answer as complete for the recorded capped bed/Franka scope while keeping
+  repair, calibration, benchmark, collision-quality, and safety claims unsupported.
 - [2026-05-22 Cylinder Package Body-State Risk Probe](2026-05-22-cylinder-package-body-state-risk-probe.md):
   package-geometry COM/inertia proxy that flags the recorded capped bed large-flat-cylinder
   package and does not flag the recorded capped Franka cost-guided cylinder package, without
