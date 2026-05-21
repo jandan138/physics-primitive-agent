@@ -810,6 +810,8 @@ experiments:
       The bed_native_opt_in_model_build_delta_audit.py command summarizes that existing
       model-build report's primitive-6 target shape-scale rows beside the recorded target/rest/full
       mass, COM, and inertia deltas.
+      The --run-inertial-component-ablation command records mass-only, inertia-only, and
+      mass+inertia sensitivity controls while retaining opt-in COM.
     claims_supported:
       - capped bed first-mesh native-exercising diagnostic blocker, not a passing package-level task-smoke result
       - records partial success only; 31 boxes and 1 selected cylinder fully mapped, representative contact canaries passed, and sphere-rain passed
@@ -821,6 +823,7 @@ experiments:
       - records a reproducible full-compound body/contact trace for fixed primitive-6 variants, including body mass, COM, inertia, pose/velocity, support height, and final contact labels
       - records a reproducible inertial-array counterfactual where the opt-in cylinder geometry clears the recorded 360-frame final-speed gate label after applying native all-box body mass/COM/inertia arrays before solver creation
       - records a COM-only field ablation where the opt-in cylinder geometry clears the recorded 360-frame final-speed gate label after applying only native all-box body_com while retaining cylinder mass and inertia
+      - records an inertial-component ablation where native all-box mass-only remains not_settled at 360 and 361 frames, inertia-only clears both final-speed gates, and mass+inertia clears only the 361-frame gate
       - records a COM-axis subset ablation where x, y, z, xy, and yz body_com subsets remain not_settled while xz clears the recorded 360-frame final-speed gate label in one fixed full-compound gate
       - records a COM-blend ablation where 0.25, 0.5, and 0.75 blends toward native all-box body_com remain not_settled for xyz and xz, while the 1.0 endpoint clears the recorded 360-frame final-speed gate label
       - records a COM-blend refinement where full xyz clears the recorded 360-frame final-speed gate label at 0.875 and above while xz still fails at 0.875 and clears the label at 0.9375 and above in the same fixed full-compound gate
@@ -870,6 +873,32 @@ experiments:
       - one-config capped bed COM-only inertial sensitivity control only
       - records that the COM-only override cleared the recorded 360-frame drop/settle not_settled label under matching package anchors
       - no physical package validation, root-cause proof, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-inertial-component-ablation
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-inertial-component-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_component_ablation_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Reproduce the capped bed primitive-6 inertial-component ablation. The diagnostic keeps the
+      opt-in cylinder geometry and COM while applying native all-box mass-only, inertia-only, and
+      mass+inertia component groups before solver creation.
+    claims_supported:
+      - one-config capped bed inertial-component sensitivity control only
+      - records that native all-box mass-only does not clear the recorded 360-frame final-speed gate, inertia-only clears it, and mass+inertia remains not_settled under the 360-frame settings
+      - no physical package validation, root-cause proof, validated inertial repair, scoring-policy evidence, default repair policy, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-inertial-component-ablation-frame361
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame361_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame361_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-inertial-component-ablation --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_inertial_component_ablation_frame361_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Repeat the capped bed primitive-6 inertial-component ablation under the clean-control
+      361-frame window while keeping the same first-mesh opt-in selection scope and Newton
+      settings except for the frame count.
+    claims_supported:
+      - one-config capped bed 361-frame inertial-component sensitivity control only
+      - records that native all-box mass-only remains not_settled while inertia-only and mass+inertia clear the recorded final-speed gate under the 361-frame settings
+      - no sustained-settle proof, physical package validation, root-cause proof, validated inertial repair, scoring-policy evidence, default repair policy, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: bed-native-opt-in-com-axis-subset-ablation
     status: complete
     config: configs/experiments/bed_native_opt_in_probe.yaml

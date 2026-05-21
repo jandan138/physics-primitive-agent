@@ -95,7 +95,21 @@ def test_bed_native_opt_in_compound_trace_script_has_bounded_help():
     assert "--run-com-axis-ablation" in help_text
     assert "--run-com-blend-ablation" in help_text
     assert "--run-com-blend-refinement" in help_text
+    assert "--run-inertial-component-ablation" in help_text
     assert "--run-model-build-audit" in help_text
+    assert module._INERTIAL_COMPONENT_VARIANTS == {
+        "native_opt_in_cylinder_with_native_box_mass": ("body_mass", "body_inv_mass"),
+        "native_opt_in_cylinder_with_native_box_inertia_tensor": (
+            "body_inertia",
+            "body_inv_inertia",
+        ),
+        "native_opt_in_cylinder_with_native_box_mass_inertia": (
+            "body_mass",
+            "body_inv_mass",
+            "body_inertia",
+            "body_inv_inertia",
+        ),
+    }
     assert module._COM_AXIS_VARIANTS[
         "native_opt_in_cylinder_with_native_box_com_xz"
     ] == (0, 2)
@@ -324,6 +338,104 @@ def test_com_blend_ablation_and_refinement_wire_body_com_only(monkeypatch):
             assert package is opt_in_package
             assert kwargs["inertial_override_fields"] == ("body_com",)
             assert kwargs["inertial_override_fields"] != module._INERTIAL_FIELDS
+
+
+def test_inertial_component_ablation_wires_non_com_field_groups(monkeypatch):
+    module = _load_bed_native_opt_in_trace_module()
+    native_package = CollisionPackage(
+        asset_id="asset",
+        package_id="native",
+        primitives=(
+            PrimitiveSpec(
+                kind="box",
+                primitive_id="native:p0",
+                source_faces=(0,),
+                center=(0.0, 0.0, 0.0),
+            ),
+        ),
+    )
+    opt_in_package = CollisionPackage(
+        asset_id="asset",
+        package_id="opt_in",
+        primitives=(
+            PrimitiveSpec(
+                kind="cylinder",
+                primitive_id="opt_in:p0",
+                source_faces=(0,),
+                center=(0.0, 0.0, 0.0),
+            ),
+        ),
+    )
+    artifact = SimpleNamespace(
+        native=SimpleNamespace(package=native_package),
+        native_opt_in=SimpleNamespace(package=opt_in_package),
+    )
+
+    class FakeDropOptions:
+        step_dt_seconds = 0.01
+
+        def to_solver_dict(self):
+            return {"solver": "fake"}
+
+        def to_initial_conditions(self):
+            return {"initial": "fake"}
+
+    captured = []
+
+    def fake_trace_package(package, **kwargs):
+        captured.append((package, kwargs))
+        return {
+            "status": "smoke_passed",
+            "type_counts": {"fake": 1},
+            "model_summary": {"body_mass": [1.0], "body_com": [[0.0, 0.0, 0.0]]},
+            "drop_settle_run": {
+                "status": "smoke_passed",
+                "failure_labels": [],
+                "final_linear_speed_mps": 0.0,
+                "final_contact_count": 1,
+                "final_support_height": 0.0,
+                "max_contact_count": 1,
+            },
+        }
+
+    monkeypatch.setattr(module, "load_compile_config", lambda path: SimpleNamespace(protocol={}))
+    monkeypatch.setattr(module, "_real_usd_native_comparison_options", lambda config: {})
+    monkeypatch.setattr(module, "build_real_usd_native_artifacts", lambda **kwargs: (artifact,))
+    monkeypatch.setattr(module, "_newton_drop_settle_options", lambda section: {"options": FakeDropOptions()})
+    monkeypatch.setattr(module, "_import_newton_runtime", lambda source_dir: SimpleNamespace(status="smoke_passed"))
+    monkeypatch.setattr(module, "_snapshot_inertial_override", lambda *args, **kwargs: {"arrays": {}})
+    monkeypatch.setattr(module, "_trace_package", fake_trace_package)
+
+    report = module.build_compound_trace_report(
+        config_path=Path("fake.yaml"),
+        source_dir="/fake/newton",
+        device="cpu",
+        target_index=0,
+        sample_every_steps=1,
+        tail_steps=0,
+        max_contact_details=0,
+        run_inertial_component_ablation=True,
+    )
+
+    ablation_calls = {
+        name: payload
+        for name, (_, payload) in zip(report["variants"], captured, strict=True)
+        if name in module._INERTIAL_COMPONENT_VARIANTS
+    }
+    assert report["counterfactuals"]["inertial_component_ablation_enabled"] is True
+    assert report["counterfactuals"]["inertial_component_ablation_variants"][
+        "native_opt_in_cylinder_with_native_box_mass_inertia"
+    ] == [
+        "body_mass",
+        "body_inv_mass",
+        "body_inertia",
+        "body_inv_inertia",
+    ]
+    assert ablation_calls
+    for name, kwargs in ablation_calls.items():
+        assert kwargs["inertial_override_fields"] == module._INERTIAL_COMPONENT_VARIANTS[name]
+        assert kwargs["inertial_override_com_axes"] is None
+        assert kwargs["inertial_override_com_blend_fraction"] is None
 
 
 def test_com_blend_refinement_main_forwards_flag(monkeypatch, tmp_path, capsys):

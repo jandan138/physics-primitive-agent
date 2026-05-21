@@ -848,6 +848,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   recorded model-build accounting, not root-cause proof, a Newton mapping bug proof, a validated
   fix, scoring/default-policy evidence, benchmark evidence, collision-quality validation, or
   safety evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
+  --run-inertial-component-ablation`, a capped bed primitive-6 inertial-component sensitivity
+  diagnostic. The dated 360-frame run may cite only that native all-box mass-only remained
+  `not_settled`, inertia-only cleared the recorded final-speed gate, and mass+inertia remained
+  `not_settled` while retaining opt-in COM. The dated 361-frame run may cite only that mass-only
+  remained `not_settled`, while inertia-only and mass+inertia cleared the recorded final-speed
+  gate. These are component sensitivity controls, not root-cause proof, a validated inertial
+  repair, a default repair recipe, physical package validation, scoring/default-policy evidence,
+  benchmark evidence, collision-quality validation, or safety evidence.
 - The real-USD native fitting diagnostic can include a per-selected-cluster candidate audit
   summary that reports whether `cylinder`, `cone`, or `ellipsoid` was the cheapest raw-cost
   candidate and whether it was support-admissible under the current surrogate. This is diagnostic
@@ -1080,6 +1089,9 @@ Use these only after broader benchmark records exist.
 - Do not describe the pre-solver model-build audit or post-run model-build delta audit as proof of
   a Newton mapping bug, physical root cause, validated inertial repair, package-quality
   conclusion, scoring evidence, or default policy change.
+- Do not describe the inertial-component ablation as proof of physical root cause, validated
+  inertial repair, a default repair recipe, package-quality conclusion, scoring evidence, or
+  default policy change.
 - Do not describe the synthetic native selection audit as a quality metric, paper-faithful
   optimizer, proof that native primitives are broadly better, real-USD improvement, or collision
   validation. It is a candidate-cost diagnostic table over toy meshes.

@@ -787,7 +787,9 @@ records exist.
   variants, and its inertial-array counterfactual clears the recorded `360`-frame drop/settle
   label in one sensitivity control after applying native all-box inertial arrays to the opt-in cylinder
   geometry. A COM-only field ablation also clears the recorded `360`-frame final-speed gate label in one sensitivity control
-  while retaining cylinder mass and inertia, and a
+  while retaining cylinder mass and inertia; an inertial-component ablation records mass-only
+  still `not_settled`, inertia-only clearing the `360`/`361` final-speed gates, and mass+inertia
+  clearing only the `361` gate. A
   COM-axis subset ablation records `x`, `y`, `z`, `xy`, and `yz` still `not_settled` while `xz`
   clears that recorded label in the same fixed full-compound gate. A COM-blend ablation records `0.25`,
   `0.5`, and `0.75` blends still `not_settled` for full `xyz` and `xz`, while the `1.0` endpoint
@@ -966,7 +968,7 @@ records exist.
   record includes local cylinder-revert, center/shape, target-only, and compound-context
   attribution diagnostics plus the worktree
   `scripts/diagnostics/bed_native_opt_in_compound_trace.py` full-compound trace,
-  inertial-array counterfactual, COM-only field ablation, COM-axis subset ablation, COM-blend
+  inertial-array counterfactual, COM-only field ablation, inertial-component ablation, COM-axis subset ablation, COM-blend
   ablation, COM-blend refinement, COM-blend refinement tail-summary rerun, the
   `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720` frame-window
   sensitivity sweep, `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py`

@@ -48,6 +48,19 @@ _INERTIAL_FIELDS = (
     "body_inertia",
     "body_inv_inertia",
 )
+_INERTIAL_COMPONENT_VARIANTS = {
+    "native_opt_in_cylinder_with_native_box_mass": ("body_mass", "body_inv_mass"),
+    "native_opt_in_cylinder_with_native_box_inertia_tensor": (
+        "body_inertia",
+        "body_inv_inertia",
+    ),
+    "native_opt_in_cylinder_with_native_box_mass_inertia": (
+        "body_mass",
+        "body_inv_mass",
+        "body_inertia",
+        "body_inv_inertia",
+    ),
+}
 
 
 def _fraction_token(fraction: float) -> str:
@@ -142,6 +155,14 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--run-inertial-component-ablation",
+        action="store_true",
+        help=(
+            "also run opt-in cylinder geometry with native all-box mass-only, "
+            "inertia-only, and mass+inertia fields while retaining opt-in COM"
+        ),
+    )
+    parser.add_argument(
         "--run-model-build-audit",
         action="store_true",
         help="also record full/target/rest Newton model mass, COM, and inertia before solver creation",
@@ -168,6 +189,7 @@ def main(argv: list[str] | None = None) -> int:
                 run_com_axis_ablation=args.run_com_axis_ablation,
                 run_com_blend_ablation=args.run_com_blend_ablation,
                 run_com_blend_refinement=args.run_com_blend_refinement,
+                run_inertial_component_ablation=args.run_inertial_component_ablation,
                 run_model_build_audit=args.run_model_build_audit,
             )
     except Exception as exc:
@@ -203,6 +225,7 @@ def build_compound_trace_report(
     run_com_axis_ablation: bool = False,
     run_com_blend_ablation: bool = False,
     run_com_blend_refinement: bool = False,
+    run_inertial_component_ablation: bool = False,
     run_model_build_audit: bool = False,
 ) -> dict[str, object]:
     if sample_every_steps <= 0:
@@ -253,6 +276,7 @@ def build_compound_trace_report(
         or run_com_axis_ablation
         or run_com_blend_ablation
         or run_com_blend_refinement
+        or run_inertial_component_ablation
     ):
         inertial_override = _snapshot_inertial_override(
             variants["native_control_box"],
@@ -272,6 +296,9 @@ def build_compound_trace_report(
             variants[variant_name] = opt_in_package
     if run_com_blend_refinement:
         for variant_name in _COM_BLEND_REFINEMENT_VARIANTS:
+            variants[variant_name] = opt_in_package
+    if run_inertial_component_ablation:
+        for variant_name in _INERTIAL_COMPONENT_VARIANTS:
             variants[variant_name] = opt_in_package
 
     variant_reports: dict[str, object] = {}
@@ -296,6 +323,8 @@ def build_compound_trace_report(
             blend_spec = _COM_BLEND_REFINEMENT_VARIANTS[variant_name]
             override_com_axes = blend_spec["axes"]
             override_com_blend_fraction = blend_spec["fraction"]
+        elif variant_name in _INERTIAL_COMPONENT_VARIANTS:
+            override_fields = _INERTIAL_COMPONENT_VARIANTS[variant_name]
         variant_reports[variant_name] = _trace_package(
             package,
             source_dir=source_dir,
@@ -376,6 +405,13 @@ def build_compound_trace_report(
             }
             if run_com_blend_refinement
             else {},
+            "inertial_component_ablation_enabled": run_inertial_component_ablation,
+            "inertial_component_ablation_variants": {
+                name: list(fields)
+                for name, fields in _INERTIAL_COMPONENT_VARIANTS.items()
+            }
+            if run_inertial_component_ablation
+            else {},
             "model_build_audit_enabled": run_model_build_audit,
         },
         "model_build_audit": model_build_audit,
@@ -386,10 +422,10 @@ def build_compound_trace_report(
         "interpretation_boundary": (
             "Trace diagnostics expose Newton body, support-height, and contact-manifold "
             "differences for this recorded bed full-compound task only. The optional inertia "
-            "counterfactual, COM field/blend ablations, and model-build audit are one-config "
-            "sensitivity controls, not physically validated collision packages. These "
-            "diagnostics do not prove general cylinder quality, benchmark behavior, root "
-            "cause, or an automatic repair policy."
+            "counterfactual, inertial-component controls, COM field/blend ablations, and "
+            "model-build audit are one-config sensitivity controls, not physically validated "
+            "collision packages. These diagnostics do not prove general cylinder quality, "
+            "benchmark behavior, root cause, or an automatic repair policy."
         ),
     }
 

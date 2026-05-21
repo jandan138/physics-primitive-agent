@@ -138,6 +138,11 @@ Task comparison:
   inverse mass, inertia, and inverse inertia unchanged while copying only the native all-box
   `body_com`. In the dated run this COM-only field ablation passes drop/settle with final speed
   about `0.0425127 m/s`;
+- the same script with `--run-inertial-component-ablation` keeps the opt-in cylinder geometry and
+  opt-in `body_com` while copying native all-box mass-only, inertia-only, and mass+inertia
+  component groups. In the dated 360-frame run mass-only and mass+inertia remain `not_settled`
+  while inertia-only passes; in the dated 361-frame run mass-only remains `not_settled` while
+  inertia-only and mass+inertia pass;
 - the same script with `--run-com-axis-ablation` keeps the opt-in cylinder geometry, mass,
   inverse mass, inertia, and inverse inertia unchanged while copying fixed single-axis and
   pairwise subsets of the native all-box `body_com`. In the dated run `x`, `y`, `z`, `xy`, and
@@ -255,6 +260,7 @@ Allowed wording:
 - "capped bed primitive-6 full-compound body/contact trace."
 - "capped bed primitive-6 full-compound inertial-array counterfactual."
 - "capped bed primitive-6 COM-only inertial-field ablation."
+- "capped bed primitive-6 inertial-component ablation."
 - "capped bed primitive-6 COM-axis subset field ablation."
 - "capped bed primitive-6 COM-blend field ablation."
 - "capped bed primitive-6 COM-blend refinement."
@@ -288,6 +294,8 @@ Do not claim:
 - that the inertial-array counterfactual is a physically validated package, root-cause proof,
   scoring-policy evidence, or a default repair recipe.
 - that the COM-only inertial-field ablation proves causality or validates a package fix.
+- that the inertial-component ablation proves root cause, validates an inertial repair, provides a
+  default repair recipe, or validates a package fix.
 - that the COM-axis subset field ablation proves causality, proves the `y` component is
   irrelevant, or validates a package fix.
 - that the COM-blend field ablation proves a COM threshold, causality, or a package fix.
@@ -401,6 +409,18 @@ PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-p
   --source-dir '$NEWTON_SOURCE_DIR' \
   --run-inertia-field-ablation \
   --output reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_field_ablation_2026-05-21.stdout.json
+```
+
+Bed opt-in inertial-component ablation:
+
+```bash
+NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton \
+PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python \
+  scripts/diagnostics/bed_native_opt_in_compound_trace.py \
+  --config configs/experiments/bed_native_opt_in_probe.yaml \
+  --source-dir /cpfs/user/zhuzihou/dev/newton \
+  --run-inertial-component-ablation \
+  --output reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_component_ablation_2026-05-21.stdout.json
 ```
 
 Bed opt-in COM-axis subset field ablation:

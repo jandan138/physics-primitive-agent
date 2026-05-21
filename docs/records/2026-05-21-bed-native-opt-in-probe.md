@@ -53,6 +53,11 @@ drop/settle task gate.
   exit `0`, report `status: diagnostic_recorded`.
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-inertia-field-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_field_ablation_2026-05-21.stdout.json`:
   exit `0`, report `status: diagnostic_recorded`.
+- `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-inertial-component-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_component_ablation_2026-05-21.stdout.json`:
+  exit `0`, report `status: diagnostic_recorded`. This 360-frame diagnostic keeps the opt-in
+  cylinder geometry and COM while applying native all-box inertial component groups. The
+  mass-only variant remained `not_settled`, the inertia-only variant cleared the recorded
+  final-speed gate, and the mass+inertia variant remained `not_settled`.
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-com-axis-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_com_axis_subset_ablation_2026-05-21.stdout.json`:
   exit `0`, report `status: diagnostic_recorded`.
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-com-blend-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_com_blend_ablation_2026-05-21.stdout.json`:
@@ -66,6 +71,10 @@ drop/settle task gate.
   exit `0`, report `status: diagnostic_recorded`. This rerun keeps the same capped bed
   first-mesh selection scope and `cylinder: 0.88` opt-in multiplier, but changes drop/settle to
   `361` frames.
+- `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame361_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-inertial-component-ablation --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_inertial_component_ablation_frame361_2026-05-21.stdout.json`:
+  exit `0`, report `status: diagnostic_recorded`. This repeats the inertial-component ablation
+  under the clean-control `361` frame window. The mass-only variant remained `not_settled`, while
+  the inertia-only and mass+inertia variants cleared the recorded final-speed gate.
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame362_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json`:
   exit `0`, report `status: diagnostic_recorded`. This rerun keeps the same capped bed
   first-mesh selection scope and `cylinder: 0.88` opt-in multiplier, but changes drop/settle to
@@ -264,6 +273,15 @@ Exploratory checks:
   drop/settle gate, this COM-only override passed with final speed about `0.0425127 m/s`, final
   contact count `4`, and the same final support-contact labels (`12`, `15`, `15`, and `26`)
   against the ground plane.
+- An inertial-component ablation then kept the opt-in cylinder geometry and opt-in `body_com`
+  while copying selected native all-box inertial component groups before solver creation. Under
+  the 360-frame gate, copying `body_mass`/`body_inv_mass` only remained `not_settled` with final
+  speed about `0.0962726 m/s`; copying `body_inertia`/`body_inv_inertia` only passed with final
+  speed about `0.0427094 m/s`; copying mass plus inertia remained `not_settled` with final speed
+  about `0.0618353 m/s`. Under the clean-control 361-frame window, mass-only remained
+  `not_settled` with final speed about `0.0610217 m/s`, while inertia-only passed at about
+  `0.0343839 m/s` and mass+inertia passed at about `0.0381616 m/s`. This is component
+  sensitivity accounting only, not a physical inertial repair or root-cause proof.
 - A COM-axis subset ablation then kept the opt-in cylinder geometry, mass, inverse mass, inertia,
   and inverse inertia unchanged while copying selected axes from the native all-box `body_com`.
   The original opt-in cylinder failed again with final speed about `0.0823040 m/s`, and the
@@ -444,6 +462,11 @@ Exploratory checks:
 - Primitive-6 COM-only inertial-field ablation report:
   `reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_field_ablation_2026-05-21.stdout.json`
   (ignored; not committed). Runtime logs are in the matching `.stderr` file.
+- Primitive-6 inertial-component ablation reports:
+  `reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_component_ablation_2026-05-21.stdout.json`
+  and
+  `reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_inertial_component_ablation_frame361_2026-05-21.stdout.json`
+  (ignored; not committed). Runtime logs are in the matching `.stderr` files.
 - Primitive-6 COM-axis subset ablation report:
   `reports/generated/bed_native_opt_in_probe/drop_primitive6_com_axis_subset_ablation_2026-05-21.stdout.json`
   (ignored; not committed). Runtime logs are in the matching `.stderr` file.
@@ -521,6 +544,10 @@ Exploratory checks:
 - Records a COM-only field ablation: with the opt-in cylinder geometry and mass/inertia retained,
   copying only the native all-box Newton `body_com` clears the drop/settle `not_settled` label for
   this run.
+- Records an inertial-component ablation: with the opt-in cylinder geometry and COM retained,
+  native all-box mass-only does not clear the recorded final-speed gate at 360 or 361 frames,
+  while native all-box inertia-only clears it at both windows and mass+inertia clears it only in
+  the clean-control 361-frame window.
 - Records a COM-axis subset ablation: with the opt-in cylinder geometry and mass/inertia retained,
   copying only `body_com` axes `x`, `y`, `z`, `xy`, or `yz` does not clear the recorded
   `not_settled` label, while copying the `x+z` subset does clear it in this run.
@@ -603,6 +630,9 @@ Exploratory checks:
 - The model-build audit and post-run model-build delta audit are one-config accounting
   diagnostics. They do not prove a Newton mapping bug, a physical root cause, a validated
   inertial repair, scoring evidence, default-policy behavior, or a package-quality conclusion.
+- The inertial-component ablation is a component sensitivity diagnostic only. It does not prove
+  root cause, a validated inertial repair, a default repair recipe, physical package validation,
+  scoring evidence, or collision-quality validation.
 - Does not support native primitive quality improvement, calibrated cylinder score multipliers,
   collision-quality validation, benchmark superiority, deployment readiness, safety
   certification, real-world transfer, or default asset behavior.
@@ -611,8 +641,9 @@ Exploratory checks:
 
 - Use the recorded full-compound trace, inertial counterfactual, COM-only field ablation,
   COM-axis subset ablation, COM-blend ablation, COM-blend refinement, COM-blend refinement
-  tail-summary rerun, the `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`
-  frame-window sensitivity sweep, the `361`/`362` frame-transition audit, the `361` clean-frame
-  blocker audit, pre-solver model-build audit, and post-run model-build delta audit as the
-  current reproducible bed blocker evidence; do not broaden bed native opt-in claims or change
-  default support-aware asset configs from this evidence.
+  tail-summary rerun, inertial-component ablation, the
+  `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720` frame-window
+  sensitivity sweep, the `361`/`362` frame-transition audit, the `361` clean-frame blocker audit,
+  pre-solver model-build audit, and post-run model-build delta audit as the current reproducible
+  bed blocker evidence; do not broaden bed native opt-in claims or change default support-aware
+  asset configs from this evidence.

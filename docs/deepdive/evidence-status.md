@@ -705,7 +705,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   into the opt-in cylinder model before solver creation clears the recorded `360`-frame
   drop/settle `not_settled` label in this one recorded run. A COM-only field ablation then keeps cylinder geometry,
   mass/inverse mass, and inertia/inverse inertia unchanged while copying only the native all-box
-  `body_com`; it also clears the recorded `360`-frame final-speed gate label in this same fixed full-compound gate. A COM-axis
+  `body_com`; it also clears the recorded `360`-frame final-speed gate label in this same fixed full-compound gate. An inertial-component
+  ablation keeps cylinder geometry and opt-in COM, records native all-box mass-only still
+  `not_settled` at 360 and 361 frames, and records inertia-only clearing both windows while
+  mass+inertia clears only the 361-frame window. A COM-axis
   subset ablation keeps the same geometry and mass/inertia, then copies selected native all-box
   `body_com` axes: `x`, `y`, `z`, `xy`, and `yz` remain `not_settled`, while `xz` clears the
   recorded `360`-frame final-speed gate label in this one fixed gate. A COM-blend ablation then applies fixed `0.0`, `0.25`,
@@ -1037,7 +1040,9 @@ variants, keeping the next question focused on body-state/inertia/residual-veloc
 rather than another solver-parameter sweep. The follow-up inertial-array counterfactual clears the
 recorded drop/settle label when native all-box inertial arrays are applied to the cylinder
 geometry, and the COM-only field ablation clears the same label while retaining cylinder mass and
-inertia. The COM-axis subset ablation records only the `xz` subset clearing the same label while
+inertia. The inertial-component ablation records mass-only still `not_settled`, inertia-only
+clearing the 360/361 final-speed gates, and mass+inertia clearing only the 361-frame gate. The
+COM-axis subset ablation records only the `xz` subset clearing the same label while
 `x`, `y`, `z`, `xy`, and `yz` remain `not_settled`. The COM-blend ablation records that
 intermediate `0.25`, `0.5`, and `0.75` blends remain `not_settled` for both full `xyz` and `xz`,
 while the `1.0` endpoint clears the same recorded `360`-frame final-speed gate label. The
