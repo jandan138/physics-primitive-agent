@@ -43,6 +43,12 @@ Complete
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/franka_native_opt_in_probe.yaml --run-real-usd-native-task-comparison > reports/generated/franka_native_opt_in_probe/task_rerun_after_com_axis_2026-05-21.json`:
   exit `0`, report `status: smoke_passed`. This current-worktree rerun after the bed COM-axis
   diagnostic preserved the capped Franka opt-in passing task-smoke status.
+- `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/franka_native_opt_in_probe.yaml --run-real-usd-native-task-comparison > reports/generated/franka_native_opt_in_probe/task_rerun_after_bed_inertial_component_2026-05-21.json`:
+  exit `0`, report `status: smoke_passed`. This current-main rerun after the capped bed
+  inertial-component diagnostic preserved the capped Franka opt-in passing task-smoke status:
+  default legacy/native lanes remained `32` boxes, the opt-in lane remained `24` boxes plus `8`
+  cylinders, and all mapped/contact/drop-settle/sphere-rain checks passed under the recorded
+  settings.
 
 Passing capped Franka result:
 
@@ -63,6 +69,9 @@ Passing capped Franka result:
 - Current-worktree rerun report:
   `reports/generated/franka_native_opt_in_probe/task_rerun_after_com_axis_2026-05-21.json`
   (ignored; not committed). Runtime logs are in the matching `.stderr` file.
+- Current-main rerun after capped bed inertial-component diagnostics:
+  `reports/generated/franka_native_opt_in_probe/task_rerun_after_bed_inertial_component_2026-05-21.json`
+  (ignored; not committed). Runtime logs are in the matching `.stderr` file.
 - Failed two-role exploratory report:
   `reports/generated/bed_franka_native_probe_comparison/real_usd_native_task_opt_in_2026-05-21.json`
   (ignored; not committed).
@@ -81,5 +90,6 @@ Passing capped Franka result:
 
 ## Next Action
 
-- Diagnose why the capped bed opt-in package passes contact but fails task smokes before expanding
-  the opt-in real-USD native-exercising path beyond capped Franka.
+- Treat capped Franka opt-in as the current passing native-exercising smoke and capped bed opt-in
+  as the current diagnosed blocker; do not expand the opt-in real-USD path or change default
+  support-aware configs without a separate package-changing algorithm slice.

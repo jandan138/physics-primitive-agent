@@ -777,6 +777,19 @@ experiments:
       - current-worktree rerun of the capped Franka opt-in native-exercising task smoke
       - records that the Franka opt-in lane remained smoke_passed after the bed COM-axis diagnostic work
       - no calibrated multiplier, native primitive quality improvement, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: franka-native-opt-in-task-rerun-after-bed-inertial-component
+    status: complete
+    config: configs/experiments/franka_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/franka_native_opt_in_probe.yaml --run-real-usd-native-task-comparison > reports/generated/franka_native_opt_in_probe/task_rerun_after_bed_inertial_component_2026-05-21.json
+    record: docs/records/2026-05-21-franka-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped Franka opt-in contact-gated Newton task smoke after the capped bed
+      inertial-component diagnostics to confirm the current main branch preserves the passing
+      native-exercising Franka evidence.
+    claims_supported:
+      - current-main rerun of the capped Franka opt-in native-exercising task smoke
+      - records that the Franka opt-in lane remained smoke_passed after the capped bed inertial-component diagnostic work
+      - no calibrated multiplier, native primitive quality improvement, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: bed-native-opt-in-probe
     status: complete
     config: configs/experiments/bed_native_opt_in_probe.yaml
