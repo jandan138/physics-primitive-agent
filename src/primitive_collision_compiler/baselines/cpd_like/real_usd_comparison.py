@@ -63,6 +63,7 @@ REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY = (
 REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL = "offline_candidate_loss_diagnosis_smoke"
 LEGACY_LABEL = "legacy_box_sphere_capsule"
 NATIVE_LABEL = "native_newton_bundle"
+NATIVE_OPT_IN_LABEL = "native_newton_bundle_opt_in"
 CANDIDATE_LOSS_TIE_TOLERANCE = 1e-12
 CANDIDATE_LOSS_NEAR_MISS_RELATIVE_GAP_THRESHOLD = 0.25
 CANDIDATE_LOSS_LOW_SUPPORT_FACE_THRESHOLD = SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES - 1
@@ -84,7 +85,7 @@ class NativeLaneArtifact:
 
     def to_summary(self) -> dict[str, object]:
         metrics = self.objective["metrics"]
-        return {
+        payload = {
             "label": self.label,
             "lane": self.lane,
             "status": self.objective["status"],
@@ -109,10 +110,16 @@ class NativeLaneArtifact:
                 normalizer_volume=float(
                     metrics["geometric_excess_proxy"]["normalizer_volume"]
                 ),
+                primitive_score_multipliers=self.decomposition.primitive_score_multipliers,
             ),
             "package_mapping": package_mapping_summary(self.package),
             "collision_package": self.package.to_dict(),
         }
+        if self.decomposition.primitive_score_multipliers:
+            payload["primitive_score_multipliers"] = dict(
+                self.decomposition.primitive_score_multipliers
+            )
+        return payload
 
 
 @dataclass(frozen=True)
@@ -121,15 +128,23 @@ class RealUsdComparisonArtifact:
     asset_path: str
     legacy: NativeLaneArtifact
     native: NativeLaneArtifact
+    native_opt_in: NativeLaneArtifact | None = None
 
     def to_summary(self) -> dict[str, object]:
-        return {
+        payload = {
             "asset_role": self.asset_role,
             "asset_path": self.asset_path,
             "legacy": self.legacy.to_summary(),
             "native": self.native.to_summary(),
             "comparison": _comparison_summary(self.legacy, self.native),
         }
+        if self.native_opt_in is not None:
+            payload["native_opt_in"] = self.native_opt_in.to_summary()
+            payload["native_opt_in_comparison"] = _comparison_summary(
+                self.legacy,
+                self.native_opt_in,
+            )
+        return payload
 
 
 def build_real_usd_native_artifacts(
@@ -142,6 +157,7 @@ def build_real_usd_native_artifacts(
     max_source_faces_by_role: Mapping[str, int] | None = None,
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
+    native_opt_in_score_multipliers: Mapping[str, float] | None = None,
 ) -> tuple[RealUsdComparisonArtifact, ...]:
     _validate_roles(roles)
     assets = _resolve_manifest_roles(manifest_path, roles)
@@ -156,6 +172,7 @@ def build_real_usd_native_artifacts(
             native_subset=native_subset,
             component_merge_options=component_merge_options,
             objective_options=objective_options,
+            native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         )
         for asset in assets
     )
@@ -171,6 +188,7 @@ def build_real_usd_native_fitting_comparison_report(
     max_source_faces_by_role: Mapping[str, int] | None = None,
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
+    native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -187,12 +205,14 @@ def build_real_usd_native_fitting_comparison_report(
         max_source_faces_by_role=max_source_faces_by_role,
         component_merge_options=component_merge_options,
         objective_options=options,
+        native_opt_in_score_multipliers=native_opt_in_score_multipliers,
     )
     cases = [artifact.to_summary() for artifact in artifacts]
     statuses = [
-        str(lane["status"])
+        str(case[lane_key]["status"])
         for case in cases
-        for lane in (case["legacy"], case["native"])
+        for lane_key in ("legacy", "native", "native_opt_in")
+        if lane_key in case
     ]
     return {
         "stage": REAL_USD_NATIVE_FITTING_STAGE,
@@ -218,6 +238,7 @@ def build_real_usd_candidate_loss_diagnosis_report(
     max_source_faces_by_role: Mapping[str, int] | None = None,
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
+    native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     claim_boundary: str = REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -234,6 +255,7 @@ def build_real_usd_candidate_loss_diagnosis_report(
         max_source_faces_by_role=max_source_faces_by_role,
         component_merge_options=component_merge_options,
         objective_options=options,
+        native_opt_in_score_multipliers=native_opt_in_score_multipliers,
     )
     cases = []
     statuses = []
@@ -288,6 +310,7 @@ def build_real_usd_native_contact_comparison_report(
     max_source_faces_by_role: Mapping[str, int] | None = None,
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
+    native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_CONTACT_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_CONTACT_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -304,6 +327,7 @@ def build_real_usd_native_contact_comparison_report(
             claim_boundary=REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
             evidence_level=REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
         ),
+        native_opt_in_score_multipliers=native_opt_in_score_multipliers,
     )
     cases: list[dict[str, object]] = []
     child_statuses: list[str] = []
@@ -321,17 +345,30 @@ def build_real_usd_native_contact_comparison_report(
             claim_boundary=claim_boundary,
         )
         child_statuses.extend([str(legacy_contact["status"]), str(native_contact["status"])])
-        cases.append(
-            {
-                "asset_role": artifact.asset_role,
-                "asset_path": artifact.asset_path,
-                "comparison": _comparison_summary(artifact.legacy, artifact.native),
-                "legacy": artifact.legacy.to_summary(),
-                "native": artifact.native.to_summary(),
-                "legacy_contact": legacy_contact,
-                "native_contact": native_contact,
-            }
-        )
+        case = {
+            "asset_role": artifact.asset_role,
+            "asset_path": artifact.asset_path,
+            "comparison": _comparison_summary(artifact.legacy, artifact.native),
+            "legacy": artifact.legacy.to_summary(),
+            "native": artifact.native.to_summary(),
+            "legacy_contact": legacy_contact,
+            "native_contact": native_contact,
+        }
+        if artifact.native_opt_in is not None:
+            native_opt_in_contact = _contact_or_mapping_gap(
+                artifact.native_opt_in,
+                source_dir=source_dir,
+                device=device,
+                claim_boundary=claim_boundary,
+            )
+            child_statuses.append(str(native_opt_in_contact["status"]))
+            case["native_opt_in"] = artifact.native_opt_in.to_summary()
+            case["native_opt_in_comparison"] = _comparison_summary(
+                artifact.legacy,
+                artifact.native_opt_in,
+            )
+            case["native_opt_in_contact"] = native_opt_in_contact
+        cases.append(case)
 
     return {
         "stage": REAL_USD_NATIVE_CONTACT_STAGE,
@@ -358,6 +395,7 @@ def build_real_usd_native_task_comparison_report(
     max_source_faces_by_role: Mapping[str, int] | None = None,
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
+    native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     drop_settle_options: DropSettleOptions | None = None,
     sphere_rain_options: SphereRainOptions | None = None,
     claim_boundary: str = REAL_USD_NATIVE_TASK_CLAIM_BOUNDARY,
@@ -377,6 +415,7 @@ def build_real_usd_native_task_comparison_report(
             claim_boundary=REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
             evidence_level=REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
         ),
+        native_opt_in_score_multipliers=native_opt_in_score_multipliers,
     )
     drop_settle_options = drop_settle_options or DropSettleOptions()
     sphere_rain_options = sphere_rain_options or SphereRainOptions()
@@ -411,19 +450,42 @@ def build_real_usd_native_task_comparison_report(
                 str(native_tasks["sphere_rain"]["status"]),
             ]
         )
-        cases.append(
-            {
-                "asset_role": artifact.asset_role,
-                "asset_path": artifact.asset_path,
-                "comparison": _comparison_summary(artifact.legacy, artifact.native),
-                "legacy": artifact.legacy.to_summary(),
-                "native": artifact.native.to_summary(),
-                "legacy_contact": legacy_contact,
-                "native_contact": native_contact,
-                "legacy_tasks": legacy_tasks,
-                "native_tasks": native_tasks,
-            }
-        )
+        case = {
+            "asset_role": artifact.asset_role,
+            "asset_path": artifact.asset_path,
+            "comparison": _comparison_summary(artifact.legacy, artifact.native),
+            "legacy": artifact.legacy.to_summary(),
+            "native": artifact.native.to_summary(),
+            "legacy_contact": legacy_contact,
+            "native_contact": native_contact,
+            "legacy_tasks": legacy_tasks,
+            "native_tasks": native_tasks,
+        }
+        if artifact.native_opt_in is not None:
+            native_opt_in_contact, native_opt_in_tasks = _task_probe_payloads(
+                artifact.native_opt_in,
+                source_dir=source_dir,
+                device=device,
+                contact_claim_boundary=contact_claim_boundary,
+                task_claim_boundary=claim_boundary,
+                drop_settle_options=drop_settle_options,
+                sphere_rain_options=sphere_rain_options,
+            )
+            child_statuses.extend(
+                [
+                    str(native_opt_in_contact["status"]),
+                    str(native_opt_in_tasks["drop_settle"]["status"]),
+                    str(native_opt_in_tasks["sphere_rain"]["status"]),
+                ]
+            )
+            case["native_opt_in"] = artifact.native_opt_in.to_summary()
+            case["native_opt_in_comparison"] = _comparison_summary(
+                artifact.legacy,
+                artifact.native_opt_in,
+            )
+            case["native_opt_in_contact"] = native_opt_in_contact
+            case["native_opt_in_tasks"] = native_opt_in_tasks
+        cases.append(case)
 
     return {
         "stage": REAL_USD_NATIVE_TASK_STAGE,
@@ -484,6 +546,7 @@ def _artifact_for_asset(
     native_subset: tuple[str, ...],
     component_merge_options: Mapping[str, object] | None,
     objective_options: CPDLikeObjectiveOptions | None,
+    native_opt_in_score_multipliers: Mapping[str, float] | None,
 ) -> RealUsdComparisonArtifact:
     legacy = _lane_artifact(
         label=LEGACY_LABEL,
@@ -495,6 +558,7 @@ def _artifact_for_asset(
         primitive_subset=legacy_subset,
         component_merge_options=component_merge_options,
         objective_options=objective_options,
+        primitive_score_multipliers=None,
     )
     native = _lane_artifact(
         label=NATIVE_LABEL,
@@ -506,12 +570,28 @@ def _artifact_for_asset(
         primitive_subset=native_subset,
         component_merge_options=component_merge_options,
         objective_options=objective_options,
+        primitive_score_multipliers=None,
     )
+    native_opt_in = None
+    if native_opt_in_score_multipliers:
+        native_opt_in = _lane_artifact(
+            label=NATIVE_OPT_IN_LABEL,
+            lane="native_opt_in",
+            asset_role=asset_role,
+            asset_path=asset_path,
+            max_source_faces=max_source_faces,
+            max_primitives=max_primitives,
+            primitive_subset=native_subset,
+            component_merge_options=component_merge_options,
+            objective_options=objective_options,
+            primitive_score_multipliers=native_opt_in_score_multipliers,
+        )
     return RealUsdComparisonArtifact(
         asset_role=asset_role,
         asset_path=asset_path,
         legacy=legacy,
         native=native,
+        native_opt_in=native_opt_in,
     )
 
 
@@ -526,6 +606,7 @@ def _lane_artifact(
     primitive_subset: tuple[str, ...],
     component_merge_options: Mapping[str, object] | None,
     objective_options: CPDLikeObjectiveOptions | None,
+    primitive_score_multipliers: Mapping[str, float] | None,
 ) -> NativeLaneArtifact:
     mesh = load_first_mesh(asset_path, max_faces=max_source_faces)
     decomposition = decompose_mesh(
@@ -533,6 +614,7 @@ def _lane_artifact(
         max_primitives=max_primitives,
         primitive_subset=primitive_subset,
         **_component_merge_kwargs(component_merge_options),
+        primitive_score_multipliers=primitive_score_multipliers,
     )
     package_asset_id = f"{asset_role}_{lane}"
     options = objective_options or CPDLikeObjectiveOptions(
@@ -618,6 +700,7 @@ def _candidate_audit_summary(
     decomposition: CPDLikeDecompositionReport,
     *,
     normalizer_volume: float,
+    primitive_score_multipliers: Mapping[str, float] | None = None,
 ) -> dict[str, object]:
     extension_kinds = tuple(
         primitive
@@ -665,6 +748,7 @@ def _candidate_audit_summary(
                 mesh,
                 face_ids,
                 candidates,
+                primitive_score_multipliers=primitive_score_multipliers,
             )
         ]
         ranked = [{**row, "rank": rank} for rank, row in enumerate(ranked, start=1)]

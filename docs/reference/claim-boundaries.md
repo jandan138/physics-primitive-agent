@@ -700,6 +700,126 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   while reporting three Franka cheaper raw-cost cylinder candidates as support-blocked extension
   candidates. This is selection/accounting evidence, not evidence that boxes or cylinders improved
   those assets.
+- The current code can also run explicit capped Franka and capped bed opt-in native-exercising
+  diagnostics where the default support-aware lanes remain box-only and separately configured
+  `native_opt_in` lanes select `cylinder` primitives. The dated
+  [2026-05-21 Franka opt-in record](../records/2026-05-21-franka-native-opt-in-probe.md)
+  supports only package-path, Newton mapping, representative contact-canary, package-level
+  drop/settle, and sphere-rain smoke evidence for capped Franka first-mesh scope. The dated
+  [2026-05-21 bed opt-in record](../records/2026-05-21-bed-native-opt-in-probe.md)
+  records a mapped capped bed package containing one selected cylinder that passes representative
+  contact canaries and sphere-rain but fails drop/settle with `not_settled`. These records do not
+  calibrate, recommend, or generalize either per-config cylinder score multiplier, prove cylinder
+  is better than box, support reusing those multipliers outside the recorded opt-in configs,
+  support changing default configs, or support native primitive quality improvement, default asset
+  behavior, or broad real-USD coverage.
+- The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
+  The diagnostic compares the recorded one-cylinder bed opt-in package against a local
+  cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
+  its native box fallback under the same recorded config scope, Newton environment, and
+  drop/settle gate. The dated run supports only local counterfactual attribution: reverting that
+  one selected cylinder package delta clears the recorded capped-bed drop/settle blocker under
+  those settings. This is not primitive-quality validation, proof that cylinders are worse than
+  boxes, multiplier calibration, a default config change, broad real-USD evidence, or benchmark
+  evidence.
+- The dated capped bed first-mesh record includes a primitive-6 center/shape
+  separation check. The dated run records that `box_at_cylinder_center` passes the same
+  drop/settle gate while `cylinder_at_box_center` still fails with `not_settled`, with unchanged
+  package anchor across variants. This supports only local attribution to the selected cylinder
+  shape/dimensions over the center shift for that package and solver setting. It is not a broad
+  root-cause proof, not evidence that cylinders are generally worse, not multiplier calibration,
+  not a default policy, and not collision-quality validation.
+- The dated capped bed first-mesh record includes a primitive-6 target-only
+  drop/settle control. The dated run records that isolated one-primitive box and cylinder variants
+  all pass under the same drop/settle settings, so the standalone selected cylinder does not
+  reproduce the full-package `not_settled` label under one-primitive anchor recomputation. This
+  supports only local diagnostic narrowing toward full-compound context, aggregate body/contact or
+  inertia behavior, or final-speed gate interaction as still-open factors. It is not root-cause proof,
+  not a primitive quality result, and not evidence for automatic repair or default-policy changes.
+- The dated capped bed first-mesh record includes local-compound context controls.
+  The dated nearest-neighbor shell run records that the six closest neighbors around primitive `6`
+  pass with either the native box or opt-in cylinder target, so that local shell does not reproduce
+  the full-package blocker. The dated anchor-preserved local subset run records that box and
+  cylinder variants all fail, so that subset is a diagnostic-control failure rather than cylinder
+  attribution evidence. These controls may narrow future debugging toward broader compound
+  context, but they are not root-cause proof, primitive-quality validation, or policy evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py`, a capped bed
+  first-mesh full-compound Newton body/contact trace for the fixed primitive-6 native box,
+  opt-in cylinder, reverted box, and center/shape variants. The dated run records body mass, COM,
+  inertia, body pose/velocity, support height, and contact details under the same drop/settle
+  gate. It supports only a reproducible blocker trace showing body-state and residual-velocity
+  differences under similar final support-contact labels; it is not root-cause proof, primitive
+  quality evidence, multiplier calibration, an automatic repair policy, or benchmark evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
+  --run-inertia-counterfactual`, a capped bed first-mesh full-compound inertial counterfactual for
+  the fixed primitive-6 blocker. The dated run keeps the opt-in cylinder geometry but overwrites
+  the Newton model body mass, inverse mass, COM, inertia, and inverse inertia arrays with the
+  native all-box control arrays before constructing the XPBD solver. It supports only the narrow
+  statement that this one inertial-array override clears the recorded `360`-frame drop/settle
+  `not_settled` label under the same config and matching package anchor. It is not physically validated package
+  evidence, root-cause proof, primitive-quality evidence, a scoring-policy change, a default
+  repair/revert policy, benchmark evidence, or safety evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
+  --run-inertia-field-ablation`, a capped bed first-mesh COM-only inertial-field ablation for the
+  same fixed primitive-6 full-compound package. The dated run keeps the opt-in cylinder geometry,
+  mass, inverse mass, inertia, and inverse inertia unchanged while copying only the native all-box
+  `body_com` field before solver creation. It supports only the narrow statement that this
+  COM-only field override clears the recorded `360`-frame drop/settle `not_settled` label under
+  the same config and matching package anchor. It is field-level sensitivity accounting, not root-cause
+  proof, a physically validated package, a repair policy, scoring-policy evidence, benchmark
+  evidence, or safety evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
+  --run-com-axis-ablation`, a capped bed first-mesh COM-axis subset ablation for the same fixed
+  primitive-6 full-compound package. The dated run keeps the opt-in cylinder geometry, mass,
+  inverse mass, inertia, and inverse inertia unchanged while copying selected native all-box
+  `body_com` axes before solver creation. It supports only the narrow statement that `x`, `y`,
+  `z`, `xy`, and `yz` subsets remain `not_settled`, while the `xz` subset clears the recorded
+  `360`-frame final-speed gate label under the same config and matching package anchor. It is field-level sensitivity
+  accounting, not root-cause proof, a physically validated package, a repair policy,
+  scoring-policy evidence, benchmark evidence, or safety evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
+  --run-com-blend-ablation`, a capped bed first-mesh COM-blend ablation for the same fixed
+  primitive-6 full-compound package. The dated run keeps the opt-in cylinder geometry, mass,
+  inverse mass, inertia, and inverse inertia unchanged while applying fixed blends from opt-in
+  `body_com` toward native all-box `body_com` for full `xyz` and `xz` axes before solver
+  creation. It supports only the narrow statement that `0.25`, `0.5`, and `0.75` blends remain
+  `not_settled` for both axis sets, while the `1.0` endpoint clears the recorded `360`-frame
+  final-speed gate label under the same config and matching package anchor. It is field-level sensitivity accounting, not
+  root-cause proof, a physically validated package, a repair policy, scoring-policy evidence,
+  benchmark evidence, or safety evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
+  --run-com-blend-refinement`, a capped bed first-mesh near-endpoint COM-blend refinement for the
+  same fixed primitive-6 full-compound package. The dated run keeps the opt-in cylinder geometry,
+  mass, inverse mass, inertia, and inverse inertia unchanged while applying fixed high-fraction
+  blends from opt-in `body_com` toward native all-box `body_com` for full `xyz` and `xz` axes
+  before solver creation. It supports only the narrow statement that full `xyz` clears the
+  recorded `360`-frame final-speed gate label at `0.875` and above in this run, while `xz`
+  remains `not_settled` at `0.875` and clears the label at `0.9375` and above. It is field-level sensitivity accounting, not COM threshold proof, root-cause proof, a
+  physically validated package, a repair policy, scoring-policy evidence, benchmark evidence, or
+  safety evidence.
+- The capped bed COM-blend refinement may cite `tail_linear_speed_summary` only as tail-window
+  speed telemetry for audit. It does not add a sustained-settle metric, long-window stability
+  gate, convergence proof, stronger validation, or any claim beyond the existing final-speed
+  drop/settle gate and failure-label logic.
+- The capped bed COM-blend refinement may cite the
+  `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame reruns
+  only as bounded real Newton frame-window sensitivity accounting. The dated runs record
+  task-gate labels under longer drop/settle windows and audit whether native all-box and
+  cylinder-reverted controls remain clean. The `361` row keeps those controls clean under the
+  existing final-speed gate; the `362` row is the first swept dirty-control row, bracketing the
+  observed native/reverted-control final-speed task-gate flip between `361` and `362`.
+  Dirty-control rows are rejected evidence for strengthening the COM-blend refinement claim, not
+  sustained-settle evidence, long-window stability validation, a validated fix, root-cause proof,
+  scoring/default-policy evidence, or collision-quality validation.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
+  --run-model-build-audit`, a capped bed first-mesh pre-solver Newton model-build audit for the
+  same fixed primitive-6 package pair. The dated run builds full, target-only, and
+  rest-without-target Newton models under full-package anchors and records mass, COM, and inertia
+  summaries before solver creation. It supports only the narrow statement that the
+  rest-without-target opt-in-minus-native model-build delta is zero in this one audit, while the
+  full and target-only deltas are nonzero for primitive index `6`. It is pre-solver diagnostic
+  accounting, not root-cause proof, a Newton mapping bug proof, a physically validated package, a
+  repair policy, scoring-policy evidence, benchmark evidence, or safety evidence.
 - The real-USD native fitting diagnostic can include a per-selected-cluster candidate audit
   summary that reports whether `cylinder`, `cone`, or `ellipsoid` was the cheapest raw-cost
   candidate and whether it was support-admissible under the current surrogate. This is diagnostic
@@ -885,8 +1005,46 @@ Use these only after broader benchmark records exist.
   beyond the dated synthetic diagnostic-path, opt-in synthetic fitting, and capped real-USD
   diagnostic records. Do not claim the CPD-like generator emits these kinds by default for normal
   asset configs. Do not claim bed or Franka native-fitting improvement from the current
-  support-aware real-USD records; bed and Franka currently select boxes, and the three
-  support-blocked Franka cylinder candidates are surrogate accounting, not quality evidence.
+  support-aware real-USD records; the default bed/Franka support-aware lanes currently select
+  boxes, the explicit capped Franka opt-in lane is diagnostic-only, and the capped bed opt-in
+  lane still fails the current drop/settle gate under the recorded settings.
+- Do not describe the capped bed cylinder-revert attribution run as proof that the selected
+  cylinder caused the failure in general, proof that cylinders are worse or less safe than boxes,
+  a calibrated or recommended multiplier, an automatic repair policy, a default behavior change,
+  collision-quality validation, benchmark evidence, deployment readiness, or safety evidence.
+- Do not describe the primitive-6 center/shape separation check as proof that cylinder geometry is
+  broadly bad, as a validated repair recipe, or as evidence that the multiplier should be changed
+  in default configs.
+- Do not describe the primitive-6 target-only diagnostic as equivalent to the 32-primitive
+  compound run; it recomputes a one-primitive anchor and does not preserve compound inertia,
+  contact manifold, body origin, or full-package support semantics.
+- Do not describe a local-context subset as cylinder attribution evidence if its paired native-box
+  control also fails.
+- Do not describe the full-compound body/contact trace as a general root-cause proof or as a
+  validated fix; it is a reproducible diagnostic trace for one capped bed first-mesh blocker.
+- Do not describe the inertial counterfactual as a validated collision package, general inertial
+  repair, root-cause proof, scoring-policy evidence, or a reason to change default bed/Franka
+  native lanes.
+- Do not describe the COM-only inertial-field ablation as proof that COM caused the blocker or as
+  a validated package fix; it is a one-config field-level sensitivity control.
+- Do not describe the COM-axis subset ablation as proof that `x+z` COM caused the blocker, proof
+  that the `y` component is irrelevant, or as a validated package fix; it is a one-config
+  field-level sensitivity control.
+- Do not describe the COM-blend ablation as a COM threshold proof, root-cause proof, or validated
+  package fix; it is a one-config field-level sensitivity control.
+- Do not describe the COM-blend refinement as a minimum required COM fraction, COM threshold
+  proof, root-cause proof, or validated package fix; it is a one-config field-level sensitivity
+  control.
+- Do not describe COM-blend refinement tail telemetry as sustained-settle proof, long-window
+  stability validation, or a new drop/settle gate.
+- Do not describe the
+  `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
+  sweep as sustained-settle evidence, long-window stability validation, a validated COM-blend
+  fix, root-cause proof, scoring/default-policy evidence, or collision-quality validation. The
+  `361` clean-control row is only final-speed sensitivity accounting, and dirty-control rows are
+  rejected evidence for the refinement claim.
+- Do not describe the pre-solver model-build audit as proof of a Newton mapping bug, physical root
+  cause, validated inertial repair, package-quality conclusion, or default policy change.
 - Do not describe the synthetic native selection audit as a quality metric, paper-faithful
   optimizer, proof that native primitives are broadly better, real-USD improvement, or collision
   validation. It is a candidate-cost diagnostic table over toy meshes.

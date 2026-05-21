@@ -721,6 +721,407 @@ experiments:
       - capped Franka support-aware native lane now selects boxes while reporting 3 cheaper raw-cost cylinders as support-blocked
       - capped bed and capped Franka packages pass named Newton contact and task smokes in the conda-managed Newton environment
       - no collision-quality, benchmark, whole-robot collider-quality, paper-faithful optimization, or full CPD reproduction claim
+  - id: real-newton-smoke-rerun-2026-05-21
+    status: complete
+    command: >
+      NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/cpd_like_baseline.yaml --run-newton-contact-smoke
+      &&
+      NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/newton_drop_settle.yaml --run-newton-drop-settle
+      &&
+      NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/newton_sphere_rain.yaml --run-newton-sphere-rain
+    record: docs/records/2026-05-21-real-newton-smoke-rerun.md
+    purpose: >
+      Re-run the existing capped-bed Newton contact, drop/settle, and sphere-rain smoke
+      diagnostics in the documented clean conda Newton environment.
+    claims_supported:
+      - clean-env rerun evidence for named Newton smoke diagnostics over the capped bed CPD-like package
+      - confirms the clean conda environment can execute contact, drop/settle, and sphere-rain smoke commands
+      - no benchmark, collision-quality, full CPD reproduction, deployment, safety, or real-world transfer claim
+  - id: real-usd-native-task-rerun-2026-05-21
+    status: complete
+    config: configs/experiments/bed_franka_native_probe_comparison.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_franka_native_probe_comparison.yaml --run-real-usd-native-task-comparison > reports/generated/bed_franka_native_probe_comparison/real_usd_native_task_2026-05-21.json
+    record: docs/records/2026-05-21-real-usd-native-task-rerun.md
+    purpose: >
+      Re-run the capped bed and capped Franka real-USD old/new contact-gated Newton task smokes
+      in the documented clean conda Newton environment.
+    claims_supported:
+      - clean-env real-USD native task-smoke rerun for capped bed and capped Franka old/new lanes
+      - records that both legacy and native lanes selected boxes only and passed contact-gated task smokes
+      - no native primitive improvement, benchmark, collision-quality, whole-robot collider-quality, deployment, safety, or CPD reproduction claim
+  - id: franka-native-opt-in-probe
+    status: complete
+    config: configs/experiments/franka_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/franka_native_opt_in_probe.yaml --run-real-usd-native-task-comparison
+    record: docs/records/2026-05-21-franka-native-opt-in-probe.md
+    purpose: >
+      Run an explicit capped Franka opt-in native lane. The Franka-only registry command records
+      a package containing selected `cylinder` primitives passing Newton mapping, representative
+      contact canaries, and package-level drop/settle and sphere-rain while preserving the default
+      bed/Franka support-aware config.
+    claims_supported:
+      - capped Franka first-mesh native-exercising diagnostic smoke only
+      - records that a package containing 24 boxes and 8 selected cylinders passed representative Newton contact canaries and package-level task smokes
+      - cites a temporary two-role exploratory run where capped bed opt-in passed contact but failed drop/settle and sphere-rain
+      - no calibrated cylinder multiplier, native primitive quality improvement, default asset behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: franka-native-opt-in-task-rerun-after-com-axis
+    status: complete
+    config: configs/experiments/franka_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/franka_native_opt_in_probe.yaml --run-real-usd-native-task-comparison > reports/generated/franka_native_opt_in_probe/task_rerun_after_com_axis_2026-05-21.json
+    record: docs/records/2026-05-21-franka-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped Franka opt-in contact-gated Newton task smoke after the capped bed
+      COM-axis diagnostic changes to confirm the current worktree preserves the passing Franka
+      opt-in evidence.
+    claims_supported:
+      - current-worktree rerun of the capped Franka opt-in native-exercising task smoke
+      - records that the Franka opt-in lane remained smoke_passed after the bed COM-axis diagnostic work
+      - no calibrated multiplier, native primitive quality improvement, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-probe
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_native_opt_in_probe.yaml --run-real-usd-native-task-comparison
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Run an explicit capped bed opt-in native lane with one selected `cylinder` primitive and
+      record the current task-gate blocker under the same clean Newton environment. The record now
+      also includes a local cylinder-revert drop-attribution diagnostic for the single selected
+      cylinder package delta, a center/shape separation diagnostic, a target-only control, and
+      local compound-context controls. The primary task-comparison command is expected to exit
+      nonzero because the recorded blocker is the evidence. The worktree
+      scripts/diagnostics/bed_native_opt_in_compound_trace.py command regenerates the
+      full-compound body/contact trace for the fixed primitive-6 variants, and the same script
+      with --run-inertia-counterfactual regenerates the inertial-array counterfactual report.
+      The --run-inertia-field-ablation command regenerates the COM-only field ablation report.
+      The --run-com-axis-ablation command regenerates the COM-axis subset ablation report.
+      The --run-com-blend-ablation command regenerates the COM-blend ablation report.
+      The --run-com-blend-refinement command regenerates the near-endpoint COM-blend refinement
+      report, and the tail-summary rerun records descriptive late-window speed telemetry for the
+      same refinement variants.
+      The frame-window configs rerun the same capped bed opt-in scope with drop_settle.frames set
+      to 361, 362, 363, 364, 365, 375, 385, 390, 420, 450, 480, 600, and 720 for sensitivity
+      accounting only.
+      The --run-model-build-audit command regenerates the pre-solver model-build audit report.
+    claims_supported:
+      - capped bed first-mesh native-exercising diagnostic blocker, not a passing package-level task-smoke result
+      - records partial success only; 31 boxes and 1 selected cylinder fully mapped, representative contact canaries passed, and sphere-rain passed
+      - records the blocking result; the same opt-in package failed drop/settle with not_settled while default all-box lanes passed
+      - records a local counterfactual drop-attribution result where reverting the one selected cylinder package delta at source faces [32..39] clears the drop/settle blocker under the recorded settings
+      - records a center/shape separation result where box_at_cylinder_center passes and cylinder_at_box_center remains not_settled under the same drop/settle gate
+      - records a target-only result where isolated primitive-6 box and cylinder variants all pass, so the standalone selected cylinder does not reproduce the full-package blocker
+      - records local-context controls; the nearest-neighbor shell passes for both target variants, while an anchor-preserved local subset fails for both box and cylinder variants and is not cylinder attribution evidence
+      - records a reproducible full-compound body/contact trace for fixed primitive-6 variants, including body mass, COM, inertia, pose/velocity, support height, and final contact labels
+      - records a reproducible inertial-array counterfactual where the opt-in cylinder geometry clears the recorded 360-frame final-speed gate label after applying native all-box body mass/COM/inertia arrays before solver creation
+      - records a COM-only field ablation where the opt-in cylinder geometry clears the recorded 360-frame final-speed gate label after applying only native all-box body_com while retaining cylinder mass and inertia
+      - records a COM-axis subset ablation where x, y, z, xy, and yz body_com subsets remain not_settled while xz clears the recorded 360-frame final-speed gate label in one fixed full-compound gate
+      - records a COM-blend ablation where 0.25, 0.5, and 0.75 blends toward native all-box body_com remain not_settled for xyz and xz, while the 1.0 endpoint clears the recorded 360-frame final-speed gate label
+      - records a COM-blend refinement where full xyz clears the recorded 360-frame final-speed gate label at 0.875 and above while xz still fails at 0.875 and clears the label at 0.9375 and above in the same fixed full-compound gate
+      - records tail_linear_speed_summary as late-window speed telemetry only; pass/fail remains the existing final-speed drop/settle gate, not a sustained-settle proof or new gate
+      - records 361/362/363/364/365/375/385/390/420/450/480/600/720-frame window reruns that refine the native/reverted-control final-speed task-gate bracket to 361 clean versus 362 failing; dirty-control rows are rejected as COM-blend stability, sustained-settle, or fix evidence
+      - records a pre-solver model-build audit where the rest-without-target opt-in-minus-native delta is zero while full-package and target-only primitive-6 mass/COM/inertia deltas remain nonzero under matching anchors
+      - records that iterations and substeps sensitivity checks did not clear the blocker under current settings
+      - no root-cause proof, native primitive quality improvement, calibrated multiplier, default asset behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-task-rerun-after-com-axis
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_native_opt_in_probe.yaml --run-real-usd-native-task-comparison > reports/generated/bed_native_opt_in_probe/task_rerun_after_com_axis_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed opt-in contact-gated Newton task comparison after the COM-axis
+      diagnostic changes to confirm the current worktree preserves the known blocker pattern.
+    claims_supported:
+      - current-worktree rerun of the capped bed opt-in task-gate blocker
+      - records that legacy/default native all-box lanes passed while the opt-in lane still failed drop/settle and passed sphere-rain
+      - no root-cause proof, native primitive quality improvement, calibrated multiplier, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-inertia-counterfactual
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-inertia-counterfactual --output reports/generated/bed_native_opt_in_probe/drop_primitive6_inertia_counterfactual_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Reproduce the capped bed primitive-6 full-compound inertial-array counterfactual. The
+      diagnostic keeps the opt-in cylinder geometry but applies the native all-box Newton body
+      mass, inverse mass, COM, inertia, and inverse inertia arrays before creating the XPBD solver.
+    claims_supported:
+      - one-config capped bed inertial sensitivity control only
+      - records that the inertial-array override cleared the recorded 360-frame drop/settle not_settled label under matching package anchors
+      - no physical package validation, root-cause proof, scoring-policy change, default repair policy, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-field-ablation
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-inertia-field-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_inertial_field_ablation_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Reproduce the capped bed primitive-6 COM-only inertial-field ablation. The diagnostic keeps
+      the opt-in cylinder geometry, mass, inverse mass, inertia, and inverse inertia unchanged
+      while applying only the native all-box Newton body_com before creating the XPBD solver.
+    claims_supported:
+      - one-config capped bed COM-only inertial sensitivity control only
+      - records that the COM-only override cleared the recorded 360-frame drop/settle not_settled label under matching package anchors
+      - no physical package validation, root-cause proof, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-axis-subset-ablation
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-com-axis-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_com_axis_subset_ablation_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Reproduce the capped bed primitive-6 COM-axis subset ablation. The diagnostic keeps the
+      opt-in cylinder geometry, mass, inverse mass, inertia, and inverse inertia unchanged while
+      applying fixed single-axis and pairwise native all-box body_com subsets before creating the
+      XPBD solver.
+    claims_supported:
+      - one-config capped bed COM-axis subset sensitivity control only
+      - records that x, y, z, xy, and yz body_com subsets remained not_settled while xz cleared the recorded 360-frame final-speed gate label under matching package anchors
+      - no physical package validation, root-cause proof, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-ablation
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-com-blend-ablation --output reports/generated/bed_native_opt_in_probe/drop_primitive6_com_blend_ablation_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Reproduce the capped bed primitive-6 COM-blend ablation. The diagnostic keeps the
+      opt-in cylinder geometry, mass, inverse mass, inertia, and inverse inertia unchanged while
+      applying fixed fractional blends from opt-in body_com toward native all-box body_com for
+      full xyz and xz axes before creating the XPBD solver.
+    claims_supported:
+      - one-config capped bed COM-blend sensitivity control only
+      - records that 0.25, 0.5, and 0.75 body_com blends remained not_settled for both xyz and xz axes while the 1.0 endpoint cleared the recorded 360-frame final-speed gate label
+      - no physical package validation, root-cause proof, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-com-blend-refinement --output reports/generated/bed_native_opt_in_probe/drop_primitive6_com_blend_refinement_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Reproduce the capped bed primitive-6 near-endpoint COM-blend refinement. The diagnostic
+      keeps the opt-in cylinder geometry, mass, inverse mass, inertia, and inverse inertia
+      unchanged while applying fixed high-fraction blends from opt-in body_com toward native
+      all-box body_com for full xyz and xz axes before creating the XPBD solver.
+    claims_supported:
+      - one-config capped bed near-endpoint COM-blend sensitivity control only
+      - records that full xyz cleared the recorded 360-frame final-speed gate label at 0.875 and above while xz remained not_settled at 0.875 and cleared the label at 0.9375 and above in this run
+      - no COM threshold proof, physical package validation, root-cause proof, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-tail-summary
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --output reports/generated/bed_native_opt_in_probe/drop_primitive6_com_blend_refinement_tail_suffix_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement with
+      tail_linear_speed_summary fields in the report. The diagnostic keeps the same opt-in
+      cylinder geometry and COM-blend variants, and records late-window speed telemetry for audit.
+    claims_supported:
+      - one-config capped bed COM-blend refinement tail-speed telemetry only
+      - records that the existing pass/fail labels remain final-speed gated; variants with passing labels still have most one-second tail samples above the settle threshold
+      - no sustained-settle proof, new drop/settle gate, convergence proof, COM threshold proof, physical package validation, root-cause proof, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame361
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame361_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame361_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 361-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 361-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 361-frame settings
+      - records the clean-control side of the native/reverted-control final-speed task-gate bracket; native all-box and cylinder-reverted controls remain clean under the existing final-speed gate, while the original opt-in cylinder remains not_settled
+      - not sustained-settle proof, long-window stability evidence, validated COM-blend fix, or stronger validation evidence
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame362
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame362_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame362_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 362-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 362-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 362-frame settings
+      - records the first swept dirty-control side of the native/reverted-control final-speed task-gate bracket
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 362-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame363
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame363_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame363_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame363_probe/drop_primitive6_com_blend_refinement_frame363_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 363-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 363-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 363-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 363-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame364
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame364_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame364_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame364_probe/drop_primitive6_com_blend_refinement_frame364_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 364-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 364-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 364-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 364-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame365
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame365_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame365_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame365_probe/drop_primitive6_com_blend_refinement_frame365_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 365-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 365-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 365-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 365-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame375
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame375_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame375_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame375_probe/drop_primitive6_com_blend_refinement_frame375_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 375-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 375-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 375-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 375-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame385
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame385_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame385_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame385_probe/drop_primitive6_com_blend_refinement_frame385_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 385-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 385-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 385-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 385-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame390
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame390_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame390_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame390_probe/drop_primitive6_com_blend_refinement_frame390_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 390-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 390-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 390-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 390-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame420
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame420_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame420_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame420_probe/drop_primitive6_com_blend_refinement_frame420_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 420-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 420-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 420-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 420-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame450
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame450_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame450_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame450_probe/drop_primitive6_com_blend_refinement_frame450_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 450-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 450-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 450-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 450-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame480
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame480_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame480_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame480_probe/drop_primitive6_com_blend_refinement_frame480_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 480-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 480-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 480-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 480-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-frame600
+    status: complete
+    config: configs/experiments/bed_native_opt_in_frame600_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame600_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame600_probe/drop_primitive6_com_blend_refinement_frame600_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 600-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count.
+    claims_supported:
+      - one-config capped bed native opt-in 600-frame COM-blend frame-window sensitivity rerun only
+      - records real Newton drop/settle labels for the fixed primitive-6 COM-blend variants under the recorded 600-frame settings
+      - used only to bracket the existing final-speed task-gate flip region and audit whether native all-box and cylinder-reverted controls remain clean under the same frame window
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 600-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-com-blend-refinement-long-window
+    status: complete
+    config: configs/experiments/bed_native_opt_in_long_window_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_long_window_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_long_window_probe/drop_primitive6_com_blend_refinement_long_window_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Re-run the capped bed primitive-6 near-endpoint COM-blend refinement under a 720-frame
+      drop/settle window while keeping the same bed first-mesh opt-in selection scope,
+      cylinder: 0.88 multiplier, and Newton settings except for the frame count. This is the
+      720-frame member of the frame-window sensitivity sweep.
+    claims_supported:
+      - one-config capped bed native opt-in 720-frame COM-blend frame-window sensitivity rerun only
+      - records that all fixed primitive-6 variants, including native all-box and cylinder-reverted controls, fail not_settled under the recorded 720-frame settings; used only for final-speed task-gate flip bracketing and control-lane cleanliness audit
+      - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 720-frame window
+      - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring calibration, default behavior change, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-model-build-audit
+    status: complete
+    config: configs/experiments/bed_native_opt_in_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-model-build-audit --output reports/generated/bed_native_opt_in_probe/drop_primitive6_model_build_audit_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Reproduce the capped bed primitive-6 pre-solver Newton model-build audit. The diagnostic
+      builds full, target-only, and rest-without-target Newton models under full-package anchors
+      and records mass, COM, and inertia summaries before solver creation.
+    claims_supported:
+      - one-config capped bed pre-solver model-build accounting diagnostic only
+      - records that the rest-without-target opt-in-minus-native model-build delta is zero while the full and target-only deltas are nonzero for primitive index 6
+      - no Newton mapping bug proof, physical root-cause proof, physical package validation, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: cylinder-near-miss-cluster-fixture
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-near-miss-workbench

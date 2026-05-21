@@ -74,6 +74,9 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Newton Sphere-Rain](2026-05-15-newton-sphere-rain.md): second named task-level
   Newton smoke diagnostic, using a sphere-rain contact-density proxy over the capped bed CPD-like
   collision package.
+- [2026-05-21 Real Newton Smoke Rerun](2026-05-21-real-newton-smoke-rerun.md): confirms the
+  documented clean conda Newton environment still runs contact, drop/settle, and sphere-rain smoke
+  diagnostics for the capped bed CPD-like package.
 - [2026-05-15 Franka CPD-Like Smoke](2026-05-15-franka-cpd-like-smoke.md): Franka/simple robot
   USD-open and capped geometry-only CPD-like smoke evidence.
 - [2026-05-15 CPD-Like Component Merge Gate](2026-05-15-cpd-like-component-merge-gate.md):
@@ -127,6 +130,41 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-15 Real USD Native Task Comparison](2026-05-15-real-usd-native-task-comparison.md):
   contact-gated drop/settle and sphere-rain task-smoke comparison for the capped bed and capped
   Franka old/new packages.
+- [2026-05-21 Real USD Native Task Rerun](2026-05-21-real-usd-native-task-rerun.md):
+  clean-env rerun of the capped bed and capped Franka real-USD old/new contact-gated task smokes.
+- [2026-05-21 Franka Native Opt-In Probe](2026-05-21-franka-native-opt-in-probe.md):
+  explicit capped Franka opt-in native package containing selected `cylinder` primitives; package
+  mapping, representative contact canaries, drop/settle, and sphere-rain passed.
+- [2026-05-21 Bed Native Opt-In Probe](2026-05-21-bed-native-opt-in-probe.md):
+  explicit capped bed opt-in native package containing one selected `cylinder` primitive;
+  mapping, representative contact canaries, and sphere-rain passed, while drop/settle failed
+  `not_settled`; a local cylinder-revert drop-attribution diagnostic cleared the blocker by
+  replacing only that selected cylinder package delta with the native box fallback, and a
+  center/shape separation diagnostic kept `cylinder_at_box_center` failing while
+  `box_at_cylinder_center` passed. A target-only control did not reproduce the full-package
+  blocker with the isolated cylinder, and local compound controls did not produce a valid compact
+  cylinder-only reproducer. A worktree full-compound trace script now records body mass, COM,
+  inertia, body pose/velocity, support height, and contact details for the fixed primitive-6
+  variants, and its inertial-array counterfactual clears the recorded `360`-frame drop/settle
+  label in one sensitivity control after applying native all-box inertial arrays to the opt-in
+  cylinder geometry. A COM-only field ablation also clears the recorded `360`-frame final-speed
+  gate label in one sensitivity control
+  while retaining cylinder mass and inertia, and a
+  COM-axis subset ablation records `x`, `y`, `z`, `xy`, and `yz` still `not_settled` while `xz`
+  clears that recorded label in the same fixed full-compound gate. A COM-blend ablation records `0.25`,
+  `0.5`, and `0.75` blends still `not_settled` for full `xyz` and `xz`, while the `1.0` endpoint
+  clears that recorded label in the same sensitivity-control scope. A near-endpoint COM-blend
+  refinement records full `xyz` clearing that label at `0.875` and above in this run, while `xz`
+  remains `not_settled` at `0.875` and clears the label at `0.9375` and above in the same fixed
+  gate; this is not a COM threshold
+  proof. A tail-summary rerun records `tail_linear_speed_summary` as late-window speed telemetry
+  only; pass/fail remains final-speed gated, not a sustained-settle proof. A
+  `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
+  sweep records the native/reverted-control final-speed task-gate bracket as `361` clean versus
+  `362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. A pre-solver
+  model-build audit records zero
+  rest-without-target delta and nonzero primitive-6 target/full mass/COM/inertia deltas under
+  matching anchors. These are not validated fixes or root-cause proof.
 - [2026-05-15 Bed Franka Native Probe Completion Audit](2026-05-15-bed-franka-native-probe-completion-audit.md):
   completion audit mapping the requested five-step real-USD native probe objective to code,
   configs, reports, records, verification, and review fixes.

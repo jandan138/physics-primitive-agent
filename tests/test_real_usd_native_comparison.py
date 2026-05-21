@@ -6,6 +6,7 @@ import pytest
 import yaml
 
 import primitive_collision_compiler.baselines.cpd_like.real_usd_comparison as real_usd_comparison
+import primitive_collision_compiler.baselines.cpd_like.synthetic as cpd_synthetic
 from primitive_collision_compiler.baselines.cpd_like.primitives import PrimitiveFit
 from primitive_collision_compiler.baselines.cpd_like.real_usd_comparison import (
     build_real_usd_candidate_loss_diagnosis_report,
@@ -58,6 +59,30 @@ def test_real_usd_native_fitting_report_runs_roles_from_manifest(tmp_path):
     assert "box_selected_cluster_count" in native_audit
     assert "clusters_with_extension_best" in native_audit
     assert "selected_rank_counts" in native_audit
+
+
+def test_real_usd_native_fitting_report_adds_opt_in_lane_without_changing_default(tmp_path):
+    manifest_path = _write_manifest_with_cylinder_near_miss(tmp_path)
+
+    report = build_real_usd_native_fitting_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_score_multipliers={"cylinder": 0.5},
+    )
+
+    case = report["cases"][0]
+
+    assert case["native"]["primitive_kind_counts"] == {"box": 1}
+    assert case["native"].get("primitive_score_multipliers", {}) == {}
+    assert case["native_opt_in"]["primitive_kind_counts"] == {"cylinder": 1}
+    assert case["native_opt_in"]["primitive_score_multipliers"] == {"cylinder": 0.5}
+    assert case["native_opt_in"]["package_mapping"]["fully_mapped"] is True
+    assert case["native_opt_in_comparison"]["native_uses_extended_primitive"] is True
 
 
 def test_real_usd_native_fitting_report_prefers_materialized_manifest_path(tmp_path):
@@ -633,6 +658,85 @@ def test_real_usd_native_task_comparison_runs_tasks_after_contact_passes(
     assert report["cases"][0]["legacy_tasks"]["sphere_rain"]["status"] == "smoke_passed"
 
 
+def test_real_usd_native_task_comparison_runs_opt_in_lane_when_configured(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_two_meshes(tmp_path)
+    calls = {"contact": [], "drop": [], "sphere": []}
+
+    def fake_contact(package, *, source_dir, device, claim_boundary):
+        calls["contact"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_contact_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="contact_canary",
+            claim_boundary=claim_boundary,
+        )
+
+    def fake_drop(package, *, source_dir, device, options, claim_boundary):
+        calls["drop"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_drop_settle",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="drop_settle",
+            claim_boundary=claim_boundary,
+        )
+
+    def fake_sphere(package, *, source_dir, device, options, claim_boundary):
+        calls["sphere"].append(package.asset_id)
+        return _diagnostic_report(
+            stage="newton_sphere_rain",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="sphere_rain",
+            claim_boundary=claim_boundary,
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "run_newton_contact_smoke", fake_contact)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_drop_settle", fake_drop)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_sphere_rain", fake_sphere)
+
+    report = build_real_usd_native_task_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box", "sphere", "capsule"),
+        native_subset=("box", "sphere", "capsule", "cylinder", "cone", "ellipsoid"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_score_multipliers={"cylinder": 0.5},
+        source_dir="/tmp/newton-source",
+        device="cpu",
+    )
+
+    assert report["status"] == "smoke_passed"
+    assert calls == {
+        "contact": [
+            "bed_dev_smoke_legacy",
+            "bed_dev_smoke_native",
+            "bed_dev_smoke_native_opt_in",
+        ],
+        "drop": [
+            "bed_dev_smoke_legacy",
+            "bed_dev_smoke_native",
+            "bed_dev_smoke_native_opt_in",
+        ],
+        "sphere": [
+            "bed_dev_smoke_legacy",
+            "bed_dev_smoke_native",
+            "bed_dev_smoke_native_opt_in",
+        ],
+    }
+    assert report["cases"][0]["native_opt_in_contact"]["status"] == "smoke_passed"
+    assert report["cases"][0]["native_opt_in_tasks"]["drop_settle"]["status"] == "smoke_passed"
+
+
 def test_real_usd_native_task_comparison_blocks_tasks_when_contact_fails(
     tmp_path,
     monkeypatch,
@@ -741,6 +845,30 @@ def _write_manifest_with_two_meshes(tmp_path: Path) -> Path:
                     {"role": "bed_dev_smoke", "path": str(bed_path)},
                     {"role": "franka_import_smoke", "path": str(franka_path)},
                 ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return manifest_path
+
+
+def _write_manifest_with_cylinder_near_miss(tmp_path: Path) -> Path:
+    mesh = cpd_synthetic._cylinder_near_miss_cluster_mesh()
+    usd_path = tmp_path / "cylinder_near_miss.usda"
+    _write_mesh_usd(
+        usd_path,
+        points=[tuple(point) for point in mesh.points],
+        face_vertex_counts=[len(face) for face in mesh.faces],
+        face_vertex_indices=[
+            int(point_index) for face in mesh.faces for point_index in face
+        ],
+    )
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump(
+            {
+                "manifest_id": "test_cylinder_near_miss_manifest",
+                "assets": [{"role": "bed_dev_smoke", "path": str(usd_path)}],
             }
         ),
         encoding="utf-8",

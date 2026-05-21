@@ -1427,6 +1427,10 @@ def _real_usd_native_comparison_options(config):
         ),
         "component_merge_options": _cpd_like_component_merge_options(cpd_like_section),
         "objective_options": objective_options,
+        "native_opt_in_score_multipliers": _primitive_score_multipliers_option(
+            cpd_like_section.get("native_opt_in_primitive_score_multipliers"),
+            "cpd_like.native_opt_in_primitive_score_multipliers",
+        ),
     }
 
 
@@ -1504,6 +1508,23 @@ def _cpd_like_component_merge_options(cpd_like_section):
         ),
         "report_merge_trace": str(cpd_like_section.get("report_merge_trace", "summary")),
     }
+
+
+def _primitive_score_multipliers_option(value, key):
+    if value in (None, ""):
+        return None
+    if not isinstance(value, dict):
+        raise ValueError(f"{key} must be a mapping")
+    result = {}
+    for primitive_type, raw_multiplier in value.items():
+        primitive_name = str(primitive_type)
+        if not primitive_name:
+            raise ValueError(f"{key} keys must be non-empty")
+        multiplier = _float_value(raw_multiplier, key)
+        if multiplier <= 0.0:
+            raise ValueError(f"{key} values must be finite positive numbers")
+        result[primitive_name] = multiplier
+    return result
 
 
 def _cpd_like_objective_options(objective_section):

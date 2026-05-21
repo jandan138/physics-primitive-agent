@@ -327,3 +327,137 @@ def test_bed_franka_native_probe_config_includes_candidate_loss_diagnosis():
         "claim_boundary": "candidate_loss_diagnosis_not_collision_quality_validation",
         "evidence_level": "offline_candidate_loss_diagnosis_smoke",
     }
+
+
+def test_franka_native_opt_in_probe_config_is_real_usd_and_claim_bounded():
+    config_path = Path("configs/experiments/franka_native_opt_in_probe.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "franka_native_opt_in_probe"
+    assert config.asset_path == "assets/manifests/cpd_like_smoke_assets.yaml"
+    assert config.task == "real_usd_native_opt_in_task_probe"
+    assert config.verify == (
+        "real_usd_native_fitting_comparison",
+        "real_usd_native_task_comparison",
+    )
+    assert config.protocol["cpd_like"]["asset_roles"] == ["franka_import_smoke"]
+    assert config.protocol["cpd_like"]["native_opt_in_primitive_score_multipliers"] == {
+        "cylinder": 0.5
+    }
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "real_usd_native_opt_in_task_smoke_not_collision_quality_or_safety"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_bed_native_opt_in_probe_config_is_real_usd_and_claim_bounded():
+    config_path = Path("configs/experiments/bed_native_opt_in_probe.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "bed_native_opt_in_probe"
+    assert config.asset_path == "assets/manifests/cpd_like_smoke_assets.yaml"
+    assert config.task == "real_usd_bed_native_opt_in_task_probe"
+    assert config.verify == (
+        "real_usd_native_fitting_comparison",
+        "real_usd_native_task_comparison",
+    )
+    assert config.protocol["cpd_like"]["asset_roles"] == ["bed_dev_smoke"]
+    assert config.protocol["cpd_like"]["max_source_faces_by_role"] == {
+        "bed_dev_smoke": 256
+    }
+    assert config.protocol["cpd_like"]["native_opt_in_primitive_score_multipliers"] == {
+        "cylinder": 0.88
+    }
+    assert config.protocol["newton_diagnostic"]["drop_settle"]["frames"] == 360
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "real_usd_native_opt_in_task_smoke_not_collision_quality_or_safety"
+    )
+    assert config.protocol["report"]["evidence_level"] == (
+        "real_usd_native_opt_in_task_gate_blocker"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_bed_native_opt_in_frame_sweep_configs_keep_default_selection_scope():
+    sweep_configs = {
+        "configs/experiments/bed_native_opt_in_frame361_probe.yaml": 361,
+        "configs/experiments/bed_native_opt_in_frame362_probe.yaml": 362,
+        "configs/experiments/bed_native_opt_in_frame363_probe.yaml": 363,
+        "configs/experiments/bed_native_opt_in_frame364_probe.yaml": 364,
+        "configs/experiments/bed_native_opt_in_frame365_probe.yaml": 365,
+        "configs/experiments/bed_native_opt_in_frame375_probe.yaml": 375,
+        "configs/experiments/bed_native_opt_in_frame385_probe.yaml": 385,
+        "configs/experiments/bed_native_opt_in_frame390_probe.yaml": 390,
+        "configs/experiments/bed_native_opt_in_frame420_probe.yaml": 420,
+        "configs/experiments/bed_native_opt_in_frame450_probe.yaml": 450,
+        "configs/experiments/bed_native_opt_in_frame480_probe.yaml": 480,
+        "configs/experiments/bed_native_opt_in_frame600_probe.yaml": 600,
+        "configs/experiments/bed_native_opt_in_long_window_probe.yaml": 720,
+    }
+    baseline = load_compile_config("configs/experiments/bed_native_opt_in_probe.yaml")
+
+    for config_name, frames in sweep_configs.items():
+        config_path = Path(config_name)
+        config = load_compile_config(config_path)
+
+        assert config.asset_id == f"bed_native_opt_in_frame{frames}_probe"
+        assert config.asset_path == "assets/manifests/cpd_like_smoke_assets.yaml"
+        assert config.task == f"real_usd_bed_native_opt_in_frame{frames}_probe"
+        assert config.method == baseline.method
+        assert config.max_primitives == baseline.max_primitives
+        assert config.allowed_fallback == baseline.allowed_fallback
+        assert config.verify == (
+            "real_usd_native_fitting_comparison",
+            "real_usd_native_task_comparison",
+        )
+        assert config.keep_visual == baseline.keep_visual
+        assert {
+            key: value
+            for key, value in config.protocol["cpd_like"].items()
+            if key != "claim_boundary"
+        } == {
+            key: value
+            for key, value in baseline.protocol["cpd_like"].items()
+            if key != "claim_boundary"
+        }
+        assert config.protocol["newton"] == baseline.protocol["newton"]
+        assert config.protocol["newton_diagnostic"]["probe_type"] == (
+            baseline.protocol["newton_diagnostic"]["probe_type"]
+        )
+        assert config.protocol["newton_diagnostic"]["device"] == (
+            baseline.protocol["newton_diagnostic"]["device"]
+        )
+        assert config.protocol["newton_diagnostic"]["sphere_rain"] == (
+            baseline.protocol["newton_diagnostic"]["sphere_rain"]
+        )
+        drop_settle = config.protocol["newton_diagnostic"]["drop_settle"]
+        baseline_drop_settle = baseline.protocol["newton_diagnostic"]["drop_settle"]
+        assert drop_settle["frames"] == frames
+        assert drop_settle["substeps"] == 8
+        assert {
+            key: value for key, value in drop_settle.items() if key != "frames"
+        } == {key: value for key, value in baseline_drop_settle.items() if key != "frames"}
+        assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+            "real_usd_native_opt_in_frame_sweep_sensitivity_not_collision_quality_or_safety"
+        )
+        assert config.protocol["cpd_like"]["claim_boundary"] == (
+            "real_usd_native_opt_in_frame_sweep_probe_not_collision_quality_validation"
+        )
+        assert config.protocol["native_fitting_comparison"] == {
+            "stage": "cpd_like_real_usd_native_fitting_comparison",
+            "real_usd_roles": ["bed_dev_smoke"],
+            "real_usd_status": (
+                "configured_real_usd_native_opt_in_frame_sweep_smoke_not_benchmark"
+            ),
+            "claim_boundary": (
+                "real_usd_native_opt_in_frame_sweep_probe_not_collision_quality_validation"
+            ),
+            "evidence_level": "offline_real_usd_native_opt_in_frame_sweep_fitting_smoke",
+        }
+        assert config.protocol["report"]["evidence_level"] == (
+            "real_usd_native_opt_in_frame_sweep_sensitivity"
+        )
+        assert config.protocol["report"]["output_dir"] == (
+            f"reports/generated/bed_native_opt_in_frame{frames}_probe"
+        )
+        assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")

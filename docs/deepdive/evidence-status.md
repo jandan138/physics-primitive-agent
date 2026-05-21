@@ -673,6 +673,59 @@ This file separates current evidence from future claims. See [message-map.md](me
   Franka cylinder candidates as support-blocked. This is not evidence that native primitives
   improved bed or Franka. The report can now include per-selected-cluster candidate audit
   summaries that distinguish raw-cost rank from support-aware selection rank.
+- The [2026-05-21 capped Franka native opt-in probe](../records/2026-05-21-franka-native-opt-in-probe.md)
+  reports `smoke_passed`: the default native lane remains `32` boxes, while a capped Franka
+  first-mesh package containing `24` boxes and `8` selected cylinders fully maps; representative
+  `box`/`cylinder` contact canaries and package-level drop/settle and sphere-rain smokes pass.
+  This is native-exercising runtime diagnostic evidence for capped Franka only, not
+  collision-quality evidence or default asset behavior.
+- The [2026-05-21 capped bed native opt-in probe](../records/2026-05-21-bed-native-opt-in-probe.md)
+  records a current blocker: a capped bed first-mesh package containing `31` boxes plus `1`
+  selected cylinder fully maps, passes representative contact canaries, and passes sphere-rain,
+  but fails drop/settle with `not_settled`. The default bed legacy/native all-box lanes pass under
+  the same config. A local cylinder-revert drop-attribution diagnostic shows that replacing only
+  the selected cylinder package delta at source faces `[32..39]` with the native box fallback
+  clears this drop/settle blocker under the recorded settings; this is counterfactual diagnostic
+  attribution only, not primitive-quality evidence or multiplier calibration. A follow-up
+  center/shape diagnostic records `box_at_cylinder_center` passing and `cylinder_at_box_center`
+  still failing, with unchanged package anchor across variants; this narrows the local
+  attribution toward the selected cylinder shape/dimensions rather than the center shift. A
+  target-only diagnostic records that isolated primitive-6 box and cylinder variants all pass, so
+  the standalone selected cylinder does not reproduce the full-package `not_settled` label under
+  one-primitive anchor recomputation. Nearest-neighbor local-shell controls also pass for both
+  target variants, while an anchor-preserved local subset fails for both the native-box and
+  cylinder target variants; those controls keep broader compound context open and are not cylinder
+  attribution evidence by themselves. A worktree full-compound trace script now records the fixed
+  native box, opt-in cylinder, reverted box, and center/shape variants with Newton body mass, COM,
+  inertia, body pose/velocity, support height, and contact details. The cylinder variants keep
+  failing with residual speeds above the settle threshold while the box variants pass, and the
+  final support-contact labels remain the same support primitives against the ground plane. The
+  same script now records an inertial-array counterfactual: keeping the opt-in cylinder geometry
+  but copying the native all-box body mass, inverse mass, COM, inertia, and inverse inertia arrays
+  into the opt-in cylinder model before solver creation clears the recorded `360`-frame
+  drop/settle `not_settled` label in this one recorded run. A COM-only field ablation then keeps cylinder geometry,
+  mass/inverse mass, and inertia/inverse inertia unchanged while copying only the native all-box
+  `body_com`; it also clears the recorded `360`-frame final-speed gate label in this same fixed full-compound gate. A COM-axis
+  subset ablation keeps the same geometry and mass/inertia, then copies selected native all-box
+  `body_com` axes: `x`, `y`, `z`, `xy`, and `yz` remain `not_settled`, while `xz` clears the
+  recorded `360`-frame final-speed gate label in this one fixed gate. A COM-blend ablation then applies fixed `0.0`, `0.25`,
+  `0.5`, `0.75`, and `1.0` blends from opt-in `body_com` toward native all-box `body_com` for
+  full `xyz` and `xz` axes; the intermediate blends remain `not_settled`, while the `1.0`
+  endpoints clear the recorded `360`-frame final-speed gate label. A near-endpoint COM-blend refinement records that full
+  `xyz` clears the recorded `360`-frame final-speed gate label at `0.875` and above, while `xz`
+  remains `not_settled` at `0.875` and clears the label at `0.9375` and above in this run. This refinement is one-config near-endpoint field sensitivity
+  accounting only, not a COM threshold proof, root-cause proof, validated fix, scoring/default
+  config evidence, benchmark evidence, or safety evidence. A tail-summary rerun records
+  `tail_linear_speed_summary` as late-window speed telemetry only; the drop/settle pass/fail
+  labels remain the existing final-speed gate, not a sustained-settle proof or new gate. A
+  `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
+  sweep then refines the native/reverted-control final-speed task-gate bracket to `361` clean
+  versus `362` failing. Dirty-control rows from `362` onward are rejected as COM-blend fix,
+  sustained-settle, or long-window stability evidence because the controls are not clean. A pre-solver
+  model-build audit builds
+  full, target-only, and rest-without-target Newton models under matching full-package anchors; the
+  rest-without-target opt-in-minus-native mass/COM/inertia row-0 delta is zero, while the full and
+  target-only deltas are nonzero for primitive index `6`.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
@@ -759,6 +812,35 @@ This file separates current evidence from future claims. See [message-map.md](me
   adding a support-aware guard: capped bed remains `32` boxes in both lanes, and capped Franka now
   selects `32` boxes in the support-aware native lane while reporting three cheaper raw-cost
   cylinder candidates as support-blocked.
+- The 2026-05-21 Franka and bed native opt-in records do not supersede the default support-aware
+  bed/Franka config. They add separate opt-in native-exercising diagnostics: capped Franka passes
+  package-level task smokes with selected cylinders, while capped bed remains blocked by a
+  drop/settle `not_settled` failure in the opt-in lane. The bed record now includes a local
+  cylinder-revert attribution check where reverting the one selected cylinder package delta clears
+  that blocker under the same recorded settings, plus a center/shape separation check that keeps
+  the cylinder failing when moved to the native box center, and a target-only control where the
+  isolated cylinder passes. Local compound controls did not produce a valid compact cylinder-only
+  reproducer. A worktree full-compound trace script now makes the main 32-primitive
+  body/contact comparison reproducible and records the cylinder variants' higher body mass,
+  shifted COM/inertia, and residual final velocity under a similar final support-contact set. Its
+  inertial-array counterfactual keeps the cylinder geometry while applying native all-box
+  inertial arrays and clears the recorded `360`-frame drop/settle gate label. The follow-up
+  COM-only ablation keeps mass and inertia unchanged and also clears that recorded label. The
+  COM-axis subset ablation then records `x`, `y`, `z`, `xy`, and `yz` subsets still
+  `not_settled`, while `xz` clears the recorded `360`-frame final-speed gate label in the same
+  fixed gate. The COM-blend ablation records `0.25`, `0.5`, and `0.75` blends still
+  `not_settled` for both full `xyz` and `xz`, while the `1.0` endpoint clears the recorded
+  `360`-frame final-speed gate label. The COM-blend refinement records full `xyz` clearing that
+  recorded label at `0.875` and above in this run, while `xz` still fails at `0.875` and clears
+  the label at `0.9375` and above in the same fixed gate. A tail-summary
+  rerun records late-window speed telemetry only and does not add sustained-settle evidence or a
+  new pass/fail gate. A
+  `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
+  sweep brackets the native/reverted-control final-speed task-gate flip between `361` clean and
+  `362` failing; dirty-control rows are rejected as stability or fix evidence. A pre-solver
+  model-build audit records zero
+  rest-without-target delta and nonzero primitive-6 target/full deltas under matching anchors.
+  These are diagnostic sensitivity controls, not validated packages or root-cause proof.
 - The current candidate-loss report records next-slice triage metadata: bed has one `cylinder`
   near-miss target, and Franka has three support-blocked raw-cost `cylinder` candidates plus three
   `cylinder` near-miss targets. The recommended next algorithmic fixture is now the cylinder
@@ -845,6 +927,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   bed/Franka old/new packages passed contact canaries, drop/settle, and sphere-rain under the
   conda-managed Newton environment. These task smokes are execution diagnostics, not
   collision-quality comparisons.
+- The 2026-05-21 clean-env real-USD native task rerun again reports `smoke_passed` for capped
+  `bed_dev_smoke` and capped `franka_import_smoke` old/new contact-gated task smokes under the
+  documented Newton conda environment. The rerun still selected `box` only in both legacy and
+  native lanes, so it remains runtime diagnostic evidence, not native primitive improvement or
+  collision-quality evidence.
 - The 2026-05-15 real-USD asset mirror materialization record reports local ignored mirrors for
   the current smoke manifests: bed materialized 18 files with no unresolved dependencies; Franka
   materialized 13 USD files and records unresolved `OmniPBR.mdl`. `--check-assets` selected
@@ -923,7 +1010,33 @@ lanes through offline reports, candidate-loss diagnosis, contact canaries, and g
 it does not show native primitive quality improvement. Bed and capped Franka both select boxes in
 the current support-aware lanes, while three capped Franka raw-cost cylinder candidates are
 reported as support-blocked diagnostic accounting. Report failures and fallback behavior as
-first-class evidence before changing broader asset claims or adding LLM/VLM.
+first-class evidence before changing broader asset claims or adding LLM/VLM. A separate
+2026-05-21 Franka-only opt-in diagnostic now exercises a package containing cylinders through the
+same gates; an analogous capped bed opt-in remains blocked by a drop/settle task-gate failure,
+with a local cylinder-revert diagnostic showing the blocker clears when the one selected cylinder
+package delta is replaced by the native box fallback and a center/shape diagnostic narrowing the
+local blocker toward the cylinder shape/dimensions rather than center shift. A target-only control
+and nearest-neighbor shell do not reproduce the full-package blocker, and an anchor-preserved
+subset fails for both box and cylinder variants. A worktree full-compound trace now records body
+mass, COM, inertia, velocity, support height, and contact details for the fixed primitive-6
+variants, keeping the next question focused on body-state/inertia/residual-velocity behavior
+rather than another solver-parameter sweep. The follow-up inertial-array counterfactual clears the
+recorded drop/settle label when native all-box inertial arrays are applied to the cylinder
+geometry, and the COM-only field ablation clears the same label while retaining cylinder mass and
+inertia. The COM-axis subset ablation records only the `xz` subset clearing the same label while
+`x`, `y`, `z`, `xy`, and `yz` remain `not_settled`. The COM-blend ablation records that
+intermediate `0.25`, `0.5`, and `0.75` blends remain `not_settled` for both full `xyz` and `xz`,
+while the `1.0` endpoint clears the same recorded `360`-frame final-speed gate label. The
+near-endpoint COM-blend refinement records full `xyz` clearing that label at `0.875` and above,
+while `xz` remains `not_settled` at `0.875` and clears the label at `0.9375` and above in this
+run. A tail-summary rerun records late-window speed telemetry only:
+the pass/fail labels remain final-speed gated and the report does not prove sustained settling.
+The `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
+sweep records the native/reverted-control final-speed task-gate bracket as `361` clean versus
+`362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. The pre-solver
+model-build audit records the rest-without-target delta as zero while the
+primitive-6 target/full deltas remain nonzero. These remain one-config diagnostic controls. This
+does not change default support-aware lane claims.
 
 ## Current Non-Goals
 
