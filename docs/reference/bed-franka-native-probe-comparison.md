@@ -240,6 +240,24 @@ Task comparison:
 - this is a support-admissibility diagnostic, not a default support threshold, calibrated policy,
   collision-quality result, or whole-robot Franka collider-quality claim.
 
+2026-05-21 combined guarded support-threshold opt-in update:
+
+- `configs/experiments/bed_franka_native_opt_in_guarded_support_threshold_probe.yaml` composes
+  the existing `native_opt_in_selection_guard` and
+  `native_opt_in_extension_support_thresholds` controls in one two-role capped bed plus capped
+  Franka diagnostic config;
+- the config does not use `native_opt_in_primitive_score_multipliers`;
+- guarded capped bed legacy/native/native-opt-in lanes all select `32` boxes; the opt-in audit
+  reports `23` diagnostic guard rejected cylinder candidates;
+- guarded support-threshold capped Franka legacy/native lanes select `32` boxes, while
+  `native_opt_in` selects `29` boxes plus `3` cylinders; the opt-in audit reports `0` guard
+  rejections and `23` support-blocked extension candidates;
+- both roles and all lanes pass contact canaries, drop/settle, and sphere-rain under the recorded
+  clean Newton environment. The Franka native-opt-in package retains `29` boxes plus `3`
+  cylinders through the contact-gated task smokes;
+- this is a combined opt-in diagnostic package, not a default selector policy, calibrated guard,
+  calibrated support-threshold relaxation, collision-quality result, or safety result.
+
 For the plain-language version of why this followed the earlier gate work, see
 [Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
 
@@ -302,6 +320,7 @@ Allowed wording:
 - "capped bed primitive-6 pre-solver model-build audit."
 - "capped bed primitive-6 post-run model-build delta audit."
 - "capped Franka opt-in support-threshold diagnostic."
+- "combined capped bed/Franka guarded support-threshold opt-in diagnostic."
 
 Do not claim:
 
@@ -349,6 +368,9 @@ Do not claim:
 - that the capped Franka support-threshold opt-in probe calibrates support thresholds, changes
   default support-aware selection, validates cylinder collision quality, or proves whole-robot
   Franka collider quality.
+- that the combined capped bed/Franka guarded support-threshold opt-in probe is a default policy,
+  calibrated guard, calibrated support relaxation, production recipe, broad real-USD result,
+  collision-quality validation, benchmark result, or safety result.
 
 ## Commands
 
@@ -408,6 +430,26 @@ NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton \
 PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python \
   -m primitive_collision_compiler.cli \
   --config configs/experiments/franka_native_opt_in_support_threshold_probe.yaml \
+  --run-real-usd-native-task-comparison
+```
+
+Combined bed/Franka guarded support-threshold opt-in fitting, contact, and task smokes:
+
+```bash
+PYTHONPATH=src python -m primitive_collision_compiler.cli \
+  --config configs/experiments/bed_franka_native_opt_in_guarded_support_threshold_probe.yaml \
+  --run-real-usd-native-fitting-comparison
+
+NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton \
+PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python \
+  -m primitive_collision_compiler.cli \
+  --config configs/experiments/bed_franka_native_opt_in_guarded_support_threshold_probe.yaml \
+  --run-real-usd-native-contact-comparison
+
+NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton \
+PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python \
+  -m primitive_collision_compiler.cli \
+  --config configs/experiments/bed_franka_native_opt_in_guarded_support_threshold_probe.yaml \
   --run-real-usd-native-task-comparison
 ```
 

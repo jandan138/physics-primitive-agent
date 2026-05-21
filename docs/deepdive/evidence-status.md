@@ -756,6 +756,13 @@ This file separates current evidence from future claims. See [message-map.md](me
   clean Newton environment. This is controlled support-threshold diagnostic evidence only; it
   does not change default support-aware lanes, calibrate support thresholds, validate cylinder
   quality, or prove whole-robot Franka collider quality.
+- The [2026-05-21 bed/Franka guarded support-threshold probe](../records/2026-05-21-bed-franka-guarded-support-threshold-probe.md)
+  composes the opt-in large-flat-cylinder selection guard with the opt-in cylinder support
+  threshold relaxation in one two-role config and uses no score multiplier. In that recorded
+  config, capped bed remains `32` boxes and capped Franka native-opt-in selects `29` boxes plus
+  `3` cylinders; both roles pass contact-gated drop/settle plus sphere-rain in the clean Newton
+  environment. This is one explicitly configured diagnostic package, not a default policy,
+  calibrated threshold, collision-quality validation, or safety result.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
@@ -887,6 +894,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   lane and reaches the recorded task smokes with `29` boxes plus `3` cylinders. This is
   support-admissibility diagnostic evidence only, not a default-policy, calibrated-threshold, or
   collision-quality result.
+- The 2026-05-21 bed/Franka guarded support-threshold opt-in record composes those two opt-in
+  controls in one two-role config without a score multiplier. Guarded bed stays at `32` boxes;
+  guarded support-threshold Franka selects `29` boxes plus `3` cylinders; both roles pass the
+  recorded contact-gated task smokes. This is a combined diagnostic package only, not default
+  behavior or collision-quality evidence.
 - The current candidate-loss report records next-slice triage metadata: bed has one `cylinder`
   near-miss target, and Franka has three support-blocked raw-cost `cylinder` candidates plus three
   `cylinder` near-miss targets. The recommended next algorithmic fixture is now the cylinder

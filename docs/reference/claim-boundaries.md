@@ -730,6 +730,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   controlled support-admissibility diagnostic evidence, not calibrated threshold evidence, not a
   default policy, not broad asset evidence, not collision-quality validation, and not whole-robot
   Franka collider-quality evidence.
+- The current code can run a combined capped bed plus capped Franka opt-in diagnostic through
+  [2026-05-21 bed/Franka guarded support-threshold probe](../records/2026-05-21-bed-franka-guarded-support-threshold-probe.md).
+  That config composes the opt-in selector guard with the opt-in cylinder support-threshold
+  relaxation and uses no score multiplier. In the recorded run, guarded bed remains `32` boxes,
+  while guarded support-threshold Franka selects `29` boxes plus `3` cylinders, and both roles
+  pass the recorded contact-gated task smokes. This is one explicitly configured diagnostic
+  package, not default behavior, threshold calibration, broad asset evidence, collision-quality
+  validation, or safety evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1125,6 +1133,11 @@ Use these only after broader benchmark records exist.
   whole-robot Franka collider-quality result, benchmark evidence, or collision-quality
   validation. It is an explicitly configured support-admissibility diagnostic for one capped
   Franka first-mesh lane.
+- Do not describe the combined bed/Franka guarded support-threshold opt-in probe as a default
+  selector policy, calibrated guard, calibrated support relaxation, score-free production recipe,
+  broad real-USD result, whole-robot Franka collider-quality result, benchmark evidence,
+  collision-quality validation, or safety evidence. It is one explicitly configured diagnostic
+  package that composes two opt-in controls under capped bed/Franka first-mesh scope.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

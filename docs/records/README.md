@@ -172,6 +172,11 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-21 Franka Native Opt-In Support Threshold Probe](2026-05-21-franka-native-opt-in-support-threshold-probe.md):
   opt-in capped Franka support-threshold diagnostic; the changed package selects `29` boxes plus
   `3` cylinders and passes contact-gated drop/settle plus sphere-rain.
+- [2026-05-21 Bed Franka Guarded Support Threshold Probe](2026-05-21-bed-franka-guarded-support-threshold-probe.md):
+  two-role opt-in diagnostic that composes the large-flat-cylinder guard with relaxed cylinder
+  support thresholds and no score multiplier; guarded bed stays at `32` boxes, while guarded
+  support-threshold Franka selects `29` boxes plus `3` cylinders and passes contact-gated
+  drop/settle plus sphere-rain.
 - [2026-05-21 Newton-In-The-Loop Selector Story Docs](2026-05-21-newton-in-the-loop-selector-story-docs.md):
   plain-language documentation update that explains why the guarded selector slice followed the
   earlier gates and what it does, and does not, prove in the CPD paper story.
