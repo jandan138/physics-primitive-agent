@@ -729,11 +729,12 @@ This file separates current evidence from future claims. See [message-map.md](me
   audit records that the same-report native all-box and cylinder-reverted controls pass while the
   original opt-in cylinder remains `not_settled`, with matching final support-contact primitive
   suffixes and final speed about `+0.0181910 m/s` above either clean control. This is
-  same-report diagnostic accounting only. A pre-solver
-  model-build audit builds
-  full, target-only, and rest-without-target Newton models under matching full-package anchors; the
+  same-report diagnostic accounting only. A pre-solver model-build audit builds full,
+  target-only, and rest-without-target Newton models under matching full-package anchors; the
   rest-without-target opt-in-minus-native mass/COM/inertia row-0 delta is zero, while the full and
-  target-only deltas are nonzero for primitive index `6`.
+  target-only deltas are nonzero for primitive index `6`. A post-run model-build delta audit links
+  those deltas to the primitive-6 native target shape-scale row
+  `[0.2130423, 2.3121915, 2.1920862]` and opt-in target row `[2.7009380, 0.2130423, 0.0]`.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
@@ -850,10 +851,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   for the native all-box and cylinder-reverted controls while the dirty row adds `8` substeps and
   increases final speed by about `0.0189847 m/s`. A `361` clean-frame blocker audit records that
   the original opt-in cylinder remains `not_settled` against clean same-report controls under
-  matching final support-contact primitive suffixes. A pre-solver
-  model-build audit records zero
-  rest-without-target delta and nonzero primitive-6 target/full deltas under matching anchors.
-  These are diagnostic sensitivity controls, not validated packages or root-cause proof.
+  matching final support-contact primitive suffixes. A pre-solver model-build audit records zero
+  rest-without-target delta and nonzero primitive-6 target/full deltas under matching anchors; a
+  post-run delta audit links those rows to the primitive-6 target shape-scale rows. These are
+  diagnostic sensitivity controls, not validated packages or root-cause proof.
 - The current candidate-loss report records next-slice triage metadata: bed has one `cylinder`
   near-miss target, and Franka has three support-blocked raw-cost `cylinder` candidates plus three
   `cylinder` near-miss targets. The recommended next algorithmic fixture is now the cylinder
@@ -1051,10 +1052,10 @@ sweep records the native/reverted-control final-speed task-gate bracket as `361`
 labels for the native all-box and cylinder-reverted controls while the dirty row adds `8`
 substeps and increases final speed by about `0.0189847 m/s`. The `361` clean-frame blocker audit
 records the original opt-in cylinder still `not_settled` against clean same-report controls under
-matching final support-contact primitive suffixes. The pre-solver
-model-build audit records the rest-without-target delta as zero while the
-primitive-6 target/full deltas remain nonzero. These remain one-config diagnostic controls. This
-does not change default support-aware lane claims.
+matching final support-contact primitive suffixes. The pre-solver model-build audit records the
+rest-without-target delta as zero while the primitive-6 target/full deltas remain nonzero; the
+post-run delta audit links those rows to the primitive-6 target shape-scale rows. These remain
+one-config diagnostic controls. This does not change default support-aware lane claims.
 
 ## Current Non-Goals
 

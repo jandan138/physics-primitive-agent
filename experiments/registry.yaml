@@ -807,6 +807,9 @@ experiments:
       native-control and cylinder-reverted controls against the still-blocked opt-in cylinder
       inside the same report.
       The --run-model-build-audit command regenerates the pre-solver model-build audit report.
+      The bed_native_opt_in_model_build_delta_audit.py command summarizes that existing
+      model-build report's primitive-6 target shape-scale rows beside the recorded target/rest/full
+      mass, COM, and inertia deltas.
     claims_supported:
       - capped bed first-mesh native-exercising diagnostic blocker, not a passing package-level task-smoke result
       - records partial success only; 31 boxes and 1 selected cylinder fully mapped, representative contact canaries passed, and sphere-rain passed
@@ -826,6 +829,7 @@ experiments:
       - records a 361/362 frame-transition audit where native all-box and cylinder-reverted controls keep matching model arrays and final support-contact labels while the dirty 362 row adds 8 substeps and increases final linear speed
       - records a 361 clean-frame blocker audit where native all-box and cylinder-reverted controls pass while the opt-in cylinder remains not_settled under matching final support-contact primitive suffixes
       - records a pre-solver model-build audit where the rest-without-target opt-in-minus-native delta is zero while full-package and target-only primitive-6 mass/COM/inertia deltas remain nonzero under matching anchors
+      - records a post-run model-build delta audit linking the existing pre-solver target/rest/full deltas to primitive-6 target shape-scale rows without rerunning Newton
       - records that iterations and substeps sensitivity checks did not clear the blocker under current settings
       - no root-cause proof, native primitive quality improvement, calibrated multiplier, default asset behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: bed-native-opt-in-task-rerun-after-com-axis
@@ -1159,6 +1163,19 @@ experiments:
       - one-config capped bed pre-solver model-build accounting diagnostic only
       - records that the rest-without-target opt-in-minus-native model-build delta is zero while the full and target-only deltas are nonzero for primitive index 6
       - no Newton mapping bug proof, physical root-cause proof, physical package validation, repair policy, scoring-policy change, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-model-build-delta-audit
+    status: complete
+    command: PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_model_build_delta_audit.py --report reports/generated/bed_native_opt_in_probe/drop_primitive6_model_build_audit_2026-05-21.stdout.json --output reports/generated/bed_native_opt_in_model_build_delta_audit/primitive6_model_build_delta_audit_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Summarize the existing capped bed primitive-6 pre-solver model-build audit by linking the
+      target/rest/full mass, COM, and inertia deltas to the target shape-scale rows. This is a
+      post-run JSON audit and does not import Newton or rerun simulation.
+    claims_supported:
+      - post-run capped bed model-build delta accounting diagnostic only
+      - records primitive-6 native versus opt-in target shape-scale rows beside the existing target/rest/full model-build deltas
+      - records that rest-without-target delta remains zero while target and full deltas remain nonzero in the source report
+      - no Newton mapping bug proof, physical root-cause proof, validated fix, scoring-policy evidence, default behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: cylinder-near-miss-cluster-fixture
     status: complete
     command: PYTHONPATH=src python -m primitive_collision_compiler.cli --run-cpd-like-near-miss-workbench

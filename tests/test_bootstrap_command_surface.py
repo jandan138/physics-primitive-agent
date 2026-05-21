@@ -53,6 +53,21 @@ def _load_bed_native_opt_in_clean_frame_blocker_audit_module():
     return module
 
 
+def _load_bed_native_opt_in_model_build_delta_audit_module():
+    script_path = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "diagnostics"
+        / "bed_native_opt_in_model_build_delta_audit.py"
+    )
+    spec = importlib.util.spec_from_file_location(
+        "bed_native_opt_in_model_build_delta_audit", script_path
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_package_imports():
     package = importlib.import_module("primitive_collision_compiler")
 
@@ -898,6 +913,144 @@ def test_clean_frame_blocker_audit_main_writes_json(tmp_path, capsys):
     file_payload = json.loads(output_path.read_text())
     assert stdout_payload == file_payload
     assert file_payload["status"] == "clean_frame_blocker_audit_recorded"
+
+
+def test_model_build_delta_audit_records_target_shape_and_delta_context(tmp_path):
+    module = _load_bed_native_opt_in_model_build_delta_audit_module()
+    report_path = tmp_path / "model_build.json"
+    report_path.write_text(
+        json.dumps(
+            {
+                "status": "diagnostic_recorded",
+                "target_index": 6,
+                "target_source_faces": [32, 33],
+                "model_build_audit": {
+                    "status": "diagnostic_recorded",
+                    "anchor_match": True,
+                    "target_index": 6,
+                    "target_source_faces": [32, 33],
+                    "delta_summary": {
+                        "full_opt_in_minus_native": {
+                            "body_mass_delta": 5.0,
+                            "body_com_delta": [0.1, 0.2, 0.3],
+                            "body_inertia_row0_delta": [10.0, 20.0, 30.0],
+                        },
+                        "target_opt_in_minus_native": {
+                            "body_mass_delta": 5.0,
+                            "body_com_delta": [1.0, 2.0, 3.0],
+                            "body_inertia_row0_delta": [100.0, 200.0, 300.0],
+                        },
+                        "rest_opt_in_minus_native": {
+                            "body_mass_delta": 0.0,
+                            "body_com_delta": [0.0, 0.0, 0.0],
+                            "body_inertia_row0_delta": [0.0, 0.0, 0.0],
+                        },
+                    },
+                    "pieces": {
+                        "native_target_full_anchor": {
+                            "primitive_count": 1,
+                            "primitive_ids": ["native:primitive:6"],
+                            "anchor": [0.0, 0.0, 0.0],
+                            "model_summary": {
+                                "body_mass": [8.0],
+                                "body_com": [[1.0, 2.0, 3.0]],
+                                "body_inertia": [[[4.0, 5.0, 6.0]]],
+                                "shape_scale": [[0.2, 2.3, 2.2]],
+                            },
+                        },
+                        "native_opt_in_target_full_anchor": {
+                            "primitive_count": 1,
+                            "primitive_ids": ["opt:primitive:6"],
+                            "anchor": [0.0, 0.0, 0.0],
+                            "model_summary": {
+                                "body_mass": [13.0],
+                                "body_com": [[2.0, 4.0, 6.0]],
+                                "body_inertia": [[[104.0, 205.0, 306.0]]],
+                                "shape_scale": [[2.7, 0.2, 0.0]],
+                            },
+                        },
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    audit = module.build_model_build_delta_audit_report(report_path=report_path)
+
+    assert audit["status"] == "model_build_delta_audit_recorded"
+    assert audit["claim_boundary"] == (
+        "bed_native_opt_in_model_build_delta_audit_not_root_cause_or_fix_or_stability_evidence"
+    )
+    assert audit["summary"] == {
+        "anchor_match": True,
+        "target_index": 6,
+        "target_source_faces": [32, 33],
+        "rest_without_target_delta_zero": True,
+        "target_delta_nonzero": True,
+        "full_delta_nonzero": True,
+    }
+    assert audit["target_shape_audit"] == {
+        "native_target_primitive_id": "native:primitive:6",
+        "native_opt_in_target_primitive_id": "opt:primitive:6",
+        "native_target_shape_scale": [0.2, 2.3, 2.2],
+        "native_opt_in_target_shape_scale": [2.7, 0.2, 0.0],
+        "target_shape_scale_delta": [2.5, -2.1, -2.2],
+    }
+    assert audit["piece_summaries"]["native_target_full_anchor"] == {
+        "primitive_count": 1,
+        "primitive_ids": ["native:primitive:6"],
+        "body_mass": 8.0,
+        "body_com": [1.0, 2.0, 3.0],
+        "body_inertia_row0": [4.0, 5.0, 6.0],
+        "shape_scale": [0.2, 2.3, 2.2],
+    }
+    assert audit["delta_summary"]["target_opt_in_minus_native"]["body_mass_delta"] == 5.0
+    json.dumps(audit, allow_nan=False)
+
+
+def test_model_build_delta_audit_main_writes_json(tmp_path, capsys):
+    module = _load_bed_native_opt_in_model_build_delta_audit_module()
+    report_path = tmp_path / "model_build.json"
+    output_path = tmp_path / "audit.json"
+    report_path.write_text(
+        json.dumps(
+            {
+                "status": "diagnostic_recorded",
+                "model_build_audit": {
+                    "status": "diagnostic_recorded",
+                    "anchor_match": True,
+                    "target_index": 1,
+                    "target_source_faces": [4],
+                    "delta_summary": {
+                        "full_opt_in_minus_native": {"body_mass_delta": 1.0},
+                        "target_opt_in_minus_native": {"body_mass_delta": 1.0},
+                        "rest_opt_in_minus_native": {"body_mass_delta": 0.0},
+                    },
+                    "pieces": {
+                        "native_target_full_anchor": {
+                            "primitive_count": 1,
+                            "primitive_ids": ["native:primitive:1"],
+                            "model_summary": {"shape_scale": [[1.0, 1.0, 1.0]]},
+                        },
+                        "native_opt_in_target_full_anchor": {
+                            "primitive_count": 1,
+                            "primitive_ids": ["opt:primitive:1"],
+                            "model_summary": {"shape_scale": [[2.0, 1.0, 1.0]]},
+                        },
+                    },
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert module.main(["--report", str(report_path), "--output", str(output_path)]) == 0
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output_path.read_text())
+    assert stdout_payload == file_payload
+    assert file_payload["status"] == "model_build_delta_audit_recorded"
 
 
 def test_cli_help_mentions_project(capsys):

@@ -805,9 +805,9 @@ records exist.
   row adds `8` substeps and increases final speed by about `0.0189847 m/s`. A `361` clean-frame
   blocker audit records that the original opt-in cylinder remains `not_settled` against clean
   same-report controls under matching final support-contact primitive suffixes. A pre-solver
-  model-build audit records zero
-  rest-without-target delta and nonzero primitive-6 target/full mass/COM/inertia deltas under
-  matching anchors. These are not validated fixes or root-cause proof.
+  model-build audit records zero rest-without-target delta and nonzero primitive-6 target/full
+  mass/COM/inertia deltas under matching anchors; a post-run delta audit links those rows to the
+  primitive-6 target shape-scale rows. These are not validated fixes or root-cause proof.
 - [Bed Franka native probe completion audit](records/2026-05-15-bed-franka-native-probe-completion-audit.md):
   final checklist mapping the requested five-step objective to code, configs, reports, records,
   verification, and review fixes.
@@ -972,7 +972,9 @@ records exist.
   sensitivity sweep, `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py`
   `361`/`362` frame-transition audit,
   `scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py` `361` clean-frame blocker
-  audit, and pre-solver model-build audit.
+  audit, pre-solver model-build audit, and
+  `scripts/diagnostics/bed_native_opt_in_model_build_delta_audit.py` post-run model-build delta
+  audit.
 - `configs/experiments/bed_native_opt_in_frame361_probe.yaml`,
   `configs/experiments/bed_native_opt_in_frame362_probe.yaml`,
   `configs/experiments/bed_native_opt_in_frame363_probe.yaml`,

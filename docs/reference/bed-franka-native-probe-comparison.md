@@ -199,6 +199,10 @@ Task comparison:
   `[0.2216988, 0.3152409, -0.0516510]`, and inertia row-0 about
   `[2962.6045, -683.8531, 436.1219]`; the rest-without-target delta is zero for mass, COM, and
   inertia row-0;
+- `scripts/diagnostics/bed_native_opt_in_model_build_delta_audit.py` adds a post-run JSON audit
+  over that model-build report. It records the primitive-6 native target shape-scale row
+  `[0.2130423, 2.3121915, 2.1920862]`, the opt-in target shape-scale row
+  `[2.7009380, 0.2130423, 0.0]`, and the same rest/target/full model-build delta summary;
 - the earlier temporary two-role capped bed opt-in stress run selected `25` boxes plus `7`
   cylinders and failed more strongly: drop/settle reported `not_settled` and `floor_breach`, and
   sphere-rain reported `no_contact_observed` and `insufficient_contact_density`.
@@ -259,6 +263,7 @@ Allowed wording:
 - "capped bed primitive-6 361/362 frame-transition audit."
 - "capped bed primitive-6 361 clean-frame blocker audit."
 - "capped bed primitive-6 pre-solver model-build audit."
+- "capped bed primitive-6 post-run model-build delta audit."
 
 Do not claim:
 
@@ -298,8 +303,9 @@ Do not claim:
   causality, a validated fix, scoring/default-policy evidence, or collision-quality validation.
 - that the 361 clean-frame blocker audit proves sustained settling, long-window stability,
   causality, a validated fix, scoring/default-policy evidence, or collision-quality validation.
-- that the pre-solver model-build audit proves a Newton mapping bug, physical root cause,
-  validated inertial repair, or package-quality conclusion.
+- that the pre-solver model-build audit or post-run model-build delta audit proves a Newton
+  mapping bug, physical root cause, validated inertial repair, scoring evidence, default-policy
+  behavior, or package-quality conclusion.
 
 ## Commands
 
@@ -659,4 +665,12 @@ PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-p
   --source-dir '$NEWTON_SOURCE_DIR' \
   --run-model-build-audit \
   --output reports/generated/bed_native_opt_in_probe/drop_primitive6_model_build_audit_2026-05-21.stdout.json
+```
+
+Bed opt-in post-run model-build delta audit:
+
+```bash
+PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_model_build_delta_audit.py \
+  --report reports/generated/bed_native_opt_in_probe/drop_primitive6_model_build_audit_2026-05-21.stdout.json \
+  --output reports/generated/bed_native_opt_in_model_build_delta_audit/primitive6_model_build_delta_audit_2026-05-21.stdout.json
 ```

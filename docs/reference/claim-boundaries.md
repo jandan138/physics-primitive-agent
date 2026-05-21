@@ -839,6 +839,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   full and target-only deltas are nonzero for primitive index `6`. It is pre-solver diagnostic
   accounting, not root-cause proof, a Newton mapping bug proof, a physically validated package, a
   repair policy, scoring-policy evidence, benchmark evidence, or safety evidence.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_model_build_delta_audit.py`, a
+  post-run JSON audit over the capped bed primitive-6 pre-solver model-build report. The dated
+  audit may cite only that the native target shape-scale row
+  `[0.2130423, 2.3121915, 2.1920862]` and opt-in target shape-scale row
+  `[2.7009380, 0.2130423, 0.0]` sit beside the existing target/rest/full model-build deltas:
+  rest-without-target remains zero while target-only and full-package deltas remain nonzero. It is
+  recorded model-build accounting, not root-cause proof, a Newton mapping bug proof, a validated
+  fix, scoring/default-policy evidence, benchmark evidence, collision-quality validation, or
+  safety evidence.
 - The real-USD native fitting diagnostic can include a per-selected-cluster candidate audit
   summary that reports whether `cylinder`, `cone`, or `ellipsoid` was the cheapest raw-cost
   candidate and whether it was support-admissible under the current surrogate. This is diagnostic
@@ -1068,8 +1077,9 @@ Use these only after broader benchmark records exist.
 - Do not describe the `361` clean-frame blocker audit as sustained-settle evidence, long-window
   stability validation, a validated COM-blend fix, root-cause proof, scoring/default-policy
   evidence, or collision-quality validation.
-- Do not describe the pre-solver model-build audit as proof of a Newton mapping bug, physical root
-  cause, validated inertial repair, package-quality conclusion, or default policy change.
+- Do not describe the pre-solver model-build audit or post-run model-build delta audit as proof of
+  a Newton mapping bug, physical root cause, validated inertial repair, package-quality
+  conclusion, scoring evidence, or default policy change.
 - Do not describe the synthetic native selection audit as a quality metric, paper-faithful
   optimizer, proof that native primitives are broadly better, real-USD improvement, or collision
   validation. It is a candidate-cost diagnostic table over toy meshes.
