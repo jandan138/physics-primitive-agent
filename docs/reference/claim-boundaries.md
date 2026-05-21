@@ -783,6 +783,12 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   effects remain open secondary context. This is not root-cause proof, a validated repair,
   selector-policy evidence, broad cylinder evidence, benchmark evidence, collision-quality
   validation, or safety evidence.
+- The current documentation includes a cylinder goal completion audit through
+  [2026-05-22 cylinder goal completion audit](../records/2026-05-22-cylinder-goal-completion-audit.md).
+  The audit may say that the diagnostic-mechanism answer is strong while the goal remains active
+  under strict completion rules. It may identify missing evidence categories such as physical
+  root-cause proof, validated package-level repair or selector-policy evidence, and stronger
+  contact/floor closure. It must not be used as evidence that the goal is complete.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1205,6 +1211,9 @@ Use these only after broader benchmark records exist.
   validated fix, proof that contact/floor effects are irrelevant, broad cylinder stability
   evidence, selector calibration, benchmark evidence, collision-quality validation, or safety
   evidence. It is a claim-bounded synthesis over the current recorded reports.
+- Do not describe the cylinder goal completion audit as completion evidence, a fix, a validated
+  repair plan, a default selector policy, broad cylinder evidence, benchmark evidence,
+  collision-quality validation, or safety evidence. It records remaining gaps.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

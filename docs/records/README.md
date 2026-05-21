@@ -173,6 +173,10 @@ Proposed | In progress | Complete | Failed | Superseded
 - [2026-05-22 Cylinder Mechanism Decision Matrix](2026-05-22-cylinder-mechanism-decision-matrix.md):
   claim-bounded synthesis table for the active bed-vs-Franka cylinder question across geometry,
   COM, inertia, mass, contact/floor, and full-compound context.
+- [2026-05-22 Cylinder Goal Completion Audit](2026-05-22-cylinder-goal-completion-audit.md):
+  strict completion audit for the active bed-vs-Franka cylinder mechanism goal. It records that
+  the diagnostic answer is strong, but the goal remains active because root-cause proof, validated
+  repair/policy evidence, and stronger contact/floor closure are not yet recorded.
 - [2026-05-21 Native Selector Diagnostic Guard](2026-05-21-native-selector-diagnostic-guard.md):
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller

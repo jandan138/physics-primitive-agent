@@ -38,6 +38,9 @@ center shift alone, mass alone, and categorical Newton cylinder unsupported beha
 for the recorded question; full-compound context is required; COM and inertia have the strongest
 positive evidence; final contact/support labels are unlikely as the sole full-package explanation;
 pair-level contact/floor effects remain open secondary context.
+A strict completion audit keeps the goal active: the diagnostic mechanism answer is now strong,
+but physical root-cause proof, a validated package-level repair or selector policy, and stronger
+contact/floor closure remain outside the current evidence.
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
@@ -879,6 +882,10 @@ records exist.
 - [Cylinder mechanism decision matrix](records/2026-05-22-cylinder-mechanism-decision-matrix.md):
   claim-bounded hypothesis table for the bed-vs-Franka cylinder contrast across geometry, COM,
   inertia, mass, contact/floor, and full-compound context.
+- [Cylinder goal completion audit](records/2026-05-22-cylinder-goal-completion-audit.md):
+  strict audit showing the mechanism diagnosis is strong but the long-running goal should remain
+  active until root-cause proof, validated repair/policy evidence, or stronger contact/floor
+  closure exists.
 - [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
   documentation update that explains the guarded selector slice as one real-USD
   Newton-in-the-loop diagnostic cycle in the CPD paper story.

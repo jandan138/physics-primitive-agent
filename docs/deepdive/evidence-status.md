@@ -811,6 +811,13 @@ This file separates current evidence from future claims. See [message-map.md](me
   label. Pair-level contact/floor effects remain open secondary context. This is diagnostic
   synthesis, not root-cause proof, a validated repair, broad cylinder evidence, benchmark
   evidence, collision-quality validation, or safety evidence.
+- The [2026-05-22 cylinder goal completion audit](../records/2026-05-22-cylinder-goal-completion-audit.md)
+  records that the current bed-vs-Franka cylinder question has a strong claim-bounded diagnostic
+  answer, but the long-running goal should remain active under strict completion rules. The audit
+  keeps physical root-cause proof, validated package-level repair or selector-policy evidence, and
+  stronger contact/floor closure as missing evidence. It also names the next useful slice as an
+  opt-in package-level body-state or large-flat-cylinder risk check that does not rely on direct
+  Newton model-array copying.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
