@@ -70,6 +70,13 @@ drop/settle task gate.
   exit `0`, report `status: diagnostic_recorded`. This rerun keeps the same capped bed
   first-mesh selection scope and `cylinder: 0.88` opt-in multiplier, but changes drop/settle to
   `362` frames.
+- `PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py --clean-report reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json --dirty-report reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json --variant-label native_control_box --variant-label native_opt_in_cylinder_reverted --output reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json`:
+  exit `0`, report `status: frame_transition_audit_recorded`. This post-run audit compares
+  the native all-box and cylinder-reverted controls across the adjacent `361` clean-control and
+  `362` dirty-control reports. It records matching Newton model arrays and matching final
+  support-contact labels while the `362` row adds `8` substeps and increases final linear speed
+  by about `0.0189847 m/s` in both controls. This is a frame-transition audit only, not
+  root-cause proof, sustained-settle evidence, a validated fix, or collision-quality validation.
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame363_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame363_probe/drop_primitive6_com_blend_refinement_frame363_2026-05-21.stdout.json`:
   exit `0`, report `status: diagnostic_recorded`. This rerun keeps the same capped bed
   first-mesh selection scope and `cylinder: 0.88` opt-in multiplier, but changes drop/settle to
@@ -120,6 +127,8 @@ drop/settle task gate.
 - `python -m pytest tests/test_cpd_like_config.py::test_bed_native_opt_in_frame_sweep_configs_keep_default_selection_scope -q`:
   exit `0`, `1 passed`.
 - `python -m json.tool reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame363_probe/drop_primitive6_com_blend_refinement_frame363_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame364_probe/drop_primitive6_com_blend_refinement_frame364_2026-05-21.stdout.json >/dev/null`:
+  exit `0`.
+- `python -m json.tool reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json >/dev/null`:
   exit `0`.
 - `python -m json.tool reports/generated/bed_native_opt_in_frame365_probe/drop_primitive6_com_blend_refinement_frame365_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame375_probe/drop_primitive6_com_blend_refinement_frame375_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame385_probe/drop_primitive6_com_blend_refinement_frame385_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame390_probe/drop_primitive6_com_blend_refinement_frame390_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame420_probe/drop_primitive6_com_blend_refinement_frame420_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame450_probe/drop_primitive6_com_blend_refinement_frame450_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame480_probe/drop_primitive6_com_blend_refinement_frame480_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame600_probe/drop_primitive6_com_blend_refinement_frame600_2026-05-21.stdout.json >/dev/null`:
   exit `0`.
@@ -423,6 +432,10 @@ Exploratory checks:
   `reports/generated/bed_native_opt_in_frame600_probe/drop_primitive6_com_blend_refinement_frame600_2026-05-21.stdout.json`, and
   `reports/generated/bed_native_opt_in_long_window_probe/drop_primitive6_com_blend_refinement_long_window_2026-05-21.stdout.json`
   (ignored; not committed). Runtime logs are in the matching `.stderr` file.
+- Primitive-6 `361`/`362` frame-transition audit:
+  `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py` and
+  `reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json`
+  (report ignored; not committed). Runtime logs are in the matching `.stderr` file.
 - Primitive-6 pre-solver model-build audit report:
   `reports/generated/bed_native_opt_in_probe/drop_primitive6_model_build_audit_2026-05-21.stdout.json`
   (ignored; not committed). Runtime logs are in the matching `.stderr` file.
@@ -483,6 +496,10 @@ Exploratory checks:
   those controls fail, refining the control-lane bracket to `361` clean versus `362` failing.
   Dirty-control rows are rejected as COM-blend fix, sustained-settle, long-window stability, or
   stronger validation evidence.
+- Records a `361`/`362` frame-transition audit for the native all-box and cylinder-reverted
+  controls: Newton model arrays and final support-contact labels match across the adjacent
+  reports, while `362` adds `8` substeps and increases final linear speed by about
+  `0.0189847 m/s`. The audit aligns final trace rows by `steps_from_final`, not raw `step`.
 - Records a pre-solver model-build audit: under matching full-package anchors, the full-package
   and target-only Newton model mass/COM/inertia deltas are nonzero for primitive index `6`, while
   the rest-without-target delta is zero in this audit.
@@ -522,6 +539,9 @@ Exploratory checks:
   default-policy evidence, or collision-quality validation. The `361` row is clean-control
   final-speed bracket context only; the `362` and later dirty-control rows are rejected evidence
   for strengthening the COM-blend refinement claim.
+- The `361`/`362` frame-transition audit is adjacent-run diagnostic accounting only. It does not
+  prove sustained settling, root cause, a validated fix, a COM-blend stability claim, scoring
+  calibration, default-policy evidence, or collision-quality validation.
 - The model-build audit is a one-config pre-solver accounting diagnostic. It does not prove a
   Newton mapping bug, a physical root cause, a validated inertial repair, or a package-quality
   conclusion.
@@ -534,6 +554,6 @@ Exploratory checks:
 - Use the recorded full-compound trace, inertial counterfactual, COM-only field ablation,
   COM-axis subset ablation, COM-blend ablation, COM-blend refinement, COM-blend refinement
   tail-summary rerun, the `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`
-  frame-window sensitivity sweep, and pre-solver model-build audit as the current reproducible
-  bed blocker evidence; do not broaden bed native opt-in claims or change default support-aware
-  asset configs from this evidence.
+  frame-window sensitivity sweep, the `361`/`362` frame-transition audit, and pre-solver
+  model-build audit as the current reproducible bed blocker evidence; do not broaden bed native
+  opt-in claims or change default support-aware asset configs from this evidence.

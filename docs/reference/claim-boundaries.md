@@ -811,6 +811,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   Dirty-control rows are rejected evidence for strengthening the COM-blend refinement claim, not
   sustained-settle evidence, long-window stability validation, a validated fix, root-cause proof,
   scoring/default-policy evidence, or collision-quality validation.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py`, a
+  post-run capped bed `361`/`362` frame-transition audit for the native all-box and
+  cylinder-reverted controls. The dated audit may cite only that the adjacent reports keep
+  matching Newton model arrays and final support-contact labels while the `362` row adds `8`
+  substeps and increases final linear speed by about `0.0189847 m/s`. It aligns compact final
+  trace rows by `steps_from_final`, not raw `step`. It is adjacent-run diagnostic accounting, not
+  sustained-settle evidence, long-window stability validation, a validated fix, root-cause proof,
+  scoring/default-policy evidence, or collision-quality validation.
 - The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
   --run-model-build-audit`, a capped bed first-mesh pre-solver Newton model-build audit for the
   same fixed primitive-6 package pair. The dated run builds full, target-only, and
@@ -1043,6 +1051,9 @@ Use these only after broader benchmark records exist.
   fix, root-cause proof, scoring/default-policy evidence, or collision-quality validation. The
   `361` clean-control row is only final-speed sensitivity accounting, and dirty-control rows are
   rejected evidence for the refinement claim.
+- Do not describe the `361`/`362` frame-transition audit as sustained-settle evidence,
+  long-window stability validation, a validated COM-blend fix, root-cause proof,
+  scoring/default-policy evidence, or collision-quality validation.
 - Do not describe the pre-solver model-build audit as proof of a Newton mapping bug, physical root
   cause, validated inertial repair, package-quality conclusion, or default policy change.
 - Do not describe the synthetic native selection audit as a quality metric, paper-faithful

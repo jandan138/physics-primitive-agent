@@ -799,7 +799,10 @@ records exist.
   only; pass/fail remains final-speed gated, not a sustained-settle proof. A
   `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
   sweep records the native/reverted-control final-speed task-gate bracket as `361` clean versus
-  `362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. A pre-solver
+  `362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. A
+  `361`/`362` frame-transition audit records matched model arrays and matched final
+  support-contact labels for the native all-box and cylinder-reverted controls while the dirty
+  row adds `8` substeps and increases final speed by about `0.0189847 m/s`. A pre-solver
   model-build audit records zero
   rest-without-target delta and nonzero primitive-6 target/full mass/COM/inertia deltas under
   matching anchors. These are not validated fixes or root-cause proof.
@@ -964,7 +967,8 @@ records exist.
   inertial-array counterfactual, COM-only field ablation, COM-axis subset ablation, COM-blend
   ablation, COM-blend refinement, COM-blend refinement tail-summary rerun, the
   `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720` frame-window
-  sensitivity sweep, and pre-solver model-build audit.
+  sensitivity sweep, `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py`
+  `361`/`362` frame-transition audit, and pre-solver model-build audit.
 - `configs/experiments/bed_native_opt_in_frame361_probe.yaml`,
   `configs/experiments/bed_native_opt_in_frame362_probe.yaml`,
   `configs/experiments/bed_native_opt_in_frame363_probe.yaml`,

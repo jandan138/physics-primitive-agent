@@ -801,6 +801,8 @@ experiments:
       The frame-window configs rerun the same capped bed opt-in scope with drop_settle.frames set
       to 361, 362, 363, 364, 365, 375, 385, 390, 420, 450, 480, 600, and 720 for sensitivity
       accounting only.
+      The bed_native_opt_in_frame_transition_audit.py command compares the adjacent 361/362
+      native-control and cylinder-reverted control reports as post-run diagnostic accounting.
       The --run-model-build-audit command regenerates the pre-solver model-build audit report.
     claims_supported:
       - capped bed first-mesh native-exercising diagnostic blocker, not a passing package-level task-smoke result
@@ -818,6 +820,7 @@ experiments:
       - records a COM-blend refinement where full xyz clears the recorded 360-frame final-speed gate label at 0.875 and above while xz still fails at 0.875 and clears the label at 0.9375 and above in the same fixed full-compound gate
       - records tail_linear_speed_summary as late-window speed telemetry only; pass/fail remains the existing final-speed drop/settle gate, not a sustained-settle proof or new gate
       - records 361/362/363/364/365/375/385/390/420/450/480/600/720-frame window reruns that refine the native/reverted-control final-speed task-gate bracket to 361 clean versus 362 failing; dirty-control rows are rejected as COM-blend stability, sustained-settle, or fix evidence
+      - records a 361/362 frame-transition audit where native all-box and cylinder-reverted controls keep matching model arrays and final support-contact labels while the dirty 362 row adds 8 substeps and increases final linear speed
       - records a pre-solver model-build audit where the rest-without-target opt-in-minus-native delta is zero while full-package and target-only primitive-6 mass/COM/inertia deltas remain nonzero under matching anchors
       - records that iterations and substeps sensitivity checks did not clear the blocker under current settings
       - no root-cause proof, native primitive quality improvement, calibrated multiplier, default asset behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
@@ -944,6 +947,20 @@ experiments:
       - records the first swept dirty-control side of the native/reverted-control final-speed task-gate bracket
       - rejected as COM-blend fix, sustained-settle, long-window stability, or stronger validation evidence because native all-box and cylinder-reverted controls are not clean under the same 362-frame window
       - no sustained-settle proof, validated fix, root-cause proof, COM threshold proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-frame-transition-audit-361-362
+    status: complete
+    command: PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py --clean-report reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json --dirty-report reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json --variant-label native_control_box --variant-label native_opt_in_cylinder_reverted --output reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Compare the adjacent capped bed 361-frame clean-control report and 362-frame dirty-control
+      report for the native all-box and cylinder-reverted controls. The audit records status
+      transitions, model-array equality checks, final support-contact label equality, final
+      residual velocity deltas, and a compact final trace window aligned by steps_from_final.
+    claims_supported:
+      - one-config capped bed 361/362 frame-transition audit only
+      - records that native all-box and cylinder-reverted controls keep matching model arrays and final support-contact labels across the adjacent reports
+      - records that the 362 report adds 8 substeps and increases final linear speed by about 0.0189847 m/s for both audited controls
+      - not sustained-settle proof, long-window stability evidence, validated COM-blend fix, root-cause proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: bed-native-opt-in-com-blend-refinement-frame363
     status: complete
     config: configs/experiments/bed_native_opt_in_frame363_probe.yaml

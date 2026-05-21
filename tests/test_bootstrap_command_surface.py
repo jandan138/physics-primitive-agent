@@ -23,6 +23,21 @@ def _load_bed_native_opt_in_trace_module():
     return module
 
 
+def _load_bed_native_opt_in_frame_transition_audit_module():
+    script_path = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "diagnostics"
+        / "bed_native_opt_in_frame_transition_audit.py"
+    )
+    spec = importlib.util.spec_from_file_location(
+        "bed_native_opt_in_frame_transition_audit", script_path
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_package_imports():
     package = importlib.import_module("primitive_collision_compiler")
 
@@ -444,6 +459,224 @@ def test_model_piece_delta_is_json_serializable():
         "body_inertia_row0_delta": [1.0, 3.0, 5.0],
     }
     json.dumps(delta, allow_nan=False)
+
+
+def test_frame_transition_audit_records_clean_to_dirty_control_with_matching_model_and_contacts(tmp_path):
+    module = _load_bed_native_opt_in_frame_transition_audit_module()
+
+    def report(frame, status, failure_labels, speed, velocity, position):
+        penultimate_speed = round(speed - 0.01, 2)
+        penultimate_velocity = [value - 0.01 for value in velocity]
+        penultimate_position = [position[0] - 0.5, position[1] + 0.5, position[2]]
+        return {
+            "status": "diagnostic_recorded",
+            "drop_settle_options": {"frames": frame},
+            "variants": {
+                "native_control_box": {
+                    "status": status,
+                    "type_counts": {"box": 32},
+                    "package_anchor": [1.0, 2.0, 3.0],
+                    "model_summary": {
+                        "body_mass": [10.0],
+                        "body_inv_mass": [0.1],
+                        "body_com": [[1.0, 2.0, 3.0]],
+                        "body_inertia": [[[4.0, 0.0, 0.0]]],
+                        "body_inv_inertia": [[[0.25, 0.0, 0.0]]],
+                    },
+                    "drop_settle_run": {
+                        "status": status,
+                        "failure_labels": failure_labels,
+                        "completed_steps": frame * 8,
+                        "final_linear_speed_mps": speed,
+                        "final_linear_velocity": velocity,
+                        "final_support_height": -0.001,
+                        "final_contact_count": 2,
+                    },
+                    "trace_samples": [
+                        {
+                            "step": frame * 8 - 1,
+                            "phase": "post_step",
+                            "linear_speed_mps": penultimate_speed,
+                            "linear_velocity_mps": penultimate_velocity,
+                            "angular_velocity_raw": [0.1, 0.2, 0.3],
+                            "body_position": penultimate_position,
+                            "support_height": -0.002,
+                            "contact_count": 2,
+                            "contact_details": [
+                                {"shape1_label": "bed_dev_smoke_native:primitive:12"},
+                                {"shape1_label": "bed_dev_smoke_native:primitive:15"},
+                            ],
+                        },
+                        {
+                            "step": frame * 8,
+                            "phase": "post_step",
+                            "linear_speed_mps": speed,
+                            "linear_velocity_mps": velocity,
+                            "angular_velocity_raw": [0.0, 0.0, 0.0],
+                            "body_position": position,
+                            "support_height": -0.001,
+                            "contact_count": 2,
+                            "contact_details": [
+                                {"shape1_label": "bed_dev_smoke_native:primitive:12"},
+                                {"shape1_label": "bed_dev_smoke_native:primitive:15"},
+                            ],
+                        }
+                    ],
+                }
+            },
+        }
+
+    clean_path = tmp_path / "frame361.json"
+    dirty_path = tmp_path / "frame362.json"
+    clean_path.write_text(
+        json.dumps(report(361, "smoke_passed", [], 0.04, [0.01, 0.02, 0.03], [0.0, 0.0, -1.0])),
+        encoding="utf-8",
+    )
+    dirty_path.write_text(
+        json.dumps(
+            report(
+                362,
+                "runtime_failure",
+                ["not_settled"],
+                0.07,
+                [0.04, 0.01, 0.05],
+                [0.1, -0.1, -1.1],
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    audit = module.build_frame_transition_audit_report(
+        clean_report_path=clean_path,
+        dirty_report_path=dirty_path,
+        variant_labels=("native_control_box",),
+    )
+
+    assert audit["status"] == "frame_transition_audit_recorded"
+    assert audit["claim_boundary"] == (
+        "bed_native_opt_in_frame_transition_audit_not_root_cause_or_fix_or_stability_evidence"
+    )
+    assert audit["clean_frame"] == 361
+    assert audit["dirty_frame"] == 362
+    assert audit["transition_summary"] == {
+        "status": "clean_to_dirty_control_transition_recorded",
+        "variant_count": 1,
+        "all_model_invariants_equal": True,
+        "all_final_contact_shape_labels_equal": True,
+    }
+    variant_audit = audit["variant_audits"]["native_control_box"]
+    assert variant_audit["clean"]["status"] == "smoke_passed"
+    assert variant_audit["dirty"]["status"] == "runtime_failure"
+    assert variant_audit["dirty"]["failure_labels"] == ["not_settled"]
+    assert variant_audit["deltas"]["completed_steps_delta"] == 8
+    assert variant_audit["deltas"]["final_linear_speed_delta_mps"] == 0.03
+    assert variant_audit["deltas"]["final_linear_velocity_delta"] == [0.03, -0.01, 0.02]
+    assert variant_audit["aligned_final_window_rows"] == [
+        {
+            "steps_from_final": -1,
+            "clean_step": 2887,
+            "dirty_step": 2895,
+            "clean_linear_speed_mps": 0.03,
+            "dirty_linear_speed_mps": 0.06,
+            "linear_speed_delta_mps": 0.03,
+            "clean_support_height": -0.002,
+            "dirty_support_height": -0.002,
+            "support_height_delta": 0.0,
+            "clean_contact_count": 2,
+            "dirty_contact_count": 2,
+            "clean_body_position": [-0.5, 0.5, -1.0],
+            "dirty_body_position": [-0.4, 0.4, -1.1],
+            "body_position_delta": [0.1, -0.1, -0.1],
+        },
+        {
+            "steps_from_final": 0,
+            "clean_step": 2888,
+            "dirty_step": 2896,
+            "clean_linear_speed_mps": 0.04,
+            "dirty_linear_speed_mps": 0.07,
+            "linear_speed_delta_mps": 0.03,
+            "clean_support_height": -0.001,
+            "dirty_support_height": -0.001,
+            "support_height_delta": 0.0,
+            "clean_contact_count": 2,
+            "dirty_contact_count": 2,
+            "clean_body_position": [0.0, 0.0, -1.0],
+            "dirty_body_position": [0.1, -0.1, -1.1],
+            "body_position_delta": [0.1, -0.1, -0.1],
+        },
+    ]
+    assert variant_audit["model_invariants"] == {
+        "body_mass_equal": True,
+        "body_inv_mass_equal": True,
+        "body_com_equal": True,
+        "body_inertia_equal": True,
+        "body_inv_inertia_equal": True,
+        "package_anchor_equal": True,
+        "type_counts_equal": True,
+    }
+    assert variant_audit["contact_invariants"] == {
+        "final_contact_count_equal": True,
+        "final_contact_shape1_labels_equal": True,
+        "clean_final_contact_shape1_labels": [
+            "bed_dev_smoke_native:primitive:12",
+            "bed_dev_smoke_native:primitive:15",
+        ],
+        "dirty_final_contact_shape1_labels": [
+            "bed_dev_smoke_native:primitive:12",
+            "bed_dev_smoke_native:primitive:15",
+        ],
+    }
+    json.dumps(audit, allow_nan=False)
+
+
+def test_frame_transition_audit_main_writes_json(tmp_path, capsys):
+    module = _load_bed_native_opt_in_frame_transition_audit_module()
+    clean_path = tmp_path / "clean.json"
+    dirty_path = tmp_path / "dirty.json"
+    output_path = tmp_path / "audit.json"
+    minimal_variant = {
+        "native_control_box": {
+            "status": "smoke_passed",
+            "model_summary": {},
+            "drop_settle_run": {
+                "status": "smoke_passed",
+                "failure_labels": [],
+                "completed_steps": 1,
+                "final_linear_speed_mps": 0.01,
+            },
+            "trace_samples": [],
+        }
+    }
+    clean_path.write_text(
+        json.dumps({"status": "diagnostic_recorded", "drop_settle_options": {"frames": 1}, "variants": minimal_variant}),
+        encoding="utf-8",
+    )
+    dirty_variant = json.loads(json.dumps(minimal_variant))
+    dirty_variant["native_control_box"]["status"] = "runtime_failure"
+    dirty_variant["native_control_box"]["drop_settle_run"]["status"] = "runtime_failure"
+    dirty_variant["native_control_box"]["drop_settle_run"]["failure_labels"] = ["not_settled"]
+    dirty_path.write_text(
+        json.dumps({"status": "diagnostic_recorded", "drop_settle_options": {"frames": 2}, "variants": dirty_variant}),
+        encoding="utf-8",
+    )
+
+    assert module.main(
+        [
+            "--clean-report",
+            str(clean_path),
+            "--dirty-report",
+            str(dirty_path),
+            "--variant-label",
+            "native_control_box",
+            "--output",
+            str(output_path),
+        ]
+    ) == 0
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output_path.read_text())
+    assert stdout_payload == file_payload
+    assert file_payload["status"] == "frame_transition_audit_recorded"
 
 
 def test_cli_help_mentions_project(capsys):

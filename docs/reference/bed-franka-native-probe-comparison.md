@@ -177,6 +177,12 @@ Task comparison:
   native/reverted-control final-speed task-gate flip between the `361` clean-control context and
   the `362` failure context. Dirty-control rows are rejected as COM-blend fix, sustained-settle,
   or long-window stability evidence;
+- `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py` adds a post-run `361`/`362`
+  frame-transition audit for the native all-box and cylinder-reverted controls. In the dated
+  audit, both controls keep matching Newton model arrays and matching final support-contact
+  labels across the adjacent reports, while the `362` row adds `8` substeps and increases final
+  linear speed by about `0.0189847 m/s`. The compact final-window rows are aligned by
+  `steps_from_final`, not raw `step`;
 - the same script with `--run-model-build-audit` records a pre-solver Newton model-build audit for
   full, target-only, and rest-without-target packages under full-package anchors. In the dated run
   the native and opt-in package anchors match; the full opt-in-minus-native body delta is mass
@@ -242,6 +248,7 @@ Allowed wording:
 - "capped bed primitive-6 COM-blend refinement."
 - "capped bed primitive-6 COM-blend refinement tail-speed telemetry."
 - "capped bed primitive-6 COM-blend refinement 361/362/363/364/365/375/385/390/420/450/480/600/720-frame window sensitivity sweep."
+- "capped bed primitive-6 361/362 frame-transition audit."
 - "capped bed primitive-6 pre-solver model-build audit."
 
 Do not claim:
@@ -278,6 +285,8 @@ Do not claim:
   sustained settling, validates a COM-blend fix, or strengthens the refinement claim. The `361`
   clean-control row is final-speed sensitivity accounting only; dirty-control rows are rejected
   when native all-box controls also fail in those swept windows.
+- that the 361/362 frame-transition audit proves sustained settling, long-window stability,
+  causality, a validated fix, scoring/default-policy evidence, or collision-quality validation.
 - that the pre-solver model-build audit proves a Newton mapping bug, physical root cause,
   validated inertial repair, or package-quality conclusion.
 
@@ -451,6 +460,17 @@ PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-p
   --sample-every-steps 480 \
   --tail-steps 960 \
   --output reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json
+```
+
+Bed opt-in 361/362 frame-transition audit:
+
+```bash
+PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py \
+  --clean-report reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json \
+  --dirty-report reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json \
+  --variant-label native_control_box \
+  --variant-label native_opt_in_cylinder_reverted \
+  --output reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json
 ```
 
 Bed opt-in COM-blend refinement 363-frame window sensitivity rerun:

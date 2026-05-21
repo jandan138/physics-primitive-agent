@@ -721,7 +721,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
   sweep then refines the native/reverted-control final-speed task-gate bracket to `361` clean
   versus `362` failing. Dirty-control rows from `362` onward are rejected as COM-blend fix,
-  sustained-settle, or long-window stability evidence because the controls are not clean. A pre-solver
+  sustained-settle, or long-window stability evidence because the controls are not clean. A
+  `361`/`362` frame-transition audit then records that the native all-box and cylinder-reverted
+  controls keep matching Newton model arrays and final support-contact labels across the adjacent
+  reports, while the `362` row adds `8` substeps and increases final linear speed by about
+  `0.0189847 m/s`. This is adjacent-run diagnostic accounting only. A pre-solver
   model-build audit builds
   full, target-only, and rest-without-target Newton models under matching full-package anchors; the
   rest-without-target opt-in-minus-native mass/COM/inertia row-0 delta is zero, while the full and
@@ -837,7 +841,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   new pass/fail gate. A
   `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
   sweep brackets the native/reverted-control final-speed task-gate flip between `361` clean and
-  `362` failing; dirty-control rows are rejected as stability or fix evidence. A pre-solver
+  `362` failing; dirty-control rows are rejected as stability or fix evidence. A `361`/`362`
+  frame-transition audit records matched model arrays and matched final support-contact labels
+  for the native all-box and cylinder-reverted controls while the dirty row adds `8` substeps and
+  increases final speed by about `0.0189847 m/s`. A pre-solver
   model-build audit records zero
   rest-without-target delta and nonzero primitive-6 target/full deltas under matching anchors.
   These are diagnostic sensitivity controls, not validated packages or root-cause proof.
@@ -1033,7 +1040,10 @@ run. A tail-summary rerun records late-window speed telemetry only:
 the pass/fail labels remain final-speed gated and the report does not prove sustained settling.
 The `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`-frame window
 sweep records the native/reverted-control final-speed task-gate bracket as `361` clean versus
-`362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. The pre-solver
+`362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. The
+`361`/`362` frame-transition audit records matched model arrays and matched final support-contact
+labels for the native all-box and cylinder-reverted controls while the dirty row adds `8`
+substeps and increases final speed by about `0.0189847 m/s`. The pre-solver
 model-build audit records the rest-without-target delta as zero while the
 primitive-6 target/full deltas remain nonzero. These remain one-config diagnostic controls. This
 does not change default support-aware lane claims.
