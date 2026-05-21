@@ -781,6 +781,15 @@ This file separates current evidence from future claims. See [message-map.md](me
   body-state sensitivity from one large flat bed cylinder, not categorical Newton cylinder
   unsupported behavior. This is diagnostic synthesis only, not root-cause proof or a validated
   repair.
+- The [2026-05-22 cylinder clean-control probe](../records/2026-05-22-cylinder-clean-control-probe.md)
+  runs compact Newton controls over the recorded bed target cylinder, bed target box, largest
+  recorded Franka cylinder, and six representative two-primitive bed pairs. The single-primitive
+  controls all pass, so the large-flat bed cylinder geometry alone is insufficient as the recorded
+  `not_settled` cause. The pair controls are mixed: some box and cylinder pairs both fail
+  `not_settled`, two cylinder-only pairs fail `floor_breach`, and one pair passes for both target
+  shapes. This supports full-compound context as required for the recorded bed failure while
+  keeping contact/floor effects open as a secondary factor. It remains diagnostic accounting, not
+  root-cause proof, a validated repair, collision-quality evidence, or safety evidence.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current

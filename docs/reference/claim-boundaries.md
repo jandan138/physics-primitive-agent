@@ -757,6 +757,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   sensitivity from one large flat cylinder. This is diagnostic synthesis only, not root-cause
   proof, a validated repair, cylinder-quality evidence, default selector behavior, benchmark
   evidence, or safety evidence.
+- The current code can run a compact bed/Franka cylinder clean-control probe through
+  [2026-05-22 cylinder clean-control probe](../records/2026-05-22-cylinder-clean-control-probe.md).
+  The probe runs selected single-primitive and two-primitive Newton drop/settle controls using the
+  recorded bed and Franka cylinder evidence. It supports only the diagnostic claims that geometry
+  alone is insufficient for the recorded bed `not_settled` label, full-compound context is
+  required for that label, and pair-level contact/floor effects remain open secondary factors.
+  This is not root-cause proof, a validated repair, cylinder-quality evidence, selector-policy
+  evidence, benchmark evidence, or safety evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1166,6 +1174,10 @@ Use these only after broader benchmark records exist.
   threshold, broad asset evidence, benchmark evidence, collision-quality validation, or safety
   evidence. It is a diagnostic synthesis over the recorded capped bed and capped Franka first-mesh
   slices plus one-config sensitivity controls.
+- Do not describe the cylinder clean-control probe as root-cause proof, proof that contact is or is
+  not the cause, proof that COM/inertia is the physical cause, a validated inertial repair, broad
+  cylinder stability evidence, selector calibration, benchmark evidence, collision-quality
+  validation, or safety evidence. It is compact diagnostic accounting over selected controls.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

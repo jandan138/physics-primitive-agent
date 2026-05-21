@@ -24,6 +24,10 @@ Franka cost-guided seven-cylinder package, then records the strongest current ex
 blocker is a full-compound COM/inertia body-state sensitivity from one large flat cylinder, while
 the recorded Franka cylinders are much smaller and pass in their capped package context. This is
 diagnostic synthesis only, not root-cause proof or a validated repair.
+A follow-up compact cylinder clean-control probe now shows that the bed target cylinder geometry
+alone passes, the largest recorded Franka cylinder alone passes, and selected two-primitive bed
+pairs have mixed outcomes. This narrows the story toward full-compound context being required for
+the recorded bed `not_settled` label while keeping pair-level contact/floor effects open.
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
@@ -855,6 +859,10 @@ records exist.
   claim-bounded synthesis explaining the current bed-vs-Franka cylinder contrast as large-flat
   bed-cylinder full-compound COM/inertia body-state sensitivity, not categorical Newton cylinder
   unsupported behavior.
+- [Cylinder clean-control probe record](records/2026-05-22-cylinder-clean-control-probe.md):
+  compact Newton controls showing geometry alone is insufficient, full-compound context is
+  required for the recorded bed `not_settled` label, and pair-level contact/floor effects remain
+  open secondary factors.
 - [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
   documentation update that explains the guarded selector slice as one real-USD
   Newton-in-the-loop diagnostic cycle in the CPD paper story.

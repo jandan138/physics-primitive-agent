@@ -68,6 +68,19 @@ def _load_bed_native_opt_in_model_build_delta_audit_module():
     return module
 
 
+def _load_cylinder_clean_control_probe_module():
+    script_path = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "diagnostics"
+        / "cylinder_clean_control_probe.py"
+    )
+    spec = importlib.util.spec_from_file_location("cylinder_clean_control_probe", script_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_package_imports():
     package = importlib.import_module("primitive_collision_compiler")
 
@@ -139,6 +152,18 @@ def test_bed_native_opt_in_compound_trace_script_has_bounded_help():
         for token in ("075", "0875", "09375", "096875", "0984375", "1")
     }
     assert set(module._COM_BLEND_REFINEMENT_VARIANTS) == expected_refinement_keys
+
+
+def test_cylinder_clean_control_probe_script_has_bounded_help_and_default_pairs():
+    module = _load_cylinder_clean_control_probe_module()
+
+    help_text = module.build_parser().format_help()
+
+    assert "compact bed/Franka cylinder clean-control Newton probe" in help_text
+    assert "--bed-task-report" in help_text
+    assert "--franka-task-report" in help_text
+    assert "--pair-rest-index" in help_text
+    assert module.DEFAULT_PAIR_REST_INDICES == (0, 3, 10, 16, 17, 24)
 
 
 def test_body_com_blend_array_interpolates_selected_axes():
