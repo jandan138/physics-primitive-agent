@@ -4,6 +4,9 @@ This page gives a plain-language explanation of the latest bed/Franka native pro
 story of reproducing Convex Primitive Decomposition for Collision Detection. It is explanatory
 documentation, not new evidence beyond the dated records.
 
+For the newer selector-specific loop that starts from the capped-bed opt-in Newton blocker, see
+[Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
+
 ## Short Version
 
 The CPD paper story is:
@@ -195,5 +198,6 @@ The next work should move from "the path runs" to "the selection logic is meanin
 - [CPD paper story status](cpd-paper-story-status.md)
 - [CPD latest diagnostic loop explainer](cpd-latest-diagnostic-loop-explainer.md)
 - [Bed and Franka native probe comparison](bed-franka-native-probe-comparison.md)
+- [Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md)
 - [Newton-native fitting comparison](newton-native-fitting-comparison.md)
 - [Claim boundaries](claim-boundaries.md)

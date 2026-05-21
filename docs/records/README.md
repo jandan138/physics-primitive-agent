@@ -165,6 +165,13 @@ Proposed | In progress | Complete | Failed | Superseded
   model-build audit records zero
   rest-without-target delta and nonzero primitive-6 target/full mass/COM/inertia deltas under
   matching anchors. These are not validated fixes or root-cause proof.
+- [2026-05-21 Native Selector Diagnostic Guard](2026-05-21-native-selector-diagnostic-guard.md):
+  opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
+  cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller
+  selected cylinders and also passes.
+- [2026-05-21 Newton-In-The-Loop Selector Story Docs](2026-05-21-newton-in-the-loop-selector-story-docs.md):
+  plain-language documentation update that explains why the guarded selector slice followed the
+  earlier gates and what it does, and does not, prove in the CPD paper story.
 - [2026-05-15 Bed Franka Native Probe Completion Audit](2026-05-15-bed-franka-native-probe-completion-audit.md):
   completion audit mapping the requested five-step real-USD native probe objective to code,
   configs, reports, records, verification, and review fixes.

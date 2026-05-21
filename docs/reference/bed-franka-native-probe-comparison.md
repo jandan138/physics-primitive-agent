@@ -227,6 +227,9 @@ Task comparison:
 - this is a controlled selector-diagnostic slice, not a default policy, collision-quality result,
   calibrated threshold, or proof that boxes are better than cylinders.
 
+For the plain-language version of why this followed the earlier gate work, see
+[Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
+
 ## What This Means In The CPD Story
 
 This moves the repository one step beyond synthetic native fitting:

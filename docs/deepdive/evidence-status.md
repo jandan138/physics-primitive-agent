@@ -746,7 +746,8 @@ This file separates current evidence from future claims. See [message-map.md](me
   guarded Franka config retains `24` boxes plus `8` selected cylinders, reports `0` diagnostic
   guard rejections, and also passes the same task smokes. This is controlled selector diagnostic
   evidence only; it does not change default support-aware lanes or supersede the historical
-  unguarded bed blocker config.
+  unguarded bed blocker config. The plain-language paper-story summary is
+  [Newton-in-the-loop selector story](../reference/newton-in-the-loop-selector-story.md).
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
@@ -870,7 +871,9 @@ This file separates current evidence from future claims. See [message-map.md](me
 - The 2026-05-21 native selector diagnostic guard record is a separate follow-up algorithm slice:
   guarded bed rejects large flat opt-in cylinder candidates and reaches the recorded task smokes,
   while guarded Franka retains its small selected cylinders and also passes. This is controlled
-  selector diagnostic evidence only, not a default-policy or collision-quality result.
+  selector diagnostic evidence only, not a default-policy or collision-quality result. See
+  [Newton-in-the-loop selector story](../reference/newton-in-the-loop-selector-story.md) for the
+  short paper-story map.
 - The current candidate-loss report records next-slice triage metadata: bed has one `cylinder`
   near-miss target, and Franka has three support-blocked raw-cost `cylinder` candidates plus three
   `cylinder` near-miss targets. The recommended next algorithmic fixture is now the cylinder

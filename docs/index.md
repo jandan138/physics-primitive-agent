@@ -684,6 +684,10 @@ records exist.
 - [Bed and Franka native probe comparison](reference/bed-franka-native-probe-comparison.md):
   completed real-USD diagnostic-smoke guide for capped bed and capped Franka old/new fitting,
   contact, and gated task probes.
+- [Newton-in-the-loop selector story](reference/newton-in-the-loop-selector-story.md):
+  plain-language explanation of why the project moved from gate scaffolding to real Newton
+  selector diagnostics, what the guarded bed/Franka opt-in slice proves, and what remains out of
+  scope.
 - [Real USD native probe in the CPD paper story](reference/real-usd-native-probe-paper-story-explainer.md):
   plain-language explanation of why the latest bed/Franka slice is a downstream diagnostic
   milestone, not native primitive improvement or full CPD reproduction evidence.
@@ -814,6 +818,13 @@ records exist.
   model-build audit records zero rest-without-target delta and nonzero primitive-6 target/full
   mass/COM/inertia deltas under matching anchors; a post-run delta audit links those rows to the
   primitive-6 target shape-scale rows. These are not validated fixes or root-cause proof.
+- [Native selector diagnostic guard record](records/2026-05-21-native-selector-diagnostic-guard.md):
+  opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
+  cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller
+  selected cylinders and also passes.
+- [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
+  documentation update that explains the guarded selector slice as one real-USD
+  Newton-in-the-loop diagnostic cycle in the CPD paper story.
 - [Bed Franka native probe completion audit](records/2026-05-15-bed-franka-native-probe-completion-audit.md):
   final checklist mapping the requested five-step objective to code, configs, reports, records,
   verification, and review fixes.

@@ -720,7 +720,8 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   `native_opt_in` lane and passes the recorded task smokes; the guarded Franka config retains the
   recorded small-cylinder selections and also passes. This is controlled diagnostic selector
   evidence, not a calibrated threshold, default policy, broad asset rule, collision-quality
-  validation, or proof that boxes are better than cylinders.
+  validation, or proof that boxes are better than cylinders. The reviewer-facing plain-language
+  story is [Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by

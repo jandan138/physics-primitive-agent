@@ -188,7 +188,8 @@ A later separate guarded opt-in selector diagnostic uses the capped-bed Newton b
 large flat cylinder candidates only in explicitly configured guard configs. The guarded capped bed
 package passes the recorded task smokes, while guarded capped Franka keeps its small selected
 cylinders and also passes. This is controlled diagnostic evidence only, not a default policy or
-collision-quality result.
+collision-quality result. The plain-language story is in
+[Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
 
 ## Next Steps In The Story
 
