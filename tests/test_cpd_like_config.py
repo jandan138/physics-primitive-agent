@@ -512,6 +512,42 @@ def test_bed_franka_native_opt_in_guarded_support_threshold_probe_config_is_clai
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
 
 
+def test_franka_native_opt_in_cost_guided_merge_probe_config_is_claim_bounded():
+    config_path = Path("configs/experiments/franka_native_opt_in_cost_guided_merge_probe.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "franka_native_opt_in_cost_guided_merge_probe"
+    assert config.asset_path == "assets/manifests/cpd_like_smoke_assets.yaml"
+    assert config.task == "real_usd_franka_native_opt_in_cost_guided_merge_task_probe"
+    assert config.verify == (
+        "real_usd_native_fitting_comparison",
+        "real_usd_native_task_comparison",
+    )
+    cpd_like = config.protocol["cpd_like"]
+    assert cpd_like["asset_roles"] == ["franka_import_smoke"]
+    assert cpd_like["max_source_faces_by_role"] == {"franka_import_smoke": 64}
+    assert cpd_like["component_merge"] == "virtual_pairwise"
+    assert cpd_like["merge_search_policy"] == "topology_then_virtual"
+    assert cpd_like["native_opt_in_merge_search_policy"] == "cost_guided_pairwise"
+    assert "native_opt_in_primitive_score_multipliers" not in cpd_like
+    assert cpd_like["claim_boundary"] == (
+        "real_usd_franka_native_opt_in_cost_guided_merge_probe_not_collision_quality_validation"
+    )
+    assert config.protocol["native_fitting_comparison"]["claim_boundary"] == (
+        "real_usd_franka_native_opt_in_cost_guided_merge_probe_not_collision_quality_validation"
+    )
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "real_usd_franka_native_opt_in_cost_guided_merge_task_smoke_not_collision_quality_or_safety"
+    )
+    assert config.protocol["report"]["evidence_level"] == (
+        "real_usd_franka_native_opt_in_cost_guided_merge_contact_gated_task_smoke"
+    )
+    assert config.protocol["report"]["output_dir"] == (
+        "reports/generated/franka_native_opt_in_cost_guided_merge_probe"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
 def test_bed_native_opt_in_frame_sweep_configs_preserve_historical_selection_scope():
     sweep_configs = {
         "configs/experiments/bed_native_opt_in_frame361_probe.yaml": 361,

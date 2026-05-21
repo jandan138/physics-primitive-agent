@@ -174,6 +174,7 @@ def build_real_usd_native_artifacts(
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
+    native_opt_in_merge_search_policy: str | None = None,
 ) -> tuple[RealUsdComparisonArtifact, ...]:
     _validate_roles(roles)
     assets = _resolve_manifest_roles(manifest_path, roles)
@@ -191,6 +192,7 @@ def build_real_usd_native_artifacts(
             native_opt_in_score_multipliers=native_opt_in_score_multipliers,
             native_opt_in_selection_guard=native_opt_in_selection_guard,
             native_opt_in_support_thresholds=native_opt_in_support_thresholds,
+            native_opt_in_merge_search_policy=native_opt_in_merge_search_policy,
         )
         for asset in assets
     )
@@ -209,6 +211,7 @@ def build_real_usd_native_fitting_comparison_report(
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
+    native_opt_in_merge_search_policy: str | None = None,
     claim_boundary: str = REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -228,6 +231,7 @@ def build_real_usd_native_fitting_comparison_report(
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         native_opt_in_selection_guard=native_opt_in_selection_guard,
         native_opt_in_support_thresholds=native_opt_in_support_thresholds,
+        native_opt_in_merge_search_policy=native_opt_in_merge_search_policy,
     )
     cases = [artifact.to_summary() for artifact in artifacts]
     statuses = [
@@ -263,6 +267,7 @@ def build_real_usd_candidate_loss_diagnosis_report(
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
+    native_opt_in_merge_search_policy: str | None = None,
     claim_boundary: str = REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -270,6 +275,8 @@ def build_real_usd_candidate_loss_diagnosis_report(
         claim_boundary=claim_boundary,
         evidence_level=evidence_level,
     )
+    # Candidate-loss diagnosis is scoped to the default native lane. Shared CLI options may carry
+    # opt-in controls, but this report must not materialize an unreported opt-in lane.
     artifacts = build_real_usd_native_artifacts(
         manifest_path=manifest_path,
         roles=roles,
@@ -279,9 +286,6 @@ def build_real_usd_candidate_loss_diagnosis_report(
         max_source_faces_by_role=max_source_faces_by_role,
         component_merge_options=component_merge_options,
         objective_options=options,
-        native_opt_in_score_multipliers=native_opt_in_score_multipliers,
-        native_opt_in_selection_guard=native_opt_in_selection_guard,
-        native_opt_in_support_thresholds=native_opt_in_support_thresholds,
     )
     cases = []
     statuses = []
@@ -339,6 +343,7 @@ def build_real_usd_native_contact_comparison_report(
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
+    native_opt_in_merge_search_policy: str | None = None,
     claim_boundary: str = REAL_USD_NATIVE_CONTACT_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_CONTACT_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -358,6 +363,7 @@ def build_real_usd_native_contact_comparison_report(
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         native_opt_in_selection_guard=native_opt_in_selection_guard,
         native_opt_in_support_thresholds=native_opt_in_support_thresholds,
+        native_opt_in_merge_search_policy=native_opt_in_merge_search_policy,
     )
     cases: list[dict[str, object]] = []
     child_statuses: list[str] = []
@@ -428,6 +434,7 @@ def build_real_usd_native_task_comparison_report(
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
     native_opt_in_support_thresholds: Mapping[str, object] | None = None,
+    native_opt_in_merge_search_policy: str | None = None,
     drop_settle_options: DropSettleOptions | None = None,
     sphere_rain_options: SphereRainOptions | None = None,
     claim_boundary: str = REAL_USD_NATIVE_TASK_CLAIM_BOUNDARY,
@@ -450,6 +457,7 @@ def build_real_usd_native_task_comparison_report(
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         native_opt_in_selection_guard=native_opt_in_selection_guard,
         native_opt_in_support_thresholds=native_opt_in_support_thresholds,
+        native_opt_in_merge_search_policy=native_opt_in_merge_search_policy,
     )
     drop_settle_options = drop_settle_options or DropSettleOptions()
     sphere_rain_options = sphere_rain_options or SphereRainOptions()
@@ -583,6 +591,7 @@ def _artifact_for_asset(
     native_opt_in_score_multipliers: Mapping[str, float] | None,
     native_opt_in_selection_guard: Mapping[str, object] | None,
     native_opt_in_support_thresholds: Mapping[str, object] | None,
+    native_opt_in_merge_search_policy: str | None,
 ) -> RealUsdComparisonArtifact:
     legacy = _lane_artifact(
         label=LEGACY_LABEL,
@@ -617,6 +626,7 @@ def _artifact_for_asset(
         native_opt_in_score_multipliers
         or native_opt_in_selection_guard
         or native_opt_in_support_thresholds
+        or native_opt_in_merge_search_policy
     ):
         native_opt_in = _lane_artifact(
             label=NATIVE_OPT_IN_LABEL,
@@ -626,7 +636,10 @@ def _artifact_for_asset(
             max_source_faces=max_source_faces,
             max_primitives=max_primitives,
             primitive_subset=native_subset,
-            component_merge_options=component_merge_options,
+            component_merge_options=_native_opt_in_component_merge_options(
+                component_merge_options,
+                native_opt_in_merge_search_policy,
+            ),
             objective_options=objective_options,
             primitive_score_multipliers=native_opt_in_score_multipliers,
             primitive_selection_guard=native_opt_in_selection_guard,
@@ -639,6 +652,17 @@ def _artifact_for_asset(
         native=native,
         native_opt_in=native_opt_in,
     )
+
+
+def _native_opt_in_component_merge_options(
+    component_merge_options: Mapping[str, object] | None,
+    native_opt_in_merge_search_policy: str | None,
+) -> Mapping[str, object] | None:
+    if native_opt_in_merge_search_policy is None:
+        return component_merge_options
+    options = dict(component_merge_options or {})
+    options["merge_search_policy"] = native_opt_in_merge_search_policy
+    return options
 
 
 def _lane_artifact(

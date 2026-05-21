@@ -1443,6 +1443,10 @@ def _real_usd_native_comparison_options(config):
             cpd_like_section.get("native_opt_in_extension_support_thresholds"),
             "cpd_like.native_opt_in_extension_support_thresholds",
         ),
+        "native_opt_in_merge_search_policy": _native_opt_in_merge_search_policy_option(
+            cpd_like_section.get("native_opt_in_merge_search_policy"),
+            "cpd_like.native_opt_in_merge_search_policy",
+        ),
     }
 
 
@@ -1520,6 +1524,15 @@ def _cpd_like_component_merge_options(cpd_like_section):
         ),
         "report_merge_trace": str(cpd_like_section.get("report_merge_trace", "summary")),
     }
+
+
+def _native_opt_in_merge_search_policy_option(value, key):
+    if value in (None, ""):
+        return None
+    policy = str(value)
+    if not policy:
+        raise ValueError(f"{key} must be a non-empty string")
+    return policy
 
 
 def _primitive_score_multipliers_option(value, key):

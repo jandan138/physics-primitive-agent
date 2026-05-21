@@ -738,6 +738,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   pass the recorded contact-gated task smokes. This is one explicitly configured diagnostic
   package, not default behavior, threshold calibration, broad asset evidence, collision-quality
   validation, or safety evidence.
+- The current code can run a separate capped Franka opt-in cost-guided merge-search diagnostic
+  through
+  [2026-05-21 Franka cost-guided merge opt-in probe](../records/2026-05-21-franka-cost-guided-merge-opt-in-probe.md).
+  The default capped Franka legacy/native lanes keep `topology_then_virtual` and select `32`
+  boxes; the configured `native_opt_in` lane uses `cost_guided_pairwise`, selects `25` boxes plus
+  `7` cylinders under the recorded guard/support-threshold controls, and passes the recorded
+  contact-gated task smokes. This is one explicitly configured diagnostic package, not
+  merge-policy superiority, default behavior, broad asset evidence, collision-quality validation,
+  or safety evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1138,6 +1147,10 @@ Use these only after broader benchmark records exist.
   broad real-USD result, whole-robot Franka collider-quality result, benchmark evidence,
   collision-quality validation, or safety evidence. It is one explicitly configured diagnostic
   package that composes two opt-in controls under capped bed/Franka first-mesh scope.
+- Do not describe the capped Franka cost-guided merge opt-in probe as merge-policy superiority,
+  a default merge-search policy, broad real-USD result, whole-robot Franka collider-quality
+  result, benchmark evidence, collision-quality validation, or safety evidence. It is one
+  explicitly configured diagnostic package under capped Franka first-mesh scope.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

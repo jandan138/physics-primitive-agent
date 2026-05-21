@@ -763,6 +763,13 @@ This file separates current evidence from future claims. See [message-map.md](me
   `3` cylinders; both roles pass contact-gated drop/settle plus sphere-rain in the clean Newton
   environment. This is one explicitly configured diagnostic package, not a default policy,
   calibrated threshold, collision-quality validation, or safety result.
+- The [2026-05-21 Franka cost-guided merge opt-in probe](../records/2026-05-21-franka-cost-guided-merge-opt-in-probe.md)
+  adds a separate capped Franka opt-in merge-search slice. The default capped Franka legacy/native
+  lanes keep `topology_then_virtual` and select `32` boxes; the `native_opt_in` lane uses
+  `cost_guided_pairwise`, selects `25` boxes plus `7` cylinders under the recorded guard and
+  support-threshold controls, and passes contact-gated drop/settle plus sphere-rain in the clean
+  Newton environment. This is controlled merge-search diagnostic evidence only; it does not rank
+  merge policies, validate collision quality, or change default lanes.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
@@ -899,6 +906,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   guarded support-threshold Franka selects `29` boxes plus `3` cylinders; both roles pass the
   recorded contact-gated task smokes. This is a combined diagnostic package only, not default
   behavior or collision-quality evidence.
+- The 2026-05-21 Franka cost-guided merge opt-in record adds one more package-changing real-USD
+  Newton-smoke slice: capped Franka default lanes stay at `32` boxes, while the opt-in
+  cost-guided lane selects `25` boxes plus `7` cylinders and passes the same recorded task
+  smokes. This is opt-in merge-search diagnostic evidence only, not merge-policy superiority or
+  collision-quality evidence.
 - The current candidate-loss report records next-slice triage metadata: bed has one `cylinder`
   near-miss target, and Franka has three support-blocked raw-cost `cylinder` candidates plus three
   `cylinder` near-miss targets. The recommended next algorithmic fixture is now the cylinder

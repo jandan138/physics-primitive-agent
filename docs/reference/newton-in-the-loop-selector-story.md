@@ -24,6 +24,7 @@ capped bed/Franka USD
 -> guarded package rerun through the same Newton diagnostics
 -> one opt-in Franka support-threshold slice rerun through the same Newton diagnostics
 -> one combined bed/Franka opt-in slice composing the guard and support-threshold controls
+-> one Franka-only opt-in cost-guided merge-search slice rerun through the same Newton diagnostics
 ```
 
 So the important status is: Newton-in-the-loop selector/fitting cycles now run end to end under
@@ -60,6 +61,8 @@ default support-aware bed/Franka lanes
    same recorded Newton task smokes
 -> combined guarded support-threshold bed/Franka config keeps bed at 32 boxes, admits the same 3
    Franka cylinders without a score multiplier, and passes the same recorded Newton task smokes
+-> Franka cost-guided merge-search opt-in keeps the default lanes at 32 boxes, changes the
+   opt-in package to 25 boxes plus 7 cylinders, and passes the same recorded Newton task smokes
 ```
 
 The selector guard is deliberately narrow. It applies only to explicitly configured
@@ -75,6 +78,12 @@ DeepDive story because it keeps the bed blocker guarded while still allowing the
 Franka support-threshold cylinders, and it does so without a score multiplier. It is still only an
 explicit diagnostic config.
 
+The cost-guided merge-search probe is a separate Franka-only opt-in config. It keeps default
+legacy/native merge search at `topology_then_virtual` while setting only the `native_opt_in` lane
+to `cost_guided_pairwise`. A two-role bed plus Franka version was not adopted as passing evidence:
+the `64`-face capped bed task smokes failed, while a `128`-face bed cost-guided fitting attempt
+exceeded the smoke timeout. That keeps the passing cost-guided evidence scoped to capped Franka.
+
 ## Current Evidence Table
 
 | Slice | Package Result | Newton Task-Smoke Status | Interpretation |
@@ -87,6 +96,7 @@ explicit diagnostic config.
 | Guarded Franka opt-in | `24` boxes + `8` cylinders; `0` guard rejections | Passed | The same guard does not erase the recorded small Franka cylinders. |
 | Franka support-threshold opt-in | `29` boxes + `3` cylinders | Passed | The three previously support-blocked raw-cost cylinder candidates can be admitted in one opt-in lane and still pass recorded task smokes. |
 | Combined guarded support-threshold bed/Franka opt-in | Bed: `32` boxes; Franka: `29` boxes + `3` cylinders | Passed | One two-role opt-in config composes the guard and support-threshold controls without a score multiplier. |
+| Franka cost-guided merge-search opt-in | `25` boxes + `7` cylinders | Passed | One Franka-only opt-in config changes merge search and package grouping while keeping default lanes unchanged. |
 
 ## What This Does Not Prove
 
@@ -99,6 +109,7 @@ This does not prove:
 - a calibrated support-threshold relaxation;
 - a default selector policy;
 - a score-free production recipe;
+- merge-policy superiority;
 - broad bed, Franka, robot, or asset coverage;
 - deployment readiness, safety certification, or real-world transfer.
 
@@ -116,6 +127,8 @@ paper-lane gates made the contracts explicit
 -> that changed Franka package also passed the same recorded task smokes
 -> the guard and support-threshold controls were composed in one bed/Franka opt-in config
 -> the combined package kept bed guarded and Franka changed, with the same recorded smokes passing
+-> a separate Franka-only cost-guided merge-search config changed the opt-in package further and
+   also passed the same recorded smokes
 ```
 
 That is a real Newton-in-the-loop diagnostic loop. The next useful work is not more gate
@@ -128,6 +141,7 @@ same mapping/contact/task-smoke checks.
 - [2026-05-21 native selector diagnostic guard](../records/2026-05-21-native-selector-diagnostic-guard.md)
 - [2026-05-21 Franka native opt-in support threshold probe](../records/2026-05-21-franka-native-opt-in-support-threshold-probe.md)
 - [2026-05-21 bed/Franka guarded support-threshold probe](../records/2026-05-21-bed-franka-guarded-support-threshold-probe.md)
+- [2026-05-21 Franka cost-guided merge opt-in probe](../records/2026-05-21-franka-cost-guided-merge-opt-in-probe.md)
 - [2026-05-21 Franka native opt-in probe](../records/2026-05-21-franka-native-opt-in-probe.md)
 - [2026-05-21 bed native opt-in probe](../records/2026-05-21-bed-native-opt-in-probe.md)
 - [Bed and Franka native probe comparison](bed-franka-native-probe-comparison.md)

@@ -1304,6 +1304,38 @@ def test_cli_run_real_usd_native_fitting_comparison_reads_support_thresholds(
     }
 
 
+def test_cli_run_real_usd_native_fitting_comparison_reads_opt_in_merge_search_policy(
+    tmp_path,
+    capsys,
+):
+    manifest_path = _write_two_mesh_manifest(tmp_path)
+    config_path = _write_real_usd_native_config(tmp_path, manifest_path)
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["cpd_like"]["merge_search_policy"] = "topology_then_virtual"
+    config["cpd_like"]["native_opt_in_merge_search_policy"] = "cost_guided_pairwise"
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-fitting-comparison",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["cases"][0]["native"]["component_accounting"][
+        "merge_search_policy"
+    ] == "topology_then_virtual"
+    assert payload["cases"][0]["native_opt_in"]["component_accounting"][
+        "merge_search_policy"
+    ] == "cost_guided_pairwise"
+
+
 def test_cli_run_real_usd_candidate_loss_diagnosis_emits_json(
     tmp_path,
     capsys,

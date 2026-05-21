@@ -157,6 +157,35 @@ def test_real_usd_native_fitting_report_applies_opt_in_support_threshold_relaxat
     assert audit["selected_kind_counts"] == {"cylinder": 1}
 
 
+def test_real_usd_native_fitting_report_applies_opt_in_merge_search_policy_only_to_opt_in_lane(
+    tmp_path,
+):
+    manifest_path = _write_manifest_with_two_meshes(tmp_path)
+
+    report = build_real_usd_native_fitting_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box", "sphere", "capsule"),
+        native_subset=("box", "sphere", "capsule", "cylinder"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={
+            "component_merge": "virtual_pairwise",
+            "merge_search_policy": "topology_then_virtual",
+        },
+        native_opt_in_merge_search_policy="cost_guided_pairwise",
+    )
+
+    case = report["cases"][0]
+
+    assert case["native"]["component_accounting"]["merge_search_policy"] == (
+        "topology_then_virtual"
+    )
+    assert case["native_opt_in"]["component_accounting"]["merge_search_policy"] == (
+        "cost_guided_pairwise"
+    )
+
+
 def test_real_usd_native_fitting_report_prefers_materialized_manifest_path(tmp_path):
     local_path = tmp_path / "local_bed.usda"
     missing_source_path = tmp_path / "missing_bed.usda"
@@ -300,6 +329,41 @@ def test_real_usd_candidate_loss_diagnosis_reports_box_loss_reasons(
     assert cluster["likely_bottleneck"] == "extension_fit_or_objective_cost"
     assert cluster["cluster_geometry"]["face_count"] > 0
     assert cluster["cluster_geometry"]["point_count"] > 0
+
+
+def test_real_usd_candidate_loss_diagnosis_remains_native_only_with_opt_in_merge_policy(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_two_meshes(tmp_path)
+    real_decompose_mesh = real_usd_comparison.decompose_mesh
+    merge_search_policies = []
+
+    def spy_decompose_mesh(mesh, **kwargs):
+        merge_search_policies.append(kwargs.get("merge_search_policy"))
+        return real_decompose_mesh(mesh, **kwargs)
+
+    monkeypatch.setattr(real_usd_comparison, "decompose_mesh", spy_decompose_mesh)
+
+    report = build_real_usd_candidate_loss_diagnosis_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={
+            "component_merge": "virtual_pairwise",
+            "merge_search_policy": "topology_then_virtual",
+        },
+        native_opt_in_merge_search_policy="cost_guided_pairwise",
+    )
+
+    assert merge_search_policies == ["topology_then_virtual", "topology_then_virtual"]
+    assert "native_opt_in" not in report["cases"][0]
+    assert report["cases"][0]["native"]["component_accounting"][
+        "merge_search_policy"
+    ] == "topology_then_virtual"
 
 
 def test_real_usd_candidate_loss_diagnosis_treats_near_equal_extension_cost_as_tie(
