@@ -774,6 +774,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   while mass-only does not. This is not root-cause proof, a validated inertial repair, an
   automatic repair policy, selector-policy evidence, benchmark evidence, collision-quality
   validation, or safety evidence.
+- The current documentation includes a cylinder mechanism decision matrix through
+  [2026-05-22 cylinder mechanism decision matrix](../records/2026-05-22-cylinder-mechanism-decision-matrix.md).
+  The matrix supports only a claim-bounded diagnostic answer for the recorded capped
+  bed-vs-Franka cylinder contrast: full-compound COM/inertia body-state sensitivity is the best
+  current explanation; geometry alone, center shift alone, mass alone, and categorical Newton
+  cylinder unsupported behavior are rejected as sole explanations; pair-level contact/floor
+  effects remain open secondary context. This is not root-cause proof, a validated repair,
+  selector-policy evidence, broad cylinder evidence, benchmark evidence, collision-quality
+  validation, or safety evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1192,6 +1201,10 @@ Use these only after broader benchmark records exist.
   selector calibration, a default repair recipe, benchmark evidence, collision-quality validation,
   or safety evidence. They are one-config full-compound sensitivity controls over selected
   pre-solver Newton body-state arrays.
+- Do not describe the cylinder mechanism decision matrix as root-cause proof, a completed
+  validated fix, proof that contact/floor effects are irrelevant, broad cylinder stability
+  evidence, selector calibration, benchmark evidence, collision-quality validation, or safety
+  evidence. It is a claim-bounded synthesis over the current recorded reports.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

@@ -170,6 +170,9 @@ Proposed | In progress | Complete | Failed | Superseded
   native all-box pre-solver body-state arrays. COM-only, inertia-only, and full inertial-array
   overrides clear the recorded 360-frame `not_settled` label; mass-only does not. This is
   one-config sensitivity evidence, not a validated repair.
+- [2026-05-22 Cylinder Mechanism Decision Matrix](2026-05-22-cylinder-mechanism-decision-matrix.md):
+  claim-bounded synthesis table for the active bed-vs-Franka cylinder question across geometry,
+  COM, inertia, mass, contact/floor, and full-compound context.
 - [2026-05-21 Native Selector Diagnostic Guard](2026-05-21-native-selector-diagnostic-guard.md):
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller

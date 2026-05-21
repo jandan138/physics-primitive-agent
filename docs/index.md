@@ -33,6 +33,11 @@ selected native all-box pre-solver body-state overrides. Native all-box COM-only
 and full inertial-array copy clear the recorded 360-frame `not_settled` label, while mass-only
 does not. This strengthens the COM/inertia body-state diagnosis but remains one-config
 sensitivity evidence, not a validated repair.
+A mechanism decision matrix now consolidates the cylinder evidence by hypothesis: geometry alone,
+center shift alone, mass alone, and categorical Newton cylinder unsupported behavior are rejected
+for the recorded question; full-compound context is required; COM and inertia have the strongest
+positive evidence; final contact/support labels are unlikely as the sole full-package explanation;
+pair-level contact/floor effects remain open secondary context.
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
@@ -871,6 +876,9 @@ records exist.
 - [Cylinder repair-candidate controls record](records/2026-05-22-cylinder-repair-candidate-controls.md):
   full-compound Newton controls showing native all-box COM-only, inertia-only, and full inertial
   array overrides clear the recorded bed opt-in final-speed label while mass-only does not.
+- [Cylinder mechanism decision matrix](records/2026-05-22-cylinder-mechanism-decision-matrix.md):
+  claim-bounded hypothesis table for the bed-vs-Franka cylinder contrast across geometry, COM,
+  inertia, mass, contact/floor, and full-compound context.
 - [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
   documentation update that explains the guarded selector slice as one real-USD
   Newton-in-the-loop diagnostic cycle in the CPD paper story.

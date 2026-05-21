@@ -801,6 +801,16 @@ This file separates current evidence from future claims. See [message-map.md](me
   gate. This strengthens full-compound COM/inertia body-state sensitivity as the current
   mechanism diagnosis while remaining one-config sensitivity evidence, not root-cause proof, a
   validated repair, selector-policy evidence, collision-quality evidence, or safety evidence.
+- The [2026-05-22 cylinder mechanism decision matrix](../records/2026-05-22-cylinder-mechanism-decision-matrix.md)
+  consolidates the current cylinder evidence by hypothesis. For the recorded bed-vs-Franka
+  question, categorical Newton `cylinder` unsupported behavior, geometry alone, center shift
+  alone, and mass alone are rejected as sole explanations. Full-compound context is required.
+  COM-only and inertia-only controls provide the strongest positive body-state evidence. The
+  final full-package contact/support set is similar across failing and passing body-state variants,
+  so final contact labels are unlikely as the sole explanation for the recorded `not_settled`
+  label. Pair-level contact/floor effects remain open secondary context. This is diagnostic
+  synthesis, not root-cause proof, a validated repair, broad cylinder evidence, benchmark
+  evidence, collision-quality validation, or safety evidence.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
