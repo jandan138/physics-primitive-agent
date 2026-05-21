@@ -819,6 +819,17 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   trace rows by `steps_from_final`, not raw `step`. It is adjacent-run diagnostic accounting, not
   sustained-settle evidence, long-window stability validation, a validated fix, root-cause proof,
   scoring/default-policy evidence, or collision-quality validation.
+- The current code can run `scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py`,
+  a post-run capped bed `361` clean-frame blocker audit for the native all-box,
+  cylinder-reverted, and original opt-in cylinder variants inside the same report. The dated audit
+  may cite only that the native all-box and cylinder-reverted controls pass while the original
+  opt-in cylinder remains `not_settled`, with matching final support-contact primitive suffixes
+  and a final-speed delta of about `+0.0181910 m/s` from either clean control to the blocked
+  target. It may also cite the same-report model deltas already recorded in the source report:
+  mass `+1126.625` and COM about `[-0.0427847, 0.0171919, 0.2960243]`. It is same-report
+  diagnostic accounting, not sustained-settle evidence, long-window stability validation, a
+  validated fix, root-cause proof, scoring/default-policy evidence, or collision-quality
+  validation.
 - The current code can run `scripts/diagnostics/bed_native_opt_in_compound_trace.py
   --run-model-build-audit`, a capped bed first-mesh pre-solver Newton model-build audit for the
   same fixed primitive-6 package pair. The dated run builds full, target-only, and
@@ -1054,6 +1065,9 @@ Use these only after broader benchmark records exist.
 - Do not describe the `361`/`362` frame-transition audit as sustained-settle evidence,
   long-window stability validation, a validated COM-blend fix, root-cause proof,
   scoring/default-policy evidence, or collision-quality validation.
+- Do not describe the `361` clean-frame blocker audit as sustained-settle evidence, long-window
+  stability validation, a validated COM-blend fix, root-cause proof, scoring/default-policy
+  evidence, or collision-quality validation.
 - Do not describe the pre-solver model-build audit as proof of a Newton mapping bug, physical root
   cause, validated inertial repair, package-quality conclusion, or default policy change.
 - Do not describe the synthetic native selection audit as a quality metric, paper-faithful

@@ -725,7 +725,11 @@ This file separates current evidence from future claims. See [message-map.md](me
   `361`/`362` frame-transition audit then records that the native all-box and cylinder-reverted
   controls keep matching Newton model arrays and final support-contact labels across the adjacent
   reports, while the `362` row adds `8` substeps and increases final linear speed by about
-  `0.0189847 m/s`. This is adjacent-run diagnostic accounting only. A pre-solver
+  `0.0189847 m/s`. This is adjacent-run diagnostic accounting only. A `361` clean-frame blocker
+  audit records that the same-report native all-box and cylinder-reverted controls pass while the
+  original opt-in cylinder remains `not_settled`, with matching final support-contact primitive
+  suffixes and final speed about `+0.0181910 m/s` above either clean control. This is
+  same-report diagnostic accounting only. A pre-solver
   model-build audit builds
   full, target-only, and rest-without-target Newton models under matching full-package anchors; the
   rest-without-target opt-in-minus-native mass/COM/inertia row-0 delta is zero, while the full and
@@ -844,7 +848,9 @@ This file separates current evidence from future claims. See [message-map.md](me
   `362` failing; dirty-control rows are rejected as stability or fix evidence. A `361`/`362`
   frame-transition audit records matched model arrays and matched final support-contact labels
   for the native all-box and cylinder-reverted controls while the dirty row adds `8` substeps and
-  increases final speed by about `0.0189847 m/s`. A pre-solver
+  increases final speed by about `0.0189847 m/s`. A `361` clean-frame blocker audit records that
+  the original opt-in cylinder remains `not_settled` against clean same-report controls under
+  matching final support-contact primitive suffixes. A pre-solver
   model-build audit records zero
   rest-without-target delta and nonzero primitive-6 target/full deltas under matching anchors.
   These are diagnostic sensitivity controls, not validated packages or root-cause proof.
@@ -1043,7 +1049,9 @@ sweep records the native/reverted-control final-speed task-gate bracket as `361`
 `362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. The
 `361`/`362` frame-transition audit records matched model arrays and matched final support-contact
 labels for the native all-box and cylinder-reverted controls while the dirty row adds `8`
-substeps and increases final speed by about `0.0189847 m/s`. The pre-solver
+substeps and increases final speed by about `0.0189847 m/s`. The `361` clean-frame blocker audit
+records the original opt-in cylinder still `not_settled` against clean same-report controls under
+matching final support-contact primitive suffixes. The pre-solver
 model-build audit records the rest-without-target delta as zero while the
 primitive-6 target/full deltas remain nonzero. These remain one-config diagnostic controls. This
 does not change default support-aware lane claims.

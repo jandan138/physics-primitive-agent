@@ -77,6 +77,16 @@ drop/settle task gate.
   support-contact labels while the `362` row adds `8` substeps and increases final linear speed
   by about `0.0189847 m/s` in both controls. This is a frame-transition audit only, not
   root-cause proof, sustained-settle evidence, a validated fix, or collision-quality validation.
+- `PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py --report reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json --baseline-label native_control_box --baseline-label native_opt_in_cylinder_reverted --target-label native_opt_in_cylinder --output reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.stdout.json`:
+  exit `0`, report `status: clean_frame_blocker_audit_recorded`. This post-run audit compares
+  the original opt-in cylinder against the native all-box and cylinder-reverted clean controls
+  inside the same `361`-frame report. It records that both controls pass while the original
+  opt-in cylinder remains `not_settled`, with matching final support-contact primitive suffixes
+  (`12`, `15`, `15`, and `26`) and a final-speed delta of about `+0.0181910 m/s` from each
+  clean control to the blocked target. It also records the same model deltas already visible in
+  the report: mass `+1126.625` and COM about `[-0.0427847, 0.0171919, 0.2960243]`. This is
+  clean-frame blocker accounting only, not root-cause proof, sustained-settle evidence, a
+  validated fix, or collision-quality validation.
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_frame363_probe.yaml --source-dir /cpfs/user/zhuzihou/dev/newton --run-com-blend-refinement --sample-every-steps 480 --tail-steps 960 --output reports/generated/bed_native_opt_in_frame363_probe/drop_primitive6_com_blend_refinement_frame363_2026-05-21.stdout.json`:
   exit `0`, report `status: diagnostic_recorded`. This rerun keeps the same capped bed
   first-mesh selection scope and `cylinder: 0.88` opt-in multiplier, but changes drop/settle to
@@ -124,16 +134,24 @@ drop/settle task gate.
 - `NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python scripts/diagnostics/bed_native_opt_in_compound_trace.py --config configs/experiments/bed_native_opt_in_probe.yaml --source-dir '$NEWTON_SOURCE_DIR' --run-model-build-audit --output reports/generated/bed_native_opt_in_probe/drop_primitive6_model_build_audit_2026-05-21.stdout.json`:
   exit `0`, report `status: diagnostic_recorded`.
 - `python -m py_compile scripts/diagnostics/bed_native_opt_in_compound_trace.py`: exit `0`.
+- `python -m py_compile scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py`:
+  exit `0`.
 - `python -m pytest tests/test_cpd_like_config.py::test_bed_native_opt_in_frame_sweep_configs_keep_default_selection_scope -q`:
   exit `0`, `1 passed`.
+- `python -m pytest tests/test_bootstrap_command_surface.py::test_clean_frame_blocker_audit_compares_target_to_clean_controls tests/test_bootstrap_command_surface.py::test_clean_frame_blocker_audit_main_writes_json -q`:
+  exit `0`, `2 passed`.
 - `python -m json.tool reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame363_probe/drop_primitive6_com_blend_refinement_frame363_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame364_probe/drop_primitive6_com_blend_refinement_frame364_2026-05-21.stdout.json >/dev/null`:
   exit `0`.
 - `python -m json.tool reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json >/dev/null`:
+  exit `0`.
+- `python -m json.tool reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.stdout.json >/dev/null`:
   exit `0`.
 - `python -m json.tool reports/generated/bed_native_opt_in_frame365_probe/drop_primitive6_com_blend_refinement_frame365_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame375_probe/drop_primitive6_com_blend_refinement_frame375_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame385_probe/drop_primitive6_com_blend_refinement_frame385_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame390_probe/drop_primitive6_com_blend_refinement_frame390_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame420_probe/drop_primitive6_com_blend_refinement_frame420_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame450_probe/drop_primitive6_com_blend_refinement_frame450_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame480_probe/drop_primitive6_com_blend_refinement_frame480_2026-05-21.stdout.json >/dev/null && python -m json.tool reports/generated/bed_native_opt_in_frame600_probe/drop_primitive6_com_blend_refinement_frame600_2026-05-21.stdout.json >/dev/null`:
   exit `0`.
 - `git check-ignore -v reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stderr reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame362_probe/drop_primitive6_com_blend_refinement_frame362_2026-05-21.stderr reports/generated/bed_native_opt_in_frame363_probe/drop_primitive6_com_blend_refinement_frame363_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame363_probe/drop_primitive6_com_blend_refinement_frame363_2026-05-21.stderr reports/generated/bed_native_opt_in_frame364_probe/drop_primitive6_com_blend_refinement_frame364_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame364_probe/drop_primitive6_com_blend_refinement_frame364_2026-05-21.stderr`:
   exit `0`; the reports and runtime logs are ignored by `.gitignore`.
+- `git check-ignore -v reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.stdout.json reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.console.stdout reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.stderr`:
+  exit `0`; the report and runtime logs are ignored by `.gitignore`.
 - `git check-ignore -v reports/generated/bed_native_opt_in_frame365_probe/drop_primitive6_com_blend_refinement_frame365_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame365_probe/drop_primitive6_com_blend_refinement_frame365_2026-05-21.stderr reports/generated/bed_native_opt_in_frame375_probe/drop_primitive6_com_blend_refinement_frame375_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame375_probe/drop_primitive6_com_blend_refinement_frame375_2026-05-21.stderr reports/generated/bed_native_opt_in_frame385_probe/drop_primitive6_com_blend_refinement_frame385_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame385_probe/drop_primitive6_com_blend_refinement_frame385_2026-05-21.stderr reports/generated/bed_native_opt_in_frame390_probe/drop_primitive6_com_blend_refinement_frame390_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame390_probe/drop_primitive6_com_blend_refinement_frame390_2026-05-21.stderr reports/generated/bed_native_opt_in_frame420_probe/drop_primitive6_com_blend_refinement_frame420_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame420_probe/drop_primitive6_com_blend_refinement_frame420_2026-05-21.stderr reports/generated/bed_native_opt_in_frame450_probe/drop_primitive6_com_blend_refinement_frame450_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame450_probe/drop_primitive6_com_blend_refinement_frame450_2026-05-21.stderr reports/generated/bed_native_opt_in_frame480_probe/drop_primitive6_com_blend_refinement_frame480_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame480_probe/drop_primitive6_com_blend_refinement_frame480_2026-05-21.stderr reports/generated/bed_native_opt_in_frame600_probe/drop_primitive6_com_blend_refinement_frame600_2026-05-21.stdout.json reports/generated/bed_native_opt_in_frame600_probe/drop_primitive6_com_blend_refinement_frame600_2026-05-21.stderr`:
   exit `0`; the reports and runtime logs are ignored by `.gitignore`.
 - `python -m pytest tests/test_bootstrap_command_surface.py::test_tail_linear_speed_summary_filters_tail_window tests/test_bootstrap_command_surface.py::test_compound_trace_main_json_safes_non_finite_report_values -q`:
@@ -436,6 +454,10 @@ Exploratory checks:
   `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py` and
   `reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json`
   (report ignored; not committed). Runtime logs are in the matching `.stderr` file.
+- Primitive-6 `361` clean-frame blocker audit:
+  `scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py` and
+  `reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.stdout.json`
+  (report ignored; not committed). Runtime logs are in the matching `.stderr` file.
 - Primitive-6 pre-solver model-build audit report:
   `reports/generated/bed_native_opt_in_probe/drop_primitive6_model_build_audit_2026-05-21.stdout.json`
   (ignored; not committed). Runtime logs are in the matching `.stderr` file.
@@ -500,6 +522,11 @@ Exploratory checks:
   controls: Newton model arrays and final support-contact labels match across the adjacent
   reports, while `362` adds `8` substeps and increases final linear speed by about
   `0.0189847 m/s`. The audit aligns final trace rows by `steps_from_final`, not raw `step`.
+- Records a `361` clean-frame blocker audit: inside the same clean-control report, the native
+  all-box and cylinder-reverted controls pass while the original opt-in cylinder remains
+  `not_settled`. Final support-contact primitive suffixes match (`12`, `15`, `15`, and `26`),
+  while the blocked target has final speed about `+0.0181910 m/s` above each clean control, body
+  mass `+1126.625`, and COM delta about `[-0.0427847, 0.0171919, 0.2960243]`.
 - Records a pre-solver model-build audit: under matching full-package anchors, the full-package
   and target-only Newton model mass/COM/inertia deltas are nonzero for primitive index `6`, while
   the rest-without-target delta is zero in this audit.
@@ -542,6 +569,9 @@ Exploratory checks:
 - The `361`/`362` frame-transition audit is adjacent-run diagnostic accounting only. It does not
   prove sustained settling, root cause, a validated fix, a COM-blend stability claim, scoring
   calibration, default-policy evidence, or collision-quality validation.
+- The `361` clean-frame blocker audit is same-report diagnostic accounting only. It does not
+  prove sustained settling, root cause, a validated fix, a COM-blend stability claim, scoring
+  calibration, default-policy evidence, or collision-quality validation.
 - The model-build audit is a one-config pre-solver accounting diagnostic. It does not prove a
   Newton mapping bug, a physical root cause, a validated inertial repair, or a package-quality
   conclusion.
@@ -554,6 +584,7 @@ Exploratory checks:
 - Use the recorded full-compound trace, inertial counterfactual, COM-only field ablation,
   COM-axis subset ablation, COM-blend ablation, COM-blend refinement, COM-blend refinement
   tail-summary rerun, the `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720`
-  frame-window sensitivity sweep, the `361`/`362` frame-transition audit, and pre-solver
-  model-build audit as the current reproducible bed blocker evidence; do not broaden bed native
-  opt-in claims or change default support-aware asset configs from this evidence.
+  frame-window sensitivity sweep, the `361`/`362` frame-transition audit, the `361` clean-frame
+  blocker audit, and pre-solver model-build audit as the current reproducible bed blocker
+  evidence; do not broaden bed native opt-in claims or change default support-aware asset configs
+  from this evidence.

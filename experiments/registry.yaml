@@ -803,6 +803,9 @@ experiments:
       accounting only.
       The bed_native_opt_in_frame_transition_audit.py command compares the adjacent 361/362
       native-control and cylinder-reverted control reports as post-run diagnostic accounting.
+      The bed_native_opt_in_clean_frame_blocker_audit.py command compares the 361-frame clean
+      native-control and cylinder-reverted controls against the still-blocked opt-in cylinder
+      inside the same report.
       The --run-model-build-audit command regenerates the pre-solver model-build audit report.
     claims_supported:
       - capped bed first-mesh native-exercising diagnostic blocker, not a passing package-level task-smoke result
@@ -821,6 +824,7 @@ experiments:
       - records tail_linear_speed_summary as late-window speed telemetry only; pass/fail remains the existing final-speed drop/settle gate, not a sustained-settle proof or new gate
       - records 361/362/363/364/365/375/385/390/420/450/480/600/720-frame window reruns that refine the native/reverted-control final-speed task-gate bracket to 361 clean versus 362 failing; dirty-control rows are rejected as COM-blend stability, sustained-settle, or fix evidence
       - records a 361/362 frame-transition audit where native all-box and cylinder-reverted controls keep matching model arrays and final support-contact labels while the dirty 362 row adds 8 substeps and increases final linear speed
+      - records a 361 clean-frame blocker audit where native all-box and cylinder-reverted controls pass while the opt-in cylinder remains not_settled under matching final support-contact primitive suffixes
       - records a pre-solver model-build audit where the rest-without-target opt-in-minus-native delta is zero while full-package and target-only primitive-6 mass/COM/inertia deltas remain nonzero under matching anchors
       - records that iterations and substeps sensitivity checks did not clear the blocker under current settings
       - no root-cause proof, native primitive quality improvement, calibrated multiplier, default asset behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
@@ -960,6 +964,22 @@ experiments:
       - one-config capped bed 361/362 frame-transition audit only
       - records that native all-box and cylinder-reverted controls keep matching model arrays and final support-contact labels across the adjacent reports
       - records that the 362 report adds 8 substeps and increases final linear speed by about 0.0189847 m/s for both audited controls
+      - not sustained-settle proof, long-window stability evidence, validated COM-blend fix, root-cause proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-clean-frame-blocker-audit-361
+    status: complete
+    command: PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py --report reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json --baseline-label native_control_box --baseline-label native_opt_in_cylinder_reverted --target-label native_opt_in_cylinder --output reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.stdout.json
+    record: docs/records/2026-05-21-bed-native-opt-in-probe.md
+    purpose: >
+      Compare the capped bed 361-frame clean-control report's native all-box and
+      cylinder-reverted controls against the original opt-in cylinder target inside the same
+      report. The audit records status contrast, final-speed/body-state/model deltas, matching
+      final support-contact primitive suffixes, and a compact final trace window aligned by
+      steps_from_final.
+    claims_supported:
+      - one-config capped bed 361-frame clean-control blocker audit only
+      - records that native all-box and cylinder-reverted controls pass while the original opt-in cylinder remains not_settled inside the same 361-frame report
+      - records matching final support-contact primitive suffixes and a final-speed delta of about +0.0181910 m/s from either clean control to the blocked target
+      - records same-report model deltas for the blocked target: mass +1126.625 and COM about [-0.0427847, 0.0171919, 0.2960243]
       - not sustained-settle proof, long-window stability evidence, validated COM-blend fix, root-cause proof, scoring/default-policy evidence, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: bed-native-opt-in-com-blend-refinement-frame363
     status: complete

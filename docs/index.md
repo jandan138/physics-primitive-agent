@@ -802,7 +802,9 @@ records exist.
   `362` failing; dirty-control rows are rejected as COM-blend stability or fix evidence. A
   `361`/`362` frame-transition audit records matched model arrays and matched final
   support-contact labels for the native all-box and cylinder-reverted controls while the dirty
-  row adds `8` substeps and increases final speed by about `0.0189847 m/s`. A pre-solver
+  row adds `8` substeps and increases final speed by about `0.0189847 m/s`. A `361` clean-frame
+  blocker audit records that the original opt-in cylinder remains `not_settled` against clean
+  same-report controls under matching final support-contact primitive suffixes. A pre-solver
   model-build audit records zero
   rest-without-target delta and nonzero primitive-6 target/full mass/COM/inertia deltas under
   matching anchors. These are not validated fixes or root-cause proof.
@@ -968,7 +970,9 @@ records exist.
   ablation, COM-blend refinement, COM-blend refinement tail-summary rerun, the
   `361`/`362`/`363`/`364`/`365`/`375`/`385`/`390`/`420`/`450`/`480`/`600`/`720` frame-window
   sensitivity sweep, `scripts/diagnostics/bed_native_opt_in_frame_transition_audit.py`
-  `361`/`362` frame-transition audit, and pre-solver model-build audit.
+  `361`/`362` frame-transition audit,
+  `scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py` `361` clean-frame blocker
+  audit, and pre-solver model-build audit.
 - `configs/experiments/bed_native_opt_in_frame361_probe.yaml`,
   `configs/experiments/bed_native_opt_in_frame362_probe.yaml`,
   `configs/experiments/bed_native_opt_in_frame363_probe.yaml`,

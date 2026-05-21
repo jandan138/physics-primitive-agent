@@ -38,6 +38,21 @@ def _load_bed_native_opt_in_frame_transition_audit_module():
     return module
 
 
+def _load_bed_native_opt_in_clean_frame_blocker_audit_module():
+    script_path = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "diagnostics"
+        / "bed_native_opt_in_clean_frame_blocker_audit.py"
+    )
+    spec = importlib.util.spec_from_file_location(
+        "bed_native_opt_in_clean_frame_blocker_audit", script_path
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_package_imports():
     package = importlib.import_module("primitive_collision_compiler")
 
@@ -677,6 +692,212 @@ def test_frame_transition_audit_main_writes_json(tmp_path, capsys):
     file_payload = json.loads(output_path.read_text())
     assert stdout_payload == file_payload
     assert file_payload["status"] == "frame_transition_audit_recorded"
+
+
+def test_clean_frame_blocker_audit_compares_target_to_clean_controls(tmp_path):
+    module = _load_bed_native_opt_in_clean_frame_blocker_audit_module()
+
+    def variant(
+        status,
+        failure_labels,
+        speed,
+        velocity,
+        position,
+        mass,
+        com,
+        label_prefix,
+        type_counts,
+    ):
+        return {
+            "status": status,
+            "type_counts": type_counts,
+            "package_anchor": [1.0, 2.0, 3.0],
+            "model_summary": {
+                "body_mass": [mass],
+                "body_inv_mass": [1.0 / mass],
+                "body_com": [com],
+                "body_inertia": [[[4.0 + mass, 5.0, 6.0]]],
+                "body_inv_inertia": [[[0.25, 0.2, 0.1]]],
+            },
+            "drop_settle_run": {
+                "status": status,
+                "failure_labels": failure_labels,
+                "completed_steps": 2888,
+                "final_linear_speed_mps": speed,
+                "final_linear_velocity": velocity,
+                "final_support_height": -0.001,
+                "final_contact_count": 2,
+            },
+            "tail_linear_speed_summary": {
+                "sample_count": 3,
+                "over_settle_threshold_count": 1 if status == "smoke_passed" else 3,
+            },
+            "trace_samples": [
+                {
+                    "step": 2887,
+                    "linear_speed_mps": round(speed - 0.01, 2),
+                    "body_position": [position[0] - 0.5, position[1] + 0.5, position[2]],
+                    "support_height": -0.002,
+                    "contact_count": 2,
+                    "contact_details": [
+                        {"shape1_label": f"{label_prefix}:primitive:12"},
+                        {"shape1_label": f"{label_prefix}:primitive:15"},
+                    ],
+                },
+                {
+                    "step": 2888,
+                    "linear_speed_mps": speed,
+                    "body_position": position,
+                    "angular_velocity_raw": [0.0, 0.0, 0.0],
+                    "support_height": -0.001,
+                    "contact_count": 2,
+                    "contact_details": [
+                        {"shape1_label": f"{label_prefix}:primitive:12"},
+                        {"shape1_label": f"{label_prefix}:primitive:15"},
+                    ],
+                },
+            ],
+        }
+
+    report_path = tmp_path / "frame361.json"
+    report_path.write_text(
+        json.dumps(
+            {
+                "status": "diagnostic_recorded",
+                "drop_settle_options": {"frames": 361},
+                "variants": {
+                    "native_control_box": variant(
+                        "smoke_passed",
+                        [],
+                        0.04,
+                        [0.01, 0.02, 0.03],
+                        [0.0, 0.0, -1.0],
+                        10.0,
+                        [1.0, 2.0, 3.0],
+                        "native",
+                        {"box": 32},
+                    ),
+                    "native_opt_in_cylinder_reverted": variant(
+                        "smoke_passed",
+                        [],
+                        0.04,
+                        [0.01, 0.02, 0.03],
+                        [0.0, 0.0, -1.0],
+                        10.0,
+                        [1.0, 2.0, 3.0],
+                        "opt_in",
+                        {"box": 32},
+                    ),
+                    "native_opt_in_cylinder": variant(
+                        "runtime_failure",
+                        ["not_settled"],
+                        0.07,
+                        [0.04, 0.01, 0.05],
+                        [0.1, -0.1, -1.1],
+                        12.0,
+                        [1.5, 2.25, 2.75],
+                        "opt_in",
+                        {"box": 31, "cylinder": 1},
+                    ),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    audit = module.build_clean_frame_blocker_audit_report(report_path=report_path)
+
+    assert audit["status"] == "clean_frame_blocker_audit_recorded"
+    assert audit["claim_boundary"] == (
+        "bed_native_opt_in_clean_frame_blocker_audit_not_root_cause_or_fix_or_stability_evidence"
+    )
+    assert audit["frame"] == 361
+    assert audit["summary"] == {
+        "target_status": "runtime_failure",
+        "target_failure_labels": ["not_settled"],
+        "baseline_count": 2,
+        "all_baselines_smoke_passed": True,
+        "all_final_contact_counts_equal": True,
+        "all_final_contact_primitive_suffixes_equal": True,
+    }
+    control_audit = audit["baseline_audits"]["native_control_box"]
+    assert control_audit["deltas"]["final_linear_speed_delta_mps"] == 0.03
+    assert control_audit["deltas"]["final_linear_velocity_delta"] == [0.03, -0.01, 0.02]
+    assert control_audit["model_deltas"]["body_mass_delta"] == 2.0
+    assert control_audit["model_deltas"]["body_com_delta"] == [0.5, 0.25, -0.25]
+    assert control_audit["contact_invariants"] == {
+        "final_contact_count_equal": True,
+        "final_contact_primitive_suffixes_equal": True,
+        "baseline_final_contact_shape1_labels": [
+            "native:primitive:12",
+            "native:primitive:15",
+        ],
+        "target_final_contact_shape1_labels": [
+            "opt_in:primitive:12",
+            "opt_in:primitive:15",
+        ],
+        "baseline_final_contact_primitive_suffixes": ["12", "15"],
+        "target_final_contact_primitive_suffixes": ["12", "15"],
+    }
+    assert control_audit["aligned_final_window_rows"][-1] == {
+        "steps_from_final": 0,
+        "baseline_step": 2888,
+        "target_step": 2888,
+        "baseline_linear_speed_mps": 0.04,
+        "target_linear_speed_mps": 0.07,
+        "linear_speed_delta_mps": 0.03,
+        "baseline_support_height": -0.001,
+        "target_support_height": -0.001,
+        "support_height_delta": 0.0,
+        "baseline_contact_count": 2,
+        "target_contact_count": 2,
+        "baseline_body_position": [0.0, 0.0, -1.0],
+        "target_body_position": [0.1, -0.1, -1.1],
+        "body_position_delta": [0.1, -0.1, -0.1],
+    }
+    json.dumps(audit, allow_nan=False)
+
+
+def test_clean_frame_blocker_audit_main_writes_json(tmp_path, capsys):
+    module = _load_bed_native_opt_in_clean_frame_blocker_audit_module()
+    report_path = tmp_path / "report.json"
+    output_path = tmp_path / "audit.json"
+    minimal_variant = {
+        "status": "smoke_passed",
+        "model_summary": {},
+        "drop_settle_run": {
+            "status": "smoke_passed",
+            "failure_labels": [],
+            "completed_steps": 1,
+            "final_linear_speed_mps": 0.01,
+        },
+        "trace_samples": [],
+    }
+    target_variant = json.loads(json.dumps(minimal_variant))
+    target_variant["status"] = "runtime_failure"
+    target_variant["drop_settle_run"]["status"] = "runtime_failure"
+    target_variant["drop_settle_run"]["failure_labels"] = ["not_settled"]
+    report_path.write_text(
+        json.dumps(
+            {
+                "status": "diagnostic_recorded",
+                "drop_settle_options": {"frames": 361},
+                "variants": {
+                    "native_control_box": minimal_variant,
+                    "native_opt_in_cylinder_reverted": minimal_variant,
+                    "native_opt_in_cylinder": target_variant,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert module.main(["--report", str(report_path), "--output", str(output_path)]) == 0
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output_path.read_text())
+    assert stdout_payload == file_payload
+    assert file_payload["status"] == "clean_frame_blocker_audit_recorded"
 
 
 def test_cli_help_mentions_project(capsys):

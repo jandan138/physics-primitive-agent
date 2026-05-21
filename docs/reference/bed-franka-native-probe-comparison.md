@@ -183,9 +183,17 @@ Task comparison:
   labels across the adjacent reports, while the `362` row adds `8` substeps and increases final
   linear speed by about `0.0189847 m/s`. The compact final-window rows are aligned by
   `steps_from_final`, not raw `step`;
-- the same script with `--run-model-build-audit` records a pre-solver Newton model-build audit for
-  full, target-only, and rest-without-target packages under full-package anchors. In the dated run
-  the native and opt-in package anchors match; the full opt-in-minus-native body delta is mass
+- `scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py` adds a post-run `361`
+  clean-frame blocker audit inside the same clean-control report. In the dated audit, the native
+  all-box and cylinder-reverted controls pass while the original opt-in cylinder remains
+  `not_settled`; final support-contact primitive suffixes match (`12`, `15`, `15`, and `26`),
+  while the original opt-in cylinder ends about `0.0181910 m/s` faster than either clean control
+  and records mass `+1126.625` plus COM delta about
+  `[-0.0427847, 0.0171919, 0.2960243]`;
+- `scripts/diagnostics/bed_native_opt_in_compound_trace.py` with `--run-model-build-audit`
+  records a pre-solver Newton model-build audit for full, target-only, and rest-without-target
+  packages under full-package anchors. In the dated run the native and opt-in package anchors
+  match; the full opt-in-minus-native body delta is mass
   `+1126.625` and COM about `[-0.0427847, 0.0171919, 0.2960243]`; the target-only
   opt-in-minus-native delta is mass about `+1126.5820`, COM about
   `[0.2216988, 0.3152409, -0.0516510]`, and inertia row-0 about
@@ -215,7 +223,7 @@ The simple mental model is:
 
 ```text
 paper goal: choose better convex primitives for collision detection
-current slice: prove real-USD packages can reach Newton diagnostics
+current slice: record capped real-USD packages reaching named Newton diagnostics under recorded settings
 current diagnostic add-on: expose why remaining real-USD clusters still select boxes
 next algorithm slice: use diagnosis labels to target the next primitive-choice change
 ```
@@ -249,6 +257,7 @@ Allowed wording:
 - "capped bed primitive-6 COM-blend refinement tail-speed telemetry."
 - "capped bed primitive-6 COM-blend refinement 361/362/363/364/365/375/385/390/420/450/480/600/720-frame window sensitivity sweep."
 - "capped bed primitive-6 361/362 frame-transition audit."
+- "capped bed primitive-6 361 clean-frame blocker audit."
 - "capped bed primitive-6 pre-solver model-build audit."
 
 Do not claim:
@@ -286,6 +295,8 @@ Do not claim:
   clean-control row is final-speed sensitivity accounting only; dirty-control rows are rejected
   when native all-box controls also fail in those swept windows.
 - that the 361/362 frame-transition audit proves sustained settling, long-window stability,
+  causality, a validated fix, scoring/default-policy evidence, or collision-quality validation.
+- that the 361 clean-frame blocker audit proves sustained settling, long-window stability,
   causality, a validated fix, scoring/default-policy evidence, or collision-quality validation.
 - that the pre-solver model-build audit proves a Newton mapping bug, physical root cause,
   validated inertial repair, or package-quality conclusion.
@@ -471,6 +482,17 @@ PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_frame_transition_aud
   --variant-label native_control_box \
   --variant-label native_opt_in_cylinder_reverted \
   --output reports/generated/bed_native_opt_in_frame_transition_audit/native_reverted_frame361_362_audit_2026-05-21.stdout.json
+```
+
+Bed opt-in 361 clean-frame blocker audit:
+
+```bash
+PYTHONPATH=src python scripts/diagnostics/bed_native_opt_in_clean_frame_blocker_audit.py \
+  --report reports/generated/bed_native_opt_in_frame361_probe/drop_primitive6_com_blend_refinement_frame361_2026-05-21.stdout.json \
+  --baseline-label native_control_box \
+  --baseline-label native_opt_in_cylinder_reverted \
+  --target-label native_opt_in_cylinder \
+  --output reports/generated/bed_native_opt_in_clean_frame_blocker_audit/native_opt_in_cylinder_frame361_blocker_audit_2026-05-21.stdout.json
 ```
 
 Bed opt-in COM-blend refinement 363-frame window sensitivity rerun:
