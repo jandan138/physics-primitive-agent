@@ -19,6 +19,11 @@ A separate capped Franka cost-guided merge-search opt-in slice now keeps the def
 `32` boxes while the opt-in lane uses `cost_guided_pairwise`, selects `25` boxes plus `7`
 cylinders, and passes the same recorded contact-gated task smokes. This is merge-search
 diagnostic evidence only, not merge-policy superiority or collision-quality evidence.
+A cylinder stability mechanism diagnosis now reruns the capped bed one-cylinder blocker and capped
+Franka cost-guided seven-cylinder package, then records the strongest current explanation: the bed
+blocker is a full-compound COM/inertia body-state sensitivity from one large flat cylinder, while
+the recorded Franka cylinders are much smaller and pass in their capped package context. This is
+diagnostic synthesis only, not root-cause proof or a validated repair.
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
@@ -846,6 +851,10 @@ records exist.
   opt-in capped Franka merge-search diagnostic; default lanes keep `topology_then_virtual` and
   `32` boxes, while the cost-guided opt-in lane selects `25` boxes plus `7` cylinders and passes
   contact-gated drop/settle plus sphere-rain.
+- [Cylinder stability mechanism diagnosis record](records/2026-05-21-cylinder-stability-mechanism-diagnosis.md):
+  claim-bounded synthesis explaining the current bed-vs-Franka cylinder contrast as large-flat
+  bed-cylinder full-compound COM/inertia body-state sensitivity, not categorical Newton cylinder
+  unsupported behavior.
 - [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
   documentation update that explains the guarded selector slice as one real-USD
   Newton-in-the-loop diagnostic cycle in the CPD paper story.

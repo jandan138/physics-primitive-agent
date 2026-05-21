@@ -92,6 +92,7 @@ exceeded the smoke timeout. That keeps the passing cost-guided evidence scoped t
 | Default support-aware Franka | `32` boxes | Passed in recorded runs | Baseline diagnostic path; raw cylinder near-wins are support-blocked. |
 | Historical Franka opt-in | `24` boxes + `8` cylinders | Passed | Cylinders can appear in one capped Franka opt-in package and reach the task smokes. |
 | Historical bed opt-in | `31` boxes + `1` cylinder | Drop/settle failed `not_settled` | A selected large flat cylinder exposed a Newton task blocker. |
+| Cylinder stability mechanism diagnosis | Bed blocker rerun plus Franka `25` boxes + `7` cylinders rerun | Diagnostic synthesis recorded | The strongest current explanation is full-compound COM/inertia body-state sensitivity from one large flat bed cylinder, not categorical Newton cylinder unsupported behavior. |
 | Guarded bed opt-in | `32` boxes; `23` guard-rejected cylinder candidates | Passed | One Newton-diagnosis-informed selector guard clears the recorded bed blocker. |
 | Guarded Franka opt-in | `24` boxes + `8` cylinders; `0` guard rejections | Passed | The same guard does not erase the recorded small Franka cylinders. |
 | Franka support-threshold opt-in | `29` boxes + `3` cylinders | Passed | The three previously support-blocked raw-cost cylinder candidates can be admitted in one opt-in lane and still pass recorded task smokes. |
@@ -121,6 +122,8 @@ The practical story is now:
 paper-lane gates made the contracts explicit
 -> real bed/Franka packages reached Newton diagnostics
 -> one opt-in cylinder choice failed a task gate
+-> the mechanism diagnosis narrowed that failure toward full-compound COM/inertia body-state
+   sensitivity from one large flat bed cylinder
 -> diagnostics produced one narrow selector rule
 -> the guarded packages passed the same recorded task smokes
 -> the support-blocked Franka candidates were admitted in one separate opt-in lane
@@ -142,6 +145,7 @@ same mapping/contact/task-smoke checks.
 - [2026-05-21 Franka native opt-in support threshold probe](../records/2026-05-21-franka-native-opt-in-support-threshold-probe.md)
 - [2026-05-21 bed/Franka guarded support-threshold probe](../records/2026-05-21-bed-franka-guarded-support-threshold-probe.md)
 - [2026-05-21 Franka cost-guided merge opt-in probe](../records/2026-05-21-franka-cost-guided-merge-opt-in-probe.md)
+- [2026-05-21 cylinder stability mechanism diagnosis](../records/2026-05-21-cylinder-stability-mechanism-diagnosis.md)
 - [2026-05-21 Franka native opt-in probe](../records/2026-05-21-franka-native-opt-in-probe.md)
 - [2026-05-21 bed native opt-in probe](../records/2026-05-21-bed-native-opt-in-probe.md)
 - [Bed and Franka native probe comparison](bed-franka-native-probe-comparison.md)

@@ -770,6 +770,17 @@ This file separates current evidence from future claims. See [message-map.md](me
   support-threshold controls, and passes contact-gated drop/settle plus sphere-rain in the clean
   Newton environment. This is controlled merge-search diagnostic evidence only; it does not rank
   merge policies, validate collision quality, or change default lanes.
+- The [2026-05-21 cylinder stability mechanism diagnosis](../records/2026-05-21-cylinder-stability-mechanism-diagnosis.md)
+  reruns the capped bed one-cylinder blocker and capped Franka cost-guided seven-cylinder package
+  in the clean Newton environment, then records a claim-bounded mechanism synthesis. Bed reproduces
+  the drop/settle `not_settled` label with final speed about `0.0823040 m/s`; Franka cost-guided
+  opt-in passes with final speed about `0.0007108 m/s`. The failing bed cylinder has radius about
+  `2.7009381 m`, while the largest recorded Franka cost-guided cylinder radius is about
+  `0.0019825 m`. Together with the existing target-only, center/shape, support-contact, COM, and
+  inertial-component controls, the strongest current explanation is full-compound COM/inertia
+  body-state sensitivity from one large flat bed cylinder, not categorical Newton cylinder
+  unsupported behavior. This is diagnostic synthesis only, not root-cause proof or a validated
+  repair.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current

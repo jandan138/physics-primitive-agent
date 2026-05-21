@@ -747,6 +747,16 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   contact-gated task smokes. This is one explicitly configured diagnostic package, not
   merge-policy superiority, default behavior, broad asset evidence, collision-quality validation,
   or safety evidence.
+- The current code can build a capped bed-vs-Franka cylinder stability mechanism synthesis through
+  [2026-05-21 cylinder stability mechanism diagnosis](../records/2026-05-21-cylinder-stability-mechanism-diagnosis.md).
+  The diagnosis reruns the bed one-cylinder blocker and the capped Franka cost-guided
+  seven-cylinder package, records the bed drop/settle `not_settled` final-speed failure and
+  Franka pass, and contrasts the large flat bed cylinder against the much smaller recorded Franka
+  cylinders. Together with prior one-config COM/inertia controls, this supports the current
+  diagnostic explanation that the bed blocker is a full-compound COM/inertia body-state
+  sensitivity from one large flat cylinder. This is diagnostic synthesis only, not root-cause
+  proof, a validated repair, cylinder-quality evidence, default selector behavior, benchmark
+  evidence, or safety evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1151,6 +1161,11 @@ Use these only after broader benchmark records exist.
   a default merge-search policy, broad real-USD result, whole-robot Franka collider-quality
   result, benchmark evidence, collision-quality validation, or safety evidence. It is one
   explicitly configured diagnostic package under capped Franka first-mesh scope.
+- Do not describe the cylinder stability mechanism diagnosis as root-cause proof, a validated
+  inertial repair, proof that cylinders are generally stable or unstable, a calibrated selector
+  threshold, broad asset evidence, benchmark evidence, collision-quality validation, or safety
+  evidence. It is a diagnostic synthesis over the recorded capped bed and capped Franka first-mesh
+  slices plus one-config sensitivity controls.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are
