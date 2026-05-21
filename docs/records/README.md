@@ -169,6 +169,9 @@ Proposed | In progress | Complete | Failed | Superseded
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller
   selected cylinders and also passes.
+- [2026-05-21 Franka Native Opt-In Support Threshold Probe](2026-05-21-franka-native-opt-in-support-threshold-probe.md):
+  opt-in capped Franka support-threshold diagnostic; the changed package selects `29` boxes plus
+  `3` cylinders and passes contact-gated drop/settle plus sphere-rain.
 - [2026-05-21 Newton-In-The-Loop Selector Story Docs](2026-05-21-newton-in-the-loop-selector-story-docs.md):
   plain-language documentation update that explains why the guarded selector slice followed the
   earlier gates and what it does, and does not, prove in the CPD paper story.

@@ -21,6 +21,7 @@ from primitive_collision_compiler.baselines.cpd_like.primitives import (
     SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES,
     SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS,
     fit_primitive_candidates,
+    normalize_primitive_selection_support_thresholds,
     rank_primitive_candidates_for_selection,
 )
 from primitive_collision_compiler.baselines.cpd_like.synthetic import (
@@ -113,6 +114,9 @@ class NativeLaneArtifact:
                 ),
                 primitive_score_multipliers=self.decomposition.primitive_score_multipliers,
                 primitive_selection_guard=self.decomposition.primitive_selection_guard,
+                primitive_selection_support_thresholds=(
+                    self.decomposition.primitive_selection_support_thresholds
+                ),
             ),
             "package_mapping": package_mapping_summary(self.package),
             "collision_package": self.package.to_dict(),
@@ -124,6 +128,10 @@ class NativeLaneArtifact:
         if self.decomposition.primitive_selection_guard:
             payload["primitive_selection_guard"] = dict(
                 self.decomposition.primitive_selection_guard
+            )
+        if self.decomposition.primitive_selection_support_thresholds:
+            payload["primitive_selection_support_thresholds"] = dict(
+                self.decomposition.primitive_selection_support_thresholds
             )
         return payload
 
@@ -165,6 +173,7 @@ def build_real_usd_native_artifacts(
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
+    native_opt_in_support_thresholds: Mapping[str, object] | None = None,
 ) -> tuple[RealUsdComparisonArtifact, ...]:
     _validate_roles(roles)
     assets = _resolve_manifest_roles(manifest_path, roles)
@@ -181,6 +190,7 @@ def build_real_usd_native_artifacts(
             objective_options=objective_options,
             native_opt_in_score_multipliers=native_opt_in_score_multipliers,
             native_opt_in_selection_guard=native_opt_in_selection_guard,
+            native_opt_in_support_thresholds=native_opt_in_support_thresholds,
         )
         for asset in assets
     )
@@ -198,6 +208,7 @@ def build_real_usd_native_fitting_comparison_report(
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
+    native_opt_in_support_thresholds: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -216,6 +227,7 @@ def build_real_usd_native_fitting_comparison_report(
         objective_options=options,
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         native_opt_in_selection_guard=native_opt_in_selection_guard,
+        native_opt_in_support_thresholds=native_opt_in_support_thresholds,
     )
     cases = [artifact.to_summary() for artifact in artifacts]
     statuses = [
@@ -250,6 +262,7 @@ def build_real_usd_candidate_loss_diagnosis_report(
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
+    native_opt_in_support_thresholds: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -268,6 +281,7 @@ def build_real_usd_candidate_loss_diagnosis_report(
         objective_options=options,
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         native_opt_in_selection_guard=native_opt_in_selection_guard,
+        native_opt_in_support_thresholds=native_opt_in_support_thresholds,
     )
     cases = []
     statuses = []
@@ -324,6 +338,7 @@ def build_real_usd_native_contact_comparison_report(
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
+    native_opt_in_support_thresholds: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_CONTACT_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_CONTACT_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -342,6 +357,7 @@ def build_real_usd_native_contact_comparison_report(
         ),
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         native_opt_in_selection_guard=native_opt_in_selection_guard,
+        native_opt_in_support_thresholds=native_opt_in_support_thresholds,
     )
     cases: list[dict[str, object]] = []
     child_statuses: list[str] = []
@@ -411,6 +427,7 @@ def build_real_usd_native_task_comparison_report(
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
     native_opt_in_selection_guard: Mapping[str, object] | None = None,
+    native_opt_in_support_thresholds: Mapping[str, object] | None = None,
     drop_settle_options: DropSettleOptions | None = None,
     sphere_rain_options: SphereRainOptions | None = None,
     claim_boundary: str = REAL_USD_NATIVE_TASK_CLAIM_BOUNDARY,
@@ -432,6 +449,7 @@ def build_real_usd_native_task_comparison_report(
         ),
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
         native_opt_in_selection_guard=native_opt_in_selection_guard,
+        native_opt_in_support_thresholds=native_opt_in_support_thresholds,
     )
     drop_settle_options = drop_settle_options or DropSettleOptions()
     sphere_rain_options = sphere_rain_options or SphereRainOptions()
@@ -564,6 +582,7 @@ def _artifact_for_asset(
     objective_options: CPDLikeObjectiveOptions | None,
     native_opt_in_score_multipliers: Mapping[str, float] | None,
     native_opt_in_selection_guard: Mapping[str, object] | None,
+    native_opt_in_support_thresholds: Mapping[str, object] | None,
 ) -> RealUsdComparisonArtifact:
     legacy = _lane_artifact(
         label=LEGACY_LABEL,
@@ -577,6 +596,7 @@ def _artifact_for_asset(
         objective_options=objective_options,
         primitive_score_multipliers=None,
         primitive_selection_guard=None,
+        primitive_selection_support_thresholds=None,
     )
     native = _lane_artifact(
         label=NATIVE_LABEL,
@@ -590,9 +610,14 @@ def _artifact_for_asset(
         objective_options=objective_options,
         primitive_score_multipliers=None,
         primitive_selection_guard=None,
+        primitive_selection_support_thresholds=None,
     )
     native_opt_in = None
-    if native_opt_in_score_multipliers:
+    if (
+        native_opt_in_score_multipliers
+        or native_opt_in_selection_guard
+        or native_opt_in_support_thresholds
+    ):
         native_opt_in = _lane_artifact(
             label=NATIVE_OPT_IN_LABEL,
             lane="native_opt_in",
@@ -605,6 +630,7 @@ def _artifact_for_asset(
             objective_options=objective_options,
             primitive_score_multipliers=native_opt_in_score_multipliers,
             primitive_selection_guard=native_opt_in_selection_guard,
+            primitive_selection_support_thresholds=native_opt_in_support_thresholds,
         )
     return RealUsdComparisonArtifact(
         asset_role=asset_role,
@@ -628,6 +654,7 @@ def _lane_artifact(
     objective_options: CPDLikeObjectiveOptions | None,
     primitive_score_multipliers: Mapping[str, float] | None,
     primitive_selection_guard: Mapping[str, object] | None,
+    primitive_selection_support_thresholds: Mapping[str, object] | None,
 ) -> NativeLaneArtifact:
     mesh = load_first_mesh(asset_path, max_faces=max_source_faces)
     decomposition = decompose_mesh(
@@ -637,6 +664,7 @@ def _lane_artifact(
         **_component_merge_kwargs(component_merge_options),
         primitive_score_multipliers=primitive_score_multipliers,
         primitive_selection_guard=primitive_selection_guard,
+        primitive_selection_support_thresholds=primitive_selection_support_thresholds,
     )
     package_asset_id = f"{asset_role}_{lane}"
     options = objective_options or CPDLikeObjectiveOptions(
@@ -724,7 +752,11 @@ def _candidate_audit_summary(
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float] | None = None,
     primitive_selection_guard: Mapping[str, object] | None = None,
+    primitive_selection_support_thresholds: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
+    support_thresholds = normalize_primitive_selection_support_thresholds(
+        primitive_selection_support_thresholds
+    )
     extension_kinds = tuple(
         primitive
         for primitive in NEWTON_NATIVE_EXTENDED_SUBSET
@@ -777,6 +809,7 @@ def _candidate_audit_summary(
                 candidates,
                 primitive_score_multipliers=primitive_score_multipliers,
                 primitive_selection_guard=primitive_selection_guard,
+                primitive_selection_support_thresholds=support_thresholds,
             )
         ]
         ranked = [{**row, "rank": rank} for rank, row in enumerate(ranked, start=1)]
@@ -906,6 +939,8 @@ def _candidate_audit_summary(
     }
     if primitive_selection_guard:
         payload["primitive_selection_guard"] = dict(primitive_selection_guard)
+    if support_thresholds:
+        payload["primitive_selection_support_thresholds"] = dict(support_thresholds)
     return payload
 
 

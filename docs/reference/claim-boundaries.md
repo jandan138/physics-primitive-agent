@@ -722,6 +722,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   evidence, not a calibrated threshold, default policy, broad asset rule, collision-quality
   validation, or proof that boxes are better than cylinders. The reviewer-facing plain-language
   story is [Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
+- The current code can run a separate capped Franka opt-in support-threshold diagnostic through
+  [2026-05-21 Franka native opt-in support-threshold probe](../records/2026-05-21-franka-native-opt-in-support-threshold-probe.md).
+  The default capped Franka native lane remains box-only; the support-threshold opt-in lane lowers
+  only configured `cylinder` extension support thresholds to `2` source faces and `4` unique
+  points, selects `29` boxes plus `3` cylinders, and passes the recorded task smokes. This is
+  controlled support-admissibility diagnostic evidence, not calibrated threshold evidence, not a
+  default policy, not broad asset evidence, not collision-quality validation, and not whole-robot
+  Franka collider-quality evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1112,6 +1120,11 @@ Use these only after broader benchmark records exist.
   proof that boxes are better than cylinders, default behavior, broad real-USD improvement, or
   collision-quality validation. It is an explicitly configured selector quarantine derived from
   one capped-bed diagnostic blocker and cross-checked on capped Franka.
+- Do not describe the capped Franka support-threshold opt-in probe as a calibrated support
+  threshold, default support-aware behavior, native primitive improvement, broad real-USD result,
+  whole-robot Franka collider-quality result, benchmark evidence, or collision-quality
+  validation. It is an explicitly configured support-admissibility diagnostic for one capped
+  Franka first-mesh lane.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

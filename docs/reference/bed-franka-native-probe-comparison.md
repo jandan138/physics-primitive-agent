@@ -227,6 +227,19 @@ Task comparison:
 - this is a controlled selector-diagnostic slice, not a default policy, collision-quality result,
   calibrated threshold, or proof that boxes are better than cylinders.
 
+2026-05-21 Franka support-threshold opt-in update:
+
+- `configs/experiments/franka_native_opt_in_support_threshold_probe.yaml` adds a separate
+  capped Franka `native_opt_in` lane with `native_opt_in_extension_support_thresholds`;
+- default capped Franka legacy/native lanes remain `32` boxes;
+- the support-threshold opt-in lane lowers only configured `cylinder` extension support
+  thresholds to `2` source faces and `4` unique points, selecting `29` boxes plus `3`
+  cylinders;
+- the changed opt-in package fully mapped and passed contact-gated drop/settle plus sphere-rain
+  under the recorded clean Newton environment;
+- this is a support-admissibility diagnostic, not a default support threshold, calibrated policy,
+  collision-quality result, or whole-robot Franka collider-quality claim.
+
 For the plain-language version of why this followed the earlier gate work, see
 [Newton-in-the-loop selector story](newton-in-the-loop-selector-story.md).
 
@@ -288,6 +301,7 @@ Allowed wording:
 - "capped bed primitive-6 361 clean-frame blocker audit."
 - "capped bed primitive-6 pre-solver model-build audit."
 - "capped bed primitive-6 post-run model-build delta audit."
+- "capped Franka opt-in support-threshold diagnostic."
 
 Do not claim:
 
@@ -332,6 +346,9 @@ Do not claim:
 - that the pre-solver model-build audit or post-run model-build delta audit proves a Newton
   mapping bug, physical root cause, validated inertial repair, scoring evidence, default-policy
   behavior, or package-quality conclusion.
+- that the capped Franka support-threshold opt-in probe calibrates support thresholds, changes
+  default support-aware selection, validates cylinder collision quality, or proves whole-robot
+  Franka collider quality.
 
 ## Commands
 
@@ -381,6 +398,16 @@ NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton \
 PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python \
   -m primitive_collision_compiler.cli \
   --config configs/experiments/franka_native_opt_in_probe.yaml \
+  --run-real-usd-native-task-comparison
+```
+
+Franka support-threshold opt-in gated task smoke:
+
+```bash
+NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton \
+PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python \
+  -m primitive_collision_compiler.cli \
+  --config configs/experiments/franka_native_opt_in_support_threshold_probe.yaml \
   --run-real-usd-native-task-comparison
 ```
 

@@ -82,6 +82,7 @@ def fit_best_primitive(
     *,
     primitive_score_multipliers: Mapping[str, float] | None = None,
     primitive_selection_guard: Mapping[str, object] | None = None,
+    primitive_selection_support_thresholds: Mapping[str, object] | None = None,
 ) -> PrimitiveFit:
     candidates = fit_primitive_candidates(mesh, face_ids, primitive_subset)
     ranked = rank_primitive_candidates_for_selection(
@@ -90,6 +91,7 @@ def fit_best_primitive(
         candidates,
         primitive_score_multipliers=primitive_score_multipliers,
         primitive_selection_guard=primitive_selection_guard,
+        primitive_selection_support_thresholds=primitive_selection_support_thresholds,
     )
     return ranked[0].candidate
 
@@ -101,14 +103,17 @@ def rank_primitive_candidates_for_selection(
     *,
     primitive_score_multipliers: Mapping[str, float] | None = None,
     primitive_selection_guard: Mapping[str, object] | None = None,
+    primitive_selection_support_thresholds: Mapping[str, object] | None = None,
 ) -> tuple[PrimitiveCandidateSelection, ...]:
     candidate_tuple = tuple(candidates)
     if not candidate_tuple:
         raise ValueError("candidates must not be empty")
     multipliers = _validated_score_multipliers(primitive_score_multipliers)
     selection_guard = normalize_primitive_selection_guard(primitive_selection_guard)
+    support_thresholds = normalize_primitive_selection_support_thresholds(
+        primitive_selection_support_thresholds
+    )
 
-    support = _selection_support(mesh, face_ids)
     fallback_available = any(
         candidate.primitive_type not in SUPPORT_AWARE_EXTENSION_PRIMITIVES
         for candidate in candidate_tuple
@@ -128,7 +133,12 @@ def rank_primitive_candidates_for_selection(
             candidate,
             candidate_order=candidate_order,
             raw_cost_rank=raw_cost_ranks[candidate_order],
-            support=support,
+            support=_selection_support(
+                mesh,
+                face_ids,
+                candidate,
+                primitive_selection_support_thresholds=support_thresholds,
+            ),
             fallback_available=fallback_available,
             primitive_score_multipliers=multipliers,
             primitive_selection_guard=selection_guard,
@@ -186,17 +196,36 @@ def fit_primitive_candidates(
     )
 
 
-def _selection_support(mesh: TriangleMesh, face_ids: frozenset[int]) -> dict[str, object]:
+def _selection_support(
+    mesh: TriangleMesh,
+    face_ids: frozenset[int],
+    candidate: PrimitiveFit,
+    *,
+    primitive_selection_support_thresholds: Mapping[str, object],
+) -> dict[str, object]:
     unique_point_indices = {
         int(point_index)
         for face_id in face_ids
         for point_index in mesh.faces[int(face_id)]
     }
+    min_faces = SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES
+    min_points = SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS
+    threshold_source = "default"
+    if _support_thresholds_apply_to_candidate(
+        candidate,
+        primitive_selection_support_thresholds=primitive_selection_support_thresholds,
+    ):
+        min_faces = int(primitive_selection_support_thresholds["min_extension_source_faces"])
+        min_points = int(primitive_selection_support_thresholds["min_extension_unique_points"])
+        threshold_source = "configured_opt_in"
     return {
         "source_face_count": len(face_ids),
         "unique_point_count": len(unique_point_indices),
-        "min_extension_source_faces": SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES,
-        "min_extension_unique_points": SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS,
+        "min_extension_source_faces": min_faces,
+        "min_extension_unique_points": min_points,
+        "default_min_extension_source_faces": SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES,
+        "default_min_extension_unique_points": SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS,
+        "support_threshold_source": threshold_source,
     }
 
 
@@ -250,11 +279,85 @@ def _candidate_selection_admissibility_reason(
     ):
         return LARGE_FLAT_CYLINDER_QUARANTINE_REASON
     if (
-        int(support["source_face_count"]) < SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES
-        or int(support["unique_point_count"]) < SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS
+        int(support["source_face_count"]) < int(support["min_extension_source_faces"])
+        or int(support["unique_point_count"]) < int(support["min_extension_unique_points"])
     ):
         return "insufficient_extension_support"
     return "support_thresholds_met"
+
+
+def normalize_primitive_selection_support_thresholds(
+    primitive_selection_support_thresholds: Mapping[str, object] | None,
+) -> dict[str, object]:
+    if (
+        primitive_selection_support_thresholds is None
+        or primitive_selection_support_thresholds == ""
+        or primitive_selection_support_thresholds is False
+        or primitive_selection_support_thresholds == {}
+    ):
+        return {}
+    if not isinstance(primitive_selection_support_thresholds, Mapping):
+        raise ValueError("primitive selection support thresholds must be a mapping")
+    enabled = bool(primitive_selection_support_thresholds.get("enabled", True))
+    if not enabled:
+        return {}
+    min_faces = _positive_guard_int(
+        primitive_selection_support_thresholds.get("min_extension_source_faces"),
+        "min_extension_source_faces",
+    )
+    min_points = _positive_guard_int(
+        primitive_selection_support_thresholds.get("min_extension_unique_points"),
+        "min_extension_unique_points",
+    )
+    result: dict[str, object] = {
+        "min_extension_source_faces": min_faces,
+        "min_extension_unique_points": min_points,
+    }
+    raw_targets = primitive_selection_support_thresholds.get("target_primitives")
+    if raw_targets not in (None, ""):
+        if isinstance(raw_targets, str):
+            raw_targets = [raw_targets]
+        if not isinstance(raw_targets, Iterable):
+            raise ValueError(
+                "primitive selection support thresholds target_primitives must be a sequence"
+            )
+        targets = tuple(dict.fromkeys(str(target) for target in raw_targets if str(target)))
+        if not targets:
+            raise ValueError(
+                "primitive selection support thresholds target_primitives must be non-empty"
+            )
+        result["target_primitives"] = list(targets)
+    claim_boundary = primitive_selection_support_thresholds.get("claim_boundary")
+    if claim_boundary not in (None, ""):
+        result["claim_boundary"] = str(claim_boundary)
+    return result
+
+
+def _positive_guard_int(value: object, field_name: str) -> int:
+    try:
+        result = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"primitive selection support thresholds {field_name} must be an integer"
+        ) from exc
+    if result < 1:
+        raise ValueError(
+            f"primitive selection support thresholds {field_name} must be at least 1"
+        )
+    return result
+
+
+def _support_thresholds_apply_to_candidate(
+    candidate: PrimitiveFit,
+    *,
+    primitive_selection_support_thresholds: Mapping[str, object],
+) -> bool:
+    if not primitive_selection_support_thresholds:
+        return False
+    targets = primitive_selection_support_thresholds.get("target_primitives")
+    if targets is None:
+        return candidate.primitive_type in SUPPORT_AWARE_EXTENSION_PRIMITIVES
+    return candidate.primitive_type in set(targets)
 
 
 def normalize_primitive_selection_guard(

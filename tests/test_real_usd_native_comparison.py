@@ -119,6 +119,44 @@ def test_real_usd_native_fitting_report_applies_opt_in_selection_guard(tmp_path)
     assert audit["diagnostic_guard_rejected_extension_count"] >= 1
 
 
+def test_real_usd_native_fitting_report_applies_opt_in_support_threshold_relaxation(
+    tmp_path,
+):
+    manifest_path = _write_manifest_with_low_support_patch(tmp_path)
+
+    report = build_real_usd_native_fitting_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("franka_import_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"franka_import_smoke": 4},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_support_thresholds={
+            "min_extension_source_faces": 2,
+            "min_extension_unique_points": 4,
+            "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+        },
+    )
+
+    case = report["cases"][0]
+
+    assert case["native"]["primitive_kind_counts"] == {"box": 1}
+    assert "primitive_selection_support_thresholds" not in case["native"]
+    assert case["native_opt_in"]["primitive_kind_counts"] == {"cylinder": 1}
+    assert case["native_opt_in"]["primitive_selection_support_thresholds"] == {
+        "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+        "min_extension_source_faces": 2,
+        "min_extension_unique_points": 4,
+    }
+    audit = case["native_opt_in"]["candidate_audit_summary"]
+    assert audit["primitive_selection_support_thresholds"] == (
+        case["native_opt_in"]["primitive_selection_support_thresholds"]
+    )
+    assert audit["support_blocked_extension_count"] == 0
+    assert audit["selected_kind_counts"] == {"cylinder": 1}
+
+
 def test_real_usd_native_fitting_report_prefers_materialized_manifest_path(tmp_path):
     local_path = tmp_path / "local_bed.usda"
     missing_source_path = tmp_path / "missing_bed.usda"
@@ -827,6 +865,65 @@ def test_real_usd_native_task_comparison_threads_opt_in_selection_guard(
     assert report["cases"][0]["native_opt_in_contact"]["type_counts"] == {"box": 1}
 
 
+def test_real_usd_native_task_comparison_threads_opt_in_support_thresholds(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_low_support_patch(tmp_path)
+
+    def fake_contact(package, *, source_dir, device, claim_boundary):
+        return _diagnostic_report(
+            stage="newton_contact_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="contact_canary",
+            claim_boundary=claim_boundary,
+        )
+
+    def fake_task(package, *, source_dir, device, options, claim_boundary):
+        return _diagnostic_report(
+            stage="newton_task_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="task_smoke",
+            claim_boundary=claim_boundary,
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "run_newton_contact_smoke", fake_contact)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_drop_settle", fake_task)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_sphere_rain", fake_task)
+
+    report = build_real_usd_native_task_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("franka_import_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"franka_import_smoke": 4},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_support_thresholds={
+            "min_extension_source_faces": 2,
+            "min_extension_unique_points": 4,
+            "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+        },
+        source_dir="/tmp/newton-source",
+        device="cpu",
+    )
+
+    case = report["cases"][0]
+    assert "primitive_selection_support_thresholds" not in case["native"]
+    assert case["native_opt_in"]["primitive_kind_counts"] == {"cylinder": 1}
+    assert case["native_opt_in"]["primitive_selection_support_thresholds"] == {
+        "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+        "min_extension_source_faces": 2,
+        "min_extension_unique_points": 4,
+    }
+    assert case["native_opt_in_tasks"]["drop_settle"]["status"] == "smoke_passed"
+    assert case["native_opt_in_tasks"]["sphere_rain"]["status"] == "smoke_passed"
+
+
 def test_real_usd_native_task_comparison_blocks_tasks_when_contact_fails(
     tmp_path,
     monkeypatch,
@@ -959,6 +1056,34 @@ def _write_manifest_with_cylinder_near_miss(tmp_path: Path) -> Path:
             {
                 "manifest_id": "test_cylinder_near_miss_manifest",
                 "assets": [{"role": "bed_dev_smoke", "path": str(usd_path)}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return manifest_path
+
+
+def _write_manifest_with_low_support_patch(tmp_path: Path) -> Path:
+    franka_path = tmp_path / "franka_low_support_patch.usda"
+    _write_mesh_usd(
+        franka_path,
+        points=[
+            (0, 0, 0),
+            (1, 0, 0),
+            (1, 1, 0),
+            (0, 1, 0),
+        ],
+        face_vertex_counts=[3, 3],
+        face_vertex_indices=[0, 1, 2, 0, 2, 3],
+    )
+    manifest_path = tmp_path / "manifest.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump(
+            {
+                "manifest_id": "test_low_support_patch_manifest",
+                "assets": [
+                    {"role": "franka_import_smoke", "path": str(franka_path)},
+                ],
             }
         ),
         encoding="utf-8",

@@ -581,6 +581,37 @@ def test_decompose_mesh_applies_opt_in_primitive_selection_guard():
     )
 
 
+def test_decompose_mesh_applies_opt_in_support_threshold_relaxation():
+    mesh = _square_mesh()
+
+    default_report = decompose_mesh(
+        mesh,
+        max_primitives=1,
+        primitive_subset=("box", "cylinder"),
+    )
+    relaxed_report = decompose_mesh(
+        mesh,
+        max_primitives=1,
+        primitive_subset=("box", "cylinder"),
+        primitive_selection_support_thresholds={
+            "min_extension_source_faces": 2,
+            "min_extension_unique_points": 4,
+            "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+        },
+    )
+
+    assert default_report.primitives[0].primitive_type == "box"
+    assert relaxed_report.primitives[0].primitive_type == "cylinder"
+    assert relaxed_report.primitive_selection_support_thresholds == {
+        "min_extension_source_faces": 2,
+        "min_extension_unique_points": 4,
+        "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+    }
+    assert relaxed_report.to_dict()["primitive_selection_support_thresholds"] == (
+        relaxed_report.primitive_selection_support_thresholds
+    )
+
+
 def test_decompose_mesh_rejects_bad_primitive_score_multipliers():
     with pytest.raises(ValueError, match="primitive score multipliers"):
         decompose_mesh(
@@ -598,6 +629,16 @@ def test_decompose_mesh_rejects_bad_primitive_selection_guard():
             max_primitives=1,
             primitive_subset=("box", "cylinder"),
             primitive_selection_guard={"enabled": True, "mode": "rerank"},
+        )
+
+
+def test_decompose_mesh_rejects_bad_support_threshold_relaxation():
+    with pytest.raises(ValueError, match="primitive selection support thresholds"):
+        decompose_mesh(
+            _square_mesh(),
+            max_primitives=1,
+            primitive_subset=("box", "cylinder"),
+            primitive_selection_support_thresholds={"min_extension_source_faces": 0},
         )
 
 

@@ -427,6 +427,38 @@ def test_native_opt_in_guard_probe_configs_are_real_usd_and_claim_bounded():
         assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
 
 
+def test_franka_native_opt_in_support_threshold_probe_config_is_real_usd_and_claim_bounded():
+    config_path = Path("configs/experiments/franka_native_opt_in_support_threshold_probe.yaml")
+    config = load_compile_config(config_path)
+
+    assert config.asset_id == "franka_native_opt_in_support_threshold_probe"
+    assert config.asset_path == "assets/manifests/cpd_like_smoke_assets.yaml"
+    assert config.task == "real_usd_franka_native_opt_in_support_threshold_task_probe"
+    assert config.verify == (
+        "real_usd_native_fitting_comparison",
+        "real_usd_native_task_comparison",
+    )
+    assert config.protocol["cpd_like"]["asset_roles"] == ["franka_import_smoke"]
+    assert "native_opt_in_primitive_score_multipliers" not in config.protocol["cpd_like"]
+    assert config.protocol["cpd_like"]["native_opt_in_extension_support_thresholds"] == {
+        "enabled": True,
+        "target_primitives": ["cylinder"],
+        "min_extension_source_faces": 2,
+        "min_extension_unique_points": 4,
+        "claim_boundary": "diagnostic_extension_support_threshold_probe_not_collision_quality_validation",
+    }
+    assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+        "real_usd_native_opt_in_support_threshold_task_smoke_not_collision_quality_or_safety"
+    )
+    assert config.protocol["native_fitting_comparison"]["claim_boundary"] == (
+        "real_usd_native_opt_in_support_threshold_probe_not_collision_quality_validation"
+    )
+    assert config.protocol["report"]["evidence_level"] == (
+        "real_usd_native_opt_in_support_threshold_contact_gated_task_smoke"
+    )
+    assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
 def test_bed_native_opt_in_frame_sweep_configs_preserve_historical_selection_scope():
     sweep_configs = {
         "configs/experiments/bed_native_opt_in_frame361_probe.yaml": 361,

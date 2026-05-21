@@ -6,6 +6,10 @@ A separate 2026-05-21 native selector diagnostic guard uses the capped-bed opt-i
 as one controlled package-changing slice: guarded bed rejects large flat cylinder candidates and
 passes the recorded task smokes, while guarded Franka keeps its small selected cylinders and also
 passes. This is opt-in diagnostic evidence only, not a default policy or collision-quality result.
+A separate capped Franka support-threshold opt-in slice now admits three previously
+support-blocked raw-cost cylinder candidates in one configured lane, producing a `29` box plus
+`3` cylinder package that passes the same recorded task smokes. This is support-admissibility
+diagnostic evidence only, not a calibrated threshold or default policy.
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
@@ -822,6 +826,9 @@ records exist.
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller
   selected cylinders and also passes.
+- [Franka native opt-in support-threshold probe record](records/2026-05-21-franka-native-opt-in-support-threshold-probe.md):
+  opt-in capped Franka support-admissibility diagnostic; the changed package selects `29` boxes
+  plus `3` cylinders and passes the recorded task smokes.
 - [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
   documentation update that explains the guarded selector slice as one real-USD
   Newton-in-the-loop diagnostic cycle in the CPD paper story.

@@ -1267,6 +1267,43 @@ def test_cli_run_real_usd_native_fitting_comparison_reads_selection_guard(
     }
 
 
+def test_cli_run_real_usd_native_fitting_comparison_reads_support_thresholds(
+    tmp_path,
+    capsys,
+):
+    manifest_path = _write_two_mesh_manifest(tmp_path)
+    config_path = _write_real_usd_native_config(tmp_path, manifest_path)
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["cpd_like"]["native_opt_in_extension_support_thresholds"] = {
+        "min_extension_source_faces": 2,
+        "min_extension_unique_points": 4,
+        "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+    }
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-fitting-comparison",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert "primitive_selection_support_thresholds" not in payload["cases"][0]["native"]
+    assert payload["cases"][0]["native_opt_in"][
+        "primitive_selection_support_thresholds"
+    ] == {
+        "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+        "min_extension_source_faces": 2,
+        "min_extension_unique_points": 4,
+    }
+
+
 def test_cli_run_real_usd_candidate_loss_diagnosis_emits_json(
     tmp_path,
     capsys,

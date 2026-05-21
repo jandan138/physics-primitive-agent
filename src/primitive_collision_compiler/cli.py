@@ -20,6 +20,7 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
 from primitive_collision_compiler.baselines.cpd_like.primitives import (
     normalize_primitive_selection_guard,
+    normalize_primitive_selection_support_thresholds,
 )
 from primitive_collision_compiler.baselines.cpd_like.real_usd_comparison import (
     REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
@@ -1438,6 +1439,10 @@ def _real_usd_native_comparison_options(config):
             cpd_like_section.get("native_opt_in_selection_guard"),
             "cpd_like.native_opt_in_selection_guard",
         ),
+        "native_opt_in_support_thresholds": _primitive_selection_support_thresholds_option(
+            cpd_like_section.get("native_opt_in_extension_support_thresholds"),
+            "cpd_like.native_opt_in_extension_support_thresholds",
+        ),
     }
 
 
@@ -1537,6 +1542,13 @@ def _primitive_score_multipliers_option(value, key):
 def _primitive_selection_guard_option(value, key):
     try:
         return normalize_primitive_selection_guard(value)
+    except ValueError as exc:
+        raise ValueError(f"{key}: {exc}") from exc
+
+
+def _primitive_selection_support_thresholds_option(value, key):
+    try:
+        return normalize_primitive_selection_support_thresholds(value)
     except ValueError as exc:
         raise ValueError(f"{key}: {exc}") from exc
 

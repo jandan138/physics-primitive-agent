@@ -214,6 +214,69 @@ def test_selection_guard_reason_takes_precedence_over_low_support():
     assert cylinder_row.selection_admissibility_reason == "large_flat_cylinder_quarantine"
 
 
+def test_opt_in_support_threshold_relaxation_allows_low_support_extension_candidate():
+    mesh = TriangleMesh(
+        points=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [1.0, 1.0, 0.0],
+                [0.0, 1.0, 0.0],
+            ]
+        ),
+        faces=np.array([[0, 1, 2], [0, 2, 3]]),
+    )
+    source_faces = (0, 1)
+    box = PrimitiveFit(
+        primitive_type="box",
+        source_faces=source_faces,
+        center=(0.5, 0.5, 0.0),
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions={"half_extents": [0.5, 0.5, 0.0]},
+        volume=2.0,
+        weighted_volume=2.0,
+        contains_assigned_points=True,
+    )
+    cylinder = PrimitiveFit(
+        primitive_type="cylinder",
+        source_faces=source_faces,
+        center=(0.5, 0.5, 0.0),
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions={"radius": 0.5, "half_height": 0.5, "axis_index": 0},
+        volume=1.0,
+        weighted_volume=1.0,
+        contains_assigned_points=True,
+    )
+
+    default_ranked = rank_primitive_candidates_for_selection(
+        mesh,
+        frozenset(source_faces),
+        (box, cylinder),
+    )
+    relaxed_ranked = rank_primitive_candidates_for_selection(
+        mesh,
+        frozenset(source_faces),
+        (box, cylinder),
+        primitive_selection_support_thresholds={
+            "min_extension_source_faces": 2,
+            "min_extension_unique_points": 4,
+            "claim_boundary": "diagnostic_support_threshold_relaxation_not_collision_quality",
+        },
+    )
+
+    assert default_ranked[0].primitive_type == "box"
+    default_cylinder = next(row for row in default_ranked if row.primitive_type == "cylinder")
+    assert default_cylinder.selection_admissible is False
+    assert default_cylinder.selection_admissibility_reason == "insufficient_extension_support"
+
+    assert relaxed_ranked[0].primitive_type == "cylinder"
+    relaxed_cylinder = relaxed_ranked[0]
+    assert relaxed_cylinder.selection_admissible is True
+    assert relaxed_cylinder.support["min_extension_source_faces"] == 2
+    assert relaxed_cylinder.support["min_extension_unique_points"] == 4
+    assert relaxed_cylinder.support["support_threshold_source"] == "configured_opt_in"
+
+
 def test_cost_guided_synthetic_comparison_shows_old_new_merge_decision():
     report = build_cpd_like_cost_guided_synthetic_comparison_report()
 
