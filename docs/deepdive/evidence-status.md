@@ -818,6 +818,15 @@ This file separates current evidence from future claims. See [message-map.md](me
   stronger contact/floor closure as missing evidence. It also names the next useful slice as an
   opt-in package-level body-state or large-flat-cylinder risk check that does not rely on direct
   Newton model-array copying.
+- The [2026-05-22 cylinder package body-state risk probe](../records/2026-05-22-cylinder-package-body-state-risk-probe.md)
+  implements that report-only package-level check by computing volume-weighted COM/inertia proxy
+  deltas from `CollisionPackage` geometry, without reading or copying Newton model arrays. On the
+  recorded task reports, the capped bed opt-in package is classified as
+  `large_flat_cylinder_body_state_delta_risk`, while the capped Franka cost-guided opt-in package
+  is `not_flagged`. The probe records bed proxy COM delta norm about `0.2996 m` versus Franka
+  about `0.000744 m`, matching the recorded bed `not_settled` / Franka pass contrast. This is
+  report-only diagnostic risk evidence, not root-cause proof, a validated repair,
+  contact/floor closure, or a default selector policy.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current

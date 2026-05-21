@@ -177,6 +177,10 @@ Proposed | In progress | Complete | Failed | Superseded
   strict completion audit for the active bed-vs-Franka cylinder mechanism goal. It records that
   the diagnostic answer is strong, but the goal remains active because root-cause proof, validated
   repair/policy evidence, and stronger contact/floor closure are not yet recorded.
+- [2026-05-22 Cylinder Package Body-State Risk Probe](2026-05-22-cylinder-package-body-state-risk-probe.md):
+  package-geometry COM/inertia proxy that flags the recorded capped bed large-flat-cylinder
+  package and does not flag the recorded capped Franka cost-guided cylinder package, without
+  reading or copying Newton model arrays.
 - [2026-05-21 Native Selector Diagnostic Guard](2026-05-21-native-selector-diagnostic-guard.md):
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller

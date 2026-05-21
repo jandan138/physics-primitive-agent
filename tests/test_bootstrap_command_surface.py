@@ -81,6 +81,19 @@ def _load_cylinder_clean_control_probe_module():
     return module
 
 
+def _load_cylinder_package_risk_probe_module():
+    script_path = (
+        Path(__file__).resolve().parents[1]
+        / "scripts"
+        / "diagnostics"
+        / "cylinder_package_risk_probe.py"
+    )
+    spec = importlib.util.spec_from_file_location("cylinder_package_risk_probe", script_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def test_package_imports():
     package = importlib.import_module("primitive_collision_compiler")
 
@@ -164,6 +177,168 @@ def test_cylinder_clean_control_probe_script_has_bounded_help_and_default_pairs(
     assert "--franka-task-report" in help_text
     assert "--pair-rest-index" in help_text
     assert module.DEFAULT_PAIR_REST_INDICES == (0, 3, 10, 16, 17, 24)
+
+
+def test_cylinder_package_risk_probe_builds_bed_franka_report(tmp_path, capsys):
+    module = _load_cylinder_package_risk_probe_module()
+    bed_report_path = tmp_path / "bed_task.json"
+    franka_report_path = tmp_path / "franka_task.json"
+    output_path = tmp_path / "risk.json"
+    bed_native = CollisionPackage(
+        asset_id="bed",
+        package_id="bed_native",
+        primitives=(
+            PrimitiveSpec(
+                kind="box",
+                primitive_id="bed_rest",
+                center=(-53.5, 25.7, -64.0),
+                axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+                dimensions={"half_extents": [4.0, 4.0, 4.0]},
+                volume=570.0,
+                weighted_volume=570.0,
+            ),
+            PrimitiveSpec(
+                kind="box",
+                primitive_id="bed_target_box",
+                center=(-77.5396449852579, 31.80276279341078, 89.88358058121636),
+                axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+                dimensions={
+                    "half_extents": [
+                        0.21304234899546515,
+                        2.312191407929859,
+                        2.192086176186713,
+                    ]
+                },
+                volume=8.638480063523374,
+                weighted_volume=8.638480063523374,
+            ),
+        ),
+    )
+    bed_opt_in = CollisionPackage(
+        asset_id="bed",
+        package_id="bed_opt_in",
+        primitives=(
+            bed_native.primitives[0],
+            PrimitiveSpec(
+                kind="cylinder",
+                primitive_id="bed_target_cylinder",
+                center=(-77.31794835914295, 32.11800343592774, 89.83193356104442),
+                axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+                dimensions={
+                    "axis_index": 0,
+                    "half_height": 0.21304234899547225,
+                    "radius": 2.700938098039964,
+                },
+                volume=9.765063505799915,
+                weighted_volume=9.765063505799915,
+            ),
+        ),
+    )
+    franka_native = CollisionPackage(
+        asset_id="franka",
+        package_id="franka_native",
+        primitives=(
+            PrimitiveSpec(
+                kind="box",
+                primitive_id="franka_rest",
+                center=(-0.02, -0.06, 0.03),
+                dimensions={"half_extents": [0.002, 0.002, 0.002]},
+            ),
+            PrimitiveSpec(
+                kind="box",
+                primitive_id="franka_target_box",
+                center=(-0.018, -0.065, 0.033),
+                dimensions={"half_extents": [0.001, 0.001, 0.00002]},
+            ),
+        ),
+    )
+    franka_opt_in = CollisionPackage(
+        asset_id="franka",
+        package_id="franka_opt_in",
+        primitives=(
+            franka_native.primitives[0],
+            PrimitiveSpec(
+                kind="cylinder",
+                primitive_id="franka_target_cylinder",
+                center=(-0.0172, -0.0651, 0.0331),
+                dimensions={
+                    "axis_index": 0,
+                    "half_height": 0.000012563167081109088,
+                    "radius": 0.0019174147476461686,
+                },
+            ),
+        ),
+    )
+    bed_report_path.write_text(
+        json.dumps(
+            {
+                "cases": [
+                    {
+                        "asset_role": "bed_dev_smoke",
+                        "native": {"collision_package": bed_native.to_dict()},
+                        "native_opt_in": {"collision_package": bed_opt_in.to_dict()},
+                        "native_opt_in_tasks": {
+                            "drop_settle": {
+                                "status": "runtime_failure",
+                                "drop_settle_runs": [
+                                    {
+                                        "failure_labels": ["not_settled"],
+                                        "final_linear_speed_mps": 0.082304,
+                                    }
+                                ],
+                            }
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    franka_report_path.write_text(
+        json.dumps(
+            {
+                "cases": [
+                    {
+                        "asset_role": "franka_import_smoke",
+                        "native": {"collision_package": franka_native.to_dict()},
+                        "native_opt_in": {"collision_package": franka_opt_in.to_dict()},
+                        "native_opt_in_tasks": {
+                            "drop_settle": {
+                                "status": "smoke_passed",
+                                "drop_settle_runs": [
+                                    {
+                                        "failure_labels": [],
+                                        "final_linear_speed_mps": 0.0007108,
+                                    }
+                                ],
+                            }
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert module.main(
+        [
+            "--bed-task-report",
+            str(bed_report_path),
+            "--franka-task-report",
+            str(franka_report_path),
+            "--output",
+            str(output_path),
+        ]
+    ) == 0
+
+    stdout_payload = json.loads(capsys.readouterr().out)
+    file_payload = json.loads(output_path.read_text())
+    assert stdout_payload == file_payload
+    assert file_payload["stage"] == "cylinder_package_body_state_risk_probe"
+    assert file_payload["case_assessments"]["bed"]["package_risk_class"] == (
+        "large_flat_cylinder_body_state_delta_risk"
+    )
+    assert file_payload["case_assessments"]["franka"]["package_risk_class"] == "not_flagged"
 
 
 def test_body_com_blend_array_interpolates_selected_axes():

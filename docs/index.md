@@ -41,6 +41,11 @@ pair-level contact/floor effects remain open secondary context.
 A strict completion audit keeps the goal active: the diagnostic mechanism answer is now strong,
 but physical root-cause proof, a validated package-level repair or selector policy, and stronger
 contact/floor closure remain outside the current evidence.
+A package body-state risk probe now computes volume-weighted COM and inertia proxy deltas from
+the recorded `CollisionPackage` geometry, without reading or copying Newton model arrays. On the
+recorded task reports it flags the capped bed large-flat-cylinder package and does not flag the
+capped Franka cost-guided cylinder package, matching the recorded bed fail / Franka pass
+contrast. This is report-only diagnostic risk evidence, not a validated repair or default policy.
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
@@ -886,6 +891,10 @@ records exist.
   strict audit showing the mechanism diagnosis is strong but the long-running goal should remain
   active until root-cause proof, validated repair/policy evidence, or stronger contact/floor
   closure exists.
+- [Cylinder package body-state risk probe](records/2026-05-22-cylinder-package-body-state-risk-probe.md):
+  report-only package-geometry proxy showing the recorded capped bed package is flagged for
+  large-flat-cylinder COM/inertia body-state risk while the recorded capped Franka cost-guided
+  cylinder package is not.
 - [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
   documentation update that explains the guarded selector slice as one real-USD
   Newton-in-the-loop diagnostic cycle in the CPD paper story.

@@ -789,6 +789,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   under strict completion rules. It may identify missing evidence categories such as physical
   root-cause proof, validated package-level repair or selector-policy evidence, and stronger
   contact/floor closure. It must not be used as evidence that the goal is complete.
+- The current code can run a report-only cylinder package body-state risk probe through
+  [2026-05-22 cylinder package body-state risk probe](../records/2026-05-22-cylinder-package-body-state-risk-probe.md).
+  It may say that a volume-weighted COM/inertia proxy computed from `CollisionPackage` geometry
+  flags the recorded capped bed large-flat-cylinder package and does not flag the recorded capped
+  Franka cost-guided cylinder package, without reading or copying Newton model arrays. This
+  supports diagnostic narrowing only; it is not root-cause proof, a validated repair, contact/floor
+  closure, a calibrated threshold, a default selector policy, benchmark evidence,
+  collision-quality validation, or safety evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1214,6 +1222,10 @@ Use these only after broader benchmark records exist.
 - Do not describe the cylinder goal completion audit as completion evidence, a fix, a validated
   repair plan, a default selector policy, broad cylinder evidence, benchmark evidence,
   collision-quality validation, or safety evidence. It records remaining gaps.
+- Do not describe the cylinder package body-state risk probe as root-cause proof, a validated
+  inertial repair, a calibrated risk threshold, contact/floor closure, a default selector policy,
+  broad cylinder stability evidence, benchmark evidence, collision-quality validation, or safety
+  evidence. It is a report-only geometry proxy over one recorded capped bed/Franka contrast.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are
