@@ -790,6 +790,17 @@ This file separates current evidence from future claims. See [message-map.md](me
   shapes. This supports full-compound context as required for the recorded bed failure while
   keeping contact/floor effects open as a secondary factor. It remains diagnostic accounting, not
   root-cause proof, a validated repair, collision-quality evidence, or safety evidence.
+- The [2026-05-22 cylinder repair-candidate controls](../records/2026-05-22-cylinder-repair-candidate-controls.md)
+  rerun the capped bed full-compound trace with the opt-in cylinder geometry retained and selected
+  native all-box Newton body-state arrays applied before solver creation. The recorded opt-in
+  cylinder variant still fails `not_settled` at about `0.0823040 m/s`; native all-box COM-only
+  clears the label at about `0.0425127 m/s`; native all-box inertia-only clears it at about
+  `0.0427094 m/s`; the full native all-box inertial-array copy clears it at about
+  `0.0404565 m/s`; mass-only does not clear it and records about `0.0962726 m/s`; mass+inertia
+  without COM also remains `not_settled` at about `0.0618353 m/s` under the recorded 360-frame
+  gate. This strengthens full-compound COM/inertia body-state sensitivity as the current
+  mechanism diagnosis while remaining one-config sensitivity evidence, not root-cause proof, a
+  validated repair, selector-policy evidence, collision-quality evidence, or safety evidence.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current

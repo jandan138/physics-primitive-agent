@@ -28,6 +28,11 @@ A follow-up compact cylinder clean-control probe now shows that the bed target c
 alone passes, the largest recorded Franka cylinder alone passes, and selected two-primitive bed
 pairs have mixed outcomes. This narrows the story toward full-compound context being required for
 the recorded bed `not_settled` label while keeping pair-level contact/floor effects open.
+A full-compound repair-candidate control rerun then keeps the opt-in cylinder geometry but applies
+selected native all-box pre-solver body-state overrides. Native all-box COM-only, inertia-only,
+and full inertial-array copy clear the recorded 360-frame `not_settled` label, while mass-only
+does not. This strengthens the COM/inertia body-state diagnosis but remains one-config
+sensitivity evidence, not a validated repair.
 
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
@@ -863,6 +868,9 @@ records exist.
   compact Newton controls showing geometry alone is insufficient, full-compound context is
   required for the recorded bed `not_settled` label, and pair-level contact/floor effects remain
   open secondary factors.
+- [Cylinder repair-candidate controls record](records/2026-05-22-cylinder-repair-candidate-controls.md):
+  full-compound Newton controls showing native all-box COM-only, inertia-only, and full inertial
+  array overrides clear the recorded bed opt-in final-speed label while mass-only does not.
 - [Newton-in-the-loop selector story docs record](records/2026-05-21-newton-in-the-loop-selector-story-docs.md):
   documentation update that explains the guarded selector slice as one real-USD
   Newton-in-the-loop diagnostic cycle in the CPD paper story.

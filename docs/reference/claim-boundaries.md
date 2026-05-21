@@ -765,6 +765,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   required for that label, and pair-level contact/floor effects remain open secondary factors.
   This is not root-cause proof, a validated repair, cylinder-quality evidence, selector-policy
   evidence, benchmark evidence, or safety evidence.
+- The current code can run full-compound bed repair-candidate controls through
+  [2026-05-22 cylinder repair-candidate controls](../records/2026-05-22-cylinder-repair-candidate-controls.md).
+  The controls retain the opt-in cylinder geometry and apply selected native all-box Newton
+  body-state arrays before solver creation. They support only the diagnostic claim that the
+  recorded bed `not_settled` label is sensitive to full-compound COM/inertia body-state arrays:
+  COM-only, inertia-only, and full inertial-array overrides clear the recorded 360-frame label,
+  while mass-only does not. This is not root-cause proof, a validated inertial repair, an
+  automatic repair policy, selector-policy evidence, benchmark evidence, collision-quality
+  validation, or safety evidence.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1178,6 +1187,11 @@ Use these only after broader benchmark records exist.
   not the cause, proof that COM/inertia is the physical cause, a validated inertial repair, broad
   cylinder stability evidence, selector calibration, benchmark evidence, collision-quality
   validation, or safety evidence. It is compact diagnostic accounting over selected controls.
+- Do not describe the cylinder repair-candidate controls as root-cause proof, a physically
+  validated COM/inertia repair, proof of sustained settling, proof that contact is irrelevant,
+  selector calibration, a default repair recipe, benchmark evidence, collision-quality validation,
+  or safety evidence. They are one-config full-compound sensitivity controls over selected
+  pre-solver Newton body-state arrays.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

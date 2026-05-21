@@ -165,6 +165,11 @@ Proposed | In progress | Complete | Failed | Superseded
   model-build audit records zero
   rest-without-target delta and nonzero primitive-6 target/full mass/COM/inertia deltas under
   matching anchors. These are not validated fixes or root-cause proof.
+- [2026-05-22 Cylinder Repair-Candidate Controls](2026-05-22-cylinder-repair-candidate-controls.md):
+  full-compound Newton controls retaining the opt-in cylinder geometry while applying selected
+  native all-box pre-solver body-state arrays. COM-only, inertia-only, and full inertial-array
+  overrides clear the recorded 360-frame `not_settled` label; mass-only does not. This is
+  one-config sensitivity evidence, not a validated repair.
 - [2026-05-21 Native Selector Diagnostic Guard](2026-05-21-native-selector-diagnostic-guard.md):
   opt-in selector guard derived from the capped-bed Newton blocker; guarded bed rejects large flat
   cylinder candidates and passes the recorded task smokes, while guarded Franka keeps its smaller
