@@ -713,6 +713,14 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   is better than box, support reusing those multipliers outside the recorded opt-in configs,
   support changing default configs, or support native primitive quality improvement, default asset
   behavior, or broad real-USD coverage.
+- The current code can run separate guarded capped bed and capped Franka opt-in selector
+  diagnostics through
+  [2026-05-21 native selector diagnostic guard](../records/2026-05-21-native-selector-diagnostic-guard.md).
+  The guarded bed config rejects large flat cylinder candidates only in the configured
+  `native_opt_in` lane and passes the recorded task smokes; the guarded Franka config retains the
+  recorded small-cylinder selections and also passes. This is controlled diagnostic selector
+  evidence, not a calibrated threshold, default policy, broad asset rule, collision-quality
+  validation, or proof that boxes are better than cylinders.
 - The dated capped bed first-mesh record includes a cylinder-revert drop-attribution diagnostic.
   The diagnostic compares the recorded one-cylinder bed opt-in package against a local
   cylinder-revert package where the selected cylinder at source faces `[32..39]` is replaced by
@@ -1043,8 +1051,9 @@ Use these only after broader benchmark records exist.
   diagnostic records. Do not claim the CPD-like generator emits these kinds by default for normal
   asset configs. Do not claim bed or Franka native-fitting improvement from the current
   support-aware real-USD records; the default bed/Franka support-aware lanes currently select
-  boxes, the explicit capped Franka opt-in lane is diagnostic-only, and the capped bed opt-in
-  lane still fails the current drop/settle gate under the recorded settings.
+  boxes, the explicit capped Franka opt-in lane is diagnostic-only, the historical unguarded
+  capped bed opt-in lane fails the recorded drop/settle gate, and the separate guarded capped bed
+  opt-in lane is controlled selector-diagnostic evidence only.
 - Do not describe the capped bed cylinder-revert attribution run as proof that the selected
   cylinder caused the failure in general, proof that cylinders are worse or less safe than boxes,
   a calibrated or recommended multiplier, an automatic repair policy, a default behavior change,
@@ -1098,6 +1107,10 @@ Use these only after broader benchmark records exist.
 - Do not describe support-aware native-extension admissibility as a paper objective, learned
   classifier, safety filter, or proof that low-support native primitives are bad. It is a local
   face/point support guard for the current diagnostic workbench.
+- Do not describe the native selector diagnostic guard as a safety filter, calibrated rule,
+  proof that boxes are better than cylinders, default behavior, broad real-USD improvement, or
+  collision-quality validation. It is an explicitly configured selector quarantine derived from
+  one capped-bed diagnostic blocker and cross-checked on capped Franka.
 - Do not describe the real-USD native probe comparison as a benchmark, collision-quality
   validation, whole-robot Franka collider-quality result, or native primitive improvement result.
 - Do not describe the real-USD candidate audit summary as proof that the selected primitives are

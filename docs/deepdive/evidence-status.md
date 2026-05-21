@@ -738,6 +738,15 @@ This file separates current evidence from future claims. See [message-map.md](me
   target-only deltas are nonzero for primitive index `6`. A post-run model-build delta audit links
   those deltas to the primitive-6 native target shape-scale row
   `[0.2130423, 2.3121915, 2.1920862]` and opt-in target row `[2.7009380, 0.2130423, 0.0]`.
+- The [2026-05-21 native selector diagnostic guard record](../records/2026-05-21-native-selector-diagnostic-guard.md)
+  adds a separate opt-in package-changing slice based on the capped-bed Newton diagnostics. The
+  guarded bed config rejects large flat cylinder candidates only in the `native_opt_in` lane; its
+  fitting report selects `32` boxes, reports `23` diagnostic guard rejected cylinder candidates,
+  and passes contact-gated drop/settle plus sphere-rain in the clean Newton environment. The
+  guarded Franka config retains `24` boxes plus `8` selected cylinders, reports `0` diagnostic
+  guard rejections, and also passes the same task smokes. This is controlled selector diagnostic
+  evidence only; it does not change default support-aware lanes or supersede the historical
+  unguarded bed blocker config.
 - The current executable surface can run `cpd_like_real_usd_candidate_loss_diagnosis`, a
   per-selected-cluster diagnosis report for capped real-USD native lanes. The current diagnosis
   records why remaining box-selected clusters beat extension candidates under the current
@@ -858,6 +867,10 @@ This file separates current evidence from future claims. See [message-map.md](me
   rest-without-target delta and nonzero primitive-6 target/full deltas under matching anchors; a
   post-run delta audit links those rows to the primitive-6 target shape-scale rows. These are
   diagnostic sensitivity controls, not validated packages or root-cause proof.
+- The 2026-05-21 native selector diagnostic guard record is a separate follow-up algorithm slice:
+  guarded bed rejects large flat opt-in cylinder candidates and reaches the recorded task smokes,
+  while guarded Franka retains its small selected cylinders and also passes. This is controlled
+  selector diagnostic evidence only, not a default-policy or collision-quality result.
 - The current candidate-loss report records next-slice triage metadata: bed has one `cylinder`
   near-miss target, and Franka has three support-blocked raw-cost `cylinder` candidates plus three
   `cylinder` near-miss targets. The recommended next algorithmic fixture is now the cylinder
@@ -1059,7 +1072,10 @@ substeps and increases final speed by about `0.0189847 m/s`. The `361` clean-fra
 records the original opt-in cylinder still `not_settled` against clean same-report controls under
 matching final support-contact primitive suffixes. The pre-solver model-build audit records the
 rest-without-target delta as zero while the primitive-6 target/full deltas remain nonzero; the
-post-run delta audit links those rows to the primitive-6 target shape-scale rows. These remain
+post-run delta audit links those rows to the primitive-6 target shape-scale rows. The follow-up
+native selector diagnostic guard uses this diagnosis as one controlled package-changing slice:
+the guarded bed opt-in config rejects large flat cylinder candidates and passes the recorded
+task smokes, while guarded Franka keeps its small selected cylinders and also passes. These remain
 one-config diagnostic controls. This does not change default support-aware lane claims.
 
 ## Current Non-Goals

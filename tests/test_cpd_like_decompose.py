@@ -544,6 +544,43 @@ def test_decompose_mesh_applies_opt_in_primitive_score_multipliers():
     assert opt_in_report.to_dict()["primitive_score_multipliers"] == {"cylinder": 0.88}
 
 
+def test_decompose_mesh_applies_opt_in_primitive_selection_guard():
+    mesh = cpd_synthetic._cylinder_near_miss_cluster_mesh()
+
+    unguarded_report = decompose_mesh(
+        mesh,
+        max_primitives=1,
+        primitive_subset=("box", "cylinder"),
+        primitive_score_multipliers={"cylinder": 0.88},
+    )
+    guarded_report = decompose_mesh(
+        mesh,
+        max_primitives=1,
+        primitive_subset=("box", "cylinder"),
+        primitive_score_multipliers={"cylinder": 0.88},
+        primitive_selection_guard={
+            "enabled": True,
+            "mode": "reject",
+            "target_primitives": ["cylinder"],
+            "max_cylinder_radius": 0.0,
+            "min_cylinder_half_height_radius_ratio": 999.0,
+        },
+    )
+
+    assert unguarded_report.primitives[0].primitive_type == "cylinder"
+    assert guarded_report.primitives[0].primitive_type == "box"
+    assert guarded_report.primitive_selection_guard == {
+        "enabled": True,
+        "mode": "reject",
+        "target_primitives": ["cylinder"],
+        "max_cylinder_radius": 0.0,
+        "min_cylinder_half_height_radius_ratio": 999.0,
+    }
+    assert guarded_report.to_dict()["primitive_selection_guard"] == (
+        guarded_report.primitive_selection_guard
+    )
+
+
 def test_decompose_mesh_rejects_bad_primitive_score_multipliers():
     with pytest.raises(ValueError, match="primitive score multipliers"):
         decompose_mesh(
@@ -551,6 +588,16 @@ def test_decompose_mesh_rejects_bad_primitive_score_multipliers():
             max_primitives=1,
             primitive_subset=("box", "cylinder"),
             primitive_score_multipliers={"cylinder": 0.0},
+        )
+
+
+def test_decompose_mesh_rejects_bad_primitive_selection_guard():
+    with pytest.raises(ValueError, match="primitive selection guard"):
+        decompose_mesh(
+            cpd_synthetic._cylinder_near_miss_cluster_mesh(),
+            max_primitives=1,
+            primitive_subset=("box", "cylinder"),
+            primitive_selection_guard={"enabled": True, "mode": "rerank"},
         )
 
 

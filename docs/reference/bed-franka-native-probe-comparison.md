@@ -212,6 +212,21 @@ Task comparison:
   cylinders and failed more strongly: drop/settle reported `not_settled` and `floor_breach`, and
   sphere-rain reported `no_contact_observed` and `insufficient_contact_density`.
 
+2026-05-21 guarded selector update:
+
+- the historical unguarded bed and Franka opt-in configs remain unchanged for reproducibility;
+- `configs/experiments/bed_native_opt_in_guard_probe.yaml` adds a separate diagnostic
+  `native_opt_in_selection_guard` that rejects large flat cylinder candidates only in the opt-in
+  lane;
+- the guarded capped bed fitting report selects `32` boxes, reports `23` diagnostic guard rejected
+  cylinder candidates, and passes contact-gated drop/settle plus sphere-rain under the same clean
+  Newton environment;
+- `configs/experiments/franka_native_opt_in_guard_probe.yaml` runs the same guard on capped
+  Franka; the opt-in lane remains `24` boxes plus `8` cylinders, reports `0` guard rejections,
+  and passes contact-gated drop/settle plus sphere-rain;
+- this is a controlled selector-diagnostic slice, not a default policy, collision-quality result,
+  calibrated threshold, or proof that boxes are better than cylinders.
+
 ## What This Means In The CPD Story
 
 This moves the repository one step beyond synthetic native fitting:

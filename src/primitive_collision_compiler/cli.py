@@ -18,6 +18,9 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
     build_cpd_like_objective_report,
 )
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
+from primitive_collision_compiler.baselines.cpd_like.primitives import (
+    normalize_primitive_selection_guard,
+)
 from primitive_collision_compiler.baselines.cpd_like.real_usd_comparison import (
     REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
     REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL,
@@ -1431,6 +1434,10 @@ def _real_usd_native_comparison_options(config):
             cpd_like_section.get("native_opt_in_primitive_score_multipliers"),
             "cpd_like.native_opt_in_primitive_score_multipliers",
         ),
+        "native_opt_in_selection_guard": _primitive_selection_guard_option(
+            cpd_like_section.get("native_opt_in_selection_guard"),
+            "cpd_like.native_opt_in_selection_guard",
+        ),
     }
 
 
@@ -1525,6 +1532,13 @@ def _primitive_score_multipliers_option(value, key):
             raise ValueError(f"{key} values must be finite positive numbers")
         result[primitive_name] = multiplier
     return result
+
+
+def _primitive_selection_guard_option(value, key):
+    try:
+        return normalize_primitive_selection_guard(value)
+    except ValueError as exc:
+        raise ValueError(f"{key}: {exc}") from exc
 
 
 def _cpd_like_objective_options(objective_section):

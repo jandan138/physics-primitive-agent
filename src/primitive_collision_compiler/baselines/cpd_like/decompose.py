@@ -4,7 +4,11 @@ from dataclasses import dataclass, replace
 import math
 from typing import Mapping
 
-from primitive_collision_compiler.baselines.cpd_like.primitives import PrimitiveFit, fit_best_primitive
+from primitive_collision_compiler.baselines.cpd_like.primitives import (
+    PrimitiveFit,
+    fit_best_primitive,
+    normalize_primitive_selection_guard,
+)
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
 
 COMPONENT_MERGE_TOPOLOGY_ONLY = "topology_only"
@@ -58,6 +62,7 @@ class CPDLikeDecompositionReport:
     merge_cost_summary: dict[str, object]
     merge_trace: tuple[dict[str, object], ...]
     primitive_score_multipliers: dict[str, float]
+    primitive_selection_guard: dict[str, object]
 
     def to_dict(self) -> dict[str, object]:
         payload = {
@@ -89,6 +94,8 @@ class CPDLikeDecompositionReport:
             payload["merge_trace"] = [dict(step) for step in self.merge_trace]
         if self.primitive_score_multipliers:
             payload["primitive_score_multipliers"] = dict(self.primitive_score_multipliers)
+        if self.primitive_selection_guard:
+            payload["primitive_selection_guard"] = dict(self.primitive_selection_guard)
         return payload
 
 
@@ -102,6 +109,7 @@ def decompose_mesh(
     excess_volume_threshold_fraction: float | None = None,
     report_merge_trace: str = REPORT_MERGE_TRACE_SUMMARY,
     primitive_score_multipliers: Mapping[str, float] | None = None,
+    primitive_selection_guard: Mapping[str, object] | None = None,
 ) -> CPDLikeDecompositionReport:
     if max_primitives < 1:
         raise ValueError("max_primitives must be at least 1")
@@ -122,6 +130,7 @@ def decompose_mesh(
         None if excess_volume_threshold_fraction is None else float(excess_volume_threshold_fraction)
     )
     score_multipliers = _validated_primitive_score_multipliers(primitive_score_multipliers)
+    selection_guard = normalize_primitive_selection_guard(primitive_selection_guard)
 
     clusters: dict[int, frozenset[int]] = {
         face_index: frozenset({face_index}) for face_index in range(mesh.face_count)
@@ -142,6 +151,7 @@ def decompose_mesh(
                 face_ids,
                 primitive_subset,
                 primitive_score_multipliers=score_multipliers,
+                primitive_selection_guard=selection_guard,
             ),
             component_ids[cluster_id],
         )
@@ -176,6 +186,7 @@ def decompose_mesh(
                     primitive_subset,
                     normalizer_volume,
                     primitive_score_multipliers=score_multipliers,
+                    primitive_selection_guard=selection_guard,
                     max_primitives=max_primitives,
                     next_cluster_id=next_cluster_id,
                 )
@@ -190,6 +201,7 @@ def decompose_mesh(
                     primitive_subset,
                     normalizer_volume,
                     primitive_score_multipliers=score_multipliers,
+                    primitive_selection_guard=selection_guard,
                 )
             if merge_candidate is None:
                 fallback_reason = "no_merge_candidates_remaining"
@@ -251,6 +263,7 @@ def decompose_mesh(
             primitive_subset,
             normalizer_volume,
             primitive_score_multipliers=score_multipliers,
+            primitive_selection_guard=selection_guard,
             require_adjacency=True,
         )
         if topology_candidate is not None:
@@ -291,6 +304,7 @@ def decompose_mesh(
             primitive_subset,
             normalizer_volume,
             primitive_score_multipliers=score_multipliers,
+            primitive_selection_guard=selection_guard,
             require_adjacency=False,
         )
         if virtual_candidate is None:
@@ -395,6 +409,7 @@ def decompose_mesh(
         ),
         merge_trace=tuple(merge_trace),
         primitive_score_multipliers=score_multipliers,
+        primitive_selection_guard=selection_guard,
     )
 
 
@@ -408,6 +423,7 @@ def _best_merge(
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
     *,
     require_adjacency: bool,
 ) -> _MergeCandidate | None:
@@ -421,6 +437,7 @@ def _best_merge(
         primitive_subset,
         normalizer_volume,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
         require_adjacency=require_adjacency,
     )
     if not candidates:
@@ -445,6 +462,7 @@ def _all_merge_candidates(
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
     *,
     require_adjacency: bool | None,
 ) -> list[_MergeCandidate]:
@@ -472,6 +490,7 @@ def _all_merge_candidates(
                 merged_faces,
                 primitive_subset,
                 primitive_score_multipliers=primitive_score_multipliers,
+                primitive_selection_guard=primitive_selection_guard,
             )
             excess_volume = (
                 merged_fit.weighted_volume
@@ -507,6 +526,7 @@ def _best_cost_guided_merge(
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
 ) -> _MergeCandidate | None:
     topology_candidate = _best_merge(
         mesh,
@@ -518,6 +538,7 @@ def _best_cost_guided_merge(
         primitive_subset,
         normalizer_volume,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
         require_adjacency=True,
     )
     virtual_candidate = _best_merge(
@@ -530,6 +551,7 @@ def _best_cost_guided_merge(
         primitive_subset,
         normalizer_volume,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
         require_adjacency=False,
     )
     candidates = [candidate for candidate in (topology_candidate, virtual_candidate) if candidate]
@@ -556,6 +578,7 @@ def _best_two_step_lookahead_merge(
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
     *,
     max_primitives: int,
     next_cluster_id: int,
@@ -570,6 +593,7 @@ def _best_two_step_lookahead_merge(
         primitive_subset,
         normalizer_volume,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
         require_adjacency=None,
     )
     if not candidates:
@@ -588,6 +612,7 @@ def _best_two_step_lookahead_merge(
             primitive_subset=primitive_subset,
             normalizer_volume=normalizer_volume,
             primitive_score_multipliers=primitive_score_multipliers,
+            primitive_selection_guard=primitive_selection_guard,
             max_primitives=max_primitives,
             next_cluster_id=next_cluster_id,
         )
@@ -627,6 +652,7 @@ def _projected_followup_merge(
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
     max_primitives: int,
     next_cluster_id: int,
 ) -> _MergeCandidate | None:
@@ -654,6 +680,7 @@ def _projected_followup_merge(
         primitive_subset,
         normalizer_volume,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
         next_cluster_id=projected_next_cluster_id,
     )
 
@@ -668,6 +695,7 @@ def _best_two_step_followup_candidate(
     primitive_subset: tuple[str, ...],
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
     *,
     next_cluster_id: int,
 ) -> _MergeCandidate | None:
@@ -682,6 +710,7 @@ def _best_two_step_followup_candidate(
         primitive_subset,
         normalizer_volume,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
         require_adjacency=None,
     )
     if not candidates:
@@ -836,14 +865,16 @@ def _fit_best_primitive_with_optional_scores(
     primitive_subset: tuple[str, ...],
     *,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
 ) -> PrimitiveFit:
-    if not primitive_score_multipliers:
+    if not primitive_score_multipliers and not primitive_selection_guard:
         return fit_best_primitive(mesh, face_ids, primitive_subset)
     return fit_best_primitive(
         mesh,
         face_ids,
         primitive_subset,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
     )
 
 

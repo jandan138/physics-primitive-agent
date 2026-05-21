@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, replace
 from math import pi
-from typing import Iterable, Mapping
 
 import numpy as np
 from numpy.typing import NDArray
@@ -25,6 +25,7 @@ CONTAINMENT_TOLERANCE = 1e-8
 SUPPORT_AWARE_EXTENSION_PRIMITIVES = ("cylinder", "cone", "ellipsoid")
 SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES = 3
 SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS = 5
+LARGE_FLAT_CYLINDER_QUARANTINE_REASON = "large_flat_cylinder_quarantine"
 
 
 @dataclass(frozen=True)
@@ -80,6 +81,7 @@ def fit_best_primitive(
     primitive_subset: tuple[str, ...],
     *,
     primitive_score_multipliers: Mapping[str, float] | None = None,
+    primitive_selection_guard: Mapping[str, object] | None = None,
 ) -> PrimitiveFit:
     candidates = fit_primitive_candidates(mesh, face_ids, primitive_subset)
     ranked = rank_primitive_candidates_for_selection(
@@ -87,6 +89,7 @@ def fit_best_primitive(
         face_ids,
         candidates,
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
     )
     return ranked[0].candidate
 
@@ -97,11 +100,13 @@ def rank_primitive_candidates_for_selection(
     candidates: Iterable[PrimitiveFit],
     *,
     primitive_score_multipliers: Mapping[str, float] | None = None,
+    primitive_selection_guard: Mapping[str, object] | None = None,
 ) -> tuple[PrimitiveCandidateSelection, ...]:
     candidate_tuple = tuple(candidates)
     if not candidate_tuple:
         raise ValueError("candidates must not be empty")
     multipliers = _validated_score_multipliers(primitive_score_multipliers)
+    selection_guard = normalize_primitive_selection_guard(primitive_selection_guard)
 
     support = _selection_support(mesh, face_ids)
     fallback_available = any(
@@ -126,6 +131,7 @@ def rank_primitive_candidates_for_selection(
             support=support,
             fallback_available=fallback_available,
             primitive_score_multipliers=multipliers,
+            primitive_selection_guard=selection_guard,
         )
         for candidate_order, candidate in enumerate(candidate_tuple)
     )
@@ -202,18 +208,24 @@ def _candidate_selection_row(
     support: dict[str, object],
     fallback_available: bool,
     primitive_score_multipliers: Mapping[str, float],
+    primitive_selection_guard: Mapping[str, object],
 ) -> PrimitiveCandidateSelection:
     reason = _candidate_selection_admissibility_reason(
         candidate,
         support=support,
         fallback_available=fallback_available,
+        primitive_selection_guard=primitive_selection_guard,
     )
     score_multiplier = float(primitive_score_multipliers.get(candidate.primitive_type, 1.0))
     return PrimitiveCandidateSelection(
         candidate=candidate,
         candidate_order=candidate_order,
         raw_cost_rank=raw_cost_rank,
-        selection_admissible=reason != "insufficient_extension_support",
+        selection_admissible=reason
+        not in {
+            "insufficient_extension_support",
+            LARGE_FLAT_CYLINDER_QUARANTINE_REASON,
+        },
         selection_admissibility_reason=reason,
         support=support,
         score_multiplier=score_multiplier,
@@ -226,17 +238,113 @@ def _candidate_selection_admissibility_reason(
     *,
     support: dict[str, object],
     fallback_available: bool,
+    primitive_selection_guard: Mapping[str, object],
 ) -> str:
     if candidate.primitive_type not in SUPPORT_AWARE_EXTENSION_PRIMITIVES:
         return "legacy_or_non_extension_primitive"
     if not fallback_available:
         return "no_fallback_candidate_available"
+    if _primitive_selection_guard_rejects_candidate(
+        candidate,
+        primitive_selection_guard=primitive_selection_guard,
+    ):
+        return LARGE_FLAT_CYLINDER_QUARANTINE_REASON
     if (
         int(support["source_face_count"]) < SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES
         or int(support["unique_point_count"]) < SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS
     ):
         return "insufficient_extension_support"
     return "support_thresholds_met"
+
+
+def normalize_primitive_selection_guard(
+    primitive_selection_guard: Mapping[str, object] | None,
+) -> dict[str, object]:
+    if (
+        primitive_selection_guard is None
+        or primitive_selection_guard == ""
+        or primitive_selection_guard is False
+        or primitive_selection_guard == {}
+    ):
+        return {}
+    if not isinstance(primitive_selection_guard, Mapping):
+        raise ValueError("primitive selection guard must be a mapping")
+    enabled = bool(primitive_selection_guard.get("enabled", True))
+    if not enabled:
+        return {}
+    mode = str(primitive_selection_guard.get("mode", "reject"))
+    if mode != "reject":
+        raise ValueError("primitive selection guard mode must be reject")
+    raw_targets = primitive_selection_guard.get("target_primitives", SUPPORT_AWARE_EXTENSION_PRIMITIVES)
+    if isinstance(raw_targets, str):
+        raw_targets = [raw_targets]
+    if not isinstance(raw_targets, Iterable):
+        raise ValueError("primitive selection guard target_primitives must be a sequence")
+    targets = tuple(dict.fromkeys(str(target) for target in raw_targets if str(target)))
+    if not targets:
+        raise ValueError("primitive selection guard target_primitives must be non-empty")
+    max_radius = _finite_nonnegative_guard_float(
+        primitive_selection_guard.get("max_cylinder_radius"),
+        "max_cylinder_radius",
+    )
+    min_ratio = _finite_nonnegative_guard_float(
+        primitive_selection_guard.get("min_cylinder_half_height_radius_ratio"),
+        "min_cylinder_half_height_radius_ratio",
+    )
+    if max_radius is None or min_ratio is None:
+        raise ValueError(
+            "primitive selection guard requires max_cylinder_radius and "
+            "min_cylinder_half_height_radius_ratio"
+        )
+    result: dict[str, object] = {
+        "enabled": True,
+        "mode": mode,
+        "target_primitives": list(targets),
+        "max_cylinder_radius": max_radius,
+        "min_cylinder_half_height_radius_ratio": min_ratio,
+    }
+    claim_boundary = primitive_selection_guard.get("claim_boundary")
+    if claim_boundary not in (None, ""):
+        result["claim_boundary"] = str(claim_boundary)
+    return result
+
+
+def _finite_nonnegative_guard_float(value: object, field_name: str) -> float | None:
+    if value in (None, ""):
+        return None
+    try:
+        result = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"primitive selection guard {field_name} must be numeric") from exc
+    if not np.isfinite(result) or result < 0.0:
+        raise ValueError(
+            f"primitive selection guard {field_name} must be finite and non-negative"
+        )
+    return result
+
+
+def _primitive_selection_guard_rejects_candidate(
+    candidate: PrimitiveFit,
+    *,
+    primitive_selection_guard: Mapping[str, object],
+) -> bool:
+    if not primitive_selection_guard:
+        return False
+    target_primitives = set(primitive_selection_guard.get("target_primitives", ()))
+    if candidate.primitive_type not in target_primitives:
+        return False
+    if candidate.primitive_type != "cylinder":
+        return False
+    radius = float(candidate.dimensions.get("radius", 0.0))
+    half_height = float(candidate.dimensions.get("half_height", 0.0))
+    if radius <= 0.0:
+        return False
+    half_height_radius_ratio = half_height / radius
+    return bool(
+        radius > float(primitive_selection_guard["max_cylinder_radius"])
+        and half_height_radius_ratio
+        < float(primitive_selection_guard["min_cylinder_half_height_radius_ratio"])
+    )
 
 
 def _fit_primitive(

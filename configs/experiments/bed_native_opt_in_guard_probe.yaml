@@ -1,0 +1,101 @@
+asset:
+  id: bed_native_opt_in_guard_probe
+  path: assets/manifests/cpd_like_smoke_assets.yaml
+task:
+  primary: real_usd_bed_native_opt_in_guard_task_probe
+compile:
+  method: cpd_like_baseline
+  max_primitives: 32
+  allowed_fallback:
+    - convex_hull
+  verify:
+    - real_usd_native_fitting_comparison
+    - real_usd_native_task_comparison
+  keep_visual: false
+cpd_like:
+  paper: Convex Primitive Decomposition for Collision Detection
+  asset_manifest: assets/manifests/cpd_like_smoke_assets.yaml
+  asset_roles:
+    - bed_dev_smoke
+  legacy_primitive_subset:
+    - box
+    - sphere
+    - capsule
+  native_primitive_subset:
+    - box
+    - sphere
+    - capsule
+    - cylinder
+    - cone
+    - ellipsoid
+  primitive_subset:
+    - box
+    - sphere
+    - capsule
+    - cylinder
+    - cone
+    - ellipsoid
+  unsupported_primitives:
+    - capped_cylinder
+    - frustum
+    - trapezoidal_prism
+  max_source_faces_by_role:
+    bed_dev_smoke: 256
+  component_merge: virtual_pairwise
+  merge_search_policy: topology_then_virtual
+  excess_volume_threshold_fraction: 1.0
+  report_merge_trace: summary
+  native_opt_in_primitive_score_multipliers:
+    cylinder: 0.88
+  native_opt_in_selection_guard:
+    enabled: true
+    mode: reject
+    target_primitives:
+      - cylinder
+    max_cylinder_radius: 0.5
+    min_cylinder_half_height_radius_ratio: 0.1
+    claim_boundary: diagnostic_selection_guard_not_collision_quality_validation
+  claim_boundary: real_usd_native_opt_in_guard_probe_not_collision_quality_validation
+native_fitting_comparison:
+  stage: cpd_like_real_usd_native_fitting_comparison
+  real_usd_roles:
+    - bed_dev_smoke
+  real_usd_status: configured_real_usd_native_opt_in_guard_smoke_not_benchmark
+  claim_boundary: real_usd_native_opt_in_guard_probe_not_collision_quality_validation
+  evidence_level: offline_real_usd_native_opt_in_guard_fitting_smoke
+newton:
+  source_dir: $NEWTON_SOURCE_DIR
+  expected_remote: https://github.com/newton-physics/newton.git
+  runtime_stage: source_import_check
+newton_diagnostic:
+  probe_type: contact_canary
+  device: cpu
+  claim_boundary: real_usd_native_opt_in_guard_task_smoke_not_collision_quality_or_safety
+  drop_settle:
+    height_m: 0.25
+    frames: 360
+    substeps: 8
+    frame_dt_seconds: 0.016666666666666666
+    iterations: 2
+    gravity_mps2: -9.81
+    ground_height_m: 0.0
+    friction: 0.5
+    max_floor_breach_m: 0.05
+    max_settle_linear_speed_mps: 0.05
+  sphere_rain:
+    sphere_count_x: 3
+    sphere_count_y: 3
+    sphere_radius_m: 0.5
+    spawn_height_m: 2.0
+    frames: 240
+    substeps: 4
+    frame_dt_seconds: 0.016666666666666666
+    iterations: 4
+    gravity_mps2: -9.81
+    friction: 0.5
+    min_contact_density: 0.05
+    require_final_contact: false
+    rigid_contact_max: 4096
+report:
+  output_dir: reports/generated/bed_native_opt_in_guard_probe
+  evidence_level: real_usd_native_opt_in_guard_contact_gated_task_smoke

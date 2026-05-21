@@ -85,6 +85,40 @@ def test_real_usd_native_fitting_report_adds_opt_in_lane_without_changing_defaul
     assert case["native_opt_in_comparison"]["native_uses_extended_primitive"] is True
 
 
+def test_real_usd_native_fitting_report_applies_opt_in_selection_guard(tmp_path):
+    manifest_path = _write_manifest_with_cylinder_near_miss(tmp_path)
+
+    report = build_real_usd_native_fitting_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_score_multipliers={"cylinder": 0.5},
+        native_opt_in_selection_guard={
+            "enabled": True,
+            "mode": "reject",
+            "target_primitives": ["cylinder"],
+            "max_cylinder_radius": 0.0,
+            "min_cylinder_half_height_radius_ratio": 999.0,
+        },
+    )
+
+    case = report["cases"][0]
+    assert case["native"]["primitive_kind_counts"] == {"box": 1}
+    assert "primitive_selection_guard" not in case["native"]
+    assert case["native_opt_in"]["primitive_kind_counts"] == {"box": 1}
+    assert case["native_opt_in"]["primitive_score_multipliers"] == {"cylinder": 0.5}
+    assert case["native_opt_in"]["primitive_selection_guard"]["target_primitives"] == [
+        "cylinder"
+    ]
+    audit = case["native_opt_in"]["candidate_audit_summary"]
+    assert audit["primitive_selection_guard"]["max_cylinder_radius"] == 0.0
+    assert audit["diagnostic_guard_rejected_extension_count"] >= 1
+
+
 def test_real_usd_native_fitting_report_prefers_materialized_manifest_path(tmp_path):
     local_path = tmp_path / "local_bed.usda"
     missing_source_path = tmp_path / "missing_bed.usda"
@@ -735,6 +769,62 @@ def test_real_usd_native_task_comparison_runs_opt_in_lane_when_configured(
     }
     assert report["cases"][0]["native_opt_in_contact"]["status"] == "smoke_passed"
     assert report["cases"][0]["native_opt_in_tasks"]["drop_settle"]["status"] == "smoke_passed"
+
+
+def test_real_usd_native_task_comparison_threads_opt_in_selection_guard(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_manifest_with_cylinder_near_miss(tmp_path)
+
+    def fake_contact(package, *, source_dir, device, claim_boundary):
+        return _diagnostic_report(
+            stage="newton_contact_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="contact_canary",
+            claim_boundary=claim_boundary,
+        )
+
+    def fake_task(package, *, source_dir, device, options, claim_boundary):
+        return _diagnostic_report(
+            stage="newton_task_smoke",
+            status="smoke_passed",
+            asset_id=package.asset_id,
+            package_id=package.package_id,
+            probe_type="task_smoke",
+            claim_boundary=claim_boundary,
+        )
+
+    monkeypatch.setattr(real_usd_comparison, "run_newton_contact_smoke", fake_contact)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_drop_settle", fake_task)
+    monkeypatch.setattr(real_usd_comparison, "run_newton_sphere_rain", fake_task)
+
+    report = build_real_usd_native_task_comparison_report(
+        manifest_path=str(manifest_path),
+        roles=("bed_dev_smoke",),
+        max_primitives=1,
+        legacy_subset=("box",),
+        native_subset=("box", "cylinder"),
+        max_source_faces_by_role={"bed_dev_smoke": 8},
+        component_merge_options={"component_merge": "virtual_pairwise"},
+        native_opt_in_score_multipliers={"cylinder": 0.5},
+        native_opt_in_selection_guard={
+            "enabled": True,
+            "mode": "reject",
+            "target_primitives": ["cylinder"],
+            "max_cylinder_radius": 0.0,
+            "min_cylinder_half_height_radius_ratio": 999.0,
+        },
+        source_dir="/tmp/newton-source",
+        device="cpu",
+    )
+
+    opt_in = report["cases"][0]["native_opt_in"]
+    assert opt_in["primitive_kind_counts"] == {"box": 1}
+    assert opt_in["primitive_selection_guard"]["mode"] == "reject"
+    assert report["cases"][0]["native_opt_in_contact"]["type_counts"] == {"box": 1}
 
 
 def test_real_usd_native_task_comparison_blocks_tasks_when_contact_fails(

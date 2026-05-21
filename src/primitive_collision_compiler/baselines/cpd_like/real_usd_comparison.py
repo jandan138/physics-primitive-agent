@@ -17,6 +17,7 @@ from primitive_collision_compiler.baselines.cpd_like.objective import (
 )
 from primitive_collision_compiler.baselines.cpd_like.package import package_from_cpd_like_report
 from primitive_collision_compiler.baselines.cpd_like.primitives import (
+    LARGE_FLAT_CYLINDER_QUARANTINE_REASON,
     SUPPORT_AWARE_EXTENSION_MIN_SOURCE_FACES,
     SUPPORT_AWARE_EXTENSION_MIN_UNIQUE_POINTS,
     fit_primitive_candidates,
@@ -111,6 +112,7 @@ class NativeLaneArtifact:
                     metrics["geometric_excess_proxy"]["normalizer_volume"]
                 ),
                 primitive_score_multipliers=self.decomposition.primitive_score_multipliers,
+                primitive_selection_guard=self.decomposition.primitive_selection_guard,
             ),
             "package_mapping": package_mapping_summary(self.package),
             "collision_package": self.package.to_dict(),
@@ -118,6 +120,10 @@ class NativeLaneArtifact:
         if self.decomposition.primitive_score_multipliers:
             payload["primitive_score_multipliers"] = dict(
                 self.decomposition.primitive_score_multipliers
+            )
+        if self.decomposition.primitive_selection_guard:
+            payload["primitive_selection_guard"] = dict(
+                self.decomposition.primitive_selection_guard
             )
         return payload
 
@@ -158,6 +164,7 @@ def build_real_usd_native_artifacts(
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
+    native_opt_in_selection_guard: Mapping[str, object] | None = None,
 ) -> tuple[RealUsdComparisonArtifact, ...]:
     _validate_roles(roles)
     assets = _resolve_manifest_roles(manifest_path, roles)
@@ -173,6 +180,7 @@ def build_real_usd_native_artifacts(
             component_merge_options=component_merge_options,
             objective_options=objective_options,
             native_opt_in_score_multipliers=native_opt_in_score_multipliers,
+            native_opt_in_selection_guard=native_opt_in_selection_guard,
         )
         for asset in assets
     )
@@ -189,6 +197,7 @@ def build_real_usd_native_fitting_comparison_report(
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
+    native_opt_in_selection_guard: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_FITTING_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -206,6 +215,7 @@ def build_real_usd_native_fitting_comparison_report(
         component_merge_options=component_merge_options,
         objective_options=options,
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
+        native_opt_in_selection_guard=native_opt_in_selection_guard,
     )
     cases = [artifact.to_summary() for artifact in artifacts]
     statuses = [
@@ -239,6 +249,7 @@ def build_real_usd_candidate_loss_diagnosis_report(
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
+    native_opt_in_selection_guard: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_CANDIDATE_LOSS_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_CANDIDATE_LOSS_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -256,6 +267,7 @@ def build_real_usd_candidate_loss_diagnosis_report(
         component_merge_options=component_merge_options,
         objective_options=options,
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
+        native_opt_in_selection_guard=native_opt_in_selection_guard,
     )
     cases = []
     statuses = []
@@ -311,6 +323,7 @@ def build_real_usd_native_contact_comparison_report(
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
+    native_opt_in_selection_guard: Mapping[str, object] | None = None,
     claim_boundary: str = REAL_USD_NATIVE_CONTACT_CLAIM_BOUNDARY,
     evidence_level: str = REAL_USD_NATIVE_CONTACT_EVIDENCE_LEVEL,
 ) -> dict[str, object]:
@@ -328,6 +341,7 @@ def build_real_usd_native_contact_comparison_report(
             evidence_level=REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
         ),
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
+        native_opt_in_selection_guard=native_opt_in_selection_guard,
     )
     cases: list[dict[str, object]] = []
     child_statuses: list[str] = []
@@ -396,6 +410,7 @@ def build_real_usd_native_task_comparison_report(
     component_merge_options: Mapping[str, object] | None = None,
     objective_options: CPDLikeObjectiveOptions | None = None,
     native_opt_in_score_multipliers: Mapping[str, float] | None = None,
+    native_opt_in_selection_guard: Mapping[str, object] | None = None,
     drop_settle_options: DropSettleOptions | None = None,
     sphere_rain_options: SphereRainOptions | None = None,
     claim_boundary: str = REAL_USD_NATIVE_TASK_CLAIM_BOUNDARY,
@@ -416,6 +431,7 @@ def build_real_usd_native_task_comparison_report(
             evidence_level=REAL_USD_NATIVE_FITTING_EVIDENCE_LEVEL,
         ),
         native_opt_in_score_multipliers=native_opt_in_score_multipliers,
+        native_opt_in_selection_guard=native_opt_in_selection_guard,
     )
     drop_settle_options = drop_settle_options or DropSettleOptions()
     sphere_rain_options = sphere_rain_options or SphereRainOptions()
@@ -547,6 +563,7 @@ def _artifact_for_asset(
     component_merge_options: Mapping[str, object] | None,
     objective_options: CPDLikeObjectiveOptions | None,
     native_opt_in_score_multipliers: Mapping[str, float] | None,
+    native_opt_in_selection_guard: Mapping[str, object] | None,
 ) -> RealUsdComparisonArtifact:
     legacy = _lane_artifact(
         label=LEGACY_LABEL,
@@ -559,6 +576,7 @@ def _artifact_for_asset(
         component_merge_options=component_merge_options,
         objective_options=objective_options,
         primitive_score_multipliers=None,
+        primitive_selection_guard=None,
     )
     native = _lane_artifact(
         label=NATIVE_LABEL,
@@ -571,6 +589,7 @@ def _artifact_for_asset(
         component_merge_options=component_merge_options,
         objective_options=objective_options,
         primitive_score_multipliers=None,
+        primitive_selection_guard=None,
     )
     native_opt_in = None
     if native_opt_in_score_multipliers:
@@ -585,6 +604,7 @@ def _artifact_for_asset(
             component_merge_options=component_merge_options,
             objective_options=objective_options,
             primitive_score_multipliers=native_opt_in_score_multipliers,
+            primitive_selection_guard=native_opt_in_selection_guard,
         )
     return RealUsdComparisonArtifact(
         asset_role=asset_role,
@@ -607,6 +627,7 @@ def _lane_artifact(
     component_merge_options: Mapping[str, object] | None,
     objective_options: CPDLikeObjectiveOptions | None,
     primitive_score_multipliers: Mapping[str, float] | None,
+    primitive_selection_guard: Mapping[str, object] | None,
 ) -> NativeLaneArtifact:
     mesh = load_first_mesh(asset_path, max_faces=max_source_faces)
     decomposition = decompose_mesh(
@@ -615,6 +636,7 @@ def _lane_artifact(
         primitive_subset=primitive_subset,
         **_component_merge_kwargs(component_merge_options),
         primitive_score_multipliers=primitive_score_multipliers,
+        primitive_selection_guard=primitive_selection_guard,
     )
     package_asset_id = f"{asset_role}_{lane}"
     options = objective_options or CPDLikeObjectiveOptions(
@@ -701,6 +723,7 @@ def _candidate_audit_summary(
     *,
     normalizer_volume: float,
     primitive_score_multipliers: Mapping[str, float] | None = None,
+    primitive_selection_guard: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     extension_kinds = tuple(
         primitive
@@ -716,9 +739,13 @@ def _candidate_audit_summary(
     clusters_with_extension_best = 0
     clusters_where_extension_beats_selected = 0
     clusters_with_support_blocked_raw_cost_extension_best = 0
+    clusters_with_diagnostic_guard_raw_cost_extension_best = 0
     support_blocked_extension_count = 0
     support_blocked_extension_kind_counts: Counter[str] = Counter()
     support_blocked_extension_targets: list[dict[str, object]] = []
+    diagnostic_guard_rejected_extension_count = 0
+    diagnostic_guard_rejected_extension_kind_counts: Counter[str] = Counter()
+    diagnostic_guard_rejected_extension_targets: list[dict[str, object]] = []
     box_selected_cluster_count = 0
     box_selected_with_extension_second_count = 0
     normalizer = max(float(normalizer_volume), 1e-12)
@@ -749,6 +776,7 @@ def _candidate_audit_summary(
                 face_ids,
                 candidates,
                 primitive_score_multipliers=primitive_score_multipliers,
+                primitive_selection_guard=primitive_selection_guard,
             )
         ]
         ranked = [{**row, "rank": rank} for rank, row in enumerate(ranked, start=1)]
@@ -787,35 +815,51 @@ def _candidate_audit_summary(
                 clusters_with_extension_best += 1
                 extension_best_kind_counts[str(raw_cost_ranked[0]["primitive_type"])] += 1
                 if not bool(raw_cost_ranked[0]["selection_admissible"]):
-                    clusters_with_support_blocked_raw_cost_extension_best += 1
+                    if (
+                        raw_cost_ranked[0]["selection_admissibility_reason"]
+                        == LARGE_FLAT_CYLINDER_QUARANTINE_REASON
+                    ):
+                        clusters_with_diagnostic_guard_raw_cost_extension_best += 1
+                    else:
+                        clusters_with_support_blocked_raw_cost_extension_best += 1
             if best_extension_cost < selected_cost:
                 clusters_where_extension_beats_selected += 1
             for extension_row in extension_rows:
                 if bool(extension_row["selection_admissible"]):
                     continue
+                target_payload = {
+                    "cluster_index": cluster_index,
+                    "source_faces": list(primitive.source_faces),
+                    "selected_primitive_type": primitive.primitive_type,
+                    "blocked_extension_primitive_type": extension_row["primitive_type"],
+                    "raw_cost_rank": int(extension_row["raw_cost_rank"]),
+                    "selection_rank": int(extension_row["rank"]),
+                    "normalized_weighted_volume": float(
+                        extension_row["normalized_weighted_volume"]
+                    ),
+                    "selected_normalized_weighted_volume": selected_cost,
+                    "selection_admissibility_reason": extension_row[
+                        "selection_admissibility_reason"
+                    ],
+                    "selection_support": extension_row["selection_support"],
+                }
+                if (
+                    extension_row["selection_admissibility_reason"]
+                    == LARGE_FLAT_CYLINDER_QUARANTINE_REASON
+                ):
+                    diagnostic_guard_rejected_extension_count += 1
+                    diagnostic_guard_rejected_extension_kind_counts[
+                        str(extension_row["primitive_type"])
+                    ] += 1
+                    if len(diagnostic_guard_rejected_extension_targets) < 10:
+                        diagnostic_guard_rejected_extension_targets.append(target_payload)
+                    continue
                 support_blocked_extension_count += 1
                 support_blocked_extension_kind_counts[str(extension_row["primitive_type"])] += 1
                 if len(support_blocked_extension_targets) < 10:
-                    support_blocked_extension_targets.append(
-                        {
-                            "cluster_index": cluster_index,
-                            "source_faces": list(primitive.source_faces),
-                            "selected_primitive_type": primitive.primitive_type,
-                            "blocked_extension_primitive_type": extension_row["primitive_type"],
-                            "raw_cost_rank": int(extension_row["raw_cost_rank"]),
-                            "selection_rank": int(extension_row["rank"]),
-                            "normalized_weighted_volume": float(
-                                extension_row["normalized_weighted_volume"]
-                            ),
-                            "selected_normalized_weighted_volume": selected_cost,
-                            "selection_admissibility_reason": extension_row[
-                                "selection_admissibility_reason"
-                            ],
-                            "selection_support": extension_row["selection_support"],
-                        }
-                    )
+                    support_blocked_extension_targets.append(target_payload)
 
-    return {
+    payload = {
         "scope": "per_selected_cluster",
         "cost_name": "normalized_weighted_primitive_volume",
         "ranking_semantics": {
@@ -833,11 +877,23 @@ def _candidate_audit_summary(
         "clusters_with_support_blocked_raw_cost_extension_best": (
             clusters_with_support_blocked_raw_cost_extension_best
         ),
+        "clusters_with_diagnostic_guard_raw_cost_extension_best": (
+            clusters_with_diagnostic_guard_raw_cost_extension_best
+        ),
         "support_blocked_extension_count": support_blocked_extension_count,
         "support_blocked_extension_kind_counts": dict(
             sorted(support_blocked_extension_kind_counts.items())
         ),
         "support_blocked_extension_targets": support_blocked_extension_targets,
+        "diagnostic_guard_rejected_extension_count": (
+            diagnostic_guard_rejected_extension_count
+        ),
+        "diagnostic_guard_rejected_extension_kind_counts": dict(
+            sorted(diagnostic_guard_rejected_extension_kind_counts.items())
+        ),
+        "diagnostic_guard_rejected_extension_targets": (
+            diagnostic_guard_rejected_extension_targets
+        ),
         "box_selected_cluster_count": box_selected_cluster_count,
         "box_selected_with_extension_second_count": box_selected_with_extension_second_count,
         "margin_sign_convention": "selected_cost_minus_comparator_cost",
@@ -848,6 +904,9 @@ def _candidate_audit_summary(
             selected_vs_extension_margins
         ),
     }
+    if primitive_selection_guard:
+        payload["primitive_selection_guard"] = dict(primitive_selection_guard)
+    return payload
 
 
 def _baseline_lock_summary(

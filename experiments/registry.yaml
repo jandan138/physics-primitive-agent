@@ -848,6 +848,32 @@ experiments:
       - records a post-run model-build delta audit linking the existing pre-solver target/rest/full deltas to primitive-6 target shape-scale rows without rerunning Newton
       - records that iterations and substeps sensitivity checks did not clear the blocker under current settings
       - no root-cause proof, native primitive quality improvement, calibrated multiplier, default asset behavior, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: bed-native-opt-in-diagnostic-selection-guard
+    status: complete
+    config: configs/experiments/bed_native_opt_in_guard_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/bed_native_opt_in_guard_probe.yaml --run-real-usd-native-task-comparison
+    record: docs/records/2026-05-21-native-selector-diagnostic-guard.md
+    purpose: >
+      Run the separate capped bed guarded opt-in selector diagnostic. The guard rejects large
+      flat cylinder candidates in the configured native_opt_in lane while leaving the historical
+      unguarded blocker config reproducible.
+    claims_supported:
+      - controlled capped bed opt-in selection-guard diagnostic only
+      - records that the guarded opt-in package selected 32 boxes, reported 23 diagnostic guard rejected cylinder candidates, and passed contact-gated task smokes
+      - no default behavior change, calibrated threshold, primitive-quality conclusion, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
+  - id: franka-native-opt-in-diagnostic-selection-guard
+    status: complete
+    config: configs/experiments/franka_native_opt_in_guard_probe.yaml
+    command: NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton PYTHONPATH=src /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/franka_native_opt_in_guard_probe.yaml --run-real-usd-native-task-comparison
+    record: docs/records/2026-05-21-native-selector-diagnostic-guard.md
+    purpose: >
+      Run the separate capped Franka guarded opt-in selector diagnostic to check that the bed
+      large-flat-cylinder guard does not reject the currently recorded small-cylinder Franka
+      opt-in selections.
+    claims_supported:
+      - controlled capped Franka opt-in selection-guard diagnostic only
+      - records that the guarded opt-in package retained 24 boxes plus 8 cylinders, reported 0 diagnostic guard rejections, and passed contact-gated task smokes
+      - no default behavior change, calibrated threshold, primitive-quality conclusion, whole-robot collider-quality claim, benchmark, collision-quality, deployment, safety, or CPD reproduction claim
   - id: bed-native-opt-in-task-rerun-after-com-axis
     status: complete
     config: configs/experiments/bed_native_opt_in_probe.yaml

@@ -1225,6 +1225,48 @@ def test_cli_run_real_usd_native_fitting_comparison_reads_score_multipliers(
     }
 
 
+def test_cli_run_real_usd_native_fitting_comparison_reads_selection_guard(
+    tmp_path,
+    capsys,
+):
+    manifest_path = _write_two_mesh_manifest(tmp_path)
+    config_path = _write_real_usd_native_config(tmp_path, manifest_path)
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    config["cpd_like"]["native_opt_in_primitive_score_multipliers"] = {"cylinder": 0.5}
+    config["cpd_like"]["native_opt_in_selection_guard"] = {
+        "enabled": True,
+        "mode": "reject",
+        "target_primitives": ["cylinder"],
+        "max_cylinder_radius": 0.5,
+        "min_cylinder_half_height_radius_ratio": 0.1,
+        "claim_boundary": "diagnostic_selection_guard_not_collision_quality_validation",
+    }
+    config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+
+    assert (
+        cli.main(
+            [
+                "--config",
+                str(config_path),
+                "--run-real-usd-native-fitting-comparison",
+            ]
+        )
+        == 0
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+
+    assert "primitive_selection_guard" not in payload["cases"][0]["native"]
+    assert payload["cases"][0]["native_opt_in"]["primitive_selection_guard"] == {
+        "claim_boundary": "diagnostic_selection_guard_not_collision_quality_validation",
+        "enabled": True,
+        "max_cylinder_radius": 0.5,
+        "min_cylinder_half_height_radius_ratio": 0.1,
+        "mode": "reject",
+        "target_primitives": ["cylinder"],
+    }
+
+
 def test_cli_run_real_usd_candidate_loss_diagnosis_emits_json(
     tmp_path,
     capsys,

@@ -2,6 +2,11 @@
 
 Current status: this repository is a DeepDive application and project bootstrap for the Newton Primitive Collision Compiler. It now contains config dry-run reporting, USD asset-open smoke diagnostics, repo-local ignored asset mirror materialization for the current bed/Franka smoke USDs, Newton source import diagnostics, local environment-readiness diagnostics, a geometry-only CPD-like face-merge primitive proposal smoke path, an opt-in CPD-like component-merge gate, an offline CPD-like objective report with structured Eq.4 alignment metadata, synthetic objective and expected-limitation workbenches, an opt-in offline `capped_cylinder` proxy, Newton contact canaries, and named Newton task smokes. The Newton-native primitive bundle maps and constructs diagnostic shapes for `box`, `sphere`, `capsule`, `cylinder`, `cone`, and `ellipsoid`, with clean-env contact, drop/settle, and sphere-rain smokes passing under the dated native-bundle record. The opt-in Newton-native fitting comparison chooses `cylinder`, `cone`, and `ellipsoid` on deterministic synthetic meshes and now includes candidate weighted-volume audit tables with explicit one-primitive fixture scope guards plus a squat-cylinder fixture for the controlled cylinder-axis search. The real-USD bed/Franka native probe comparison now runs capped bed and capped Franka first-mesh old/new lanes through offline reports, per-selected-cluster candidate audit and candidate-loss diagnosis summaries with next-slice triage metadata, contact canaries, and gated task smokes; bed and capped Franka both select boxes in the current support-aware lanes, while three capped Franka cheaper raw-cost cylinder candidates are reported as support-blocked. This is selection/accounting evidence rather than native primitive quality evidence. It does not yet contain benchmark results, full CPD paper reproduction, broad asset/task evidence, whole-robot collider-quality evidence, real contact-stress measurement, or LLM/VLM research code.
 
+A separate 2026-05-21 native selector diagnostic guard uses the capped-bed opt-in Newton blocker
+as one controlled package-changing slice: guarded bed rejects large flat cylinder candidates and
+passes the recorded task smokes, while guarded Franka keeps its small selected cylinders and also
+passes. This is opt-in diagnostic evidence only, not a default policy or collision-quality result.
+
 Current next action: the CPD paper offline lane has closed the mapped-subset native-fixture
 PrimitiveSpec-like dict generation contract, the report-only serialization/schema stability
 contract, the command-only runtime-boundary preflight, the single-fixture runtime-construction
@@ -93,11 +98,10 @@ deployment/safety evidence, not full-CPD evidence, not `paper_faithful_offline` 
   for the same single synthetic package boundary, not a capped bed/Franka rerun and not a
 Newton-support claim. The entry contract
 consolidated the planned import-boundary preconditions and first Newton entry decision into one
-gate to avoid splitting overlapping audit facts across low-value follow-on gates. A capped
-bed/Franka rerun remains blocked
-unless a
-separate real package change is introduced and passes full mapping, contact-canary, task-gate, and
-dated-record gates. The
+gate to avoid splitting overlapping audit facts across low-value follow-on gates. A separate
+real package-changing selector-guard slice has now passed full mapping, contact-canary,
+task-gate, and dated-record gates for capped bed and capped Franka; it remains outside the
+paper-lane runtime contract and does not change default support-aware lane claims. The
 completed cylinder branch remains useful context: the `cylinder_near_miss_cluster` fixture,
 near-miss workbench, fit-ablation report, scoring-sensitivity report, report-only scoring-policy
 ablation, and boxy guardrail extension show how synthetic changes are gated before broader runs.

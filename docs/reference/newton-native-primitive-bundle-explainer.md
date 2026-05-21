@@ -184,6 +184,11 @@ ellipsoid proposals and map the resulting one-primitive packages through Newton 
 That statement is synthetic fitting evidence only. The separate capped bed/Franka real-USD probe
 comparison is selection/accounting and diagnostic-gate evidence; capped Franka now reports three
 support-blocked raw-cost cylinder candidates, but this is not native primitive quality evidence.
+A later separate guarded opt-in selector diagnostic uses the capped-bed Newton blocker to reject
+large flat cylinder candidates only in explicitly configured guard configs. The guarded capped bed
+package passes the recorded task smokes, while guarded capped Franka keeps its small selected
+cylinders and also passes. This is controlled diagnostic evidence only, not a default policy or
+collision-quality result.
 
 ## Next Steps In The Story
 

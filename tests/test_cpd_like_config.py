@@ -344,6 +344,7 @@ def test_franka_native_opt_in_probe_config_is_real_usd_and_claim_bounded():
     assert config.protocol["cpd_like"]["native_opt_in_primitive_score_multipliers"] == {
         "cylinder": 0.5
     }
+    assert "native_opt_in_selection_guard" not in config.protocol["cpd_like"]
     assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
         "real_usd_native_opt_in_task_smoke_not_collision_quality_or_safety"
     )
@@ -368,6 +369,7 @@ def test_bed_native_opt_in_probe_config_is_real_usd_and_claim_bounded():
     assert config.protocol["cpd_like"]["native_opt_in_primitive_score_multipliers"] == {
         "cylinder": 0.88
     }
+    assert "native_opt_in_selection_guard" not in config.protocol["cpd_like"]
     assert config.protocol["newton_diagnostic"]["drop_settle"]["frames"] == 360
     assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
         "real_usd_native_opt_in_task_smoke_not_collision_quality_or_safety"
@@ -378,7 +380,54 @@ def test_bed_native_opt_in_probe_config_is_real_usd_and_claim_bounded():
     assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
 
 
-def test_bed_native_opt_in_frame_sweep_configs_keep_default_selection_scope():
+def test_native_opt_in_guard_probe_configs_are_real_usd_and_claim_bounded():
+    expected = {
+        "enabled": True,
+        "mode": "reject",
+        "target_primitives": ["cylinder"],
+        "max_cylinder_radius": 0.5,
+        "min_cylinder_half_height_radius_ratio": 0.1,
+        "claim_boundary": "diagnostic_selection_guard_not_collision_quality_validation",
+    }
+    cases = [
+        (
+            Path("configs/experiments/bed_native_opt_in_guard_probe.yaml"),
+            "bed_native_opt_in_guard_probe",
+            "real_usd_bed_native_opt_in_guard_task_probe",
+            ["bed_dev_smoke"],
+            {"cylinder": 0.88},
+        ),
+        (
+            Path("configs/experiments/franka_native_opt_in_guard_probe.yaml"),
+            "franka_native_opt_in_guard_probe",
+            "real_usd_franka_native_opt_in_guard_task_probe",
+            ["franka_import_smoke"],
+            {"cylinder": 0.5},
+        ),
+    ]
+
+    for config_path, asset_id, task, roles, multipliers in cases:
+        config = load_compile_config(config_path)
+
+        assert config.asset_id == asset_id
+        assert config.asset_path == "assets/manifests/cpd_like_smoke_assets.yaml"
+        assert config.task == task
+        assert config.verify == (
+            "real_usd_native_fitting_comparison",
+            "real_usd_native_task_comparison",
+        )
+        assert config.protocol["cpd_like"]["asset_roles"] == roles
+        assert config.protocol["cpd_like"]["native_opt_in_primitive_score_multipliers"] == (
+            multipliers
+        )
+        assert config.protocol["cpd_like"]["native_opt_in_selection_guard"] == expected
+        assert config.protocol["newton_diagnostic"]["claim_boundary"] == (
+            "real_usd_native_opt_in_guard_task_smoke_not_collision_quality_or_safety"
+        )
+        assert "/cpfs/user/" not in config_path.read_text(encoding="utf-8")
+
+
+def test_bed_native_opt_in_frame_sweep_configs_preserve_historical_selection_scope():
     sweep_configs = {
         "configs/experiments/bed_native_opt_in_frame361_probe.yaml": 361,
         "configs/experiments/bed_native_opt_in_frame362_probe.yaml": 362,
@@ -414,12 +463,13 @@ def test_bed_native_opt_in_frame_sweep_configs_keep_default_selection_scope():
         assert {
             key: value
             for key, value in config.protocol["cpd_like"].items()
-            if key != "claim_boundary"
+            if key not in {"claim_boundary", "native_opt_in_selection_guard"}
         } == {
             key: value
             for key, value in baseline.protocol["cpd_like"].items()
-            if key != "claim_boundary"
+            if key not in {"claim_boundary", "native_opt_in_selection_guard"}
         }
+        assert "native_opt_in_selection_guard" not in config.protocol["cpd_like"]
         assert config.protocol["newton"] == baseline.protocol["newton"]
         assert config.protocol["newton_diagnostic"]["probe_type"] == (
             baseline.protocol["newton_diagnostic"]["probe_type"]

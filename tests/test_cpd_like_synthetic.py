@@ -97,6 +97,123 @@ def test_synthetic_comparison_report_is_strict_json_serializable():
     assert "cpd_like_synthetic_objective_comparison" in encoded
 
 
+def test_selection_guard_rejects_oversized_native_extension_candidate():
+    mesh = TriangleMesh(
+        points=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [1.0, 1.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [1.0, 0.0, 1.0],
+                [1.0, 1.0, 1.0],
+                [0.0, 1.0, 1.0],
+            ]
+        ),
+        faces=np.array([[0, 1, 2], [0, 2, 3], [4, 5, 6], [4, 6, 7]]),
+    )
+    source_faces = (0, 1, 2, 3)
+    box = PrimitiveFit(
+        primitive_type="box",
+        source_faces=source_faces,
+        center=(0.5, 0.5, 0.5),
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions={"half_extents": [0.5, 0.5, 0.5]},
+        volume=0.2,
+        weighted_volume=0.2,
+        contains_assigned_points=True,
+    )
+    cylinder = PrimitiveFit(
+        primitive_type="cylinder",
+        source_faces=source_faces,
+        center=(0.5, 0.5, 0.5),
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions={"radius": 2.0, "half_height": 0.1, "axis_index": 0},
+        volume=0.02,
+        weighted_volume=0.02,
+        contains_assigned_points=True,
+    )
+
+    unguarded = rank_primitive_candidates_for_selection(
+        mesh,
+        frozenset(source_faces),
+        (box, cylinder),
+        primitive_score_multipliers={"cylinder": 0.5},
+    )
+    guarded = rank_primitive_candidates_for_selection(
+        mesh,
+        frozenset(source_faces),
+        (box, cylinder),
+        primitive_score_multipliers={"cylinder": 0.5},
+        primitive_selection_guard={
+            "enabled": True,
+            "mode": "reject",
+            "target_primitives": ["cylinder"],
+            "max_cylinder_radius": 0.5,
+            "min_cylinder_half_height_radius_ratio": 0.1,
+        },
+    )
+
+    assert unguarded[0].primitive_type == "cylinder"
+    assert guarded[0].primitive_type == "box"
+    cylinder_row = next(row for row in guarded if row.primitive_type == "cylinder")
+    assert cylinder_row.raw_cost_rank == 1
+    assert cylinder_row.selection_admissible is False
+    assert cylinder_row.selection_admissibility_reason == "large_flat_cylinder_quarantine"
+
+
+def test_selection_guard_reason_takes_precedence_over_low_support():
+    mesh = TriangleMesh(
+        points=np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+            ]
+        ),
+        faces=np.array([[0, 1, 2]]),
+    )
+    source_faces = (0,)
+    box = PrimitiveFit(
+        primitive_type="box",
+        source_faces=source_faces,
+        center=(0.5, 0.5, 0.0),
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions={"half_extents": [0.5, 0.5, 0.0]},
+        volume=0.2,
+        weighted_volume=0.2,
+        contains_assigned_points=True,
+    )
+    cylinder = PrimitiveFit(
+        primitive_type="cylinder",
+        source_faces=source_faces,
+        center=(0.5, 0.5, 0.0),
+        axes=((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)),
+        dimensions={"radius": 2.0, "half_height": 0.1, "axis_index": 0},
+        volume=0.02,
+        weighted_volume=0.02,
+        contains_assigned_points=True,
+    )
+
+    guarded = rank_primitive_candidates_for_selection(
+        mesh,
+        frozenset(source_faces),
+        (box, cylinder),
+        primitive_selection_guard={
+            "enabled": True,
+            "mode": "reject",
+            "target_primitives": ["cylinder"],
+            "max_cylinder_radius": 0.5,
+            "min_cylinder_half_height_radius_ratio": 0.1,
+        },
+    )
+
+    cylinder_row = next(row for row in guarded if row.primitive_type == "cylinder")
+    assert cylinder_row.selection_admissible is False
+    assert cylinder_row.selection_admissibility_reason == "large_flat_cylinder_quarantine"
+
+
 def test_cost_guided_synthetic_comparison_shows_old_new_merge_decision():
     report = build_cpd_like_cost_guided_synthetic_comparison_report()
 
