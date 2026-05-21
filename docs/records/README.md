@@ -177,6 +177,11 @@ Proposed | In progress | Complete | Failed | Superseded
   strict completion audit for the active bed-vs-Franka cylinder mechanism goal. It records that
   the diagnostic answer is strong, but the goal remains active because root-cause proof, validated
   repair/policy evidence, and stronger contact/floor closure are not yet recorded.
+- [2026-05-22 Cylinder Contact/Floor Closure Audit](2026-05-22-cylinder-contact-floor-closure-audit.md):
+  same-report contact/support audit over the capped-bed full-compound controls; failing and
+  passing variants share the final contact count and primitive suffixes, so contact/floor is no
+  longer the likely full-package primary mechanism, while pair-level floor controls remain
+  secondary local-context evidence.
 - [2026-05-22 Cylinder Package Body-State Risk Probe](2026-05-22-cylinder-package-body-state-risk-probe.md):
   package-geometry COM/inertia proxy that flags the recorded capped bed large-flat-cylinder
   package and does not flag the recorded capped Franka cost-guided cylinder package, without

@@ -792,6 +792,15 @@ necessary, add the evidence requirement here before using it in the DeepDive pac
   while mass-only does not. This is not root-cause proof, a validated inertial repair, an
   automatic repair policy, selector-policy evidence, benchmark evidence, collision-quality
   validation, or safety evidence.
+- The current documentation includes a same-report contact/floor closure audit through
+  [2026-05-22 cylinder contact/floor closure audit](../records/2026-05-22-cylinder-contact-floor-closure-audit.md).
+  The audit may say that contact/floor is unlikely as the primary full-package mechanism for the
+  recorded capped-bed blocker because failing and passing full-package variants share final
+  contact count `4`, final contact primitive suffixes `12,15,15,26`, and near-zero support
+  heights, while failing full-package variants fail `not_settled` rather than `floor_breach`.
+  It must preserve compact pair-level floor/contact anomalies as secondary local-context evidence.
+  This is not root-cause proof, proof that contact is irrelevant in all settings, a validated
+  repair, broad cylinder evidence, collision-quality validation, or safety evidence.
 - The current documentation includes a cylinder mechanism decision matrix through
   [2026-05-22 cylinder mechanism decision matrix](../records/2026-05-22-cylinder-mechanism-decision-matrix.md).
   The matrix supports only a claim-bounded diagnostic answer for the recorded capped
@@ -1233,6 +1242,10 @@ Use these only after broader benchmark records exist.
   selector calibration, a default repair recipe, benchmark evidence, collision-quality validation,
   or safety evidence. They are one-config full-compound sensitivity controls over selected
   pre-solver Newton body-state arrays.
+- Do not describe the cylinder contact/floor closure audit as root-cause proof, proof that
+  contact/floor can never matter, a validated inertial repair, selector calibration, broad
+  cylinder evidence, benchmark evidence, collision-quality validation, or safety evidence. It is
+  a same-report diagnostic narrowing for the recorded capped-bed full-package blocker.
 - Do not describe the cylinder mechanism decision matrix as root-cause proof, a completed
   validated fix, proof that contact/floor effects are irrelevant, broad cylinder stability
   evidence, selector calibration, benchmark evidence, collision-quality validation, or safety

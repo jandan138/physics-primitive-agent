@@ -799,6 +799,16 @@ This file separates current evidence from future claims. See [message-map.md](me
   shapes. This supports full-compound context as required for the recorded bed failure while
   keeping contact/floor effects open as a secondary factor. It remains diagnostic accounting, not
   root-cause proof, a validated repair, collision-quality evidence, or safety evidence.
+- The [2026-05-22 cylinder contact/floor closure audit](../records/2026-05-22-cylinder-contact-floor-closure-audit.md)
+  extracts same-report contact/support facts from the capped-bed full-compound controls. Across
+  ten full-package variants, including failing opt-in cylinder, passing native/reverted controls,
+  passing COM-only and inertia-only body-state variants, and failing mass-only and mass+inertia
+  variants, the final contact count is `4`, the final contact primitive suffixes are
+  `12,15,15,26`, and final support heights remain near zero. The failing full-package variants
+  fail `not_settled`, not `floor_breach`. This makes contact/floor unlikely as the primary
+  full-package mechanism for the recorded bed blocker, while preserving compact pair-level
+  contact/floor anomalies as secondary local-context evidence. It is still not physical root-cause
+  proof, a validated repair, broad cylinder evidence, or safety evidence.
 - The [2026-05-22 cylinder repair-candidate controls](../records/2026-05-22-cylinder-repair-candidate-controls.md)
   rerun the capped bed full-compound trace with the opt-in cylinder geometry retained and selected
   native all-box Newton body-state arrays applied before solver creation. The recorded opt-in
@@ -1197,7 +1207,11 @@ one-config diagnostic controls. The package body-state guard-candidate report ma
 bed/Franka direction package-level and COM/inertia-proxy based, and the package body-state
 guard task-path record now applies that decision inside an explicit real-USD Newton task path:
 flagged bed runs the native `32`-box package, while unflagged Franka runs the native-opt-in
-`23`-box plus `9`-cylinder package. This does not change default support-aware lane claims.
+`23`-box plus `9`-cylinder package. The contact/floor closure audit now narrows the prior
+secondary contact/floor gap for the recorded full-package bed blocker: same-report failing and
+passing full-package variants share final contact count `4`, contact suffixes `12,15,15,26`, and
+near-zero support heights, so contact/floor is no longer the likely primary full-package
+mechanism. This does not change default support-aware lane claims.
 
 ## Current Non-Goals
 
