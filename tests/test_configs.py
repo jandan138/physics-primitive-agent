@@ -14,7 +14,7 @@ def test_deepdive_mvp_config_loads():
     assert config.asset_id == "handle_gap_mvp"
     assert config.asset_path == "assets/examples/handle_gap.usda"
     assert config.task == "grasping"
-    assert config.method == "primitive_first"
+    assert config.method == "simulation_checked_primitive_candidates"
     assert config.max_primitives == 16
 
 
@@ -23,8 +23,15 @@ def test_phase0_baseline_config_loads():
 
     assert config.asset_id == "phase0_asset_manifest"
     assert config.asset_path == "assets/manifests/phase0_assets.yaml"
-    assert config.task == "phase0_diagnostic"
-    assert config.verify == ("drop", "stack_or_slide", "sphere_rain", "precision_rejection")
+    assert config.task == "phase0_simulation_checked_diagnostic"
+    assert config.verify == (
+        "body_state_drop_settle",
+        "stack_or_slide",
+        "sphere_rain",
+        "link_boundary_audit",
+        "articulation_smoke_if_robot",
+        "precision_rejection",
+    )
     assert config.protocol["phase0_defaults"]["seeds"] == 3
 
 
@@ -56,13 +63,21 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
         "bounding_primitive",
         "single_convex_hull",
         "coacd_or_vhacd_if_available",
+        "cpd_style_primitive_candidate_if_available",
     }
-    assert probes["drop"]["initial_conditions"]["height_m"] == 0.25
+    assert probes["body_state_drop_settle"]["initial_conditions"]["height_m"] == 0.25
+    assert "body_state_delta" in probes["body_state_drop_settle"]["metrics"]
     assert probes["stack_or_slide"]["metrics"] == [
         "displacement",
         "contact_count_p95",
         "penetration_or_jitter",
     ]
     assert probes["sphere_rain"]["initial_conditions"]["sphere_count"] == 32
+    assert probes["link_boundary_audit"]["pass_condition"] == "zero_cross_link_merges"
+    assert (
+        probes["articulation_smoke_if_robot"]["pass_condition"]
+        == "complete_and_label_articulation_failures"
+    )
     assert probes["precision_rejection"]["pass_condition"] == "reject_or_fallback"
     assert "displacement" in required_metrics
+    assert "link_boundary_status" in required_metrics

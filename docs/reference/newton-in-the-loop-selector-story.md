@@ -1,11 +1,12 @@
 # Newton-In-The-Loop Selector Story
 
-This page explains the current real-USD selector slice in the CPD paper story. It is a
-plain-language map, not new evidence beyond the dated records.
+This page explains the current real-USD selector slice and how it now fits the
+simulation-checked primitive collider direction. It is a plain-language map, not new evidence
+beyond the dated records.
 
 ## Short Version
 
-The paper story is:
+The CPD paper-adjacent story is:
 
 ```text
 mesh
@@ -14,7 +15,9 @@ mesh
 -> quality and speed evaluation
 ```
 
-The repository has not reproduced that full paper story. The current real-USD slice is narrower:
+The repository has not reproduced that full paper story. The current real-USD slice is narrower and
+now serves a different main claim: primitive packages are candidates until Newton diagnostics
+accept or reject them.
 
 ```text
 capped bed/Franka USD
@@ -28,8 +31,8 @@ capped bed/Franka USD
 ```
 
 So the important status is: Newton-in-the-loop selector/fitting cycles now run end to end under
-recorded, claim-bounded settings. They are diagnostic evidence, not benchmark or
-collision-quality evidence.
+recorded, claim-bounded settings. They are evidence for a simulation-checked acceptance loop, not
+benchmark, collision-quality, full CPD, or whole-robot evidence.
 
 ## Why The Gates Came First
 
@@ -135,9 +138,9 @@ paper-lane gates made the contracts explicit
 ```
 
 That is a real Newton-in-the-loop diagnostic loop. The next useful work is not more gate
-scaffolding for its own sake and not broad asset expansion. The next useful work is one more
-controlled selector or fitting slice that changes a package for a clear reason, followed by the
-same mapping/contact/task-smoke checks.
+scaffolding for its own sake. The next useful work is to extend the same acceptance logic to
+robot-operation evidence: link-aware package generation, no cross-joint primitive merges, and
+articulation smoke checks before any whole-robot Franka claim.
 
 ## Related Records
 
@@ -149,4 +152,5 @@ same mapping/contact/task-smoke checks.
 - [2026-05-21 Franka native opt-in probe](../records/2026-05-21-franka-native-opt-in-probe.md)
 - [2026-05-21 bed native opt-in probe](../records/2026-05-21-bed-native-opt-in-probe.md)
 - [Bed and Franka native probe comparison](bed-franka-native-probe-comparison.md)
+- [Simulation-checked primitive collider direction](simulation-checked-primitive-collider-direction.md)
 - [Claim boundaries](claim-boundaries.md)

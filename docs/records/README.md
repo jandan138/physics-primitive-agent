@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-05-22 DeepDive Direction Shift To Simulation-Checked Robotics](2026-05-22-deepdive-direction-shift-to-simulation-checked-robotics.md):
+  current-facing documentation alignment that shifts the DeepDive story from CPD-like
+  reproduction toward simulation-checked primitive collider acceptance, with robot articulation
+  gates as the next evidence target.
 - [2026-05-14 Project Bootstrap](2026-05-14-project-bootstrap.md): DeepDive-first repository
   bootstrap.
 - [2026-05-14 CPD-Like Newton Source And Assets](2026-05-14-cpd-like-newton-source-and-assets.md):

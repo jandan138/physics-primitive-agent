@@ -2,34 +2,48 @@
 
 ## Purpose
 
-The project proposes a Newton Primitive Collision Compiler: a primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compiler. The current repository exists to support a DeepDive application and to define the first implementation milestone.
+The project proposes a Newton Primitive Collision Compiler: a simulation-checked, fallback-aware
+primitive collider compiler. The repository exists to support a DeepDive application and define the
+first evidence-producing milestone.
+
+The project is not centered on claiming a full CPD paper reproduction. CPD-style primitive
+decomposition is a related generator and baseline.
 
 ## In Scope
 
 - DeepDive application and reviewer materials.
-- A non-LLM primitive baseline as the first engineering milestone.
-- Newton diagnostic checker design for named tasks and metrics.
+- Deterministic primitive candidate generation as the first engineering baseline.
+- Newton diagnostics for body-state, contact, and task behavior.
+- Link-aware robot package constraints for articulated assets.
+- Articulation smoke checks when a robot asset is in scope.
 - Baseline comparison against existing collision approximation methods.
-- Explicit fallback to CoACD, V-HACD, SDF, hydroelastic, convex mesh, triangle mesh where valid, or manual review.
+- Explicit fallback to CoACD, V-HACD, SDF, hydroelastic, convex mesh, triangle mesh where valid,
+  authored colliders, or manual review.
 - Provenance, reporting, and claim-boundary discipline.
 
 ## Out Of Scope Today
 
 - Production primitive fitting and collision package generation.
-- Newton checker execution.
-- Benchmark results.
+- Broad benchmark results.
+- Calibrated default selector policy.
+- Whole-robot Franka performance validation.
 - LLM/VLM primitive generation, planning, repair, or evaluation.
 - Real robot deployment.
 - Safety certification.
 
 ## Strategic Boundary
 
-The leadership story connects the project to AI model physical safety constraints: physics engines provide executable diagnostic layers, and collision proxies are critical inputs to those diagnostics. This does not convert simulator checks into safety guarantees.
+The leadership story connects the project to AI model physical constraints: physics engines provide
+executable diagnostics, and collision packages are critical inputs to those diagnostics. Simulator
+checks remain scoped observations under named assumptions; do not claim safety guarantees.
 
 ## First Milestone
 
-The first 0-4 week milestone is non-LLM primitive baseline plus Newton diagnostic checker. The milestone should measure whether primitive-first compilation is worth expanding before LLM/VLM is introduced.
+The first milestone is a non-LLM candidate-generator plus Newton checker loop. It should measure
+whether body-state, contact, and articulation diagnostics catch failures that geometry-only
+primitive selection would miss.
 
 ## Current Non-Goals
 
-No safety guarantee, real-world transfer, deployment readiness, benchmark superiority, primitive-only sufficiency, or complete replacement of convex decomposition.
+No safety guarantee, real-world transfer, deployment readiness, benchmark superiority,
+primitive-only sufficiency, full CPD reproduction, or complete replacement of convex decomposition.

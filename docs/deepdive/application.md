@@ -2,82 +2,101 @@
 
 ## Why This Project
 
-AI systems for physical intelligence increasingly generate scenes, assets, and robot behaviors. Those outputs become meaningful only when they can be tested against physical constraints. Today, collision geometry is often treated as a low-level asset conversion detail, but it is actually a hidden contract between model output, simulator behavior, and downstream robotics evaluation.
+AI systems for physical intelligence increasingly generate assets, scenes, and robot behaviors.
+Those outputs become meaningful only when they can be checked against physical constraints.
+Collision geometry is one of the hidden contracts behind that check. A visual asset can look
+correct while its collision proxy blocks a handle, opens a false gap, changes contact behavior, or
+alters robot dynamics.
 
-Concrete failure scenario: an imported or AI-generated asset may look correct, but its collision proxy can leave a handle hollow in the render mesh and blocked in physics, or allow a gripper to pass through a surface. A downstream model can then select a grasp or path through a visible opening while the physics proxy creates a false pass/fail in simulation. Newton can expose that false clearance or unstable contact only if the proxy is represented, checked, and reported as an explicit artifact.
+Existing primitive and convex-decomposition methods can generate useful collider candidates. The
+missing layer for our target workflow is a compiler/checker that treats those candidates as
+untrusted until Newton has executed task diagnostics over them.
 
-The project asks whether we can build a Newton Primitive Collision Compiler: a primitive-first, Newton-diagnostic-checked, fallback-aware tool that turns visual assets into editable collision proxies, checks them in Newton, and records when existing methods such as CoACD, SDF, hydroelastic, or manual review are still required.
-
-The immediate DeepDive goal is not to claim a finished compiler. It is to get review and support for a narrow first milestone that can quickly measure whether the non-LLM baseline has value.
+The project asks whether we can build a simulation-checked primitive collider compiler for Newton:
+generate editable primitive packages, run engine-level diagnostics over body state, contact, and
+robot operation, then accept, reject, or fall back with a reproducible report.
 
 ## Strategic Relevance
 
-Physical Intelligence Center needs models that respect physical safety constraints, not only models that produce plausible actions or assets. Physics engines matter because they act as executable diagnostic layers: under specified assumptions, tasks, metrics, solver settings, and versions, they can surface candidate penetrations, unstable contacts, false clearance assumptions, and task-level physical failures.
+Physical Intelligence Center needs models that respect physical constraints, not only models that
+produce plausible geometry or action plans. Physics engines are executable diagnostic layers under
+specified assumptions, tasks, metrics, solver settings, and versions.
 
-Collision geometry is a low-level safety interface. If a proxy is too loose, a policy can appear to move through an object. If it is too conservative, valid grasps, stacks, or paths may fail. A collision compiler that checks and reports this boundary supports safer physical-intelligence workflows without claiming safety certification.
+This project focuses on one concrete infrastructure point: collision packages should become
+reviewable artifacts with recorded physics evidence. The system does not certify safety. It makes
+collision-proxy failure modes visible before downstream users trust a simulated asset or robot
+task.
 
 ## Core Technical Route
 
 The proposed route is:
 
-1. Geometry preprocessing prepares mesh, scale, regions, and provenance.
-2. A non-LLM primitive proposal baseline produces boxes, spheres, capsules, cylinders, cones, or ellipsoids under a primitive budget.
-3. A constrained optimizer fits primitive parameters while respecting task-specific budgets and basic geometry constraints.
-4. A Newton diagnostic checker runs task probes and records contact behavior, penetration, jitter, time, and failure modes.
-5. A repair/fallback stage splits, merges, adjusts, rejects, or falls back locally to existing collision representations.
-6. Export/report writes collision packages with provenance, metrics, fallback reasons, and unsupported regions.
+1. Asset intake records provenance, scale, units, mesh source, and robot link/joint structure.
+2. Candidate generation creates primitive packages from simple heuristics, native lanes, authored
+   colliders, or CPD-style outputs.
+3. Package guards check geometry risk, compound body-state deltas, and link-boundary constraints.
+4. Newton diagnostics run drop/settle, contact stress, and body-state probes under recorded
+   settings.
+5. Robot assets also run articulation gates: joint tree import, gravity hold, simple joint
+   trajectory, self-collision sanity, and end-effector pose sanity.
+6. Export/report records accepted packages, fallback regions, failed gates, configs, asset hashes,
+   and runtime provenance.
 
-LLM/VLM components are intentionally deferred. They may later help with semantic part planning, task-aware budgets, and repair proposals, but only after the non-LLM baseline shows measurable value.
+LLM/VLM components are deferred. They may later help with semantic part planning or repair
+critique, but only after the non-LLM checker loop shows value.
 
 ## Current Preparation
 
 Current repository state:
 
-- project framing and bootstrap documents exist;
-- a minimal Python package skeleton and dry-run CLI exist;
-- a geometry-only CPD-like face-merge smoke path exists for restricted
-  `box`/`sphere`/`capsule` primitive proposals;
-- a contact-only Newton canary smoke path exists for representative mapped primitive types;
-- one named Newton drop/settle task smoke exists for the capped bed CPD-like collision package;
-- DeepDive application materials are being organized;
-- no broad asset/task Newton diagnostic suite or benchmark metrics exist today.
+- DeepDive framing and claim-boundary documents exist;
+- a Python package skeleton and dry-run CLI exist;
+- CPD-like geometry smoke paths and paper-lane audit records exist;
+- Newton environment, source, contact, drop/settle, and sphere-rain diagnostic records exist;
+- capped bed/Franka records show a real Newton package-context failure mode for a selected
+  cylinder package;
+- an opt-in body-state guard task path falls back only the flagged bed package while preserving the
+  unflagged Franka cylinder package in the recorded smoke.
 
-The current evidence supports a project proposal and milestone plan, not research conclusions.
+The current evidence supports a project proposal and a narrow diagnostic mechanism story. It does
+not support broad benchmark, whole-robot, or safety claims.
 
 ## 0-4 Week Milestone
 
-The first milestone is a non-LLM primitive baseline plus Newton diagnostic checker:
+The first milestone should demonstrate that simulation checks catch errors that geometry-only
+primitive generation would miss:
 
-- select 5-10 simple, licensed/provenance-clear assets;
-- normalize scale and task labels;
-- generate simple primitive proposals with a fixed budget;
-- compare against 2-3 baselines: bounding box or sphere, single convex hull, and CoACD or V-HACD when available;
-- run 2-3 Newton probes first: drop, stack or slide, and sphere-rain/contact stress;
-- include one negative-control precision asset only to test rejection or fallback, not primitive-only success;
-- report primitive count, fallback surface ratio, generation failure rate, step time, contact count, and one penetration or jitter signal;
-- decide whether the baseline justifies Phase 1.
+- select 5-10 provenance-clear rigid assets;
+- include one reproducible articulated robot smoke asset if available;
+- generate primitive candidate packages and baseline colliders;
+- forbid primitive merging across robot link/joint boundaries;
+- run Newton body-state, drop/settle, and contact-stress probes;
+- run articulation smoke gates for robot packages;
+- compare simple baselines plus CoACD/V-HACD/CPD-style candidates when available;
+- report primitive count, fallback ratio, failure rate, step time, contact count, jitter or
+  penetration, articulation drift, and task failure labels.
 
-Success means useful evidence and clear failure modes, not universal success across assets.
+Success means useful accept/reject/fallback evidence, not universal primitive success.
 
 ## 4-12 Week Route
 
-Weeks 4-8 should expand the non-LLM baseline to more assets, stabilize the Newton checker, add repair operations, and make fallback reporting precise.
+Weeks 4-8 should expand asset coverage and stabilize the checker/fallback loop. The priority is
+not adding more paper-lane gates; it is broadening simulation-checked evidence.
 
-Weeks 8-12 should introduce LLM/VLM only if the non-LLM baseline has shown measurable value. The first LLM/VLM role should be semantic planning, task-aware budget selection, or repair critique, not direct floating-point primitive regression.
-
-The 12-week output should be a measured decision: continue, narrow, pivot to fallback tooling, or stop.
+Weeks 8-12 should add checker-guided repair only after failure labels are stable. LLM/VLM should
+remain optional and should be introduced only as semantic planning or repair critique after
+deterministic baselines justify it.
 
 ## Support Requested
 
 Requested support:
 
-- reviewers from Newton physics, geometry processing, robotics simulation, and physical-intelligence safety;
-- representative internal assets and source/license guidance;
-- advice on Newton checker scenarios, solver settings, and metric thresholds;
-- small compute and engineering time for the first milestone;
-- connections to internal users who import assets, train robot policies, or evaluate physical scenes.
-
-The project should be funded by milestone evidence. If the non-LLM baseline fails to produce value, the project should not spend resources on LLM/VLM expansion.
+- Newton and robotics-simulation reviewers;
+- geometry-processing reviewers familiar with CPD, CoACD, V-HACD, and authored collider workflows;
+- representative assets and robot descriptions with clear source/license policy;
+- advice on Newton task probes, articulation metrics, solver settings, and acceptance thresholds;
+- small compute and engineering time for the first simulation-checked proof point;
+- connections to users in asset import, robotics, RL, and digital-twin workflows.
 
 ## Current Non-Goals
 
@@ -85,7 +104,8 @@ The project should be funded by milestone evidence. If the non-LLM baseline fail
 - No real-world transfer or deployment readiness claim.
 - No benchmark superiority claim.
 - No complete replacement of convex decomposition.
-- No promise that primitive-only collision works for precision insertion, thin walls, threads, gears, or all CAD assets.
-- No claim that LLM/VLM improves results before ablation evidence exists.
+- No novelty claim for automatic primitive collider generation itself.
+- No whole-robot Franka performance claim before articulated records exist.
+- No LLM/VLM improvement claim before ablation evidence exists.
 
 Canonical wording lives in [message-map.md](message-map.md).

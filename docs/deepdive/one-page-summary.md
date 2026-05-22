@@ -2,52 +2,57 @@
 
 ## Project
 
-Newton Primitive Collision Compiler: a primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compiler proposal for Newton.
+Newton Primitive Collision Compiler: a DeepDive-stage proposal for simulation-checked primitive
+collider generation in Newton workflows.
 
 ## Why It Matters
 
-Physical Intelligence Center needs AI models whose outputs can be tested against physical safety constraints. Physics engines provide an executable diagnostic layer for those constraints, but the layer depends on collision geometry. If a collision proxy is wrong, simulation can produce false confidence or false failures.
-
-This project treats collision geometry as a low-level physical contract. It aims to make that contract editable, measurable, and explicit about fallback.
+Collision geometry is a low-level physical contract. A generated or imported asset can look correct
+while its collider blocks valid contacts, permits impossible motion, changes body state, or breaks
+robot behavior. Physics engines can expose those failures only if collider packages are treated as
+diagnostic artifacts rather than trusted conversion outputs.
 
 ## Technical Thesis
 
-Try primitives first when the asset and task permit it. Check task behavior in Newton. Fall back locally when primitives are not enough.
+Primitive colliders should be generated as candidates, not accepted as final output. A candidate
+package should pass named Newton diagnostics for body state, contact behavior, and robot operation,
+or fall back to another representation.
 
-The project does not claim that primitives fully replace convex decomposition. CoACD, V-HACD, SDF, hydroelastic, convex mesh, triangle mesh, and manual review remain baselines or fallbacks depending on the task.
+This is different from claiming that primitive collider generation itself is new. CPD-style
+primitive decomposition is an important related candidate generator and baseline.
 
 ## First Milestone
 
 0-4 weeks:
 
-- build a non-LLM primitive baseline;
-- build a Newton diagnostic checker harness;
-- run 5-10 provenance-clear assets;
-- compare against 2-3 simple/existing baselines;
-- report primitive count, fallback surface ratio, generation failure rate, step time, contact count, and penetration or jitter.
-
-LLM/VLM is deferred until the non-LLM baseline demonstrates value.
+- build a non-LLM candidate-generator plus Newton checker loop;
+- include body-state and contact diagnostics;
+- add link-aware articulation gates for a reproducible robot smoke asset when available;
+- compare simple baselines and CPD/CoACD/V-HACD-style candidates where available;
+- report accept/reject/fallback decisions with metrics and provenance.
 
 ## Current Status
 
 - Proposal and project bootstrap.
-- Minimal package, dry-run CLI, geometry-only CPD-like face-merge smoke path, and
-  contact-only Newton canary exist.
-- One named Newton drop/settle task smoke exists for the capped bed CPD-like collision package.
-- DeepDive documentation defines scope and evidence boundaries.
-- No broad asset/task Newton diagnostic suite, benchmark metrics, or full CPD paper reproduction
-  exists yet.
+- CPD-like geometry smoke paths and Newton task smokes exist.
+- A recorded bed/Franka cylinder mechanism shows why engine-level body-state diagnostics matter.
+- An opt-in package body-state guard task path has real Newton task-smoke evidence for the capped
+  bed/Franka slice.
+- No broad benchmark, complete collision-quality validation, or whole-robot articulated-dynamics
+  evidence exists yet.
 
 ## Support Requested
 
-- Reviewers from Newton, robotics simulation, geometry processing, and physical-intelligence safety.
-- Representative internal assets with clear source/license policy.
-- Newton checker scenario and solver-setting guidance.
-- Small compute and engineering allocation for the first milestone.
-- Downstream user input from asset import, robotics, RL, and digital-twin workflows.
+- Newton and robotics-simulation review.
+- Geometry-processing and collider-generation review.
+- Representative assets and robot descriptions with clear provenance.
+- Guidance on diagnostic tasks, solver settings, and acceptance thresholds.
+- Small compute and engineering allocation for the first proof point.
 
 ## Non-Goals
 
-No safety guarantee, no real-world transfer claim, no deployment readiness, no benchmark superiority claim, no primitive-only sufficiency claim, and no complete replacement of convex decomposition.
+No safety guarantee, no real-world transfer claim, no deployment readiness, no benchmark
+superiority claim, no primitive-only sufficiency claim, no full CPD reproduction claim, and no
+whole-robot robot-operation claim before articulated records exist.
 
 Canonical wording: [message-map.md](message-map.md).

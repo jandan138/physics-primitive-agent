@@ -1,53 +1,64 @@
 # System Architecture
 
-Current implementation status: documentation, package skeleton, config dry-run reporting, USD
-asset-open smoke diagnostics, Newton source import diagnostics, and environment-readiness
-diagnostics exist today. The components below describe the intended compiler architecture, not a
+Current implementation status: documentation, package skeleton, config/reporting surfaces, USD
+asset diagnostics, Newton environment diagnostics, CPD-like smoke paths, and several named Newton
+task smokes exist today. The components below describe the intended compiler architecture, not a
 completed compiler.
 
 ## Environment Readiness And Source Provenance
 
-Records the Python executable, interpreter realpath, module provenance, Newton source checkout,
-GPU visibility, setup-script fingerprint, output directory writability, and repository diagnostic
-status before any Newton simulation claim. This layer is implemented as a diagnostic checker, not as
-an environment installer. The current clean local Python/Newton readiness state is `smoke_passed`
-for the named conda environment and Newton source checkout, but this is still not Newton simulation
-readiness.
+Records Python executable, interpreter realpath, module provenance, Newton source checkout, GPU
+visibility, setup fingerprint, output writability, and repository diagnostic status before any
+Newton simulation claim. This is diagnostic provenance, not an environment installer.
 
-## Geometry Preprocessor
+## Asset And Robot Intake
 
-Prepares incoming mesh, USD, URDF, or MJCF assets for collision compilation. Responsibilities include source tracking, asset hash capture, unit and scale normalization, mesh cleanup checks, connected-component inspection, coarse region extraction, and task metadata validation.
+Prepares mesh, USD, URDF, MJCF, or other asset descriptions for collision compilation. It records
+source, license/provenance, asset hash, units, scale, source frames, connected components, and
+robot link/joint structure when present.
 
-## Semantic/Task Planner
+## Candidate Generator
 
-Defines which contact behavior matters for the asset and task. In the first milestone this is rule-based or config-driven. LLM/VLM semantic planning is deferred until the non-LLM baseline shows value.
+Produces candidate collision packages from deterministic primitive heuristics, native approximation
+lanes, authored colliders, or CPD-style outputs. Candidate generation is not acceptance.
 
-## Primitive Proposal Bank
+## Package Guard
 
-Generates candidate boxes, spheres, capsules, cylinders, cones, and ellipsoids. The first version should be non-LLM and conservative, using simple geometry heuristics and fixed primitive budgets.
-
-## Constrained Optimizer
-
-Fits primitive parameters while respecting task budgets, scale, containment/coverage checks, and shape count limits. It should avoid producing many small primitives that erase the runtime or editability advantage.
+Checks finite geometry, primitive budgets, scale anomalies, large-flat or degenerate primitive
+classes, compound body-state proxy deltas, and robot link-boundary constraints. For articulated
+assets, the guard must reject cross-link primitive merges.
 
 ## Newton Checker
 
-Runs simulation probes in Newton under recorded assumptions: version, solver settings, hardware, seeds, task templates, and metric definitions. It records runtime, contact behavior, penetration, jitter, task success, and failure traces. The checker is a diagnostic layer, not proof of real-world safety.
+Runs simulation probes in Newton under recorded assumptions: source version, solver settings,
+hardware, seeds, task templates, and metric definitions. It records body-state behavior, contact
+behavior, penetration or jitter, step time, and task labels.
+
+## Articulation Checker
+
+For robot assets, runs link/joint-specific gates: joint tree import, gravity hold, simple scripted
+joint trajectory, self-collision sanity, and end-effector pose sanity. These gates are required
+before any whole-robot claim.
 
 ## Repair/Fallback
 
-Uses checker output to split, merge, expand, shrink, reject, or fall back. Fallback options include CoACD, V-HACD, SDF, hydroelastic, convex mesh, triangle mesh where valid, manual primitive colliders, or manual review. The system must preserve the nuanced claim: primitive-first and fallback-aware, not a full replacement of convex decomposition.
+Uses checker output to split, merge, expand, shrink, reject, or fall back. Fallback options include
+CoACD, V-HACD, SDF, hydroelastic, convex mesh, triangle mesh where valid, authored primitive
+colliders, or manual review.
 
 ## Export/Report
 
-Writes collision packages and reports with primitives, fallback regions, task labels, source hashes, config hashes, metrics, failure reasons, and artifact paths. Every package remains untrusted until checked and reviewed.
+Writes collision packages and reports with primitives, fallback regions, task labels, source
+hashes, config hashes, metrics, failure reasons, and artifact paths. Every package remains
+untrusted until checked and reviewed.
 
 ## First Milestone
 
-With the first clean local environment-readiness record in place, only the Geometry Preprocessor
-subset, non-LLM Primitive Proposal Bank, minimal Constrained Optimizer, Newton Checker, and
-Export/Report are needed for the first 0-4 week proof point.
+Only the Asset/Robot Intake subset, Candidate Generator, Package Guard, Newton Checker,
+Articulation Checker for one robot smoke if available, and Export/Report are needed for the first
+proof point.
 
 ## Current Non-Goals
 
-No safety guarantee, real-world transfer, deployment readiness, benchmark superiority, primitive-only sufficiency, or complete replacement of convex decomposition.
+No safety guarantee, real-world transfer, deployment readiness, benchmark superiority,
+primitive-only sufficiency, full CPD reproduction, or complete replacement of convex decomposition.

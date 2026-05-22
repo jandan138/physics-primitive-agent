@@ -3,14 +3,16 @@ asset:
   id: phase0_asset_manifest
   provenance: planned_manifest
 task:
-  primary: phase0_diagnostic
+  primary: phase0_simulation_checked_diagnostic
   probes:
-    - drop
+    - body_state_drop_settle
     - stack_or_slide
     - sphere_rain
+    - link_boundary_audit
+    - articulation_smoke_if_robot
     - precision_rejection
 compile:
-  method: primitive_first
+  method: simulation_checked_primitive_candidates
   max_primitives: 16
   allowed_fallback:
     - coacd
@@ -19,9 +21,11 @@ compile:
     - convex_mesh
     - manual_review
   verify:
-    - drop
+    - body_state_drop_settle
     - stack_or_slide
     - sphere_rain
+    - link_boundary_audit
+    - articulation_smoke_if_robot
     - precision_rejection
   keep_visual: true
 phase0_defaults:
@@ -42,8 +46,13 @@ phase0_defaults:
       required: false
       fallback_if_unavailable: record_dependency_gap
       status: best_effort
+    - id: cpd_style_primitive_candidate_if_available
+      method: cpd_style_primitive_candidate
+      required: false
+      fallback_if_unavailable: record_dependency_gap
+      status: best_effort
   probes:
-    drop:
+    body_state_drop_settle:
       initial_conditions:
         height_m: 0.25
         plane: static
@@ -54,10 +63,12 @@ phase0_defaults:
         duration_seconds: 2
         seeds: 3
       metrics:
+        - body_state_delta
         - step_time
         - contact_count_p95
         - penetration_or_jitter
-      pass_condition: complete_and_label_failures
+        - final_speed_label
+      pass_condition: complete_and_label_body_state_or_rest_failures
     stack_or_slide:
       initial_conditions:
         support: static_plane_or_box
@@ -87,6 +98,35 @@ phase0_defaults:
         - contact_count_p95
         - penetration_or_jitter
       pass_condition: complete_and_label_blocked_openings_or_contact_stress
+    link_boundary_audit:
+      initial_conditions:
+        asset_role: articulated_robot_if_present
+        simulation_required: false
+      solver:
+        engine: newton
+        settings: compile_time_check
+        duration_seconds: 0
+        seeds: 1
+      metrics:
+        - cross_link_merge_count
+        - per_link_primitive_count
+      pass_condition: zero_cross_link_merges
+    articulation_smoke_if_robot:
+      initial_conditions:
+        asset_role: articulated_robot_if_present
+        joint_command: simple_scripted_trajectory
+      solver:
+        engine: newton
+        settings: default_recorded
+        duration_seconds: 2
+        seeds: 1
+      metrics:
+        - joint_tree_import
+        - gravity_hold_drift
+        - trajectory_completion
+        - self_collision_sanity
+        - end_effector_pose_error
+      pass_condition: complete_and_label_articulation_failures
     precision_rejection:
       initial_conditions:
         asset_role: precision_negative_control
@@ -103,10 +143,13 @@ phase0_defaults:
     - primitive_or_hull_count
     - fallback_ratio
     - generation_failure_rate
+    - body_state_delta
     - step_time
     - contact_count_p95
     - displacement
     - penetration_or_jitter
+    - link_boundary_status
+    - articulation_drift
 report:
   output_dir: reports/generated/phase0_baseline
   record_template: docs/records/README.md

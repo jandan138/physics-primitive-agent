@@ -5,11 +5,13 @@ asset:
 task:
   primary: grasping
   probes:
-    - drop
+    - body_state_drop_settle
     - stack_or_slide
     - sphere_rain
+    - link_boundary_audit
+    - articulation_smoke_if_robot
 compile:
-  method: primitive_first
+  method: simulation_checked_primitive_candidates
   max_primitives: 16
   allowed_fallback:
     - coacd
@@ -17,9 +19,11 @@ compile:
     - sdf
     - manual_review
   verify:
-    - drop
+    - body_state_drop_settle
     - stack_or_slide
     - sphere_rain
+    - link_boundary_audit
+    - articulation_smoke_if_robot
   keep_visual: true
 report:
   evidence_status: proposal_config_only

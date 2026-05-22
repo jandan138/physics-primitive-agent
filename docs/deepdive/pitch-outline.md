@@ -6,47 +6,50 @@ Target length: 20-30 minutes, followed by review questions.
 
 Time: 4-5 minutes.
 
-- Physical-intelligence workflows depend on simulation checks.
-- Collision geometry is a hidden contract between assets, models, policies, and physics.
-- A concrete failure case: a visual handle or gap can be open in the render mesh but blocked by a coarse collider, while an under-conservative proxy can let a policy appear to pass through a surface.
-- Render meshes are not reliable dynamic collision assets.
-- Existing automated convex decomposition is useful but can be hard to edit, explain, or tune for tasks.
+- Physical-intelligence workflows depend on simulator checks.
+- Collision geometry is a hidden contract between assets, robots, policies, and physics.
+- Geometry-only collider generation can miss engine-level failures.
+- A primitive package may look plausible but change COM/inertia, contact behavior, or robot
+  articulation.
+- The problem is not only "generate colliders"; it is "accept colliders only after executable
+  diagnostics".
 
 ## 2. Strategic Story
 
 Time: 4-5 minutes.
 
-- Physical Intelligence Center needs AI models that respect physical safety constraints.
-- Physics engines are executable diagnostic layers under named assumptions, tasks, metrics, and versions.
-- Wrong collision proxies can create false confidence or false failures.
-- This project focuses on one concrete infrastructure layer: primitive-first, Newton-diagnostic-checked, fallback-aware collision asset compilation.
+- Physical Intelligence Center needs AI outputs that can be checked against physical constraints.
+- Physics engines are executable diagnostic layers under named assumptions.
+- Collision packages are safety-affecting artifacts that need provenance, metrics, and fallback.
+- The project focuses on simulation-checked primitive collider compilation for Newton workflows.
 
 ## 3. Technical Route
 
-Time: 5-7 minutes.
+Time: 6-8 minutes.
 
-- Geometry Preprocessor: normalize mesh, scale, regions, and provenance.
-- Primitive Proposal Bank: produce simple non-LLM primitive candidates first.
-- Constrained Optimizer: fit primitive parameters with budgets and constraints.
-- Newton Checker: run task probes and record runtime/contact/penetration/jitter/task metrics.
-- Repair/Fallback: adjust, reject, or fall back locally to CoACD, SDF, hydroelastic, convex mesh, or manual review.
-- Export/Report: write collision package plus provenance and failure reasons.
+- Candidate Generator: simple primitives, authored colliders, native lanes, or CPD-style outputs.
+- Package Guard: scale, provenance, body-state risk, primitive-budget, and link-boundary checks.
+- Newton Checker: drop/settle, sphere-rain/contact stress, and body-state diagnostics.
+- Robot Operation Gates: joint tree import, gravity hold, joint trajectory, self-collision sanity,
+  and end-effector pose sanity.
+- Fallback: CoACD, V-HACD, SDF, hydroelastic, convex mesh, triangle mesh where valid, or manual
+  review.
+- Export/Report: accepted package, failed gates, fallback reason, metrics, asset hash, config, and
+  Newton provenance.
 
-Important boundary: LLM/VLM is not first. It is a later semantic planner, critic, or repair component only if the non-LLM baseline earns it.
+Important boundary: LLM/VLM is not first. It is deferred until deterministic baselines and checker
+records justify a semantic-planning or repair-critique role.
 
 ## 4. Current Preparation
 
-Time: 3-4 minutes.
+Time: 4-5 minutes.
 
-- Repository skeleton exists.
-- Dry-run package contracts exist.
-- Geometry-only CPD-like face-merge primitive proposal smoke exists.
-- Contact-only Newton canary smoke exists for representative mapped primitive types.
-- One named Newton drop/settle task smoke exists for the capped bed CPD-like collision package.
-- DeepDive docs define claim boundaries.
-- Current status is proposal/bootstrap only.
-- No broad asset/task Newton diagnostic suite, benchmark metrics, or full CPD paper reproduction
-  exists yet.
+- Repository skeleton and dry-run package contracts exist.
+- CPD-like and native primitive diagnostic lanes exist.
+- Newton environment and task-smoke records exist.
+- Capped bed/Franka cylinder records show a real full-compound body-state failure mode.
+- An opt-in body-state guard has recorded task-path evidence.
+- Current status is still proposal/bootstrap, not broad benchmark or whole-robot validation.
 
 ## 5. Next Milestones
 
@@ -54,32 +57,34 @@ Time: 4-5 minutes.
 
 0-4 weeks:
 
-- build a non-LLM primitive baseline for 5-10 provenance-clear assets;
-- build 2-3 Newton probes: drop, stack or slide, and sphere-rain/contact stress;
-- compare against 2-3 baselines: bounding box or sphere, single convex hull, and CoACD or V-HACD when available;
-- report failures, fallback ratio, step time, contact count, and penetration or jitter.
+- run a small provenance-clear asset set;
+- include one articulated robot smoke asset if reproducible;
+- forbid cross-link primitive merges;
+- run body-state, contact, and articulation gates;
+- compare simple baselines plus CoACD/V-HACD/CPD-style candidates when available;
+- report accept/reject/fallback evidence.
 
 4-12 weeks:
 
-- broaden assets and tasks;
-- add repair/fallback logic;
-- introduce LLM/VLM only after baseline evidence supports it;
-- make a continue/narrow/pivot/stop decision.
+- broaden assets and robot-operation tasks;
+- add checker-guided repair only after failure labels are stable;
+- introduce LLM/VLM only after non-LLM value is demonstrated;
+- decide continue, narrow, pivot, or stop.
 
 ## 6. Support Request
 
 Time: 2-4 minutes.
 
 - Newton, robotics simulation, geometry, and physical-intelligence safety reviewers.
-- Representative assets with clear source/license policy.
-- Newton scenario and solver-setting guidance.
-- Small compute and engineering allocation for the first proof point.
-- Downstream user feedback from robotics, RL, digital twin, and asset import workflows.
+- Representative assets and robot descriptions with clear source/license policy.
+- Newton task and solver-setting guidance.
+- Small compute and engineering allocation.
+- Downstream feedback from robotics, RL, digital-twin, and asset-import workflows.
 
-## Strategic Story, Milestone, And Non-Goals
+## Non-Goals
 
 Canonical wording: [message-map.md](message-map.md).
 
-Narrow first milestone: non-LLM primitive baseline plus Newton diagnostic checker.
-
-Current non-goals: safety guarantee, real-world transfer, deployment readiness, benchmark superiority, complete replacement of convex decomposition, and LLM/VLM claims before baseline evidence.
+Current non-goals: safety guarantee, real-world transfer, deployment readiness, benchmark
+superiority, full CPD reproduction, complete replacement of convex decomposition, whole-robot
+robot-operation claims before articulated records, and LLM/VLM claims before baseline evidence.
