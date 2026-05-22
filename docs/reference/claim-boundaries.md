@@ -31,6 +31,10 @@ baseline. It is not the novelty claim by itself.
 - The current opt-in package body-state guard task path can be described as a recorded diagnostic:
   it falls back only the flagged capped bed package while keeping the unflagged capped Franka
   cylinder package in the recorded Newton task smoke.
+- A preliminary bed-aligned collision-only contact-throughput microbenchmark can be described as a
+  narrow performance hook: native Newton boxes achieved 2.21x generated-contact throughput versus
+  same-count convex64 mesh proxies in one pressure scene, with about 5.3% collision-only wall-time
+  reduction.
 - Current Franka evidence is capped package/task-smoke evidence only. It is not whole-robot
   articulated-dynamics evidence.
 - "Simulation-checked" may be used only when a dated record links a generated package to a named
@@ -53,7 +57,8 @@ baseline. It is not the novelty claim by itself.
 Do not claim:
 
 - finished compiler functionality before implementation and records exist;
-- benchmark superiority before benchmark reports exist;
+- broad benchmark superiority, full-simulation speedup, or general primitive speed superiority
+  before benchmark-suite evidence exists;
 - complete replacement of convex decomposition;
 - novelty in automatic primitive collider generation itself;
 - full CPD paper reproduction;

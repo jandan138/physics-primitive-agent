@@ -24,7 +24,7 @@ decomposition is a related generator and baseline.
 ## Out Of Scope Today
 
 - Production primitive fitting and collision package generation.
-- Broad benchmark results.
+- Broad benchmark-suite results or full-simulation speedup claims.
 - Calibrated default selector policy.
 - Whole-robot Franka performance validation.
 - LLM/VLM primitive generation, planning, repair, or evaluation.
@@ -45,5 +45,6 @@ primitive selection would miss.
 
 ## Current Non-Goals
 
-No safety guarantee, real-world transfer, deployment readiness, benchmark superiority,
-primitive-only sufficiency, full CPD reproduction, or complete replacement of convex decomposition.
+No safety guarantee, real-world transfer, deployment readiness, broad benchmark superiority,
+full-simulation speedup, primitive-only sufficiency, full CPD reproduction, or complete replacement
+of convex decomposition.

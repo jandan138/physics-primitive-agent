@@ -30,6 +30,17 @@ candidate selection and simulation-checked acceptance:
 
 This is not a broad cylinder result. It is a concrete example of why package context matters.
 
+## Why The Contact-Throughput Result Matters
+
+The bed-aligned contact-throughput microbenchmark records the complementary positive case: when a
+primitive package is accepted as Newton-native boxes, it can preserve access to primitive collision
+paths. In one collision-only pressure scene, the native 32-box package achieved 2.21x higher
+generated-contact throughput than same-count 64-vertex convex-mesh proxies.
+
+This is not a full simulation speedup or broad benchmark result. It is a scoped performance hook
+for the same compiler principle: accept primitive packages when Newton diagnostics support them,
+and fall back when they do not.
+
 ## Research Position
 
 Candidate generation layer:
@@ -68,7 +79,9 @@ is required.
 ## Claim Boundary
 
 Allowed now: simulation-checked direction, capped bed/Franka diagnostic mechanism, opt-in package
-body-state guard task-path evidence.
+body-state guard task-path evidence, and the preliminary bed-aligned collision-only
+contact-throughput microbenchmark.
 
-Not allowed now: do not claim benchmark superiority, full CPD reproduction, default selector
-policy, broad robot operation, deployment readiness, real-world transfer, or a safety proof.
+Not allowed now: do not claim broad benchmark superiority, full-simulation speedup, full CPD
+reproduction, default selector policy, broad robot operation, deployment readiness, real-world
+transfer, or a safety proof.

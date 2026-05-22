@@ -54,6 +54,12 @@ bed cylinder is safe as an isolated primitive but fails in the full compound pac
 COM/inertia body-state sensitivity, while recorded Franka cylinder packages pass in their smaller
 package context.
 
+The bed-aligned contact-throughput microbenchmark adds the first positive performance hook: in one
+collision-only pressure scene, accepted Newton-native box primitives achieved 2.21x higher
+generated-contact throughput than same-count 64-vertex convex-mesh proxies. This supports the
+primitive-aware acceptance story, while staying below any full-simulation or broad benchmark
+superiority claim.
+
 ## DeepDive Proof Point
 
 The narrow first proof point should demonstrate that the checker can expose errors that
@@ -75,7 +81,7 @@ Do not claim:
 
 - do not claim a physical safety guarantee or real-world transfer;
 - deployment readiness;
-- benchmark superiority;
+- broad benchmark superiority or full-simulation speedup;
 - complete replacement of convex decomposition;
 - novelty in automatic primitive collider generation itself;
 - full CPD paper reproduction;

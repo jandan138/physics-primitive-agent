@@ -47,6 +47,7 @@ Robot-asset tasks:
 | generation failure rate | failed outputs divided by attempted asset-task pairs | compiler report |
 | body-state delta | package COM/inertia proxy or recorded Newton body-state difference where available | package/report |
 | step time | median simulation step wall time over the recorded probe duration | Newton run log |
+| contact throughput | generated contacts per second or microseconds per generated contact in collision-only microbenchmarks | Newton run log |
 | contact count | p95 active contact count over the recorded probe duration | Newton run log |
 | penetration or jitter | max penetration if available, otherwise rest-state position or velocity jitter | Newton run log |
 | final-speed label | pass/fail label for rest-state residual speed under the recorded gate | Newton run log |
@@ -81,8 +82,9 @@ Reports must include:
 - failure examples and fallback reasons;
 - clear scope labels for capped packages, first-mesh probes, and whole-robot articulation claims.
 
-Do not report benchmark superiority until sample size, task coverage, and statistical treatment
-justify it.
+Single-scene microbenchmarks may be reported as scoped evidence when the metric and boundary are
+explicit. Do not report broad benchmark superiority until sample size, task coverage, and
+statistical treatment justify it.
 
 ## Phase Gates
 
@@ -111,5 +113,6 @@ Stop, narrow, or pivot if:
 
 ## Current Non-Goals
 
-No safety guarantee, real-world transfer, deployment readiness, benchmark superiority,
-primitive-only sufficiency, full CPD reproduction, or complete replacement of convex decomposition.
+No safety guarantee, real-world transfer, deployment readiness, broad benchmark superiority,
+full-simulation speedup, primitive-only sufficiency, full CPD reproduction, or complete replacement
+of convex decomposition.

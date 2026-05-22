@@ -68,10 +68,14 @@ Supported today:
   while recorded Franka cylinder packages pass.
 - An explicitly opt-in package body-state guard task path that falls back only the flagged bed
   package while keeping the unflagged Franka cylinder package in the recorded task smoke.
+- A preliminary bed-aligned collision-only contact-throughput microbenchmark where Newton-native
+  boxes achieved 2.21x generated-contact throughput versus same-count convex64 mesh proxies in
+  one pressure scene.
 
 Not supported today:
 
 - broad benchmark superiority;
+- full-simulation speedup;
 - full CPD paper reproduction;
 - calibrated default selector policy;
 - complete collision-quality validation;
@@ -136,5 +140,5 @@ git diff --check
 - No claim that primitive colliders replace convex decomposition.
 - No broad robot-operation evidence yet; current Franka evidence is capped and not whole-robot
   articulated performance validation.
-- No benchmark superiority claim.
+- No broad benchmark superiority or full-simulation speedup claim.
 - No deployment, real-world transfer, or safety guarantee.

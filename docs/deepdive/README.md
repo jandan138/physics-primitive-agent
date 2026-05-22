@@ -38,7 +38,7 @@ LLM/VLM work starts only after this deterministic loop shows measurable value.
 
 - No claim of physical safety guarantee.
 - No real-world transfer or deployment readiness claim.
-- No benchmark superiority claim.
+- No broad benchmark superiority or full-simulation speedup claim.
 - No novelty claim for primitive collider generation itself.
 - No complete replacement of convex decomposition.
 - No whole-robot articulated-dynamics claim before dedicated records exist.

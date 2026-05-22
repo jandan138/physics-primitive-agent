@@ -49,7 +49,10 @@ Time: 4-5 minutes.
 - Newton environment and task-smoke records exist.
 - Capped bed/Franka cylinder records show a real full-compound body-state failure mode.
 - An opt-in body-state guard has recorded task-path evidence.
-- Current status is still proposal/bootstrap, not broad benchmark or whole-robot validation.
+- A bed-aligned collision-only pressure test gives an early performance hook: 2.21x
+  generated-contact throughput for Newton-native boxes versus same-count convex64 mesh proxies.
+- Current status is still proposal/bootstrap, not broad benchmark-suite, full-simulation speedup,
+  or whole-robot validation.
 
 ## 5. Next Milestones
 
@@ -85,6 +88,7 @@ Time: 2-4 minutes.
 
 Canonical wording: [message-map.md](message-map.md).
 
-Current non-goals: safety guarantee, real-world transfer, deployment readiness, benchmark
-superiority, full CPD reproduction, complete replacement of convex decomposition, whole-robot
-robot-operation claims before articulated records, and LLM/VLM claims before baseline evidence.
+Current non-goals: safety guarantee, real-world transfer, deployment readiness, broad benchmark
+superiority, full-simulation speedup, full CPD reproduction, complete replacement of convex
+decomposition, whole-robot robot-operation claims before articulated records, and LLM/VLM claims
+before baseline evidence.

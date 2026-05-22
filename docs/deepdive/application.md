@@ -57,9 +57,11 @@ Current repository state:
   cylinder package;
 - an opt-in body-state guard task path falls back only the flagged bed package while preserving the
   unflagged Franka cylinder package in the recorded smoke.
+- a preliminary bed-aligned collision-only microbenchmark shows 2.21x generated-contact throughput
+  for Newton-native boxes versus same-count convex64 mesh proxies in one pressure scene.
 
 The current evidence supports a project proposal and a narrow diagnostic mechanism story. It does
-not support broad benchmark, whole-robot, or safety claims.
+not support broad benchmark-suite, full-simulation speedup, whole-robot, or safety claims.
 
 ## 0-4 Week Milestone
 
@@ -102,7 +104,7 @@ Requested support:
 
 - No safety guarantee.
 - No real-world transfer or deployment readiness claim.
-- No benchmark superiority claim.
+- No broad benchmark superiority or full-simulation speedup claim.
 - No complete replacement of convex decomposition.
 - No novelty claim for automatic primitive collider generation itself.
 - No whole-robot Franka performance claim before articulated records exist.

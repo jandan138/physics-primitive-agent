@@ -38,8 +38,10 @@ primitive decomposition is an important related candidate generator and baseline
 - A recorded bed/Franka cylinder mechanism shows why engine-level body-state diagnostics matter.
 - An opt-in package body-state guard task path has real Newton task-smoke evidence for the capped
   bed/Franka slice.
-- No broad benchmark, complete collision-quality validation, or whole-robot articulated-dynamics
-  evidence exists yet.
+- A preliminary bed-aligned collision-only pressure test records 2.21x generated-contact throughput
+  for Newton-native boxes versus same-count convex64 mesh proxies.
+- No broad benchmark-suite, complete collision-quality validation, or whole-robot
+  articulated-dynamics evidence exists yet.
 
 ## Support Requested
 
@@ -51,8 +53,8 @@ primitive decomposition is an important related candidate generator and baseline
 
 ## Non-Goals
 
-No safety guarantee, no real-world transfer claim, no deployment readiness, no benchmark
-superiority claim, no primitive-only sufficiency claim, no full CPD reproduction claim, and no
-whole-robot robot-operation claim before articulated records exist.
+No safety guarantee, no real-world transfer claim, no deployment readiness, no broad benchmark
+superiority or full-simulation speedup claim, no primitive-only sufficiency claim, no full CPD
+reproduction claim, and no whole-robot robot-operation claim before articulated records exist.
 
 Canonical wording: [message-map.md](message-map.md).

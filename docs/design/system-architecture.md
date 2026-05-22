@@ -60,5 +60,6 @@ proof point.
 
 ## Current Non-Goals
 
-No safety guarantee, real-world transfer, deployment readiness, benchmark superiority,
-primitive-only sufficiency, full CPD reproduction, or complete replacement of convex decomposition.
+No safety guarantee, real-world transfer, deployment readiness, broad benchmark superiority,
+full-simulation speedup, primitive-only sufficiency, full CPD reproduction, or complete replacement
+of convex decomposition.

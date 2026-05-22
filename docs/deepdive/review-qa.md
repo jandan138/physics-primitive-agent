@@ -15,6 +15,14 @@ format. The project makes those packages measurable, rejectable, and fallback-aw
 Primitives are editable, interpretable, and often cheap in physics engines. The claim is not
 primitive-only. The claim is candidate primitives plus Newton diagnostics and fallback.
 
+**Question: Do you have early performance evidence?**
+
+Yes, with a narrow boundary. In one bed-aligned collision-only pressure test, Newton-native box
+primitives achieved 2.21x higher generated-contact throughput than same-count 64-vertex
+convex-mesh proxies: 19.8k versus 9.0k generated contacts per second. The end-to-end
+collision-only wall time improved by about 5.3%, so this should be presented as contact-throughput
+evidence, not full simulation speedup.
+
 **Question: How is this different from CPD 2026?**
 
 CPD-style work generates compact primitive collider packages and evaluates geometry/simulation
@@ -45,8 +53,9 @@ self-collision sanity, and end-effector pose error.
 **Question: How do you avoid benchmark overclaiming?**
 
 Use paired asset-level comparisons, fixed configs, recorded seeds, Newton version, hardware, solver
-settings, asset hashes, baseline parameters, and artifact paths. Do not claim superiority before
-sample size and task coverage justify it.
+settings, asset hashes, baseline parameters, and artifact paths. The current 2.21x bed-aligned
+result is a preliminary single-scene contact-throughput hook; do not claim broad benchmark
+superiority before sample size and task coverage justify it.
 
 ## Robot Operation
 
@@ -107,6 +116,6 @@ LLM/VLM adds no measurable value after deterministic baselines.
 
 ## Non-Goals
 
-No safety guarantee, real-world transfer, deployment readiness, benchmark superiority, full CPD
-reproduction, complete replacement of convex decomposition, or whole-robot robot-operation claim
-before articulated records exist.
+No safety guarantee, real-world transfer, deployment readiness, broad benchmark superiority,
+full-simulation speedup, full CPD reproduction, complete replacement of convex decomposition, or
+whole-robot robot-operation claim before articulated records exist.

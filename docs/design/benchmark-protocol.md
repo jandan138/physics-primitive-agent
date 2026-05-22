@@ -34,6 +34,7 @@ For articulated assets:
 |---|---|---|---|---|---|
 | body-state/drop-settle | asset above static plane; gravity enabled; zero initial velocity | Newton settings recorded in config, 2 s target duration unless overridden | 3 | body-state delta, final speed, contact count, jitter or penetration | passes if run completes and labels rest/contact failure modes |
 | sphere rain/contact stress | fixed or seeded sphere pattern above/around asset | Newton settings recorded in config, 2 s target duration unless overridden | 3 | contact count p95, step time, jitter or penetration | passes if false clearances, blocked openings, or excessive contacts are observable when present |
+| collision-only contact throughput | fixed or seeded probe pattern around asset; no dynamics integration | Newton collision pipeline only, repeated collide calls with warmup and repeats | 3-5 | contacts per second, microseconds per contact, wall time, contacted probe count | supports scoped throughput evidence only; does not imply full simulation speedup |
 | stack or slide | asset on static plane or support; optional lateral impulse | Newton settings recorded in config | 3 | displacement, contact count, jitter or penetration | passes if support/slide behavior is measurable and labeled |
 | link-boundary audit | robot asset with source link/joint graph | compile/check only | 1 | cross-link merge count, per-link primitive count | passes only if cross-link merges are zero |
 | articulation smoke | robot loaded with generated package | Newton settings recorded in config | 1-3 | joint tree import, gravity-hold drift, trajectory completion, self-collision sanity, end-effector pose error | passes if the robot remains a valid articulated system under the recorded gates |
@@ -103,5 +104,6 @@ Later baselines:
 
 ## Current Non-Goals
 
-No safety guarantee, real-world transfer, deployment readiness, benchmark superiority,
-primitive-only sufficiency, full CPD reproduction, or complete replacement of convex decomposition.
+No safety guarantee, real-world transfer, deployment readiness, broad benchmark superiority,
+full-simulation speedup, primitive-only sufficiency, full CPD reproduction, or complete replacement
+of convex decomposition.

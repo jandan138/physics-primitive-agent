@@ -23,13 +23,17 @@ canonical DeepDive wording.
 - An explicitly opt-in package body-state guard task path has been recorded: it falls back only the
   flagged capped bed package while keeping the unflagged capped Franka cylinder package in the
   recorded Newton task smoke.
+- A preliminary bed-aligned, collision-only contact-throughput microbenchmark has been recorded:
+  native Newton boxes achieved 2.21x generated-contact throughput versus same-count convex64 mesh
+  proxies in one pressure scene, with about 5.3% collision-only wall-time reduction.
 - Current Franka evidence is capped-package and task-smoke evidence. It is not whole-robot
   articulated-dynamics evidence.
 
 ## Current Unsupported Claims
 
 - No production collision compiler is complete.
-- No broad benchmark result or benchmark superiority claim exists.
+- No broad benchmark-suite result, full-simulation speedup result, or broad benchmark superiority
+  claim exists.
 - No calibrated default primitive selector policy exists.
 - No validated COM/inertia repair policy exists.
 - No broad cylinder stability result exists.
@@ -42,6 +46,7 @@ canonical DeepDive wording.
 
 - [Cylinder goal completion audit after contact closure](../records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
 - [Package body-state guard task path](../records/2026-05-22-package-body-state-guard-task-path.md)
+- [Bed-aligned box primitive contact-throughput microbenchmark](../records/2026-05-22-bed-aligned-box-primitive-contact-throughput.md)
 - [Newton-in-the-loop selector story](../reference/newton-in-the-loop-selector-story.md)
 - [Simulation-checked primitive collider direction](../reference/simulation-checked-primitive-collider-direction.md)
 - [Claim boundaries](../reference/claim-boundaries.md)

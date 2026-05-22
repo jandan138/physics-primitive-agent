@@ -46,12 +46,13 @@ contribution is the downstream compiler/checker loop:
 
 - [Cylinder goal completion audit after contact closure](records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
 - [Package body-state guard task path](records/2026-05-22-package-body-state-guard-task-path.md)
+- [Bed-aligned box primitive contact-throughput microbenchmark](records/2026-05-22-bed-aligned-box-primitive-contact-throughput.md)
 - [DeepDive direction shift record](records/2026-05-22-deepdive-direction-shift-to-simulation-checked-robotics.md)
 
 ## Current Non-Goals
 
 - No production compiler claim.
 - No full CPD paper reproduction claim.
-- No broad benchmark or collision-quality validation claim.
+- No broad benchmark, full-simulation speedup, or collision-quality validation claim.
 - No whole-robot articulated robot-operation claim before dedicated records exist.
 - No deployment readiness, real-world transfer, or safety guarantee.

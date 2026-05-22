@@ -34,6 +34,11 @@ So the important status is: Newton-in-the-loop selector/fitting cycles now run e
 recorded, claim-bounded settings. They are evidence for a simulation-checked acceptance loop, not
 benchmark, collision-quality, full CPD, or whole-robot evidence.
 
+A separate bed-aligned collision-only microbenchmark adds one preliminary performance hook for the
+same story: accepted Newton-native box primitives reached 2.21x generated-contact throughput versus
+same-count convex64 mesh proxies in one pressure scene. That is contact-throughput evidence, not
+full simulation speedup or broad benchmark evidence.
+
 ## Why The Gates Came First
 
 The earlier gates were not the final research claim. They made the later Newton run interpretable:
@@ -101,6 +106,7 @@ exceeded the smoke timeout. That keeps the passing cost-guided evidence scoped t
 | Franka support-threshold opt-in | `29` boxes + `3` cylinders | Passed | The three previously support-blocked raw-cost cylinder candidates can be admitted in one opt-in lane and still pass recorded task smokes. |
 | Combined guarded support-threshold bed/Franka opt-in | Bed: `32` boxes; Franka: `29` boxes + `3` cylinders | Passed | One two-role opt-in config composes the guard and support-threshold controls without a score multiplier. |
 | Franka cost-guided merge-search opt-in | `25` boxes + `7` cylinders | Passed | One Franka-only opt-in config changes merge search and package grouping while keeping default lanes unchanged. |
+| Bed-aligned contact-throughput microbenchmark | Native `32` boxes versus `32` convex64 mesh proxies | Collision-only throughput recorded | Native boxes reached 2.21x generated-contact throughput in one pressure scene; not full simulation speedup. |
 
 ## What This Does Not Prove
 
@@ -108,7 +114,7 @@ This does not prove:
 
 - full CPD paper reproduction;
 - primitive collision quality improvement;
-- benchmark superiority;
+- broad benchmark superiority or full-simulation speedup;
 - a calibrated cylinder threshold;
 - a calibrated support-threshold relaxation;
 - a default selector policy;
@@ -151,6 +157,7 @@ articulation smoke checks before any whole-robot Franka claim.
 - [2026-05-21 cylinder stability mechanism diagnosis](../records/2026-05-21-cylinder-stability-mechanism-diagnosis.md)
 - [2026-05-21 Franka native opt-in probe](../records/2026-05-21-franka-native-opt-in-probe.md)
 - [2026-05-21 bed native opt-in probe](../records/2026-05-21-bed-native-opt-in-probe.md)
+- [2026-05-22 bed-aligned box primitive contact-throughput microbenchmark](../records/2026-05-22-bed-aligned-box-primitive-contact-throughput.md)
 - [Bed and Franka native probe comparison](bed-franka-native-probe-comparison.md)
 - [Simulation-checked primitive collider direction](simulation-checked-primitive-collider-direction.md)
 - [Claim boundaries](claim-boundaries.md)
