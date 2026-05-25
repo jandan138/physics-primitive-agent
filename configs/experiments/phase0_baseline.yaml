@@ -80,6 +80,7 @@ phase0_defaults:
     coacd_mcts_max_depth: 1
     coacd_merge: false
     vhacd_max_vertices_per_hull: 64
+    vhacd_resolution: 20000
   probes:
     body_state_drop_settle:
       initial_conditions:

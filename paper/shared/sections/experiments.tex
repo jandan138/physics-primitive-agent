@@ -21,8 +21,9 @@ This is scoped collision-pipeline evidence, not a full-simulation speedup claim.
 \subsection{Phase 0 rigid-asset diagnostic table}
 Table~\ref{tab:phase0-grscenes-rigid} summarizes the current scoped Phase~0 rigid run over five materialized GRScenes assets.
 The run records first-mesh bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain probes.
+It also records V-HACD runtime evidence for all five assets, with V-HACD probe failures on bowl, cup, and tray.
 It also includes one Franka USD articulation smoke.
-It is not a complete Phase~0 benchmark: V-HACD is recorded as a dependency gap in the current environment, and link-aware robot package generation remains open.
+It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, and link-aware robot package generation remains open.
 
 \begin{table}[t]
   \centering
@@ -31,11 +32,11 @@ It is not a complete Phase~0 benchmark: V-HACD is recorded as a dependency gap i
     \toprule
     Asset role & Candidate lanes & \simchecked{} outcome & Recorded fallback/failure \\
     \midrule
-    rigid prop & bbox 1; CoACD 1; CPD 12 & tested lanes pass & V-HACD dependency gap \\
-    container & bbox 1; CoACD 9; CPD 16 & bbox pass; sphere pass & CoACD/CPD drop+stack failures \\
-    contact affordance & bbox 1; CoACD 5; CPD 16 & bbox pass; sphere pass & CoACD/CPD drop; CPD stack failure \\
-    stackable & bbox 1; CoACD 1; CPD 16 & tested lanes pass & V-HACD dependency gap \\
-    precision control & bbox 1; CoACD 1; CPD 12 & tested lanes pass & manual review required \\
+    rigid prop & bbox 1; CoACD 1; V-HACD 1; CPD 12 & tested lanes pass & none in scoped run \\
+    container & bbox 1; CoACD 9; V-HACD 16; CPD 16 & bbox pass; sphere pass & CoACD/CPD/V-HACD drop+stack failures \\
+    contact affordance & bbox 1; CoACD 5; V-HACD 16; CPD 16 & bbox pass; sphere pass & CoACD/CPD/V-HACD drop; CPD stack failure \\
+    stackable & bbox 1; CoACD 1; V-HACD 16; CPD 16 & bbox/CoACD/CPD pass & V-HACD drop failure \\
+    precision control & bbox 1; CoACD 1; V-HACD 16; CPD 12 & tested lanes pass & manual review required \\
     \bottomrule
   \end{tabular}
   \caption{Scoped Phase~0 GRScenes diagnostic summary. Counts are primitive or hull counts in the recorded package lanes; fallback and failure entries are recorded outcomes, not hidden exclusions.}

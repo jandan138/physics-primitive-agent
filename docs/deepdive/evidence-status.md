@@ -19,9 +19,9 @@ canonical DeepDive wording.
   filenames.
 - A scoped Phase 0 follow-up run exists for five GRScenes rigid assets plus one Franka USD smoke
   asset. It records bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes under
-  Newton contact, drop/settle, stack-or-slide, and sphere-rain probes; records V-HACD as a
-  dependency gap because `vhacdx` is unavailable; and records Franka joint-tree import, short
-  gravity hold, and kinematic trajectory smoke.
+  Newton contact, drop/settle, stack-or-slide, and sphere-rain probes; records V-HACD runtime
+  evidence for all five selected rigid assets, including V-HACD probe failures on bowl/cup/tray;
+  and records Franka joint-tree import, short gravity hold, and kinematic trajectory smoke.
 - The repository has dated records for capped bed/Franka native probe paths and opt-in selected
   cylinder packages.
 - The capped bed/Franka cylinder mechanism question is complete for the recorded scope: the bed
@@ -42,9 +42,9 @@ canonical DeepDive wording.
 - No production collision compiler is complete.
 - No broad benchmark-suite result, full-simulation speedup result, or broad benchmark superiority
   claim exists.
-- No complete Phase 0 benchmark coverage exists: CoACD and stack-or-slide are now present in the
-  scoped run, but V-HACD is still a dependency gap and link-aware robot package generation remains
-  open.
+- No complete Phase 0 benchmark coverage exists: CoACD, V-HACD, and stack-or-slide are now present
+  in the scoped run, but selected V-HACD lanes still have recorded probe failures and link-aware
+  robot package generation remains open.
 - No calibrated default primitive selector policy exists.
 - No validated COM/inertia repair policy exists.
 - No broad cylinder stability result exists.
@@ -56,6 +56,7 @@ canonical DeepDive wording.
 ## Current Evidence To Highlight
 
 - [Cylinder goal completion audit after contact closure](../records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
+- [Phase 0 V-HACD runtime follow-up](../records/2026-05-26-phase0-vhacd-runtime-followup.md)
 - [Phase 0 GRScenes asset intake](../records/2026-05-25-phase0-grscenes-asset-intake.md)
 - [Phase 0 stack/CoACD/articulation follow-up](../records/2026-05-25-phase0-stack-coacd-articulation-followup.md)
 - [Phase 0 GRScenes rigid benchmark](../records/2026-05-25-phase0-grscenes-rigid-benchmark.md)
@@ -71,7 +72,8 @@ The next milestone should produce evidence for simulation-checked acceptance rat
 paper-lane gate accounting:
 
 - link-aware primitive package generation for an articulated robot asset;
-- V-HACD runtime evidence after `vhacdx` or another V-HACD executable is installed;
+- V-HACD probe-failure triage for the bowl, cup, and tray lanes, or an explicit decision to keep
+  those failures as recorded diagnostic outcomes;
 - proof that primitive merges do not cross link/joint boundaries;
 - Newton articulation smoke: joint tree import, gravity hold, simple joint trajectory,
   self-collision sanity, and end-effector pose sanity;

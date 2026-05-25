@@ -17,6 +17,11 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.4",
 ]
+phase0 = [
+    "coacd>=1.0",
+    "trimesh>=4.12",
+    "vhacdx>=0.0.10",
+]
 
 [project.scripts]
 npc-compile = "primitive_collision_compiler.cli:main"

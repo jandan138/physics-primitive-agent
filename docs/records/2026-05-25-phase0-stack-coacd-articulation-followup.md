@@ -6,7 +6,8 @@
 
 ## Status
 
-Complete for the scoped follow-up run.
+Complete for the scoped follow-up run. V-HACD dependency status is superseded by the
+2026-05-26 runtime follow-up.
 
 ## Changes
 
@@ -15,7 +16,7 @@ Complete for the scoped follow-up run.
   enter contact, drop/settle, stack-or-slide, and sphere-rain probes.
 - Added a CoACD/V-HACD convex-decomposition baseline path. CoACD ran in the clean Newton
   environment; V-HACD is now recorded separately as `vhacd_if_available` and currently reports a
-  dependency gap because `vhacdx` is not installed.
+  dependency gap because `vhacdx` was not installed for this 2026-05-25 run.
 - Added a Franka USD articulation smoke case with joint tree import, short gravity hold, and simple
   kinematic trajectory checks.
 - Preserved the link-boundary claim boundary: link-aware robot package generation is not
@@ -46,7 +47,7 @@ Baseline and probe summary:
 |---|---|
 | `bounding_primitive` | Generated for all five rigid assets and entered Newton probes. |
 | `coacd_or_vhacd_if_available` | CoACD generated convex-mesh hull packages for all five rigid assets; hull counts were 1, 9, 5, 1, and 1. |
-| `vhacd_if_available` | Recorded dependency gap for all five rigid assets: `vhacdx` is not installed. |
+| `vhacd_if_available` | Recorded dependency gap for all five rigid assets in this historical run: `vhacdx` was not installed. |
 | `cpd_style_primitive_candidate_if_available` | Generated CPD-style first-mesh candidates for all five rigid assets. |
 | `single_convex_hull` | Kept as a simple fallback lane; executable convex-decomposition owns generated convex hull probes. |
 | `stack_or_slide` | Ran as a Newton task smoke where the baseline package entered contact canary successfully. |
@@ -86,9 +87,11 @@ Recorded failures are diagnostic outcomes, not hidden exclusions:
 - Supports the claim that the diagnostic checker records accept, fallback, dependency-gap, and
   failure outcomes rather than hiding failing packages.
 - Does not support V-HACD runtime comparison until `vhacdx` or another V-HACD executable is
-  installed and a new report records it.
+  installed and a new report records it. This was later addressed for scoped runtime evidence in
+  `docs/records/2026-05-26-phase0-vhacd-runtime-followup.md`.
 - Does not support link-aware robot package generation or whole-robot Franka collider quality.
-- V-HACD runtime parsing remains unverified in this environment because the dependency is absent.
+- V-HACD runtime parsing remains unverified for this 2026-05-25 report because the dependency was
+  absent.
 - Does not support broad benchmark superiority, full-simulation speedup, deployment readiness,
   real-world transfer, or safety certification.
 

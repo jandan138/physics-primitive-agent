@@ -43,7 +43,7 @@ created outside the repository with conda and then populated with the project pa
 importer dependencies:
 
 ```bash
-python -m pip install -e "/cpfs/user/zhuzihou/dev/physics-primitive-agent[dev]"
+python -m pip install -e "/cpfs/user/zhuzihou/dev/physics-primitive-agent[dev,phase0]"
 python -m pip install -e "/cpfs/user/zhuzihou/dev/newton[importers]" \
   --extra-index-url https://pypi.nvidia.com/
 ```

@@ -39,20 +39,21 @@ claims:
     status: recorded_scoped
     section: experiments
     claim: >-
-      A scoped Phase 0 diagnostic run records accept, fallback, dependency-gap, and failure
-      outcomes for five materialized GRScenes rigid assets under bounding-primitive, CPD-style
-      first-mesh, and CoACD convex-mesh candidate packages with Newton contact, drop/settle,
-      stack-or-slide, and sphere-rain probes. The same report separately includes one Franka USD
-      articulation smoke asset.
+      A scoped Phase 0 diagnostic run records accept, fallback, and failure outcomes plus a zero
+      dependency-gap count for five materialized GRScenes rigid assets under bounding-primitive,
+      CPD-style first-mesh, CoACD convex-mesh, and V-HACD candidate packages with Newton contact,
+      drop/settle, stack-or-slide, and sphere-rain probes. V-HACD generates packages for all five
+      selected assets and records probe failures on bowl/cup/tray. The same report separately
+      includes one Franka USD articulation smoke asset.
     evidence_source: >-
-      docs/records/2026-05-25-phase0-stack-coacd-articulation-followup.md;
+      docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
     paper_scope: >-
-      scoped_diagnostic_not_broad_benchmark_superiority_not_vhacd_runtime_not_link_aware_robot_package
+      scoped_diagnostic_not_broad_benchmark_superiority_not_all_vhacd_success_not_link_aware_robot_package
     next_required_step: >-
-      Add V-HACD runtime evidence and link-aware robot package generation before claiming complete
-      Phase 0 coverage.
+      Triage or intentionally preserve the recorded V-HACD probe failures and add link-aware robot
+      package generation before claiming complete Phase 0 coverage.
   - id: franka_articulation_smoke
     status: recorded_scoped
     section: experiments
@@ -60,7 +61,7 @@ claims:
       The Phase 0 follow-up report includes a Franka USD articulation smoke that passes joint-tree
       import, short gravity hold, and simple kinematic trajectory checks.
     evidence_source: >-
-      docs/records/2026-05-25-phase0-stack-coacd-articulation-followup.md;
+      docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
     paper_scope: articulation_import_smoke_not_link_aware_package_not_whole_robot_validation

@@ -46,10 +46,15 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-05-26 Phase 0 V-HACD Runtime Follow-Up](2026-05-26-phase0-vhacd-runtime-followup.md):
+  scoped follow-up run after installing `vhacdx`; V-HACD generates hull packages for all five
+  GRScenes rigid assets, records V-HACD probe failures on bowl/cup/tray, and has zero dependency
+  gaps.
 - [2026-05-25 Phase 0 Stack CoACD Articulation Follow-Up](2026-05-25-phase0-stack-coacd-articulation-followup.md):
   scoped follow-up run that adds dedicated stack-or-slide execution, CoACD executable convex-mesh
-  baseline packages, explicit V-HACD dependency-gap records, and Franka articulation smoke while
-  preserving the link-aware robot package boundary.
+  baseline packages, initial V-HACD dependency-gap records, and Franka articulation smoke while
+  preserving the link-aware robot package boundary; superseded for V-HACD status by the 2026-05-26
+  runtime follow-up.
 - [2026-05-25 Phase 0 GRScenes Rigid Benchmark](2026-05-25-phase0-grscenes-rigid-benchmark.md):
   scoped five-asset GRScenes rigid diagnostic run with bounding-primitive and CPD-style first-mesh
   candidate lanes, Newton contact/drop/sphere outcomes, and explicit fallback/dependency-gap

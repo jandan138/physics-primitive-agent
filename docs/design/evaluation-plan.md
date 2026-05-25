@@ -61,10 +61,10 @@ Robot-asset tasks:
   materialized GRScenes USD assets covering rigid props, stackable objects, contact affordances,
   containers, and one precision negative control. The current robot smoke asset is tracked in
   `assets/manifests/franka_usd_smoke_assets.yaml`.
-- Current run scope: the follow-up run covers bounding-primitive, CPD-style, and CoACD convex-mesh
-  candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain probes. It
-  records V-HACD as a dependency gap, single convex hull as fallback, and precision review as
-  manual-review fallback rather than treating them as successful coverage.
+- Current run scope: the follow-up run covers bounding-primitive, CPD-style, CoACD convex-mesh,
+  and V-HACD candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain
+  probes. It records V-HACD probe failures, single convex hull as fallback, and precision review
+  as manual-review fallback rather than treating them as successful coverage.
 - Newton: record exact Newton source/version, Python environment, hardware, solver settings, and
   deviations before reporting results.
 - Primitive generator: start with deterministic non-LLM heuristics, native lanes, or imported

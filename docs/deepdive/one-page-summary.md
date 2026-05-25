@@ -40,8 +40,8 @@ primitive decomposition is an important related candidate generator and baseline
   bed/Franka slice.
 - A scoped Phase 0 follow-up run exists over the repo-local materialized GRScenes assets and one
   Franka USD smoke asset, with accept/fallback/dependency-gap/failure outcomes for bounding,
-  CPD-style, CoACD convex-mesh, stack-or-slide, and articulation-smoke lanes. V-HACD remains a
-  recorded dependency gap.
+  CPD-style, CoACD convex-mesh, V-HACD, stack-or-slide, and articulation-smoke lanes. V-HACD
+  generates packages for all five selected rigid assets and records probe failures on bowl/cup/tray.
 - A preliminary bed-aligned collision-only pressure test records 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies.
 - No broad benchmark-suite, complete collision-quality validation, or whole-robot

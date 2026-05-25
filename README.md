@@ -66,9 +66,10 @@ Supported today:
   Newton diagnostic smokes.
 - A Phase 0 GRScenes rigid-asset intake manifest with five repo-local materialized USD dependency
   closures, plus a scoped Newton diagnostic follow-up over bounding-primitive, CPD-style, and CoACD
-  convex-mesh candidate lanes. The run includes stack-or-slide probes, records V-HACD as a
-  dependency gap in the current environment, and adds one Franka USD articulation smoke; it is not a
-  complete Phase 0 benchmark or broad generalization result.
+  convex-mesh candidate lanes. The latest follow-up includes stack-or-slide probes, V-HACD runtime
+  evidence for all five selected rigid assets, recorded V-HACD probe failures on bowl/cup/tray,
+  and one Franka USD articulation smoke; it is not a complete Phase 0 benchmark or broad
+  generalization result.
 - A dated capped bed/Franka mechanism audit explaining why the recorded bed cylinder package fails
   while recorded Franka cylinder packages pass.
 - An explicitly opt-in package body-state guard task path that falls back only the flagged bed
@@ -83,7 +84,7 @@ Not supported today:
 - full-simulation speedup;
 - full CPD paper reproduction;
 - calibrated default selector policy;
-- complete Phase 0 coverage with V-HACD runtime evidence and link-aware robot package generation;
+- complete Phase 0 coverage with link-aware robot package generation and broader pass criteria;
 - complete collision-quality validation;
 - whole-robot articulated Franka performance evidence;
 - deployment readiness, real-world transfer, or safety certification.
@@ -94,7 +95,7 @@ The next DeepDive-facing proof point should shift from "primitive-first only" to
 "simulation-checked and robot-operation-aware":
 
 - add link-aware robot package generation and link-boundary package probes;
-- install or configure V-HACD and rerun the current materialized Phase 0 asset set;
+- triage recorded V-HACD probe failures while keeping them visible as diagnostic failures;
 - keep primitive merging link-aware and forbid cross-joint merges;
 - run Newton drop/settle, contact stress, and body-state diagnostics;
 - add articulation smoke checks: joint tree import, gravity hold, simple joint trajectory,
@@ -108,6 +109,12 @@ Install locally:
 
 ```sh
 python -m pip install -e ".[dev]"
+```
+
+Install Phase 0 baseline dependencies, including CoACD and V-HACD:
+
+```sh
+python -m pip install -e ".[dev,phase0]"
 ```
 
 Run fast tests:

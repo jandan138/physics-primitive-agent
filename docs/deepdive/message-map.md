@@ -61,9 +61,10 @@ primitive-aware acceptance story, while staying below any full-simulation or bro
 superiority claim.
 
 The scoped Phase 0 follow-up run adds stack-or-slide execution, CoACD executable convex-mesh
-packages, explicit V-HACD dependency-gap records, and one Franka USD articulation smoke to the
-five-asset GRScenes diagnostic table. It is still not complete Phase 0 coverage because V-HACD has
-not run in the current environment and link-aware robot package generation is not implemented.
+packages, V-HACD runtime evidence, and one Franka USD articulation smoke to the five-asset GRScenes
+diagnostic table. V-HACD now generates packages for all five selected rigid assets, with recorded
+probe failures on bowl/cup/tray. It is still not complete Phase 0 coverage because link-aware
+robot package generation is not implemented.
 
 ## DeepDive Proof Point
 

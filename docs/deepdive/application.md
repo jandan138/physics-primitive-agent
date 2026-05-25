@@ -59,10 +59,11 @@ Current repository state:
   unflagged Franka cylinder package in the recorded smoke.
 - a preliminary bed-aligned collision-only microbenchmark shows 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies in one pressure scene.
-- a scoped Phase 0 follow-up run records bounding-primitive, CPD-style, and CoACD convex-mesh
-  candidate lanes across five materialized GRScenes assets with Newton contact, drop/settle,
-  stack-or-slide, and sphere-rain probes; it also records V-HACD as a dependency gap and records
-  one Franka USD articulation smoke.
+- a scoped Phase 0 follow-up run records bounding-primitive, CPD-style, CoACD convex-mesh, and
+  V-HACD candidate lanes across five materialized GRScenes assets with Newton contact,
+  drop/settle, stack-or-slide, and sphere-rain probes; V-HACD generates packages for all five
+  assets and records probe failures on bowl/cup/tray; the same report records one Franka USD
+  articulation smoke.
 
 The current evidence supports a project proposal, a narrow diagnostic mechanism story, and a
 scoped Phase 0 diagnostic table with CoACD and robot-smoke entries. It does not support broad
@@ -75,7 +76,7 @@ The first milestone should demonstrate that simulation checks catch errors that 
 primitive generation would miss:
 
 - add link-aware robot package generation and link-boundary package probes;
-- install or configure V-HACD and rerun the current materialized Phase 0 asset set;
+- triage recorded V-HACD probe failures while keeping them visible as diagnostic failures;
 - generate primitive candidate packages and baseline colliders;
 - forbid primitive merging across robot link/joint boundaries;
 - run Newton body-state, drop/settle, and contact-stress probes;

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import multiprocessing as mp
 import os
+import pickle
 from pathlib import Path
+import queue
 import shutil
 import subprocess
 import sys
@@ -134,22 +137,17 @@ def _run_vhacd(
     mesh: TriangleMesh,
     options: Mapping[str, object],
 ) -> _RawConvexDecomposition:
-    try:
-        import trimesh  # type: ignore[import-not-found]
-    except ModuleNotFoundError as exc:
-        raise ConvexDecompositionUnavailable(f"trimesh module not available: {exc}") from exc
-
     settings = {
         "maxConvexHulls": int(options["max_hulls"]),
         "maxNumVerticesPerCH": int(options["vhacd_max_vertices_per_hull"]),
+        "resolution": int(options["vhacd_resolution"]),
     }
-    tmesh = trimesh.Trimesh(vertices=mesh.points, faces=mesh.faces, process=False)
-    try:
-        raw = trimesh.decomposition.convex_decomposition(tmesh, **settings)
-    except ModuleNotFoundError as exc:
-        raise ConvexDecompositionUnavailable(f"vhacdx module not available: {exc}") from exc
-    except BaseException as exc:
-        raise ValueError(f"vhacd_runtime_failure: {type(exc).__name__}: {exc}") from exc
+    raw, runtime_metadata = _compute_vhacd_with_timeout(
+        mesh.points,
+        mesh.faces,
+        settings=settings,
+        timeout_seconds=float(options["timeout_seconds"]),
+    )
     return _RawConvexDecomposition(
         hulls=tuple(
             _normalize_hull(item["vertices"], item["faces"])
@@ -158,10 +156,126 @@ def _run_vhacd(
         ),
         metadata={
             "backend_type": "python_module",
-            "backend_version": "trimesh_vhacdx",
+            **runtime_metadata,
             "settings": settings,
         },
     )
+
+
+def _compute_vhacd_with_timeout(
+    points: np.ndarray,
+    faces: np.ndarray,
+    *,
+    settings: Mapping[str, object],
+    timeout_seconds: float,
+) -> tuple[list[Mapping[str, object]], dict[str, object]]:
+    context = _multiprocessing_context()
+    with tempfile.TemporaryDirectory(prefix="npc-vhacd-") as tmp:
+        result_path = Path(tmp) / "hulls.pkl"
+        result_queue = context.Queue(maxsize=1)
+        process = context.Process(
+            target=_vhacd_worker,
+            args=(points, faces, dict(settings), result_queue, str(result_path)),
+        )
+        process.start()
+        process.join(max(timeout_seconds, 0.001))
+        try:
+            if process.is_alive():
+                process.terminate()
+                process.join(5.0)
+                if process.is_alive():
+                    process.kill()
+                    process.join()
+                raise ValueError(f"vhacd_runtime_timeout: exceeded {timeout_seconds:.3f}s")
+            try:
+                status, payload = result_queue.get_nowait()
+            except queue.Empty as exc:
+                raise ValueError(
+                    f"vhacd_runtime_failure: worker exited without a result, exit={process.exitcode}"
+                ) from exc
+            if status == "ok":
+                payload_mapping = _worker_payload_mapping(payload)
+                result_path = str(payload_mapping["result_path"])
+                runtime_metadata = {
+                    "backend_version": str(payload_mapping["backend_version"]),
+                    "trimesh_version": str(payload_mapping["trimesh_version"]),
+                    "vhacdx_version": str(payload_mapping["vhacdx_version"]),
+                }
+                return pickle.loads(Path(result_path).read_bytes()), runtime_metadata
+        finally:
+            result_queue.close()
+            result_queue.join_thread()
+    if status == "ok":
+        raise ValueError("vhacd_runtime_failure: worker reported success without result path")
+    if status == "unavailable":
+        raise ConvexDecompositionUnavailable(str(payload))
+    raise ValueError(str(payload))
+
+
+def _worker_payload_mapping(payload: object) -> Mapping[str, object]:
+    if not isinstance(payload, Mapping):
+        raise ValueError("vhacd_runtime_failure: worker returned invalid result metadata")
+    required = {"result_path", "backend_version", "trimesh_version", "vhacdx_version"}
+    missing = required.difference(payload)
+    if missing:
+        raise ValueError(
+            "vhacd_runtime_failure: worker result metadata missing "
+            + ", ".join(sorted(missing))
+        )
+    return payload
+
+
+def _multiprocessing_context() -> mp.context.BaseContext:
+    try:
+        return mp.get_context("fork")
+    except ValueError:
+        return mp.get_context()
+
+
+def _vhacd_worker(
+    points: np.ndarray,
+    faces: np.ndarray,
+    settings: Mapping[str, object],
+    result_queue: object,
+    result_path: str,
+) -> None:
+    try:
+        import trimesh  # type: ignore[import-not-found]
+        import vhacdx  # type: ignore[import-not-found]
+
+        tmesh = trimesh.Trimesh(vertices=points, faces=faces, process=False)
+        raw = trimesh.decomposition.convex_decomposition(tmesh, **settings)
+        payload = [
+            {"vertices": item["vertices"], "faces": item["faces"]}
+            for item in raw
+            if isinstance(item, Mapping)
+        ]
+        Path(result_path).write_bytes(pickle.dumps(payload, protocol=pickle.HIGHEST_PROTOCOL))
+        result_queue.put(
+            (
+                "ok",
+                {
+                    "result_path": result_path,
+                    "backend_version": (
+                        f"trimesh_{getattr(trimesh, '__version__', 'unknown')}"
+                        f"_vhacdx_{getattr(vhacdx, '__version__', 'unknown')}"
+                    ),
+                    "trimesh_version": str(getattr(trimesh, "__version__", "unknown")),
+                    "vhacdx_version": str(getattr(vhacdx, "__version__", "unknown")),
+                },
+            )
+        )
+    except ModuleNotFoundError as exc:
+        module_name = str(getattr(exc, "name", "") or "")
+        if module_name == "trimesh":
+            message = f"trimesh module not available: {exc}"
+        elif module_name == "vhacdx":
+            message = f"vhacdx module not available: {exc}"
+        else:
+            message = f"vhacd dependency module not available: {exc}"
+        result_queue.put(("unavailable", message))
+    except BaseException as exc:
+        result_queue.put(("error", f"vhacd_runtime_failure: {type(exc).__name__}: {exc}"))
 
 
 def _run_coacd_executable(
@@ -279,6 +393,7 @@ def _convex_decomposition_options(
         "coacd_mcts_max_depth": int(raw.get("coacd_mcts_max_depth", 1)),
         "coacd_merge": bool(raw.get("coacd_merge", False)),
         "vhacd_max_vertices_per_hull": int(raw.get("vhacd_max_vertices_per_hull", 64)),
+        "vhacd_resolution": int(raw.get("vhacd_resolution", 400000)),
     }
 
 

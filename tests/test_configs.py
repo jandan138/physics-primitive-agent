@@ -171,6 +171,7 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
         "coacd",
         "vhacd",
     ]
+    assert data["phase0_defaults"]["convex_decomposition"]["vhacd_resolution"] == 20000
     assert data["phase0_defaults"]["articulated_robot_roles"] == ["franka_import_smoke"]
     assert "displacement" in required_metrics
     assert "link_boundary_status" in required_metrics

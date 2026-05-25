@@ -33,24 +33,28 @@ results:
       assets/manifests/phase0_assets.yaml;
       assets/manifests/franka_usd_smoke_assets.yaml;
       docs/records/2026-05-25-phase0-stack-coacd-articulation-followup.md;
-      reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-25.json
+      docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
+      reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json
     reporting_scope: >-
       Scoped five-asset GRScenes rigid diagnostic run plus one Franka USD articulation smoke over
       repo-local mirrors. Bounding primitive, CPD-style first-mesh, and CoACD convex-mesh
       candidates are recorded with Newton contact, drop/settle, stack-or-slide, and sphere-rain
-      outcomes. V-HACD remains a dependency gap and link-aware robot package generation remains
-      fallback/not run.
+      outcomes. V-HACD runtime evidence is recorded for all five assets with probe failures, and
+      link-aware robot package generation remains fallback/not run.
     metrics:
       asset_count: 5
       articulation_asset_count: 1
-      generated_candidate_lanes: 15
+      generated_candidate_lanes: 20
       coacd_hull_counts: [1, 9, 5, 1, 1]
-      vhacd_dependency_gap_assets: 5
+      vhacd_hull_counts: [1, 16, 16, 16, 16]
+      vhacd_probe_failure_assets: 3
+      vhacd_timeout_assets: 0
       bounding_primitive_lanes_drop_and_sphere_passed: 5
       franka_articulation_smoke_passed: true
-      recorded_failure_count: 7
-      recorded_accept_count: 75
-      recorded_dependency_gap_count: 25
+      recorded_failure_count: 11
+      recorded_accept_count: 96
+      recorded_dependency_gap_count: 0
       recorded_fallback_count: 31
+      recorded_not_applicable_count: 70
       single_convex_hull_fallback_assets: 5
       precision_negative_control_manual_review_assets: 1

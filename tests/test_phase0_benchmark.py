@@ -226,6 +226,45 @@ def test_phase0_coacd_vhacd_baseline_records_executable_package_when_available(
     assert coacd["package_mapping"]["fully_mapped"] is True
 
 
+def test_phase0_vhacd_runtime_failure_records_failed_baseline(tmp_path, monkeypatch):
+    manifest_path = _write_phase0_manifest(tmp_path)
+    config_path = _write_phase0_config(tmp_path, manifest_path, source_dir=None)
+
+    def fake_convex_decomposition_package(
+        mesh,
+        *,
+        role,
+        baseline_id,
+        source_sha256,
+        source_path,
+        max_hulls,
+        phase0_section,
+        preferred_backends=None,
+    ):
+        if preferred_backends == ("vhacd",):
+            raise ValueError("vhacd_runtime_failure: timeout after 1.0s")
+        raise phase0.ConvexDecompositionUnavailable("coacd unavailable")
+
+    import primitive_collision_compiler.phase0 as phase0
+
+    monkeypatch.setattr(
+        phase0,
+        "build_convex_decomposition_package",
+        fake_convex_decomposition_package,
+        raising=False,
+    )
+
+    report = build_phase0_rigid_benchmark_report(config_path)
+
+    vhacd = report["cases"][0]["baseline_results"]["vhacd_if_available"]
+    assert vhacd["status"] == "failure"
+    assert vhacd["outcome"] == "failure"
+    assert vhacd["fallback_reason"] == "vhacd_runtime_failure: timeout after 1.0s"
+    assert report["cases"][0]["probe_results"]["vhacd_if_available"]["contact_canary"][
+        "status"
+    ] == "blocked_by_baseline"
+
+
 def test_phase0_report_records_articulated_robot_smoke_case(
     tmp_path,
     monkeypatch,

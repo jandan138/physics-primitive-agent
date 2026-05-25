@@ -11,6 +11,8 @@ Superseded for current Phase 0 status by
 [`2026-05-25-phase0-stack-coacd-articulation-followup.md`](2026-05-25-phase0-stack-coacd-articulation-followup.md),
 which adds stack-or-slide execution, CoACD executable hull packages, explicit V-HACD dependency-gap
 records, and Franka articulation smoke.
+The V-HACD dependency status is further superseded by
+[`2026-05-26-phase0-vhacd-runtime-followup.md`](2026-05-26-phase0-vhacd-runtime-followup.md).
 The command below used the then-current `configs/experiments/phase0_baseline.yaml`; that config has
 since evolved, so use this record's generated report path as the historical artifact and the
 follow-up record for current reruns.

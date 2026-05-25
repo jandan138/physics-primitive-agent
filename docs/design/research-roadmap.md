@@ -10,8 +10,8 @@ packages in ways that geometry-only generation would miss.
 - Use the materialized Phase 0 GRScenes rigid-asset manifest as the first asset set.
 - Keep the recorded Franka USD articulation smoke reproducible while avoiding whole-robot claims.
 - Generate primitive candidates from deterministic heuristics, native lanes, or CPD-style outputs.
-- Compare against simple baselines, CPD-style candidates, CoACD, and V-HACD when the dependency is
-  installed; current V-HACD status is a recorded dependency gap.
+- Compare against simple baselines, CPD-style candidates, CoACD, and V-HACD; current V-HACD status
+  is generated packages for all five selected assets with recorded probe failures on bowl/cup/tray.
 - Build Newton probes: body-state/drop-settle, contact stress, stack-or-slide, and at least one
   operation-style smoke when feasible.
 - For robot assets, implement link-aware package boundaries before making link-boundary claims.
