@@ -61,6 +61,10 @@ Robot-asset tasks:
   materialized GRScenes USD assets covering rigid props, stackable objects, contact affordances,
   containers, and one precision negative control. A robot smoke asset remains separate and should be
   added only when licensing and runtime setup are reproducible.
+- Current run scope: the first recorded rigid run covers bounding-primitive and CPD-style
+  first-mesh candidate lanes with Newton contact, drop/settle, and sphere-rain probes. It records
+  fallback/dependency-gap labels for single convex hull, CoACD/V-HACD, stack-or-slide, and
+  precision review rather than treating them as successful coverage.
 - Newton: record exact Newton source/version, Python environment, hardware, solver settings, and
   deviations before reporting results.
 - Primitive generator: start with deterministic non-LLM heuristics, native lanes, or imported

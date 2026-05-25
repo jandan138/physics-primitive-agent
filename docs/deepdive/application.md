@@ -59,16 +59,22 @@ Current repository state:
   unflagged Franka cylinder package in the recorded smoke.
 - a preliminary bed-aligned collision-only microbenchmark shows 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies in one pressure scene.
+- a scoped Phase 0 GRScenes rigid diagnostic run records bounding-primitive and CPD-style
+  first-mesh candidate lanes across five materialized assets, including accepted Newton
+  contact/drop/sphere lanes, two CPD-style drop/settle failures, and explicit fallback or
+  dependency-gap labels.
 
-The current evidence supports a project proposal and a narrow diagnostic mechanism story. It does
-not support broad benchmark-suite, full-simulation speedup, whole-robot, or safety claims.
+The current evidence supports a project proposal, a narrow diagnostic mechanism story, and a
+scoped rigid Phase 0 diagnostic table. It does not support broad benchmark-suite,
+full-simulation speedup, whole-robot, or safety claims.
 
 ## 0-4 Week Milestone
 
 The first milestone should demonstrate that simulation checks catch errors that geometry-only
 primitive generation would miss:
 
-- run the materialized Phase 0 GRScenes rigid-asset manifest;
+- extend the current materialized Phase 0 GRScenes rigid-asset run with missing baselines and
+  task probes;
 - include one reproducible articulated robot smoke asset if available;
 - generate primitive candidate packages and baseline colliders;
 - forbid primitive merging across robot link/joint boundaries;

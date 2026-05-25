@@ -73,6 +73,7 @@ from primitive_collision_compiler.newton.sphere_rain import (
     SphereRainOptions,
     run_newton_sphere_rain,
 )
+from primitive_collision_compiler.phase0 import build_phase0_rigid_benchmark_report
 
 
 def build_parser():
@@ -211,6 +212,11 @@ def build_parser():
         "--run-real-usd-native-task-comparison",
         action="store_true",
         help="run gated real-USD old/new Newton drop/settle and sphere-rain comparison",
+    )
+    parser.add_argument(
+        "--run-phase0-benchmark",
+        action="store_true",
+        help="run the Phase 0 rigid-asset benchmark report over the configured manifest",
     )
     parser.add_argument(
         "--run-newton-contact-smoke",
@@ -1075,6 +1081,38 @@ def main(argv=None):
             "npc-compile: --run-real-usd-native-task-comparison requires --config.",
             file=sys.stderr,
         )
+        return 2
+
+    if args.run_phase0_benchmark and args.config:
+        try:
+            with contextlib.redirect_stdout(sys.stderr):
+                report = build_phase0_rigid_benchmark_report(args.config)
+        except (USDMeshLoadError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "stage": "phase0_rigid_asset_benchmark",
+                        "status": "config_error"
+                        if "config" in str(exc) or "phase0_defaults" in str(exc)
+                        else "runtime_failure",
+                        "fallback_reason": str(exc),
+                    },
+                    sort_keys=True,
+                )
+            )
+            return 2
+        try:
+            print(json.dumps(report, sort_keys=True, allow_nan=False))
+        except ValueError as exc:
+            print(
+                f"npc-compile: phase0 benchmark report contains non-finite JSON values: {exc}",
+                file=sys.stderr,
+            )
+            return 2
+        return 0
+
+    if args.run_phase0_benchmark:
+        print("npc-compile: --run-phase0-benchmark requires --config.", file=sys.stderr)
         return 2
 
     if args.run_newton_contact_smoke and args.config:

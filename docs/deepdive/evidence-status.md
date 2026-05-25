@@ -16,7 +16,12 @@ canonical DeepDive wording.
   paths, Newton contact canaries, and named Newton task smokes.
 - Phase 0 now has five selected GRScenes rigid assets materialized into ignored repo-local mirrors
   with tracked source paths, source/local hashes, and concrete localized USD/MDL/texture dependency
-  filenames. This is asset intake evidence, not benchmark outcome evidence.
+  filenames.
+- A scoped Phase 0 rigid diagnostic run exists for those five GRScenes assets. It records
+  bounding-primitive and CPD-style first-mesh candidate lanes under Newton contact, drop/settle,
+  and sphere-rain probes, including two CPD-style drop/settle `not_settled` failures and explicit
+  fallback/dependency-gap labels for convex hull, CoACD/V-HACD, stack-or-slide, and precision
+  review.
 - The repository has dated records for capped bed/Franka native probe paths and opt-in selected
   cylinder packages.
 - The capped bed/Franka cylinder mechanism question is complete for the recorded scope: the bed
@@ -37,7 +42,8 @@ canonical DeepDive wording.
 - No production collision compiler is complete.
 - No broad benchmark-suite result, full-simulation speedup result, or broad benchmark superiority
   claim exists.
-- No Phase 0 multi-asset benchmark result, accept/fallback-rate table, or paper metric claim exists.
+- No complete Phase 0 benchmark coverage exists: CoACD/V-HACD executable baselines, dedicated
+  stack-or-slide execution, and articulated robot smoke remain open.
 - No calibrated default primitive selector policy exists.
 - No validated COM/inertia repair policy exists.
 - No broad cylinder stability result exists.
@@ -50,6 +56,7 @@ canonical DeepDive wording.
 
 - [Cylinder goal completion audit after contact closure](../records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
 - [Phase 0 GRScenes asset intake](../records/2026-05-25-phase0-grscenes-asset-intake.md)
+- [Phase 0 GRScenes rigid benchmark](../records/2026-05-25-phase0-grscenes-rigid-benchmark.md)
 - [Package body-state guard task path](../records/2026-05-22-package-body-state-guard-task-path.md)
 - [Bed-aligned box primitive contact-throughput microbenchmark](../records/2026-05-22-bed-aligned-box-primitive-contact-throughput.md)
 - [Newton-in-the-loop selector story](../reference/newton-in-the-loop-selector-story.md)
@@ -62,8 +69,7 @@ The next milestone should produce evidence for simulation-checked acceptance rat
 paper-lane gate accounting:
 
 - link-aware primitive package generation for an articulated robot asset;
-- Phase 0 runs over the materialized GRScenes rigid-asset manifest with dated accept/fallback
-  records;
+- Phase 0 follow-up runs with dedicated stack-or-slide execution and CoACD/V-HACD baselines;
 - proof that primitive merges do not cross link/joint boundaries;
 - Newton articulation smoke: joint tree import, gravity hold, simple joint trajectory,
   self-collision sanity, and end-effector pose sanity;

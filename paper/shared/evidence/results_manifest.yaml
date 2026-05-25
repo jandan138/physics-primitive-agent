@@ -26,10 +26,26 @@ results:
       primitive_count: 32
       mesh_proxy_vertices: 64
   - id: phase0_multi_asset_benchmark
-    status: asset_intake_materialized_not_run
+    status: recorded_scoped_rigid_diagnostic
     section: experiments
     evidence_source: >-
       configs/experiments/phase0_baseline.yaml;
       assets/manifests/phase0_assets.yaml;
-      docs/records/2026-05-25-phase0-grscenes-asset-intake.md
-    reporting_scope: Asset intake only; required benchmark outcomes are not yet recorded.
+      docs/records/2026-05-25-phase0-grscenes-rigid-benchmark.md;
+      reports/generated/phase0_baseline/phase0_grscenes_rigid_newton_2026-05-25.json
+    reporting_scope: >-
+      Scoped five-asset GRScenes rigid diagnostic run over repo-local mirrors. Bounding primitive
+      and CPD-style first-mesh candidates are recorded with Newton contact, drop/settle, and
+      sphere-rain outcomes. CoACD/V-HACD, dedicated stack-or-slide, and robot articulation remain
+      fallback or dependency gaps.
+    metrics:
+      asset_count: 5
+      generated_candidate_lanes: 10
+      bounding_primitive_lanes_drop_and_sphere_passed: 5
+      cpd_style_lanes_drop_and_sphere_passed: 3
+      cpd_style_drop_settle_failures: 2
+      coacd_or_vhacd_dependency_gap_assets: 5
+      single_convex_hull_fallback_assets: 5
+      stack_or_slide_runner_fallback_assets: 5
+      precision_negative_control_manual_review_assets: 1
+      report_elapsed_seconds: 298

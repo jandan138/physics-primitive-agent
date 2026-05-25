@@ -65,7 +65,9 @@ Supported today:
   diagnostics, environment-readiness diagnostics, CPD-like geometry smoke paths, and several named
   Newton diagnostic smokes.
 - A Phase 0 GRScenes rigid-asset intake manifest with five repo-local materialized USD dependency
-  closures. This is asset readiness for the benchmark, not a benchmark result.
+  closures, plus a scoped Newton diagnostic run over bounding-primitive and CPD-style first-mesh
+  candidate lanes. The run records accept/fallback/dependency-gap/failure outcomes; it is not a
+  complete Phase 0 benchmark or broad generalization result.
 - A dated capped bed/Franka mechanism audit explaining why the recorded bed cylinder package fails
   while recorded Franka cylinder packages pass.
 - An explicitly opt-in package body-state guard task path that falls back only the flagged bed
@@ -80,6 +82,8 @@ Not supported today:
 - full-simulation speedup;
 - full CPD paper reproduction;
 - calibrated default selector policy;
+- complete Phase 0 coverage with CoACD/V-HACD, dedicated stack-or-slide, and articulated robot
+  smoke;
 - complete collision-quality validation;
 - whole-robot articulated Franka performance evidence;
 - deployment readiness, real-world transfer, or safety certification.
@@ -89,7 +93,8 @@ Not supported today:
 The next DeepDive-facing proof point should shift from "primitive-first only" to
 "simulation-checked and robot-operation-aware":
 
-- run the materialized Phase 0 GRScenes rigid-asset set in `assets/manifests/phase0_assets.yaml`;
+- extend the materialized Phase 0 GRScenes rigid-asset run beyond the current contact/drop/sphere
+  diagnostic lanes;
 - include at least one articulated robot smoke asset such as Franka when licensing and runtime setup
   are reproducible;
 - keep primitive merging link-aware and forbid cross-joint merges;

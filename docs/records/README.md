@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-05-25 Phase 0 GRScenes Rigid Benchmark](2026-05-25-phase0-grscenes-rigid-benchmark.md):
+  scoped five-asset GRScenes rigid diagnostic run with bounding-primitive and CPD-style first-mesh
+  candidate lanes, Newton contact/drop/sphere outcomes, and explicit fallback/dependency-gap
+  labels.
 - [2026-05-25 Phase 0 GRScenes Asset Intake](2026-05-25-phase0-grscenes-asset-intake.md):
   five selected GRScenes rigid assets materialized into ignored repo-local mirrors with tracked
   source/local hashes and USD/MDL/texture dependency metadata; this is asset intake evidence, not

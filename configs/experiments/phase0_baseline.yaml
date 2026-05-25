@@ -51,6 +51,17 @@ phase0_defaults:
       required: false
       fallback_if_unavailable: record_dependency_gap
       status: best_effort
+  cpd_like:
+    primitive_subset: [box, sphere, capsule]
+    component_merge: virtual_pairwise
+    merge_search_policy: topology_then_virtual
+    report_merge_trace: summary
+    max_source_faces_by_role:
+      rigid_prop: 64
+      container: 256
+      contact_affordance: 192
+      stackable: 140
+      precision_negative_control: 64
   probes:
     body_state_drop_settle:
       initial_conditions:

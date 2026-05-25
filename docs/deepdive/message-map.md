@@ -60,6 +60,12 @@ generated-contact throughput than same-count 64-vertex convex-mesh proxies. This
 primitive-aware acceptance story, while staying below any full-simulation or broad benchmark
 superiority claim.
 
+The scoped Phase 0 GRScenes rigid run adds the first five-asset diagnostic table: bounding and
+CPD-style first-mesh candidate lanes are recorded with Newton contact, drop/settle, and
+sphere-rain outcomes, including explicit fallback/dependency-gap labels and two CPD-style
+drop/settle failures. It is not complete Phase 0 coverage because stack-or-slide, CoACD/V-HACD,
+and articulated robot smoke are still open.
+
 ## DeepDive Proof Point
 
 The narrow first proof point should demonstrate that the checker can expose errors that

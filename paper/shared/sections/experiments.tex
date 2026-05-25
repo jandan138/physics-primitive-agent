@@ -18,22 +18,25 @@ An opt-in package body-state guard falls back only the flagged capped bed packag
 In one bed-aligned pressure scene with 32 accepted box primitives versus 32 convex64 mesh proxies, native primitives report median $2.21\times$ generated contacts per collide call and about $5.3\%$ lower collision-only wall time.
 This is scoped collision-pipeline evidence, not a full-simulation speedup claim.
 
-\subsection{Phase 0 benchmark table (in progress)}
-Table~\ref{tab:phase0-placeholder} lists required Phase~0 rows.
-Populate from \texttt{experiments/registry.yaml} and new dated records before claiming multi-asset generalization.
+\subsection{Phase 0 rigid-asset diagnostic table}
+Table~\ref{tab:phase0-grscenes-rigid} summarizes the current scoped Phase~0 rigid run over five materialized GRScenes assets.
+The run records first-mesh bounding-primitive and CPD-style candidate lanes with Newton contact, drop/settle, and sphere-rain probes.
+It is not a complete Phase~0 benchmark: CoACD/V-HACD baselines, dedicated stack-or-slide execution, and articulated robot smoke remain open.
 
 \begin{table}[t]
   \centering
   \small
-  \begin{tabular}{@{}lccc@{}}
+  \begin{tabular}{@{}llll@{}}
     \toprule
-    Asset & Geometry-only accept & \simchecked{} accept & Fallback reason \\
+    Asset role & Candidate lanes & \simchecked{} outcome & Recorded fallback/failure \\
     \midrule
-    Bed (capped) & TBD & fail (body-state) & guard / revert \\
-    Franka (capped) & TBD & pass (smoke) & none recorded \\
-    \multicolumn{4}{@{}l@{}}{\emph{Additional Phase~0 assets: pending}} \\
+    rigid prop & bbox 1; CPD 12 & both drop+sphere pass & convex/CoACD/stack gaps \\
+    container & bbox 1; CPD 16 & bbox pass; CPD sphere pass & CPD drop not-settled \\
+    contact affordance & bbox 1; CPD 16 & bbox pass; CPD sphere pass & CPD drop not-settled \\
+    stackable & bbox 1; CPD 16 & both drop+sphere pass & stack runner pending \\
+    precision control & bbox 1; CPD 12 & both drop+sphere pass & manual review required \\
     \bottomrule
   \end{tabular}
-  \caption{Phase~0 paired comparison placeholder. Do not treat empty rows as negative results.}
-  \label{tab:phase0-placeholder}
+  \caption{Scoped Phase~0 GRScenes rigid diagnostic summary. Counts are primitive counts in the recorded package lanes; fallback entries are recorded outcomes, not hidden exclusions.}
+  \label{tab:phase0-grscenes-rigid}
 \end{table}

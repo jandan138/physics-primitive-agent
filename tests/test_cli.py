@@ -488,6 +488,84 @@ def test_cli_materialize_assets_redirects_builder_stdout_to_stderr(tmp_path, cap
     assert "NOISY USD OUTPUT" in captured.err
 
 
+def test_cli_run_phase0_benchmark_emits_json_for_partial_record(tmp_path, capsys, monkeypatch):
+    config_path = tmp_path / "phase0.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: phase0_fixture",
+                "  path: assets/manifests/phase0_assets.yaml",
+                "task:",
+                "  primary: phase0_simulation_checked_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    calls = []
+
+    def fake_report(config_path_arg):
+        calls.append(str(config_path_arg))
+        return {
+            "stage": "phase0_rigid_asset_benchmark",
+            "status": "partial",
+            "outcome_counts": {
+                "accept": 1,
+                "fallback": 1,
+                "dependency_gap": 0,
+                "failure": 0,
+            },
+        }
+
+    monkeypatch.setattr(cli, "build_phase0_rigid_benchmark_report", fake_report, raising=False)
+
+    assert cli.main(["--config", str(config_path), "--run-phase0-benchmark"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["stage"] == "phase0_rigid_asset_benchmark"
+    assert payload["status"] == "partial"
+    assert calls == [str(config_path)]
+
+
+def test_cli_run_phase0_benchmark_returns_zero_for_recorded_failures(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    config_path = tmp_path / "phase0.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: phase0_fixture",
+                "  path: assets/manifests/phase0_assets.yaml",
+                "task:",
+                "  primary: phase0_simulation_checked_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    def fake_report(config_path_arg):
+        return {
+            "stage": "phase0_rigid_asset_benchmark",
+            "status": "completed_with_recorded_failures",
+            "outcome_counts": {
+                "accept": 1,
+                "fallback": 0,
+                "dependency_gap": 0,
+                "failure": 1,
+            },
+        }
+
+    monkeypatch.setattr(cli, "build_phase0_rigid_benchmark_report", fake_report, raising=False)
+
+    assert cli.main(["--config", str(config_path), "--run-phase0-benchmark"]) == 0
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["outcome_counts"]["failure"] == 1
+
+
 def test_cli_run_cpd_like_emits_report_for_tiny_usd(tmp_path, capsys):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")

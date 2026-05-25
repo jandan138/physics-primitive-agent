@@ -129,6 +129,7 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
     config_path = ROOT / "configs" / "experiments" / "phase0_baseline.yaml"
     data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     baselines = data["phase0_defaults"]["baselines"]
+    cpd_like = data["phase0_defaults"]["cpd_like"]
     probes = data["phase0_defaults"]["probes"]
     required_metrics = set(data["phase0_defaults"]["required_metrics"])
 
@@ -152,5 +153,7 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
         == "complete_and_label_articulation_failures"
     )
     assert probes["precision_rejection"]["pass_condition"] == "reject_or_fallback"
+    assert cpd_like["component_merge"] == "virtual_pairwise"
+    assert cpd_like["max_source_faces_by_role"]["container"] == 256
     assert "displacement" in required_metrics
     assert "link_boundary_status" in required_metrics

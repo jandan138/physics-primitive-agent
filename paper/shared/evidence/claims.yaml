@@ -36,15 +36,22 @@ claims:
     excluded_from_paper_metrics: false
     paper_scope: collision_only_single_scene_not_full_simulation_speedup
   - id: phase0_multi_asset_benchmark
-    status: planned
+    status: recorded_scoped
     section: experiments
     claim: >-
-      Phase 0 paired asset-level accept/fallback rates across geometry-only versus
-      simulation-checked gates on 5-10 assets with simple and decomposition baselines.
-    evidence_source: docs/design/evaluation-plan.md; docs/design/benchmark-protocol.md
-    excluded_from_paper_metrics: true
-    exclusion_reason: Multi-asset benchmark table not yet executed for paper metrics.
-    next_required_step: Run Phase 0 asset suite and update results_manifest.yaml before ACCV metrics claims.
+      A scoped Phase 0 rigid diagnostic run over five materialized GRScenes assets records
+      accept, fallback, dependency-gap, and failure outcomes for bounding-primitive and
+      CPD-style first-mesh candidate packages under Newton contact, drop/settle, and
+      sphere-rain probes.
+    evidence_source: >-
+      docs/records/2026-05-25-phase0-grscenes-rigid-benchmark.md;
+      paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
+    excluded_from_paper_metrics: false
+    paper_scope: >-
+      scoped_rigid_diagnostic_not_broad_benchmark_superiority_not_complete_phase0_articulation
+    next_required_step: >-
+      Add dedicated stack-or-slide runner, CoACD/V-HACD executable baselines, and a reproducible
+      articulated robot smoke before claiming complete Phase 0 coverage.
   - id: franka_articulation_smoke
     status: planned
     section: experiments
