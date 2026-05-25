@@ -1,5 +1,6 @@
 import argparse
 import contextlib
+import io
 import json
 import math
 import os
@@ -74,6 +75,28 @@ from primitive_collision_compiler.newton.sphere_rain import (
     run_newton_sphere_rain,
 )
 from primitive_collision_compiler.phase0 import build_phase0_rigid_benchmark_report
+
+
+@contextlib.contextmanager
+def _redirect_stdout_to_stderr():
+    """Redirect Python and file-descriptor stdout while building JSON reports."""
+    try:
+        sys.stdout.flush()
+        sys.stderr.flush()
+        saved_stdout_fd = os.dup(1)
+        os.dup2(2, 1)
+    except (AttributeError, OSError, io.UnsupportedOperation):
+        with contextlib.redirect_stdout(sys.stderr):
+            yield
+        return
+
+    try:
+        with contextlib.redirect_stdout(sys.stderr):
+            yield
+    finally:
+        sys.stdout.flush()
+        os.dup2(saved_stdout_fd, 1)
+        os.close(saved_stdout_fd)
 
 
 def build_parser():
@@ -305,7 +328,7 @@ def main(argv=None):
     if args.materialize_assets and args.config:
         try:
             config = load_compile_config(args.config)
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = build_asset_materialization_report(_asset_manifest_path(config))
         except ValueError as exc:
             print(f"npc-compile: {exc}", file=sys.stderr)
@@ -657,7 +680,7 @@ def main(argv=None):
             sphere_options = _newton_sphere_rain_options(
                 {**diagnostic_section, "probe_type": "sphere_rain"}
             )["options"]
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = build_cpd_like_controlled_merge_search_newton_probe_report(
                     source_dir=source_dir,
                     device=device,
@@ -740,7 +763,7 @@ def main(argv=None):
             sphere_options = _newton_sphere_rain_options(
                 {**diagnostic_section, "probe_type": "sphere_rain"}
             )["options"]
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = build_cpd_like_cost_guided_lookahead_newton_probe_report(
                     source_dir=source_dir,
                     device=device,
@@ -817,7 +840,7 @@ def main(argv=None):
             sphere_options = _newton_sphere_rain_options(
                 {**diagnostic_section, "probe_type": "sphere_rain"}
             )["options"]
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = build_cpd_like_cylinder_scoring_policy_newton_probe_report(
                     source_dir=source_dir,
                     device=device,
@@ -977,7 +1000,7 @@ def main(argv=None):
             if not isinstance(diagnostic_section, dict):
                 diagnostic_section = {}
             diagnostic_options = _newton_diagnostic_options(diagnostic_section)
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = build_real_usd_native_contact_comparison_report(
                     **options,
                     source_dir=source_dir,
@@ -1043,7 +1066,7 @@ def main(argv=None):
             sphere_options = _newton_sphere_rain_options(
                 {**diagnostic_section, "probe_type": "sphere_rain"}
             )["options"]
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = build_real_usd_native_task_comparison_report(
                     **options,
                     source_dir=source_dir,
@@ -1085,13 +1108,13 @@ def main(argv=None):
 
     if args.run_phase0_benchmark and args.config:
         try:
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = build_phase0_rigid_benchmark_report(args.config)
         except (USDMeshLoadError, ValueError) as exc:
             print(
                 json.dumps(
                     {
-                        "stage": "phase0_rigid_asset_benchmark",
+                        "stage": "phase0_asset_diagnostic_benchmark",
                         "status": "config_error"
                         if "config" in str(exc) or "phase0_defaults" in str(exc)
                         else "runtime_failure",
@@ -1143,7 +1166,7 @@ def main(argv=None):
                 ),
                 max_source_faces=max_source_faces,
             )
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = run_newton_contact_smoke(
                     package,
                     source_dir=source_dir,
@@ -1198,7 +1221,7 @@ def main(argv=None):
                 ),
                 max_source_faces=max_source_faces,
             )
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = run_newton_drop_settle(
                     package,
                     source_dir=source_dir,
@@ -1254,7 +1277,7 @@ def main(argv=None):
                 ),
                 max_source_faces=max_source_faces,
             )
-            with contextlib.redirect_stdout(sys.stderr):
+            with _redirect_stdout_to_stderr():
                 report = run_newton_sphere_rain(
                     package,
                     source_dir=source_dir,

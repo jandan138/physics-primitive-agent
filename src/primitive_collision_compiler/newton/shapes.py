@@ -7,7 +7,15 @@ from typing import Any
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.reports.schema import NewtonShapeMapping
 
-SUPPORTED_NEWTON_SHAPES = ("box", "sphere", "capsule", "cylinder", "cone", "ellipsoid")
+SUPPORTED_NEWTON_SHAPES = (
+    "box",
+    "sphere",
+    "capsule",
+    "cylinder",
+    "cone",
+    "ellipsoid",
+    "convex_mesh",
+)
 IDENTITY_AXES = (
     (1.0, 0.0, 0.0),
     (0.0, 1.0, 0.0),
@@ -32,8 +40,10 @@ def _map_primitive(primitive: PrimitiveSpec) -> NewtonShapeMapping:
         detail = _validate_capsule(dimensions)
     elif primitive.kind in {"cylinder", "cone"}:
         detail = _validate_axis_shape(dimensions, primitive.kind)
-    else:
+    elif primitive.kind == "ellipsoid":
         detail = _validate_ellipsoid(dimensions)
+    else:
+        detail = _validate_convex_mesh(dimensions)
     if detail:
         return _gap(primitive, dimensions, detail)
     center_detail = _validate_vector3(primitive.center, "center")
@@ -95,6 +105,32 @@ def _validate_ellipsoid(dimensions: dict[str, Any]) -> str:
         return "ellipsoid radii must contain three positive finite values"
     if any(_as_positive_float(value) is None for value in radii):
         return "ellipsoid radii must contain three positive finite values"
+    return ""
+
+
+def _validate_convex_mesh(dimensions: dict[str, Any]) -> str:
+    vertices = dimensions.get("vertices")
+    faces = dimensions.get("faces")
+    if not isinstance(vertices, list | tuple) or len(vertices) < 4:
+        return "convex_mesh vertices must contain at least four finite 3D points"
+    for vertex in vertices:
+        detail = _validate_vector3(vertex, "convex_mesh vertices")
+        if detail:
+            return "convex_mesh vertices must contain at least four finite 3D points"
+    if not isinstance(faces, list | tuple) or len(faces) < 4:
+        return "convex_mesh faces must contain at least four triangle index triplets"
+    vertex_count = len(vertices)
+    for face in faces:
+        if not isinstance(face, list | tuple) or len(face) != 3:
+            return "convex_mesh faces must contain at least four triangle index triplets"
+        for index in face:
+            if (
+                isinstance(index, bool)
+                or not isinstance(index, Integral)
+                or int(index) < 0
+                or int(index) >= vertex_count
+            ):
+                return "convex_mesh faces contain vertex indices outside the vertices array"
     return ""
 
 

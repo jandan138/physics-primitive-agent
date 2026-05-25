@@ -60,11 +60,10 @@ generated-contact throughput than same-count 64-vertex convex-mesh proxies. This
 primitive-aware acceptance story, while staying below any full-simulation or broad benchmark
 superiority claim.
 
-The scoped Phase 0 GRScenes rigid run adds the first five-asset diagnostic table: bounding and
-CPD-style first-mesh candidate lanes are recorded with Newton contact, drop/settle, and
-sphere-rain outcomes, including explicit fallback/dependency-gap labels and two CPD-style
-drop/settle failures. It is not complete Phase 0 coverage because stack-or-slide, CoACD/V-HACD,
-and articulated robot smoke are still open.
+The scoped Phase 0 follow-up run adds stack-or-slide execution, CoACD executable convex-mesh
+packages, explicit V-HACD dependency-gap records, and one Franka USD articulation smoke to the
+five-asset GRScenes diagnostic table. It is still not complete Phase 0 coverage because V-HACD has
+not run in the current environment and link-aware robot package generation is not implemented.
 
 ## DeepDive Proof Point
 
@@ -92,7 +91,8 @@ Do not claim:
 - novelty in automatic primitive collider generation itself;
 - full CPD paper reproduction;
 - calibrated default selector policy;
-- whole-robot Franka or broad robot-operation validation before articulation records exist;
+- whole-robot Franka or broad robot-operation validation before link-aware package generation,
+  link-boundary probes, and articulation records exist;
 - that simulation checks prove collision correctness outside named simulator assumptions.
 
 ## Support Request

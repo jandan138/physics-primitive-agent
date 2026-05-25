@@ -8,13 +8,13 @@ packages in ways that geometry-only generation would miss.
 - Finalize DeepDive claim boundaries and support request.
 - Maintain clean Newton environment provenance for every runtime claim.
 - Use the materialized Phase 0 GRScenes rigid-asset manifest as the first asset set.
-- Include one articulated robot smoke asset if licensing and runtime setup are reproducible.
+- Keep the recorded Franka USD articulation smoke reproducible while avoiding whole-robot claims.
 - Generate primitive candidates from deterministic heuristics, native lanes, or CPD-style outputs.
-- Compare against simple baselines: bounding primitive, single convex hull, and CoACD/V-HACD or
-  CPD-style candidates when available.
-- Build Newton probes: body-state/drop-settle, contact stress, and at least one operation-style
-  smoke when feasible.
-- For robot assets, enforce link-aware package boundaries and run articulation smoke gates.
+- Compare against simple baselines, CPD-style candidates, CoACD, and V-HACD when the dependency is
+  installed; current V-HACD status is a recorded dependency gap.
+- Build Newton probes: body-state/drop-settle, contact stress, stack-or-slide, and at least one
+  operation-style smoke when feasible.
+- For robot assets, implement link-aware package boundaries before making link-boundary claims.
 - Produce the first accept/reject/fallback evidence report.
 
 ## Phase 1: Asset And Robot-Gate Expansion (4-8 Weeks)

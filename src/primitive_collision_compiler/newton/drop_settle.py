@@ -276,7 +276,7 @@ def _run_drop_settle(
             )
         )
         for mapping in mappings:
-            _add_dynamic_shape(builder, mapping, wp, body, anchor)
+            _add_dynamic_shape(builder, mapping, wp, body, anchor, newton)
         model = builder.finalize(device=device)
         solver = newton.solvers.SolverXPBD(model, iterations=options.iterations)
         state_0 = model.state()
@@ -347,6 +347,7 @@ def _add_dynamic_shape(
     wp: ModuleType,
     body: int,
     anchor: tuple[float, float, float],
+    newton: ModuleType | None = None,
 ) -> None:
     local_center = tuple(float(mapping.center[index] - anchor[index]) for index in range(3))
     xform = wp.transform(_wp_vec3(wp, local_center), _shape_quat(mapping, wp))
@@ -380,6 +381,9 @@ def _add_dynamic_shape(
     elif mapping.kind == "ellipsoid":
         rx, ry, rz = (float(value) for value in dimensions["radii"])
         builder.add_shape_ellipsoid(body=body, xform=xform, rx=rx, ry=ry, rz=rz)
+    elif mapping.kind == "convex_mesh":
+        mesh = _newton_mesh(mapping, newton)
+        builder.add_shape_convex_hull(body=body, xform=xform, mesh=mesh)
     else:
         raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
 
@@ -424,6 +428,10 @@ def _world_half_extents(mapping: NewtonShapeMapping) -> np.ndarray:
     if mapping.kind == "box":
         half_extents = np.asarray(dimensions["half_extents"], dtype=float)
         return np.abs(axes) @ half_extents
+    if mapping.kind == "convex_mesh":
+        vertices = np.asarray(dimensions["vertices"], dtype=float)
+        local_half_extents = np.max(np.abs(vertices), axis=0)
+        return np.abs(axes) @ local_half_extents
     if mapping.kind in {"cylinder", "cone", "ellipsoid"}:
         return np.abs(axes) @ _local_half_extents(mapping)
     raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
@@ -461,6 +469,10 @@ def _support_extent_z(mapping: NewtonShapeMapping, world_axes: np.ndarray) -> fl
     if mapping.kind == "box":
         half_extents = np.asarray(dimensions["half_extents"], dtype=float)
         return float(np.abs(world_axes[2, :]) @ half_extents)
+    if mapping.kind == "convex_mesh":
+        vertices = np.asarray(dimensions["vertices"], dtype=float)
+        local_half_extents = np.max(np.abs(vertices), axis=0)
+        return float(np.abs(world_axes[2, :]) @ local_half_extents)
     if mapping.kind in {"cylinder", "cone", "ellipsoid"}:
         return float(np.abs(world_axes[2, :]) @ _local_half_extents(mapping))
     raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
@@ -505,6 +517,16 @@ def _axes_matrix(mapping: NewtonShapeMapping) -> np.ndarray:
 def _linear_speed(velocity: tuple[float, float, float]) -> float:
     vector = np.asarray(velocity, dtype=float)
     return float(np.linalg.norm(vector))
+
+
+def _newton_mesh(mapping: NewtonShapeMapping, newton: ModuleType | None):
+    if newton is None:
+        import newton as newton_module  # type: ignore[import-not-found]
+    else:
+        newton_module = newton
+    vertices = np.asarray(mapping.dimensions["vertices"], dtype=np.float32)
+    faces = np.asarray(mapping.dimensions["faces"], dtype=np.int32).reshape(-1)
+    return newton_module.Mesh(vertices, faces)
 
 
 def _drop_report(

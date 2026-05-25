@@ -138,12 +138,53 @@ def test_contact_canary_builds_newton_native_static_shapes():
     assert builder.calls[2][1]["rz"] == 0.6
 
 
+def test_contact_canary_builds_convex_mesh_static_shape():
+    builder = _RecordingBuilder()
+    wp = _FakeWarp()
+    newton = _FakeNewton()
+    mapping = _mapping(
+        "hull0",
+        "convex_mesh",
+        {
+            "vertices": [
+                [-0.5, -0.5, -0.5],
+                [0.5, -0.5, -0.5],
+                [0.0, 0.5, -0.5],
+                [0.0, 0.0, 0.5],
+            ],
+            "faces": [[0, 1, 2], [0, 3, 1], [1, 3, 2], [2, 3, 0]],
+        },
+    )
+
+    _add_static_shape(builder, mapping, wp, newton)
+
+    assert builder.calls[0][0] == "convex_mesh"
+    assert builder.calls[0][1]["body"] == -1
+    assert builder.calls[0][1]["mesh"].vertices_shape == (4, 3)
+
+
 def test_contact_canary_probe_radius_uses_native_bundle_dimensions():
     assert _probe_radius(
         _mapping("cylinder0", "cylinder", {"radius": 0.3, "half_height": 0.8})
     ) == 0.15
     assert _probe_radius(_mapping("cone0", "cone", {"radius": 0.4, "half_height": 0.9})) == 0.2
     assert _probe_radius(_mapping("ellipsoid0", "ellipsoid", {"radii": [0.2, 0.4, 0.6]})) == 0.1
+    assert _probe_radius(
+        _mapping(
+            "hull0",
+            "convex_mesh",
+            {
+                "vertices": [
+                    [-0.5, -0.25, -0.1],
+                    [0.5, -0.25, -0.1],
+                    [0.0, 0.25, -0.1],
+                    [0.0, 0.0, 0.1],
+                ],
+                "faces": [[0, 1, 2], [0, 3, 1], [1, 3, 2], [2, 3, 0]],
+            },
+        )
+    ) == 0.05
+
 
 
 def _mapping(
@@ -181,6 +222,9 @@ class _RecordingBuilder:
     def add_shape_ellipsoid(self, *, body, xform, rx, ry, rz):
         self.calls.append(("ellipsoid", {"body": body, "xform": xform, "rx": rx, "ry": ry, "rz": rz}))
 
+    def add_shape_convex_hull(self, *, body, xform, mesh):
+        self.calls.append(("convex_mesh", {"body": body, "xform": xform, "mesh": mesh}))
+
 
 class _FakeWarp:
     def vec3(self, x: float, y: float, z: float) -> tuple[float, float, float]:
@@ -194,3 +238,10 @@ class _FakeWarp:
 
     def transform(self, position, rotation):
         return {"position": position, "rotation": rotation}
+
+
+class _FakeNewton:
+    class Mesh:
+        def __init__(self, vertices, faces):
+            self.vertices_shape = vertices.shape
+            self.faces_shape = faces.shape

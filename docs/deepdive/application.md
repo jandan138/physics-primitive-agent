@@ -59,23 +59,23 @@ Current repository state:
   unflagged Franka cylinder package in the recorded smoke.
 - a preliminary bed-aligned collision-only microbenchmark shows 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies in one pressure scene.
-- a scoped Phase 0 GRScenes rigid diagnostic run records bounding-primitive and CPD-style
-  first-mesh candidate lanes across five materialized assets, including accepted Newton
-  contact/drop/sphere lanes, two CPD-style drop/settle failures, and explicit fallback or
-  dependency-gap labels.
+- a scoped Phase 0 follow-up run records bounding-primitive, CPD-style, and CoACD convex-mesh
+  candidate lanes across five materialized GRScenes assets with Newton contact, drop/settle,
+  stack-or-slide, and sphere-rain probes; it also records V-HACD as a dependency gap and records
+  one Franka USD articulation smoke.
 
 The current evidence supports a project proposal, a narrow diagnostic mechanism story, and a
-scoped rigid Phase 0 diagnostic table. It does not support broad benchmark-suite,
-full-simulation speedup, whole-robot, or safety claims.
+scoped Phase 0 diagnostic table with CoACD and robot-smoke entries. It does not support broad
+benchmark-suite, full-simulation speedup, link-aware robot package generation, whole-robot
+collider quality, or safety claims.
 
 ## 0-4 Week Milestone
 
 The first milestone should demonstrate that simulation checks catch errors that geometry-only
 primitive generation would miss:
 
-- extend the current materialized Phase 0 GRScenes rigid-asset run with missing baselines and
-  task probes;
-- include one reproducible articulated robot smoke asset if available;
+- add link-aware robot package generation and link-boundary package probes;
+- install or configure V-HACD and rerun the current materialized Phase 0 asset set;
 - generate primitive candidate packages and baseline colliders;
 - forbid primitive merging across robot link/joint boundaries;
 - run Newton body-state, drop/settle, and contact-stress probes;
@@ -113,7 +113,8 @@ Requested support:
 - No broad benchmark superiority or full-simulation speedup claim.
 - No complete replacement of convex decomposition.
 - No novelty claim for automatic primitive collider generation itself.
-- No whole-robot Franka performance claim before articulated records exist.
+- No whole-robot Franka performance claim before link-aware package generation, link-boundary
+  probes, and articulation records exist.
 - No LLM/VLM improvement claim before ablation evidence exists.
 
 Canonical wording lives in [message-map.md](message-map.md).

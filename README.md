@@ -65,8 +65,9 @@ Supported today:
   diagnostics, environment-readiness diagnostics, CPD-like geometry smoke paths, and several named
   Newton diagnostic smokes.
 - A Phase 0 GRScenes rigid-asset intake manifest with five repo-local materialized USD dependency
-  closures, plus a scoped Newton diagnostic run over bounding-primitive and CPD-style first-mesh
-  candidate lanes. The run records accept/fallback/dependency-gap/failure outcomes; it is not a
+  closures, plus a scoped Newton diagnostic follow-up over bounding-primitive, CPD-style, and CoACD
+  convex-mesh candidate lanes. The run includes stack-or-slide probes, records V-HACD as a
+  dependency gap in the current environment, and adds one Franka USD articulation smoke; it is not a
   complete Phase 0 benchmark or broad generalization result.
 - A dated capped bed/Franka mechanism audit explaining why the recorded bed cylinder package fails
   while recorded Franka cylinder packages pass.
@@ -82,8 +83,7 @@ Not supported today:
 - full-simulation speedup;
 - full CPD paper reproduction;
 - calibrated default selector policy;
-- complete Phase 0 coverage with CoACD/V-HACD, dedicated stack-or-slide, and articulated robot
-  smoke;
+- complete Phase 0 coverage with V-HACD runtime evidence and link-aware robot package generation;
 - complete collision-quality validation;
 - whole-robot articulated Franka performance evidence;
 - deployment readiness, real-world transfer, or safety certification.
@@ -93,10 +93,8 @@ Not supported today:
 The next DeepDive-facing proof point should shift from "primitive-first only" to
 "simulation-checked and robot-operation-aware":
 
-- extend the materialized Phase 0 GRScenes rigid-asset run beyond the current contact/drop/sphere
-  diagnostic lanes;
-- include at least one articulated robot smoke asset such as Franka when licensing and runtime setup
-  are reproducible;
+- add link-aware robot package generation and link-boundary package probes;
+- install or configure V-HACD and rerun the current materialized Phase 0 asset set;
 - keep primitive merging link-aware and forbid cross-joint merges;
 - run Newton drop/settle, contact stress, and body-state diagnostics;
 - add articulation smoke checks: joint tree import, gravity hold, simple joint trajectory,

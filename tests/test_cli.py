@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -507,7 +508,7 @@ def test_cli_run_phase0_benchmark_emits_json_for_partial_record(tmp_path, capsys
     def fake_report(config_path_arg):
         calls.append(str(config_path_arg))
         return {
-            "stage": "phase0_rigid_asset_benchmark",
+            "stage": "phase0_asset_diagnostic_benchmark",
             "status": "partial",
             "outcome_counts": {
                 "accept": 1,
@@ -522,7 +523,7 @@ def test_cli_run_phase0_benchmark_emits_json_for_partial_record(tmp_path, capsys
     assert cli.main(["--config", str(config_path), "--run-phase0-benchmark"]) == 0
 
     payload = json.loads(capsys.readouterr().out)
-    assert payload["stage"] == "phase0_rigid_asset_benchmark"
+    assert payload["stage"] == "phase0_asset_diagnostic_benchmark"
     assert payload["status"] == "partial"
     assert calls == [str(config_path)]
 
@@ -548,7 +549,7 @@ def test_cli_run_phase0_benchmark_returns_zero_for_recorded_failures(
 
     def fake_report(config_path_arg):
         return {
-            "stage": "phase0_rigid_asset_benchmark",
+            "stage": "phase0_asset_diagnostic_benchmark",
             "status": "completed_with_recorded_failures",
             "outcome_counts": {
                 "accept": 1,
@@ -564,6 +565,48 @@ def test_cli_run_phase0_benchmark_returns_zero_for_recorded_failures(
 
     payload = json.loads(capsys.readouterr().out)
     assert payload["outcome_counts"]["failure"] == 1
+
+
+def test_cli_run_phase0_benchmark_keeps_fd_stdout_json_only(tmp_path, capfd, monkeypatch):
+    config_path = tmp_path / "phase0.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "asset:",
+                "  id: phase0_fixture",
+                "  path: assets/manifests/phase0_assets.yaml",
+                "task:",
+                "  primary: phase0_simulation_checked_diagnostic",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    def noisy_report(config_path_arg):
+        os.write(1, b"[CoACD] stdout log from native extension\n")
+        print("python stdout log")
+        return {
+            "stage": "phase0_asset_diagnostic_benchmark",
+            "status": "completed",
+            "outcome_counts": {
+                "accept": 1,
+                "fallback": 0,
+                "dependency_gap": 0,
+                "failure": 0,
+            },
+        }
+
+    monkeypatch.setattr(cli, "build_phase0_rigid_benchmark_report", noisy_report, raising=False)
+
+    assert cli.main(["--config", str(config_path), "--run-phase0-benchmark"]) == 0
+
+    captured = capfd.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["stage"] == "phase0_asset_diagnostic_benchmark"
+    assert captured.out.startswith("{")
+    assert "[CoACD]" not in captured.out
+    assert "[CoACD]" in captured.err
+    assert "python stdout log" in captured.err
 
 
 def test_cli_run_cpd_like_emits_report_for_tiny_usd(tmp_path, capsys):

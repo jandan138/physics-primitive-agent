@@ -18,8 +18,9 @@ materialized into ignored repo-local mirrors. It currently contains:
 - one container/bowl;
 - one precision negative control.
 
-The articulated robot smoke asset remains separate and should be added only if licensing and
-runtime setup are reproducible.
+The current articulated robot smoke asset is tracked separately in
+`assets/manifests/franka_usd_smoke_assets.yaml`. It supports import/short-trajectory smoke only;
+link-aware package generation remains a future gate.
 
 ## Robot Package Rules
 
@@ -95,7 +96,9 @@ Phase 0 required/best-effort baselines:
 
 - bounding primitive;
 - single convex hull;
-- CoACD, V-HACD, or CPD-style candidate when available.
+- CoACD executable convex-mesh package when available;
+- V-HACD package when `vhacdx` or another V-HACD executable is installed;
+- CPD-style candidate when available.
 
 Later baselines:
 

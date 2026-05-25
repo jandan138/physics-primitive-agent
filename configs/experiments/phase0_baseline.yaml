@@ -30,6 +30,9 @@ compile:
   keep_visual: true
 phase0_defaults:
   asset_manifest: assets/manifests/phase0_assets.yaml
+  articulated_robot_manifest: assets/manifests/franka_usd_smoke_assets.yaml
+  articulated_robot_roles:
+    - franka_import_smoke
   seeds: 3
   duration_seconds: 2
   baselines:
@@ -43,6 +46,11 @@ phase0_defaults:
       status: specified
     - id: coacd_or_vhacd_if_available
       method: coacd_or_vhacd
+      required: false
+      fallback_if_unavailable: record_dependency_gap
+      status: best_effort
+    - id: vhacd_if_available
+      method: vhacd
       required: false
       fallback_if_unavailable: record_dependency_gap
       status: best_effort
@@ -62,6 +70,16 @@ phase0_defaults:
       contact_affordance: 192
       stackable: 140
       precision_negative_control: 64
+  convex_decomposition:
+    preferred_backends: [coacd, vhacd]
+    max_hulls: 16
+    timeout_seconds: 120
+    coacd_threshold: 0.5
+    coacd_mcts_nodes: 20
+    coacd_mcts_iterations: 5
+    coacd_mcts_max_depth: 1
+    coacd_merge: false
+    vhacd_max_vertices_per_hull: 64
   probes:
     body_state_drop_settle:
       initial_conditions:
@@ -84,11 +102,15 @@ phase0_defaults:
       initial_conditions:
         support: static_plane_or_box
         lateral_velocity_mps: 0.1
+        probe_half_extents_m: [0.05, 0.05, 0.05]
+        spawn_clearance_m: 0.01
       solver:
         engine: newton
         settings: default_recorded
         duration_seconds: 2
         seeds: 3
+        substeps: 4
+        iterations: 4
       metrics:
         - displacement
         - contact_count_p95
@@ -126,11 +148,16 @@ phase0_defaults:
       initial_conditions:
         asset_role: articulated_robot_if_present
         joint_command: simple_scripted_trajectory
+        mesh_approximation: bounding_box
+        collapse_fixed_joints: true
+        enable_self_collisions: false
       solver:
         engine: newton
         settings: default_recorded
-        duration_seconds: 2
+        duration_seconds: 0.25
         seeds: 1
+        substeps: 2
+        iterations: 2
       metrics:
         - joint_tree_import
         - gravity_hold_drift

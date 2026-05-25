@@ -39,26 +39,29 @@ claims:
     status: recorded_scoped
     section: experiments
     claim: >-
-      A scoped Phase 0 rigid diagnostic run over five materialized GRScenes assets records
-      accept, fallback, dependency-gap, and failure outcomes for bounding-primitive and
-      CPD-style first-mesh candidate packages under Newton contact, drop/settle, and
-      sphere-rain probes.
+      A scoped Phase 0 diagnostic run records accept, fallback, dependency-gap, and failure
+      outcomes for five materialized GRScenes rigid assets under bounding-primitive, CPD-style
+      first-mesh, and CoACD convex-mesh candidate packages with Newton contact, drop/settle,
+      stack-or-slide, and sphere-rain probes. The same report separately includes one Franka USD
+      articulation smoke asset.
     evidence_source: >-
-      docs/records/2026-05-25-phase0-grscenes-rigid-benchmark.md;
+      docs/records/2026-05-25-phase0-stack-coacd-articulation-followup.md;
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
     paper_scope: >-
-      scoped_rigid_diagnostic_not_broad_benchmark_superiority_not_complete_phase0_articulation
+      scoped_diagnostic_not_broad_benchmark_superiority_not_vhacd_runtime_not_link_aware_robot_package
     next_required_step: >-
-      Add dedicated stack-or-slide runner, CoACD/V-HACD executable baselines, and a reproducible
-      articulated robot smoke before claiming complete Phase 0 coverage.
+      Add V-HACD runtime evidence and link-aware robot package generation before claiming complete
+      Phase 0 coverage.
   - id: franka_articulation_smoke
-    status: planned
+    status: recorded_scoped
     section: experiments
     claim: >-
-      Link-aware primitive packages with articulation smoke (joint import, gravity hold,
-      trajectory, self-collision, end-effector pose) for a robot asset.
-    evidence_source: docs/deepdive/evidence-status.md#next-evidence-needed
-    excluded_from_paper_metrics: true
-    exclusion_reason: Whole-robot articulation records do not yet exist.
-    next_required_step: Record link-boundary audit and articulation smoke before whole-robot wording.
+      The Phase 0 follow-up report includes a Franka USD articulation smoke that passes joint-tree
+      import, short gravity hold, and simple kinematic trajectory checks.
+    evidence_source: >-
+      docs/records/2026-05-25-phase0-stack-coacd-articulation-followup.md;
+      paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
+    excluded_from_paper_metrics: false
+    paper_scope: articulation_import_smoke_not_link_aware_package_not_whole_robot_validation
+    next_required_step: Record link-aware package generation and link-boundary probes before whole-robot wording.

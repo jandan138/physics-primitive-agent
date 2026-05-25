@@ -13,6 +13,10 @@ from primitive_collision_compiler.assets.usd_smoke import (
     load_asset_manifest,
     resolve_asset_path,
 )
+from primitive_collision_compiler.baselines.convex_decomposition import (
+    ConvexDecompositionUnavailable,
+    build_convex_decomposition_package,
+)
 from primitive_collision_compiler.baselines.cpd_like.decompose import decompose_mesh
 from primitive_collision_compiler.baselines.cpd_like.objective import (
     CPDLikeObjectiveOptions,
@@ -26,6 +30,11 @@ from primitive_collision_compiler.baselines.cpd_like.usd import USDMeshLoadError
 from primitive_collision_compiler.config import load_compile_config
 from primitive_collision_compiler.contracts import CollisionPackage, FallbackSpec, PrimitiveSpec
 from primitive_collision_compiler.newton.diagnostics import run_newton_contact_smoke
+from primitive_collision_compiler.newton.articulation_smoke import (
+    ARTICULATION_SMOKE_CLAIM_BOUNDARY,
+    ArticulationSmokeOptions,
+    run_newton_articulation_smoke,
+)
 from primitive_collision_compiler.newton.drop_settle import (
     DROP_SETTLE_CLAIM_BOUNDARY,
     DropSettleOptions,
@@ -36,17 +45,26 @@ from primitive_collision_compiler.newton.sphere_rain import (
     SphereRainOptions,
     run_newton_sphere_rain,
 )
-
-PHASE0_STAGE = "phase0_rigid_asset_benchmark"
-PHASE0_CLAIM_BOUNDARY = (
-    "phase0_rigid_asset_diagnostic_benchmark_not_collision_quality_or_safety_validation"
+from primitive_collision_compiler.newton.stack_slide import (
+    STACK_SLIDE_CLAIM_BOUNDARY,
+    StackSlideOptions,
+    run_newton_stack_slide,
 )
-PHASE0_EVIDENCE_LEVEL = "phase0_rigid_asset_simulation_checked_smoke"
+
+PHASE0_STAGE = "phase0_asset_diagnostic_benchmark"
+PHASE0_CLAIM_BOUNDARY = (
+    "phase0_asset_diagnostic_benchmark_not_collision_quality_or_safety_validation"
+)
+PHASE0_EVIDENCE_LEVEL = "phase0_asset_simulation_checked_smoke"
 PHASE0_CONTACT_CLAIM_BOUNDARY = (
     "phase0_contact_canary_preflight_not_collision_quality_or_safety_validation"
 )
 PHASE0_CPD_CLAIM_BOUNDARY = "phase0_cpd_style_candidate_not_cpd_reproduction_or_quality_claim"
 PHASE0_CPD_EVIDENCE_LEVEL = "phase0_cpd_style_candidate_geometry_smoke"
+PHASE0_LINK_BOUNDARY_CLAIM_BOUNDARY = (
+    "phase0_link_boundary_audit_not_link_aware_robot_package_generation_or_whole_robot_validation"
+)
+PHASE0_LINK_BOUNDARY_EVIDENCE_LEVEL = "phase0_link_boundary_audit_smoke"
 DEFAULT_CPD_PRIMITIVE_SUBSET = ("box", "sphere", "capsule")
 OUTCOME_KEYS = ("accept", "fallback", "dependency_gap", "failure", "not_applicable")
 
@@ -68,7 +86,9 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
     source_dir = _newton_source_dir(config.protocol.get("newton"))
     device = str(diagnostic_section.get("device", "cpu"))
     drop_options = _drop_settle_options(phase0_section, diagnostic_section)
+    stack_options = _stack_slide_options(phase0_section, diagnostic_section)
     sphere_options = _sphere_rain_options(phase0_section, diagnostic_section)
+    articulation_options = _articulation_smoke_options(phase0_section, diagnostic_section)
 
     cases: list[dict[str, object]] = []
     outcome_counter: Counter[str] = Counter({key: 0 for key in OUTCOME_KEYS})
@@ -81,10 +101,19 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
             source_dir=source_dir,
             device=device,
             drop_options=drop_options,
+            stack_options=stack_options,
             sphere_options=sphere_options,
         )
         cases.append(case)
         outcome_counter.update(_case_outcomes(case))
+    articulation_cases = _articulation_cases(
+        phase0_section,
+        source_dir=source_dir,
+        device=device,
+        options=articulation_options,
+    )
+    for case in articulation_cases:
+        outcome_counter.update(_articulation_case_outcomes(case))
 
     return _json_safe(
         {
@@ -95,11 +124,18 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
             "config": str(config_path),
             "manifest": manifest_path,
             "asset_count": len(cases),
+            "articulation_asset_count": len(articulation_cases),
             "roles": [str(case["asset_role"]) for case in cases],
             "baselines": baselines,
             "probes": list(config.verify),
             "source_dir": source_dir,
             "device": device,
+            "report_scope": {
+                "rigid_asset_diagnostic_cases": len(cases),
+                "articulation_smoke_cases": len(articulation_cases),
+                "link_aware_robot_package_generation": False,
+                "whole_robot_collision_quality": False,
+            },
             "run_semantics": "record_generation_not_validation_gate",
             "serialization_policy": "non_finite_diagnostic_values_are_serialized_as_null",
             "phase0_defaults": {
@@ -109,6 +145,7 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
             },
             "outcome_counts": {key: int(outcome_counter.get(key, 0)) for key in OUTCOME_KEYS},
             "cases": cases,
+            "articulation_cases": articulation_cases,
         }
     )
 
@@ -122,6 +159,7 @@ def _case_report(
     source_dir: str,
     device: str,
     drop_options: DropSettleOptions,
+    stack_options: StackSlideOptions,
     sphere_options: SphereRainOptions,
 ) -> dict[str, object]:
     raw_asset = dict(asset)
@@ -198,6 +236,7 @@ def _case_report(
             source_dir=source_dir,
             device=device,
             drop_options=drop_options,
+            stack_options=stack_options,
             sphere_options=sphere_options,
         )
 
@@ -222,6 +261,91 @@ def _case_report(
             baseline_results,
             probe_results,
             asset_gate=asset_gate,
+        ),
+    }
+
+
+def _articulation_cases(
+    phase0_section: Mapping[str, object],
+    *,
+    source_dir: str,
+    device: str,
+    options: ArticulationSmokeOptions,
+) -> list[dict[str, object]]:
+    manifest_path = str(phase0_section.get("articulated_robot_manifest") or "")
+    if not manifest_path:
+        return []
+    roles = phase0_section.get("articulated_robot_roles", [])
+    role_filter = {str(role) for role in roles} if isinstance(roles, list | tuple) else set()
+    assets = load_asset_manifest(manifest_path)
+    cases = []
+    for asset in assets:
+        role = str(asset.get("role") or "")
+        if role_filter and role not in role_filter:
+            continue
+        cases.append(
+            _articulation_case_report(
+                asset,
+                source_dir=source_dir,
+                device=device,
+                options=options,
+            )
+        )
+    return cases
+
+
+def _articulation_case_report(
+    asset: Mapping[str, object],
+    *,
+    source_dir: str,
+    device: str,
+    options: ArticulationSmokeOptions,
+) -> dict[str, object]:
+    raw_asset = dict(asset)
+    role = str(raw_asset.get("role") or raw_asset.get("id") or "articulated_robot")
+    asset_id = str(raw_asset.get("id") or role)
+    resolved = resolve_asset_path(raw_asset)
+    smoke_report = inspect_usd_asset(raw_asset).to_dict()
+    asset_gate = _asset_gate(smoke_report)
+    if asset_gate["outcome"] == "accept":
+        articulation = _run_articulation_smoke_probe(
+            resolved.path,
+            source_dir=source_dir,
+            device=device,
+            options=options,
+        )
+    else:
+        articulation = _blocked_probe(
+            "articulation_smoke_if_robot",
+            status="blocked_by_asset_smoke",
+            reason=str(asset_gate.get("fallback_reason") or asset_gate.get("status")),
+            outcome=str(asset_gate.get("outcome", "failure")),
+        )
+    return {
+        "asset_id": asset_id,
+        "asset_role": role,
+        "asset_path": resolved.path,
+        "asset_path_kind": resolved.path_kind,
+        "configured_path": resolved.configured_path,
+        "source_path": resolved.source_path,
+        "local_path": resolved.local_path,
+        "asset_hashes": {
+            "source_sha256": str(raw_asset.get("source_sha256") or ""),
+            "sha256": str(raw_asset.get("sha256") or ""),
+            "local_sha256": str(raw_asset.get("local_sha256") or ""),
+        },
+        "asset_smoke": smoke_report,
+        "asset_gate": asset_gate,
+        "probe_results": {
+            "link_boundary_audit": _robot_link_boundary_audit(role),
+            "articulation_smoke_if_robot": articulation,
+        },
+        "outcome_counts": _articulation_case_outcome_counts(
+            asset_gate=asset_gate,
+            probe_results={
+                "link_boundary_audit": _robot_link_boundary_audit(role),
+                "articulation_smoke_if_robot": articulation,
+            },
         ),
     }
 
@@ -265,8 +389,8 @@ def _baseline_result(
                 "status": "fallback",
                 "outcome": "fallback",
                 "fallback_reason": (
-                    "single_convex_hull is recorded as a convex_mesh fallback; current "
-                    "Newton primitive mapper has no convex-mesh shape contract"
+                    "single_convex_hull remains recorded as a simple convex_mesh fallback; "
+                    "executable convex-decomposition baselines own generated convex hull probes"
                 ),
                 "primitive_or_hull_count": 1,
                 "collision_package": package.to_dict(),
@@ -275,19 +399,41 @@ def _baseline_result(
             None,
         )
 
-    if baseline_id == "coacd_or_vhacd_if_available":
-        return (
-            {
-                **_baseline_header(spec),
-                "status": "dependency_gap",
-                "outcome": "dependency_gap",
-                "fallback_reason": (
-                    "coacd/vhacd executable integration is not configured in this repo"
-                ),
-                "primitive_or_hull_count": 0,
-            },
-            None,
-        )
+    if baseline_id in {
+        "coacd_or_vhacd_if_available",
+        "coacd_if_available",
+        "vhacd_if_available",
+    }:
+        preferred_backends: tuple[str, ...] | None = None
+        if baseline_id == "coacd_if_available" or method == "coacd":
+            preferred_backends = ("coacd",)
+        if baseline_id == "vhacd_if_available" or method == "vhacd":
+            preferred_backends = ("vhacd",)
+        try:
+            package, executable = build_convex_decomposition_package(
+                mesh,
+                role=role,
+                baseline_id=baseline_id,
+                source_sha256=asset_sha256,
+                source_path=asset_path,
+                max_hulls=max_primitives,
+                phase0_section=phase0_section,
+                preferred_backends=preferred_backends,
+            )
+        except ConvexDecompositionUnavailable as exc:
+            return (
+                {
+                    **_baseline_header(spec),
+                    "status": "dependency_gap",
+                    "outcome": "dependency_gap",
+                    "fallback_reason": str(exc),
+                    "primitive_or_hull_count": 0,
+                },
+                None,
+            )
+        payload = _generated_baseline_payload(spec, package, status="generated")
+        payload["executable_baseline"] = executable
+        return payload, package
 
     if baseline_id == "cpd_style_primitive_candidate_if_available":
         package, objective = _cpd_style_package(
@@ -323,12 +469,19 @@ def _probe_set(
     source_dir: str,
     device: str,
     drop_options: DropSettleOptions,
+    stack_options: StackSlideOptions,
     sphere_options: SphereRainOptions,
 ) -> dict[str, object]:
     contact = _run_contact_probe(package, source_dir=source_dir, device=device)
     if contact["status"] != "smoke_passed":
         drop = _blocked_probe(
             "body_state_drop_settle",
+            status="blocked_by_contact_canary",
+            reason=str(contact.get("fallback_reason") or contact["status"]),
+            outcome=_outcome_for_status(str(contact["status"])),
+        )
+        stack = _blocked_probe(
+            "stack_or_slide",
             status="blocked_by_contact_canary",
             reason=str(contact.get("fallback_reason") or contact["status"]),
             outcome=_outcome_for_status(str(contact["status"])),
@@ -346,6 +499,12 @@ def _probe_set(
             device=device,
             options=drop_options,
         )
+        stack = _run_stack_slide_probe(
+            package,
+            source_dir=source_dir,
+            device=device,
+            options=stack_options,
+        )
         sphere = _run_sphere_probe(
             package,
             source_dir=source_dir,
@@ -356,12 +515,7 @@ def _probe_set(
     return {
         "contact_canary": contact,
         "body_state_drop_settle": drop,
-        "stack_or_slide": _blocked_probe(
-            "stack_or_slide",
-            status="unsupported_probe",
-            reason="dedicated stack/slide Newton runner is not implemented yet",
-            outcome="fallback",
-        ),
+        "stack_or_slide": stack,
         "sphere_rain": sphere,
         "link_boundary_audit": _link_boundary_audit(package, role),
         "articulation_smoke_if_robot": _articulation_probe(role),
@@ -481,6 +635,23 @@ def _run_drop_probe(
     return _probe_payload(report)
 
 
+def _run_stack_slide_probe(
+    package: CollisionPackage,
+    *,
+    source_dir: str,
+    device: str,
+    options: StackSlideOptions,
+) -> dict[str, object]:
+    report = run_newton_stack_slide(
+        package,
+        source_dir=source_dir,
+        device=device,
+        options=options,
+        claim_boundary=STACK_SLIDE_CLAIM_BOUNDARY,
+    ).to_dict()
+    return _probe_payload(report)
+
+
 def _run_sphere_probe(
     package: CollisionPackage,
     *,
@@ -496,6 +667,22 @@ def _run_sphere_probe(
         claim_boundary=SPHERE_RAIN_CLAIM_BOUNDARY,
     ).to_dict()
     return _probe_payload(report)
+
+
+def _run_articulation_smoke_probe(
+    asset_path: str,
+    *,
+    source_dir: str,
+    device: str,
+    options: ArticulationSmokeOptions,
+) -> dict[str, object]:
+    return run_newton_articulation_smoke(
+        asset_path=asset_path,
+        source_dir=source_dir,
+        device=device,
+        options=options,
+        claim_boundary=ARTICULATION_SMOKE_CLAIM_BOUNDARY,
+    )
 
 
 def _probe_payload(report: Mapping[str, object]) -> dict[str, object]:
@@ -544,6 +731,26 @@ def _link_boundary_audit(package: CollisionPackage | None, role: str) -> dict[st
     }
 
 
+def _robot_link_boundary_audit(role: str) -> dict[str, object]:
+    return {
+        "stage": "phase0_link_boundary_audit",
+        "status": "not_run",
+        "probe_type": "link_boundary_audit",
+        "outcome": "fallback",
+        "metrics": {
+            "asset_role": role,
+            "cross_link_merge_count": None,
+            "per_link_primitive_count": {},
+            "link_aware_package_generated": False,
+        },
+        "claim_boundary": PHASE0_LINK_BOUNDARY_CLAIM_BOUNDARY,
+        "evidence_level": PHASE0_LINK_BOUNDARY_EVIDENCE_LEVEL,
+        "fallback_reason": (
+            "link-aware robot package generation is not implemented in this Phase 0 runner"
+        ),
+    }
+
+
 def _articulation_probe(role: str) -> dict[str, object]:
     return {
         "stage": "phase0_articulation_smoke",
@@ -560,10 +767,10 @@ def _articulation_probe(role: str) -> dict[str, object]:
 def _precision_rejection(role: str) -> dict[str, object]:
     if role != "precision_negative_control":
         return {
-        "stage": "phase0_precision_rejection",
-        "status": "not_applicable",
-        "probe_type": "precision_rejection",
-        "outcome": "not_applicable",
+            "stage": "phase0_precision_rejection",
+            "status": "not_applicable",
+            "probe_type": "precision_rejection",
+            "outcome": "not_applicable",
             "metrics": {"asset_role": role, "precision_negative_control": False},
             "claim_boundary": PHASE0_CLAIM_BOUNDARY,
             "evidence_level": PHASE0_EVIDENCE_LEVEL,
@@ -852,6 +1059,47 @@ def _drop_settle_options(
     )
 
 
+def _stack_slide_options(
+    phase0_section: Mapping[str, object],
+    diagnostic_section: Mapping[str, object],
+) -> StackSlideOptions:
+    probe = _probe_config(phase0_section, "stack_or_slide")
+    initial = _mapping_section(probe.get("initial_conditions"), "stack_or_slide", default={})
+    stack_section = _mapping_section(
+        diagnostic_section.get("stack_or_slide"),
+        "newton_diagnostic.stack_or_slide",
+        default={},
+    )
+    raw_probe_half_extents = stack_section.get("probe_half_extents_m", (0.05, 0.05, 0.05))
+    if isinstance(raw_probe_half_extents, list | tuple):
+        probe_half_extents = tuple(float(value) for value in raw_probe_half_extents)
+    else:
+        raise ValueError("newton_diagnostic.stack_or_slide.probe_half_extents_m must be a list")
+    if len(probe_half_extents) != 3:
+        raise ValueError("newton_diagnostic.stack_or_slide.probe_half_extents_m must have length 3")
+    return StackSlideOptions(
+        probe_half_extents_m=probe_half_extents,  # type: ignore[arg-type]
+        lateral_velocity_mps=float(
+            stack_section.get(
+                "lateral_velocity_mps",
+                initial.get("lateral_velocity_mps", 0.1),
+            )
+        ),
+        spawn_clearance_m=float(stack_section.get("spawn_clearance_m", 0.01)),
+        frames=int(stack_section.get("frames") or _duration_frames(phase0_section, probe)),
+        substeps=int(stack_section.get("substeps", 4)),
+        frame_dt_seconds=float(stack_section.get("frame_dt_seconds", 1.0 / 60.0)),
+        iterations=int(stack_section.get("iterations", 4)),
+        friction=float(stack_section.get("friction", 0.7)),
+        max_slide_distance_m=float(stack_section.get("max_slide_distance_m", 0.25)),
+        max_drop_below_support_m=float(stack_section.get("max_drop_below_support_m", 0.05)),
+        max_settle_linear_speed_mps=float(
+            stack_section.get("max_settle_linear_speed_mps", 0.25)
+        ),
+        rigid_contact_max=int(stack_section.get("rigid_contact_max", 4096)),
+    )
+
+
 def _sphere_rain_options(
     phase0_section: Mapping[str, object],
     diagnostic_section: Mapping[str, object],
@@ -880,6 +1128,66 @@ def _sphere_rain_options(
         min_contact_density=float(sphere_section.get("min_contact_density", 0.05)),
         require_final_contact=bool(sphere_section.get("require_final_contact", False)),
         rigid_contact_max=int(sphere_section.get("rigid_contact_max", 4096)),
+    )
+
+
+def _articulation_smoke_options(
+    phase0_section: Mapping[str, object],
+    diagnostic_section: Mapping[str, object],
+) -> ArticulationSmokeOptions:
+    probe = _probe_config(phase0_section, "articulation_smoke_if_robot")
+    initial = _mapping_section(
+        probe.get("initial_conditions"),
+        "articulation_smoke_if_robot.initial_conditions",
+        default={},
+    )
+    solver = _mapping_section(
+        probe.get("solver"),
+        "articulation_smoke_if_robot.solver",
+        default={},
+    )
+    articulation_section = _mapping_section(
+        diagnostic_section.get("articulation_smoke_if_robot"),
+        "newton_diagnostic.articulation_smoke_if_robot",
+        default={},
+    )
+    return ArticulationSmokeOptions(
+        hold_frames=int(
+            articulation_section.get("hold_frames")
+            or _duration_frames(phase0_section, probe)
+        ),
+        trajectory_delta_rad=float(articulation_section.get("trajectory_delta_rad", 0.05)),
+        max_gravity_hold_joint_drift=float(
+            articulation_section.get("max_gravity_hold_joint_drift", 0.01)
+        ),
+        min_end_effector_pose_delta_m=float(
+            articulation_section.get("min_end_effector_pose_delta_m", 1.0e-6)
+        ),
+        substeps=int(articulation_section.get("substeps", solver.get("substeps", 4))),
+        frame_dt_seconds=float(
+            articulation_section.get("frame_dt_seconds", solver.get("frame_dt_seconds", 1.0 / 60.0))
+        ),
+        iterations=int(articulation_section.get("iterations", solver.get("iterations", 2))),
+        mesh_approximation=str(
+            articulation_section.get(
+                "mesh_approximation",
+                initial.get("mesh_approximation", "bounding_box"),
+            )
+        ),
+        collapse_fixed_joints=bool(
+            articulation_section.get(
+                "collapse_fixed_joints",
+                initial.get("collapse_fixed_joints", True),
+            )
+        ),
+        enable_self_collisions=bool(
+            articulation_section.get(
+                "enable_self_collisions",
+                initial.get("enable_self_collisions", False),
+            )
+        ),
+        load_visual_shapes=bool(articulation_section.get("load_visual_shapes", False)),
+        hide_collision_shapes=bool(articulation_section.get("hide_collision_shapes", True)),
     )
 
 
@@ -987,6 +1295,21 @@ def _case_outcomes(case: Mapping[str, object]) -> list[str]:
     return outcomes
 
 
+def _articulation_case_outcomes(case: Mapping[str, object]) -> list[str]:
+    outcomes: list[str] = []
+    asset_gate = case.get("asset_gate", {})
+    if isinstance(asset_gate, Mapping):
+        outcomes.append(str(asset_gate.get("outcome", "failure")))
+    probe_results = case.get("probe_results", {})
+    if isinstance(probe_results, Mapping):
+        outcomes.extend(
+            str(result.get("outcome", "failure"))
+            for result in probe_results.values()
+            if isinstance(result, Mapping)
+        )
+    return outcomes
+
+
 def _case_outcome_counts(
     baseline_results: Mapping[str, object],
     probe_results: Mapping[str, object],
@@ -1008,6 +1331,21 @@ def _case_outcome_counts(
             for result in by_probe.values()
             if isinstance(result, Mapping)
         )
+    return {key: int(counter.get(key, 0)) for key in OUTCOME_KEYS}
+
+
+def _articulation_case_outcome_counts(
+    *,
+    asset_gate: Mapping[str, object],
+    probe_results: Mapping[str, Mapping[str, object]],
+) -> dict[str, int]:
+    counter: Counter[str] = Counter({key: 0 for key in OUTCOME_KEYS})
+    counter.update([str(asset_gate.get("outcome", "failure"))])
+    counter.update(
+        str(result.get("outcome", "failure"))
+        for result in probe_results.values()
+        if isinstance(result, Mapping)
+    )
     return {key: int(counter.get(key, 0)) for key in OUTCOME_KEYS}
 
 

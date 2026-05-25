@@ -303,7 +303,9 @@ def _run_sphere_rain(
     with wp.ScopedDevice(device):
         builder = newton.ModelBuilder(gravity=options.gravity_mps2, up_axis=newton.Axis.Z)
         builder.default_shape_cfg.mu = options.friction
-        package_shape_ids = tuple(_add_static_shape(builder, mapping, wp) for mapping in mappings)
+        package_shape_ids = tuple(
+            _add_static_shape(builder, mapping, wp, newton) for mapping in mappings
+        )
         sphere_shape_ids: list[int] = []
         sphere_bodies: list[int] = []
         for index, point in enumerate(spawn_points):
@@ -405,7 +407,12 @@ def _run_sphere_rain(
     )
 
 
-def _add_static_shape(builder: Any, mapping: NewtonShapeMapping, wp: ModuleType) -> int:
+def _add_static_shape(
+    builder: Any,
+    mapping: NewtonShapeMapping,
+    wp: ModuleType,
+    newton: ModuleType | None = None,
+) -> int:
     xform = wp.transform(_wp_vec3(wp, mapping.center), _shape_quat(mapping, wp))
     dimensions = mapping.dimensions
     if mapping.kind == "box":
@@ -443,6 +450,9 @@ def _add_static_shape(builder: Any, mapping: NewtonShapeMapping, wp: ModuleType)
     if mapping.kind == "ellipsoid":
         rx, ry, rz = (float(value) for value in dimensions["radii"])
         return int(builder.add_shape_ellipsoid(body=-1, xform=xform, rx=rx, ry=ry, rz=rz))
+    if mapping.kind == "convex_mesh":
+        mesh = _newton_mesh(mapping, newton)
+        return int(builder.add_shape_convex_hull(body=-1, xform=xform, mesh=mesh))
     raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
 
 
@@ -565,6 +575,16 @@ def _p95(values: tuple[int, ...]) -> float:
     if not values:
         return 0.0
     return float(np.percentile(np.asarray(values, dtype=float), 95.0))
+
+
+def _newton_mesh(mapping: NewtonShapeMapping, newton: ModuleType | None):
+    if newton is None:
+        import newton as newton_module  # type: ignore[import-not-found]
+    else:
+        newton_module = newton
+    vertices = np.asarray(mapping.dimensions["vertices"], dtype=np.float32)
+    faces = np.asarray(mapping.dimensions["faces"], dtype=np.int32).reshape(-1)
+    return newton_module.Mesh(vertices, faces)
 
 
 def _positive_int(value: int, name: str) -> None:

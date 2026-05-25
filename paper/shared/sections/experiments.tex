@@ -20,8 +20,9 @@ This is scoped collision-pipeline evidence, not a full-simulation speedup claim.
 
 \subsection{Phase 0 rigid-asset diagnostic table}
 Table~\ref{tab:phase0-grscenes-rigid} summarizes the current scoped Phase~0 rigid run over five materialized GRScenes assets.
-The run records first-mesh bounding-primitive and CPD-style candidate lanes with Newton contact, drop/settle, and sphere-rain probes.
-It is not a complete Phase~0 benchmark: CoACD/V-HACD baselines, dedicated stack-or-slide execution, and articulated robot smoke remain open.
+The run records first-mesh bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain probes.
+It also includes one Franka USD articulation smoke.
+It is not a complete Phase~0 benchmark: V-HACD is recorded as a dependency gap in the current environment, and link-aware robot package generation remains open.
 
 \begin{table}[t]
   \centering
@@ -30,13 +31,18 @@ It is not a complete Phase~0 benchmark: CoACD/V-HACD baselines, dedicated stack-
     \toprule
     Asset role & Candidate lanes & \simchecked{} outcome & Recorded fallback/failure \\
     \midrule
-    rigid prop & bbox 1; CPD 12 & both drop+sphere pass & convex/CoACD/stack gaps \\
-    container & bbox 1; CPD 16 & bbox pass; CPD sphere pass & CPD drop not-settled \\
-    contact affordance & bbox 1; CPD 16 & bbox pass; CPD sphere pass & CPD drop not-settled \\
-    stackable & bbox 1; CPD 16 & both drop+sphere pass & stack runner pending \\
-    precision control & bbox 1; CPD 12 & both drop+sphere pass & manual review required \\
+    rigid prop & bbox 1; CoACD 1; CPD 12 & tested lanes pass & V-HACD dependency gap \\
+    container & bbox 1; CoACD 9; CPD 16 & bbox pass; sphere pass & CoACD/CPD drop+stack failures \\
+    contact affordance & bbox 1; CoACD 5; CPD 16 & bbox pass; sphere pass & CoACD/CPD drop; CPD stack failure \\
+    stackable & bbox 1; CoACD 1; CPD 16 & tested lanes pass & V-HACD dependency gap \\
+    precision control & bbox 1; CoACD 1; CPD 12 & tested lanes pass & manual review required \\
     \bottomrule
   \end{tabular}
-  \caption{Scoped Phase~0 GRScenes rigid diagnostic summary. Counts are primitive counts in the recorded package lanes; fallback entries are recorded outcomes, not hidden exclusions.}
+  \caption{Scoped Phase~0 GRScenes diagnostic summary. Counts are primitive or hull counts in the recorded package lanes; fallback and failure entries are recorded outcomes, not hidden exclusions.}
   \label{tab:phase0-grscenes-rigid}
 \end{table}
+
+\subsection{Franka articulation smoke}
+The Phase~0 follow-up report includes one Franka USD smoke asset.
+The articulation smoke records joint-tree import, a short gravity hold, and a simple kinematic trajectory as passed.
+The same report keeps link-boundary package generation as fallback/not run, so this is not whole-robot collider quality or manipulation evidence.

@@ -40,10 +40,14 @@ def test_phase0_config_references_existing_structured_manifest():
     config_path = ROOT / "configs" / "experiments" / "phase0_baseline.yaml"
     data = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     manifest_path = ROOT / data["asset"]["path"]
+    robot_manifest_path = ROOT / data["phase0_defaults"]["articulated_robot_manifest"]
     manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    robot_manifest = yaml.safe_load(robot_manifest_path.read_text(encoding="utf-8"))
 
     assert manifest_path.exists()
+    assert robot_manifest_path.exists()
     assert len(manifest["assets"]) >= 5
+    assert {asset["role"] for asset in robot_manifest["assets"]} >= {"franka_import_smoke"}
     assert {asset["role"] for asset in manifest["assets"]} >= {
         "rigid_prop",
         "stackable",
@@ -137,6 +141,7 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
         "bounding_primitive",
         "single_convex_hull",
         "coacd_or_vhacd_if_available",
+        "vhacd_if_available",
         "cpd_style_primitive_candidate_if_available",
     }
     assert probes["body_state_drop_settle"]["initial_conditions"]["height_m"] == 0.25
@@ -146,14 +151,26 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
         "contact_count_p95",
         "penetration_or_jitter",
     ]
+    assert probes["stack_or_slide"]["initial_conditions"]["probe_half_extents_m"] == [
+        0.05,
+        0.05,
+        0.05,
+    ]
     assert probes["sphere_rain"]["initial_conditions"]["sphere_count"] == 32
     assert probes["link_boundary_audit"]["pass_condition"] == "zero_cross_link_merges"
     assert (
         probes["articulation_smoke_if_robot"]["pass_condition"]
         == "complete_and_label_articulation_failures"
     )
+    assert probes["articulation_smoke_if_robot"]["solver"]["duration_seconds"] == 0.25
+    assert probes["articulation_smoke_if_robot"]["solver"]["substeps"] == 2
     assert probes["precision_rejection"]["pass_condition"] == "reject_or_fallback"
     assert cpd_like["component_merge"] == "virtual_pairwise"
     assert cpd_like["max_source_faces_by_role"]["container"] == 256
+    assert data["phase0_defaults"]["convex_decomposition"]["preferred_backends"] == [
+        "coacd",
+        "vhacd",
+    ]
+    assert data["phase0_defaults"]["articulated_robot_roles"] == ["franka_import_smoke"]
     assert "displacement" in required_metrics
     assert "link_boundary_status" in required_metrics

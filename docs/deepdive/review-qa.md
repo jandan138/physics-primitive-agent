@@ -118,4 +118,5 @@ LLM/VLM adds no measurable value after deterministic baselines.
 
 No safety guarantee, real-world transfer, deployment readiness, broad benchmark superiority,
 full-simulation speedup, full CPD reproduction, complete replacement of convex decomposition, or
-whole-robot robot-operation claim before articulated records exist.
+whole-robot robot-operation claim before link-aware package generation, link-boundary probes, and
+articulation records exist.

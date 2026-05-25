@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-05-25 Phase 0 Stack CoACD Articulation Follow-Up](2026-05-25-phase0-stack-coacd-articulation-followup.md):
+  scoped follow-up run that adds dedicated stack-or-slide execution, CoACD executable convex-mesh
+  baseline packages, explicit V-HACD dependency-gap records, and Franka articulation smoke while
+  preserving the link-aware robot package boundary.
 - [2026-05-25 Phase 0 GRScenes Rigid Benchmark](2026-05-25-phase0-grscenes-rigid-benchmark.md):
   scoped five-asset GRScenes rigid diagnostic run with bounding-primitive and CPD-style first-mesh
   candidate lanes, Newton contact/drop/sphere outcomes, and explicit fallback/dependency-gap

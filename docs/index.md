@@ -45,6 +45,7 @@ contribution is the downstream compiler/checker loop:
 ## Key Evidence Records
 
 - [Phase 0 GRScenes asset intake](records/2026-05-25-phase0-grscenes-asset-intake.md)
+- [Phase 0 stack/CoACD/articulation follow-up](records/2026-05-25-phase0-stack-coacd-articulation-followup.md)
 - [Cylinder goal completion audit after contact closure](records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
 - [Package body-state guard task path](records/2026-05-22-package-body-state-guard-task-path.md)
 - [Bed-aligned box primitive contact-throughput microbenchmark](records/2026-05-22-bed-aligned-box-primitive-contact-throughput.md)

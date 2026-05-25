@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from primitive_collision_compiler.contracts import CollisionPackage
+from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.phase0 import build_phase0_rigid_benchmark_report
 from primitive_collision_compiler.reports.schema import NewtonDiagnosticReport
 
@@ -13,7 +13,7 @@ from primitive_collision_compiler.reports.schema import NewtonDiagnosticReport
 def test_phase0_report_records_all_assets_baselines_and_probe_outcomes(tmp_path, monkeypatch):
     manifest_path = _write_phase0_manifest(tmp_path)
     config_path = _write_phase0_config(tmp_path, manifest_path)
-    calls = {"contact": [], "drop": [], "sphere": []}
+    calls = {"contact": [], "drop": [], "stack": [], "sphere": []}
 
     def fake_contact(package, *, source_dir, device, claim_boundary):
         calls["contact"].append(package.asset_id)
@@ -45,17 +45,30 @@ def test_phase0_report_records_all_assets_baselines_and_probe_outcomes(tmp_path,
             claim_boundary=claim_boundary,
         )
 
+    def fake_stack(package, *, source_dir, device, options, claim_boundary):
+        calls["stack"].append(package.asset_id)
+        return _diagnostic_report(
+            package,
+            stage="newton_stack_slide",
+            probe_type="stack_or_slide",
+            status="smoke_passed",
+            claim_boundary=claim_boundary,
+        )
+
     import primitive_collision_compiler.phase0 as phase0
 
     monkeypatch.setattr(phase0, "run_newton_contact_smoke", fake_contact)
     monkeypatch.setattr(phase0, "run_newton_drop_settle", fake_drop)
+    monkeypatch.setattr(phase0, "run_newton_stack_slide", fake_stack, raising=False)
     monkeypatch.setattr(phase0, "run_newton_sphere_rain", fake_sphere)
 
     report = build_phase0_rigid_benchmark_report(config_path)
 
-    assert report["stage"] == "phase0_rigid_asset_benchmark"
+    assert report["stage"] == "phase0_asset_diagnostic_benchmark"
     assert report["status"] == "partial"
     assert report["asset_count"] == 2
+    assert report["report_scope"]["rigid_asset_diagnostic_cases"] == 2
+    assert report["report_scope"]["link_aware_robot_package_generation"] is False
     assert report["roles"] == ["rigid_prop", "precision_negative_control"]
     assert set(report["outcome_counts"]) >= {
         "accept",
@@ -74,6 +87,7 @@ def test_phase0_report_records_all_assets_baselines_and_probe_outcomes(tmp_path,
         "bounding_primitive",
         "single_convex_hull",
         "coacd_or_vhacd_if_available",
+        "vhacd_if_available",
         "cpd_style_primitive_candidate_if_available",
     }
     assert first["baseline_results"]["bounding_primitive"]["outcome"] == "accept"
@@ -88,13 +102,12 @@ def test_phase0_report_records_all_assets_baselines_and_probe_outcomes(tmp_path,
         first["baseline_results"]["coacd_or_vhacd_if_available"]["outcome"]
         == "dependency_gap"
     )
+    assert first["baseline_results"]["vhacd_if_available"]["outcome"] == "dependency_gap"
     assert first["probe_results"]["bounding_primitive"]["body_state_drop_settle"][
         "outcome"
     ] == "accept"
     assert first["probe_results"]["bounding_primitive"]["sphere_rain"]["outcome"] == "accept"
-    assert first["probe_results"]["bounding_primitive"]["stack_or_slide"]["outcome"] == (
-        "fallback"
-    )
+    assert first["probe_results"]["bounding_primitive"]["stack_or_slide"]["outcome"] == "accept"
     assert first["probe_results"]["bounding_primitive"]["link_boundary_audit"][
         "outcome"
     ] == "not_applicable"
@@ -113,6 +126,7 @@ def test_phase0_report_records_all_assets_baselines_and_probe_outcomes(tmp_path,
         "precision_negative_control_bounding_primitive",
         "precision_negative_control_cpd_style_primitive_candidate_if_available",
     ]
+    assert calls["stack"] == calls["contact"]
 
 
 def test_phase0_report_gates_hash_mismatch_before_generating_packages(tmp_path):
@@ -139,6 +153,140 @@ def test_phase0_report_gates_hash_mismatch_before_generating_packages(tmp_path):
     )
 
 
+def test_phase0_coacd_vhacd_baseline_records_executable_package_when_available(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_phase0_manifest(tmp_path)
+    config_path = _write_phase0_config(tmp_path, manifest_path, source_dir=None)
+
+    def fake_convex_decomposition_package(
+        mesh,
+        *,
+        role,
+        baseline_id,
+        source_sha256,
+        source_path,
+        max_hulls,
+        phase0_section,
+        preferred_backends=None,
+    ):
+        if preferred_backends == ("vhacd",):
+            raise phase0.ConvexDecompositionUnavailable("vhacd unavailable")
+        package = CollisionPackage(
+            package_id=f"{role}_{baseline_id}:phase0_coacd",
+            asset_id=f"{role}_{baseline_id}",
+            source_path=source_path,
+            source_sha256=source_sha256,
+            method="coacd",
+            stage="phase0_convex_decomposition",
+            status="smoke_passed",
+            primitives=(
+                PrimitiveSpec(
+                    primitive_id="hull0",
+                    kind="convex_mesh",
+                    center=(0.5, 0.5, 0.25),
+                    dimensions={
+                        "vertices": [
+                            [-0.5, -0.5, -0.25],
+                            [0.5, -0.5, -0.25],
+                            [0.0, 0.5, -0.25],
+                            [0.0, 0.0, 0.25],
+                        ],
+                        "faces": [[0, 1, 2], [0, 3, 1], [1, 3, 2], [2, 3, 0]],
+                    },
+                ),
+            ),
+            primitive_subset=("convex_mesh",),
+        )
+        return package, {
+            "backend": "coacd",
+            "backend_type": "python_module",
+            "max_hulls": max_hulls,
+            "hull_count": 1,
+            "artifact_policy": "generated_hulls_embedded_in_report",
+        }
+
+    import primitive_collision_compiler.phase0 as phase0
+
+    monkeypatch.setattr(
+        phase0,
+        "build_convex_decomposition_package",
+        fake_convex_decomposition_package,
+        raising=False,
+    )
+
+    report = build_phase0_rigid_benchmark_report(config_path)
+
+    coacd = report["cases"][0]["baseline_results"]["coacd_or_vhacd_if_available"]
+    assert coacd["outcome"] == "accept"
+    assert coacd["status"] == "generated"
+    assert coacd["primitive_or_hull_count"] == 1
+    assert coacd["executable_baseline"]["backend"] == "coacd"
+    assert coacd["package_mapping"]["fully_mapped"] is True
+
+
+def test_phase0_report_records_articulated_robot_smoke_case(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_phase0_manifest(tmp_path)
+    robot_manifest_path = _write_articulated_robot_manifest(tmp_path)
+    config_path = _write_phase0_config(
+        tmp_path,
+        manifest_path,
+        articulated_robot_manifest=robot_manifest_path,
+    )
+    captured_options = {}
+
+    def fake_articulation_smoke(*, asset_path, source_dir, device, options, claim_boundary):
+        captured_options["hold_frames"] = options.hold_frames
+        captured_options["substeps"] = options.substeps
+        captured_options["iterations"] = options.iterations
+        return {
+            "stage": "newton_articulation_smoke",
+            "status": "smoke_passed",
+            "outcome": "accept",
+            "asset_path": asset_path,
+            "probe_type": "articulation_smoke_if_robot",
+            "device": device,
+            "metrics": {
+                "joint_tree_import": "passed",
+                "gravity_hold_drift": 0.0,
+                "trajectory_completion": "passed",
+            },
+            "failure_labels": [],
+            "fallback_reason": None,
+            "claim_boundary": claim_boundary,
+            "evidence_level": "newton_articulation_smoke",
+        }
+
+    import primitive_collision_compiler.phase0 as phase0
+
+    monkeypatch.setattr(
+        phase0,
+        "run_newton_articulation_smoke",
+        fake_articulation_smoke,
+        raising=False,
+    )
+
+    report = build_phase0_rigid_benchmark_report(config_path)
+
+    assert report["articulation_asset_count"] == 1
+    assert captured_options == {"hold_frames": 15, "substeps": 2, "iterations": 3}
+    robot_case = report["articulation_cases"][0]
+    assert robot_case["asset_role"] == "articulated_robot"
+    assert robot_case["asset_gate"]["outcome"] == "accept"
+    assert robot_case["probe_results"]["articulation_smoke_if_robot"]["outcome"] == "accept"
+    assert robot_case["probe_results"]["link_boundary_audit"]["outcome"] == "fallback"
+    assert robot_case["probe_results"]["link_boundary_audit"]["claim_boundary"] == (
+        "phase0_link_boundary_audit_not_link_aware_robot_package_generation_or_whole_robot_validation"
+    )
+    assert robot_case["probe_results"]["link_boundary_audit"]["fallback_reason"] == (
+        "link-aware robot package generation is not implemented in this Phase 0 runner"
+    )
+
+
 def test_phase0_report_is_strict_json_serializable_without_newton_source(tmp_path):
     manifest_path = _write_phase0_manifest(tmp_path)
     config_path = _write_phase0_config(tmp_path, manifest_path, source_dir=None)
@@ -147,7 +295,7 @@ def test_phase0_report_is_strict_json_serializable_without_newton_source(tmp_pat
 
     encoded = json.dumps(report, allow_nan=False, sort_keys=True)
 
-    assert "phase0_rigid_asset_benchmark" in encoded
+    assert "phase0_asset_diagnostic_benchmark" in encoded
     first = report["cases"][0]
     assert first["probe_results"]["bounding_primitive"]["body_state_drop_settle"][
         "outcome"
@@ -240,11 +388,49 @@ def _write_phase0_manifest(tmp_path: Path) -> Path:
     return manifest_path
 
 
+def _write_articulated_robot_manifest(tmp_path: Path) -> Path:
+    robot_path = tmp_path / "robot.usda"
+    _write_mesh_usd(
+        robot_path,
+        points=[
+            (0, 0, 0),
+            (0.1, 0, 0),
+            (0, 0.1, 0),
+            (0, 0, 0.1),
+        ],
+        face_vertex_counts=[3, 3, 3, 3],
+        face_vertex_indices=[0, 1, 2, 0, 3, 1, 1, 3, 2, 2, 3, 0],
+    )
+    manifest_path = tmp_path / "phase0_robot_assets.yaml"
+    manifest_path.write_text(
+        yaml.safe_dump(
+            {
+                "manifest_id": "phase0_robot_fixture",
+                "assets": [
+                    {
+                        "id": "fixture_robot",
+                        "role": "articulated_robot",
+                        "path": str(robot_path),
+                        "local_path": str(robot_path),
+                        "source_path": str(robot_path),
+                        "sha256": _sha256_file(robot_path),
+                        "local_sha256": _sha256_file(robot_path),
+                        "source_sha256": "3" * 64,
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return manifest_path
+
+
 def _write_phase0_config(
     tmp_path: Path,
     manifest_path: Path,
     *,
     source_dir: str | None = "/tmp/newton-source",
+    articulated_robot_manifest: Path | None = None,
 ) -> Path:
     config = {
         "asset": {"id": "phase0_fixture", "path": str(manifest_path)},
@@ -280,6 +466,12 @@ def _write_phase0_config(
                     "fallback_if_unavailable": "record_dependency_gap",
                 },
                 {
+                    "id": "vhacd_if_available",
+                    "method": "vhacd",
+                    "required": False,
+                    "fallback_if_unavailable": "record_dependency_gap",
+                },
+                {
                     "id": "cpd_style_primitive_candidate_if_available",
                     "method": "cpd_style_primitive_candidate",
                     "required": False,
@@ -297,13 +489,23 @@ def _write_phase0_config(
                 },
                 "link_boundary_audit": {"initial_conditions": {"simulation_required": False}},
                 "articulation_smoke_if_robot": {
-                    "initial_conditions": {"simulation_required": False}
+                    "initial_conditions": {"simulation_required": False},
+                    "solver": {
+                        "duration_seconds": 0.25,
+                        "substeps": 2,
+                        "iterations": 3,
+                    },
                 },
                 "precision_rejection": {"initial_conditions": {"simulation_required": False}},
             },
             "required_metrics": ["primitive_or_hull_count", "fallback_ratio"],
         },
     }
+    if articulated_robot_manifest is not None:
+        config["phase0_defaults"]["articulated_robot_manifest"] = str(
+            articulated_robot_manifest
+        )
+        config["phase0_defaults"]["articulated_robot_roles"] = ["articulated_robot"]
     if source_dir is not None:
         config["newton"] = {"source_dir": source_dir}
     config_path = tmp_path / "phase0_config.yaml"

@@ -86,6 +86,38 @@ def test_map_package_shapes_accepts_complete_newton_native_bundle_without_import
     json.dumps([mapping.to_dict() for mapping in mappings], allow_nan=False)
 
 
+def test_map_package_shapes_accepts_convex_mesh_without_importing_newton():
+    package = CollisionPackage(
+        package_id="pkg",
+        asset_id="asset",
+        primitives=(
+            PrimitiveSpec(
+                primitive_id="hull0",
+                kind="convex_mesh",
+                center=(1.0, 2.0, 3.0),
+                dimensions={
+                    "vertices": [
+                        [-0.5, -0.5, -0.5],
+                        [0.5, -0.5, -0.5],
+                        [0.0, 0.5, -0.5],
+                        [0.0, 0.0, 0.5],
+                    ],
+                    "faces": [[0, 1, 2], [0, 3, 1], [1, 3, 2], [2, 3, 0]],
+                },
+            ),
+        ),
+    )
+
+    mapping = map_package_shapes(package)[0]
+
+    assert mapping.status == "mapped"
+    assert mapping.kind == "convex_mesh"
+    assert mapping.center == (1.0, 2.0, 3.0)
+    assert len(mapping.dimensions["vertices"]) == 4
+    assert len(mapping.dimensions["faces"]) == 4
+    json.dumps(mapping.to_dict(), allow_nan=False)
+
+
 def test_map_package_shapes_reports_mapping_gap_for_bad_dimensions():
     package = CollisionPackage(
         package_id="pkg",

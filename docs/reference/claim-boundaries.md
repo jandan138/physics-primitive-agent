@@ -35,8 +35,9 @@ baseline. It is not the novelty claim by itself.
   narrow performance hook: native Newton boxes achieved 2.21x generated-contact throughput versus
   same-count convex64 mesh proxies in one pressure scene, with about 5.3% collision-only wall-time
   reduction.
-- Current Franka evidence is capped package/task-smoke evidence only. It is not whole-robot
-  articulated-dynamics evidence.
+- Current Franka evidence includes capped package/task-smoke evidence and one USD articulation
+  smoke. It is not link-aware package generation, whole-robot collider quality, manipulation, or
+  broad articulated-dynamics evidence.
 - "Simulation-checked" may be used only when a dated record links a generated package to a named
   Newton task, settings, asset, environment, and report.
 - "Diagnostic checker" is preferred over formal-verification language.
@@ -47,8 +48,9 @@ baseline. It is not the novelty claim by itself.
   documented.
 - Prefer "candidate generator" for primitive or CPD-style outputs before Newton diagnostics.
 - Prefer "fallback-aware" rather than "primitive-only".
-- Use "capped Franka package" or "Franka package smoke" unless a full articulated robot record
-  exists.
+- Use "Franka articulation smoke" only for the recorded USD import/short-trajectory smoke.
+  Use link-aware package or whole-robot wording only after link-aware package generation and
+  link-boundary probes exist.
 - Use "body-state risk guard" only for the opt-in diagnostic path unless calibrated threshold
   evidence exists.
 

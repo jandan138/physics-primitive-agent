@@ -38,9 +38,10 @@ primitive decomposition is an important related candidate generator and baseline
 - A recorded bed/Franka cylinder mechanism shows why engine-level body-state diagnostics matter.
 - An opt-in package body-state guard task path has real Newton task-smoke evidence for the capped
   bed/Franka slice.
-- A scoped Phase 0 GRScenes rigid-asset diagnostic run exists over the repo-local materialized
-  manifest, with accept/fallback/dependency-gap/failure outcomes for bounding and CPD-style
-  first-mesh candidate lanes.
+- A scoped Phase 0 follow-up run exists over the repo-local materialized GRScenes assets and one
+  Franka USD smoke asset, with accept/fallback/dependency-gap/failure outcomes for bounding,
+  CPD-style, CoACD convex-mesh, stack-or-slide, and articulation-smoke lanes. V-HACD remains a
+  recorded dependency gap.
 - A preliminary bed-aligned collision-only pressure test records 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies.
 - No broad benchmark-suite, complete collision-quality validation, or whole-robot
@@ -58,6 +59,7 @@ primitive decomposition is an important related candidate generator and baseline
 
 No safety guarantee, no real-world transfer claim, no deployment readiness, no broad benchmark
 superiority or full-simulation speedup claim, no primitive-only sufficiency claim, no full CPD
-reproduction claim, and no whole-robot robot-operation claim before articulated records exist.
+reproduction claim, and no whole-robot robot-operation claim before link-aware package generation,
+link-boundary probes, and articulation records exist.
 
 Canonical wording: [message-map.md](message-map.md).

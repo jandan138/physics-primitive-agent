@@ -233,7 +233,7 @@ def _run_contact_canary(
 
     with wp.ScopedDevice(device):
         builder = newton.ModelBuilder(gravity=0.0)
-        _add_static_shape(builder, mapping, wp)
+        _add_static_shape(builder, mapping, wp, newton)
         probe_body = builder.add_body(
             xform=wp.transform(_wp_vec3(wp, mapping.center), wp.quat_identity())
         )
@@ -254,7 +254,12 @@ def _run_contact_canary(
     return NewtonContactCanary(mapping.primitive_id, mapping.kind, status, contact_count, detail)
 
 
-def _add_static_shape(builder: Any, mapping: NewtonShapeMapping, wp: ModuleType) -> None:
+def _add_static_shape(
+    builder: Any,
+    mapping: NewtonShapeMapping,
+    wp: ModuleType,
+    newton: ModuleType | None = None,
+) -> None:
     xform = wp.transform(_wp_vec3(wp, mapping.center), _shape_quat(mapping, wp))
     dimensions = mapping.dimensions
     if mapping.kind == "box":
@@ -286,8 +291,21 @@ def _add_static_shape(builder: Any, mapping: NewtonShapeMapping, wp: ModuleType)
     elif mapping.kind == "ellipsoid":
         rx, ry, rz = (float(value) for value in dimensions["radii"])
         builder.add_shape_ellipsoid(body=-1, xform=xform, rx=rx, ry=ry, rz=rz)
+    elif mapping.kind == "convex_mesh":
+        mesh = _newton_mesh(mapping, newton)
+        builder.add_shape_convex_hull(body=-1, xform=xform, mesh=mesh)
     else:
         raise ValueError(f"unsupported mapped primitive kind: {mapping.kind}")
+
+
+def _newton_mesh(mapping: NewtonShapeMapping, newton: ModuleType | None):
+    if newton is None:
+        import newton as newton_module  # type: ignore[import-not-found]
+    else:
+        newton_module = newton
+    vertices = np.asarray(mapping.dimensions["vertices"], dtype=np.float32)
+    faces = np.asarray(mapping.dimensions["faces"], dtype=np.int32).reshape(-1)
+    return newton_module.Mesh(vertices, faces)
 
 
 def _shape_quat(mapping: NewtonShapeMapping, wp: ModuleType):
@@ -318,6 +336,10 @@ def _probe_radius(mapping: NewtonShapeMapping) -> float:
         return max(float(dimensions["radius"]) * 0.5, 1e-3)
     if mapping.kind == "ellipsoid":
         return max(min(float(value) for value in dimensions["radii"]) * 0.5, 1e-3)
+    if mapping.kind == "convex_mesh":
+        vertices = np.asarray(dimensions["vertices"], dtype=float)
+        half_extents = np.max(np.abs(vertices), axis=0)
+        return max(float(np.min(half_extents)) * 0.5, 1e-3)
     half_extents = [float(value) for value in dimensions["half_extents"]]
     return max(min(half_extents) * 0.5, 1e-3)
 
