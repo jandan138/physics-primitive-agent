@@ -1,31 +1,200 @@
+manifest_id: phase0_grscenes_assets_2026_05_25
+description: >
+  Phase 0 GRScenes rigid-asset intake for simulation-checked primitive collider
+  diagnostics. Raw USD files are materialized into an ignored repo-local mirror;
+  this manifest is the tracked contract.
+source_dataset:
+  name: GRScenes_assets
+  root: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets
+  intake_status: selected_for_internal_phase0_smoke
+  license_status: unreviewed
+  artifact_policy: raw_assets_ignored_repo_local_mirror_only
+mirror_root: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25
+materialization_report: reports/generated/asset_materialization/phase0_grscenes_assets_2026_05_25.json
 assets:
-  - id: rigid_prop_01
+  - id: grscenes_box_040c0ca4_phase0
     role: rigid_prop
-    path: assets/raw/phase0/rigid_prop_01.usda
-    provenance_status: required_before_run
-    source_policy: internal_or_permissive
-    task_labels: [drop]
-  - id: stackable_01
-    role: stackable
-    path: assets/raw/phase0/stackable_01.usda
-    provenance_status: required_before_run
-    source_policy: internal_or_permissive
+    category: box
+    path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/rigid_prop/040c0ca486261112bd979930d7945b41.usd
+    local_path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/rigid_prop/040c0ca486261112bd979930d7945b41.usd
+    source_path: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets/box/040c0ca486261112bd979930d7945b41/usd/040c0ca486261112bd979930d7945b41.usd
+    source_sha256: d4228c6b48ff24bdbfead3bc5a9d1f6650b5698fa451da2be16e1aaefe662102
+    sha256: 90091253cf4874fdf3c3ccc03261d44e0862df52039bb8545074c60708758e80
+    local_sha256: 90091253cf4874fdf3c3ccc03261d44e0862df52039bb8545074c60708758e80
+    size_bytes: 4899
+    source_size_bytes: 4924
+    provenance_status: source_recorded_license_unreviewed
+    source_policy: internal_dataset_license_review_required
     task_labels: [drop, stack_or_slide]
-  - id: contact_affordance_01
-    role: contact_affordance
-    path: assets/raw/phase0/contact_affordance_01.usda
-    provenance_status: required_before_run
-    source_policy: internal_or_permissive
-    task_labels: [drop, sphere_rain]
-  - id: container_01
+    selection_reason: small rigid prop for drop and support-contact smoke.
+    materialization:
+      status: materialized
+      method: pxr_usdutils_localize_asset
+      report: reports/generated/asset_materialization/phase0_grscenes_assets_2026_05_25.json
+      local_file_count: 6
+      local_total_size_bytes: 249982
+      local_file_extensions:
+        ".mdl": 1
+        ".png": 4
+        ".usd": 1
+      localized_dependency_files:
+        - 0/Num5dd77cea7d6a630001bffad3.mdl
+        - 1/6526211c69ad3400017ca183_color.png
+        - 1/black.png
+        - 1/normal.png
+        - 1/white.png
+      dependency_summary:
+        layer_count: 1
+        asset_count: 5
+        unresolved_count: 0
+      unresolved_dependencies: []
+  - id: grscenes_bowl_0cc93a88_phase0
     role: container
-    path: assets/raw/phase0/container_01.usda
-    provenance_status: required_before_run
-    source_policy: internal_or_permissive
+    category: bowl
+    path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/container/0cc93a880a63cb7e3844d1bfd2aa9931.usd
+    local_path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/container/0cc93a880a63cb7e3844d1bfd2aa9931.usd
+    source_path: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets/bowl/0cc93a880a63cb7e3844d1bfd2aa9931/usd/0cc93a880a63cb7e3844d1bfd2aa9931.usd
+    source_sha256: ba81c8b89b594890cc8a06db4086d375647d3e74d49fbd4d6352482933ccb3e8
+    sha256: eacf7fd89ebdd210dff5cb39a5a49bd5fc5cdffaa980acb6974220ae84a06842
+    local_sha256: eacf7fd89ebdd210dff5cb39a5a49bd5fc5cdffaa980acb6974220ae84a06842
+    size_bytes: 48280
+    source_size_bytes: 48305
+    provenance_status: source_recorded_license_unreviewed
+    source_policy: internal_dataset_license_review_required
     task_labels: [drop, sphere_rain]
-  - id: precision_negative_control_01
+    selection_reason: concave container-like shape for opening and contact stress smoke.
+    materialization:
+      status: materialized
+      method: pxr_usdutils_localize_asset
+      report: reports/generated/asset_materialization/phase0_grscenes_assets_2026_05_25.json
+      local_file_count: 6
+      local_total_size_bytes: 338626
+      local_file_extensions:
+        ".mdl": 1
+        ".png": 4
+        ".usd": 1
+      localized_dependency_files:
+        - 0/Num5d4e3b9f0340ad000170b34b.mdl
+        - 1/5dc03f3b7d6a63000122383a_color.png
+        - 1/black.png
+        - 1/normal.png
+        - 1/white.png
+      dependency_summary:
+        layer_count: 1
+        asset_count: 5
+        unresolved_count: 0
+      unresolved_dependencies: []
+  - id: grscenes_cup_08b88d9e_phase0
+    role: contact_affordance
+    category: cup
+    path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/contact_affordance/08b88d9e48d6da2d7a59d94a5d15ed13.usd
+    local_path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/contact_affordance/08b88d9e48d6da2d7a59d94a5d15ed13.usd
+    source_path: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets/cup/08b88d9e48d6da2d7a59d94a5d15ed13/usd/08b88d9e48d6da2d7a59d94a5d15ed13.usd
+    source_sha256: 090c9b885c0bb1fb332ea6336947d0838fc4f70013b270a744093c856001d3f4
+    sha256: 870d7d667c640906ed3adaa744133ad194186152cfea18e46bc924800c1ab7fd
+    local_sha256: 870d7d667c640906ed3adaa744133ad194186152cfea18e46bc924800c1ab7fd
+    size_bytes: 16600
+    source_size_bytes: 16625
+    provenance_status: source_recorded_license_unreviewed
+    source_policy: internal_dataset_license_review_required
+    task_labels: [drop, sphere_rain]
+    selection_reason: small handled or hollow object for contact affordance smoke.
+    materialization:
+      status: materialized
+      method: pxr_usdutils_localize_asset
+      report: reports/generated/asset_materialization/phase0_grscenes_assets_2026_05_25.json
+      local_file_count: 6
+      local_total_size_bytes: 3406945
+      local_file_extensions:
+        ".mdl": 1
+        ".png": 4
+        ".usd": 1
+      localized_dependency_files:
+        - 0/Num5dc94110b1d8ad00019ccbcb.mdl
+        - 1/6529141e69ad3400017d247d_color.png
+        - 1/6529141e69ad3400017d247d_metallic.png
+        - 1/normal.png
+        - 1/white.png
+      dependency_summary:
+        layer_count: 1
+        asset_count: 5
+        unresolved_count: 0
+      unresolved_dependencies: []
+  - id: grscenes_tray_0e670d9c_phase0
+    role: stackable
+    category: tray
+    path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/stackable/0e670d9ca896a91367ae5f3c380720b8.usd
+    local_path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/stackable/0e670d9ca896a91367ae5f3c380720b8.usd
+    source_path: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets/tray/0e670d9ca896a91367ae5f3c380720b8/usd/0e670d9ca896a91367ae5f3c380720b8.usd
+    source_sha256: 9a461911b214b141ea237d28895456382f156402c656aa784b849a3519f1e73c
+    sha256: 21922ef6b7f7789b4b5e6c6e182ca1160e0c1a7672d1edaaaff7201c6ba13318
+    local_sha256: 21922ef6b7f7789b4b5e6c6e182ca1160e0c1a7672d1edaaaff7201c6ba13318
+    size_bytes: 13988
+    source_size_bytes: 14014
+    provenance_status: source_recorded_license_unreviewed
+    source_policy: internal_dataset_license_review_required
+    task_labels: [drop, stack_or_slide, sphere_rain]
+    selection_reason: shallow support-like object for stack or slide smoke.
+    materialization:
+      status: materialized
+      method: pxr_usdutils_localize_asset
+      report: reports/generated/asset_materialization/phase0_grscenes_assets_2026_05_25.json
+      local_file_count: 6
+      local_total_size_bytes: 7350151
+      local_file_extensions:
+        ".mdl": 1
+        ".png": 4
+        ".usd": 1
+      localized_dependency_files:
+        - 0/Num60db2086e399d00001dee92d.mdl
+        - 1/5f1443cc5ea89f0001e51704_color.png
+        - 1/black.png
+        - 1/normal.png
+        - 1/white.png
+      dependency_summary:
+        layer_count: 1
+        asset_count: 5
+        unresolved_count: 0
+      unresolved_dependencies: []
+  - id: grscenes_keyboard_b4cc03c7_phase0
     role: precision_negative_control
-    path: assets/raw/phase0/precision_negative_control_01.usda
-    provenance_status: required_before_run
-    source_policy: internal_or_permissive
+    category: keyboard
+    path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/precision_negative_control/b4cc03c7fdcb2988414a2be683d9510c.usd
+    local_path: assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/precision_negative_control/b4cc03c7fdcb2988414a2be683d9510c.usd
+    source_path: /cpfs/user/zhuzihou/assets/dedup_workspaces/test0_transitive_apply_parallel/dataset/GRScenes_assets/keyboard/b4cc03c7fdcb2988414a2be683d9510c/usd/b4cc03c7fdcb2988414a2be683d9510c.usd
+    source_sha256: 1de5b7df9f4542af5cec4d0509cc7a38e70ffb159e52c66ae274f6293767526f
+    sha256: e21afbc29c8cb977d0385edefaa9287346d1cf62d09d3d9f43541926c958ec93
+    local_sha256: e21afbc29c8cb977d0385edefaa9287346d1cf62d09d3d9f43541926c958ec93
+    size_bytes: 27750
+    source_size_bytes: 27776
+    provenance_status: source_recorded_license_unreviewed
+    source_policy: internal_dataset_license_review_required
     task_labels: [precision_rejection]
+    selection_reason: thin detailed object to keep precision-rejection or fallback behavior explicit.
+    materialization:
+      status: materialized
+      method: pxr_usdutils_localize_asset
+      report: reports/generated/asset_materialization/phase0_grscenes_assets_2026_05_25.json
+      local_file_count: 12
+      local_total_size_bytes: 222237
+      local_file_extensions:
+        ".mdl": 1
+        ".png": 10
+        ".usd": 1
+      localized_dependency_files:
+        - 0/Num657df4975e2fc700018a3c66.mdl
+        - 1/657e5ad0613a4200012948da_color.png
+        - 1/657e5ad0613a4200012948da_metallic.png
+        - 1/657e5ad08c0c1a0001be937b_color.png
+        - 1/657e5ad0b0a88500019a48f0_color.png
+        - 1/657e5ad0b0a88500019a48f0_metallic.png
+        - 1/657e5ad0fea3d40001fe4a0f_color.png
+        - 1/657e5ad0fea3d40001fe4a0f_metallic.png
+        - 1/black.png
+        - 1/normal.png
+        - 1/white.png
+      dependency_summary:
+        layer_count: 1
+        asset_count: 11
+        unresolved_count: 0
+      unresolved_dependencies: []

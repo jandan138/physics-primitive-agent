@@ -26,7 +26,10 @@ results:
       primitive_count: 32
       mesh_proxy_vertices: 64
   - id: phase0_multi_asset_benchmark
-    status: not_started
+    status: asset_intake_materialized_not_run
     section: experiments
-    evidence_source: configs/experiments/phase0_baseline.yaml; assets/manifests/phase0_assets.yaml
-    reporting_scope: Required before multi-asset ACCV table claims.
+    evidence_source: >-
+      configs/experiments/phase0_baseline.yaml;
+      assets/manifests/phase0_assets.yaml;
+      docs/records/2026-05-25-phase0-grscenes-asset-intake.md
+    reporting_scope: Asset intake only; required benchmark outcomes are not yet recorded.

@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 
 import yaml
 
@@ -50,6 +51,78 @@ def test_phase0_config_references_existing_structured_manifest():
         "container",
         "precision_negative_control",
     }
+
+
+def test_phase0_manifest_uses_repo_local_grscenes_mirrors():
+    manifest_path = ROOT / "assets" / "manifests" / "phase0_assets.yaml"
+    manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+
+    manifest_id = "phase0_grscenes_assets_2026_05_25"
+    source_root = (
+        "/cpfs/user/zhuzihou/assets/dedup_workspaces/"
+        "test0_transitive_apply_parallel/dataset/GRScenes_assets/"
+    )
+    mirror_prefix = f"assets/raw/mirrors/{manifest_id}/"
+    placeholder_ids = {
+        "rigid_prop_01",
+        "stackable_01",
+        "contact_affordance_01",
+        "container_01",
+        "precision_negative_control_01",
+    }
+
+    assert manifest["manifest_id"] == manifest_id
+    assert manifest["materialization_report"].endswith(".json")
+    assert len(manifest["assets"]) >= 5
+    assert not placeholder_ids & {asset["id"] for asset in manifest["assets"]}
+
+    for asset in manifest["assets"]:
+        materialization = asset["materialization"]
+        dependency_summary = materialization["dependency_summary"]
+        dependency_files = materialization["localized_dependency_files"]
+        extensions = materialization["local_file_extensions"]
+
+        assert asset["id"].startswith("grscenes_")
+        assert asset["source_path"].startswith(source_root)
+        assert asset["path"] == asset["local_path"]
+        assert asset["path"].startswith(mirror_prefix)
+        assert Path(asset["path"]).name == Path(asset["source_path"]).name
+        assert not asset["path"].startswith(source_root)
+        assert asset["provenance_status"] == "source_recorded_license_unreviewed"
+        assert materialization["status"] == "materialized"
+        assert materialization["method"] == "pxr_usdutils_localize_asset"
+        assert materialization["local_file_count"] == len(dependency_files) + 1
+        assert materialization["local_file_count"] >= dependency_summary["asset_count"] + 1
+        assert dependency_summary["unresolved_count"] == 0
+        assert materialization["unresolved_dependencies"] == []
+        assert extensions[".usd"] == 1
+        assert extensions[".mdl"] >= 1
+        assert extensions[".png"] >= 1
+        assert any(path.endswith(".mdl") for path in dependency_files)
+        assert any(path.endswith(".png") for path in dependency_files)
+
+        ignored = subprocess.run(
+            ["git", "check-ignore", "--quiet", asset["path"]],
+            cwd=ROOT,
+            check=False,
+        )
+        assert ignored.returncode == 0
+
+    ignored_report = subprocess.run(
+        ["git", "check-ignore", "--quiet", manifest["materialization_report"]],
+        cwd=ROOT,
+        check=False,
+    )
+    assert ignored_report.returncode == 0
+
+    tracked_raw_outputs = subprocess.run(
+        ["git", "ls-files", "assets/raw", "reports/generated"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert tracked_raw_outputs.stdout == ""
 
 
 def test_phase0_config_defines_baselines_probes_and_required_metrics():
