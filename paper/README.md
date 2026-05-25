@@ -1,0 +1,64 @@
+# Newton Primitive Collision Compiler — Paper Workspace
+
+Multi-venue LaTeX structure migrated from the `genesis-llm` paper workflow. **ACCV** is the
+active primary draft for the simulation-checked primitive collider compiler story. **arXiv**,
+**ECCV**, and **NeurIPS** are transfer-candidate wrappers that share manuscript sections and
+evidence registries.
+
+## Layout
+
+```text
+paper/
+  shared/                 # Cross-venue sections, figures, tables, references, evidence registries
+  venues/accv/            # ACCV primary wrapper (Springer LNCS)
+  venues/arxiv/           # arXiv transfer-candidate wrapper
+  venues/eccv/            # ECCV transfer-candidate wrapper
+  venues/neurips/         # NeurIPS transfer-candidate wrapper
+```
+
+## Build
+
+```bash
+cd paper && make list
+cd paper && make template-check
+cd paper && make accv          # primary draft
+cd paper && make all           # every venue (fails clearly if a template is missing)
+cd paper && make clean
+```
+
+Venue wrappers use `\bibliography{references}`. The shared bibliography is resolved by each
+venue's `.latexmkrc` and the Makefile fallback, which set `BIBINPUTS` to `paper/shared/`; do not
+encode `../../shared/` inside `\bibliography{...}`, because BibTeX may run from the venue
+`build/` directory.
+
+## Override Rule
+
+Venue `main.tex` files explicitly choose shared or local sections. Shared inputs look like
+`\input{../../shared/sections/method}`. A local override uses `\input{sections/method}` and must
+be recorded in that venue's `STATUS.md`.
+
+## Template Status
+
+| Venue | Template source | Expected class | Readiness intent |
+| --- | --- | --- | --- |
+| accv | Springer LNCS from TeX Live or committed class | `llncs.cls` | primary-draft |
+| arxiv | standard article | `article` | transfer-preparation |
+| eccv | official ECCV class from TeX Live or committed file | `eccv.sty` + `eccvabbrv.bst` | transfer-preparation |
+| neurips | copied NeurIPS 2026 style in repo | `neurips_2026.sty` | transfer-preparation |
+
+Each venue records template provenance in `venues/<venue>/STATUS.md`.
+
+## Evidence Rules
+
+Claims and result provenance live under `shared/evidence/`. Any change to quantitative results,
+figure values, table values, seed reporting, or venue-specific scientific claims must update
+`claims.yaml` and, when applicable, `results_manifest.yaml` in the same change. Dated runtime
+evidence remains canonical in `docs/records/`; the paper registry links to those records rather
+than duplicating full logs.
+
+## Claim Boundary
+
+Paper sources must stay consistent with `docs/reference/claim-boundaries.md` and
+`docs/deepdive/evidence-status.md`. Use scoped wording such as ``simulation-checked'',
+``capped package smoke'', ``collision-only microbenchmark'', and ``diagnostic checker'' unless a
+dated record supports a stronger claim.

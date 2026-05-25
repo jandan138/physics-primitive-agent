@@ -30,6 +30,12 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+addopts = [
+    "--strict-markers",
+]
+markers = [
+    "paper_offline: slow CPD-paper offline contract tests; run explicitly for paper-lane changes",
+]
 
 [tool.ruff]
 target-version = "py310"

@@ -1,0 +1,17 @@
+\section{Introduction}
+\label{sec:intro}
+
+Collision proxies gate what simulators and robot stacks can trust.
+Primitive colliders remain attractive because they are editable, inspectable, and fast in many engines, yet a package that fits the input mesh can still change compound body state, destabilize contact, or violate link structure when imported into Newton.
+
+Recent primitive-decomposition methods, including CPD-style bottom-up fitting, optimize geometric fidelity and proxy complexity.
+They do not, by themselves, answer whether a generated package should be accepted for simulation, articulation, or task operation under recorded settings.
+
+We study \emph{simulation-checked} acceptance: generate or import primitive candidates, preserve provenance and link boundaries, run Newton diagnostics over body state and contact, and fall back when checks expose risk.
+Fallback is an expected compiler output, not a failure to hide.
+
+Our current repository is a DeepDive-stage bootstrap with dated records rather than a completed production compiler.
+The strongest existing story is diagnostic: a capped bed cylinder package fails drop/settle as a full compound while isolated geometry passes, and recorded Franka cylinder packages pass in smaller contexts.
+The paper workspace versions in this repository keep claims aligned with those records while Phase~0 benchmark tables are filled.
+
+\input{../../shared/figures/pipeline_schematic}

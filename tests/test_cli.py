@@ -11,6 +11,52 @@ from primitive_collision_compiler.reports.schema import NewtonDiagnosticReport
 FIXTURE_CONFIG = Path(__file__).parent / "fixtures" / "dry_run_mvp.yaml"
 
 
+def _newton_native_fitting_comparison_payload(
+    *,
+    status="smoke_passed",
+    claim_boundary="newton_native_fitting_comparison_not_collision_quality_validation",
+    evidence_level="offline_newton_native_fitting_comparison_smoke",
+    legacy_primitive_subset=None,
+):
+    return {
+        "stage": "cpd_like_newton_native_fitting_comparison",
+        "status": status,
+        "claim_boundary": claim_boundary,
+        "evidence_level": evidence_level,
+        "legacy_primitive_subset": list(
+            legacy_primitive_subset or ("box", "sphere", "capsule")
+        ),
+        "cases": [
+            {
+                "case_id": "cylindrical_rod",
+                "expectation_status": "matched"
+                if status == "smoke_passed"
+                else "mismatched",
+                "native": {
+                    "selected_primitive_kind": "cylinder",
+                    "selection_policy": "support_aware_min_weighted_volume_surrogate_v1",
+                    "candidate_audit": [
+                        {
+                            "primitive_type": "cylinder",
+                            "selected": True,
+                        }
+                    ],
+                },
+                "comparison": {
+                    "native_selected_kind_cost_explained": True,
+                    "native_selected_newton_extension": status == "smoke_passed",
+                },
+            }
+        ],
+        "real_usd_scope": {
+            "assets": [
+                {"role": "bed_dev_smoke"},
+                {"role": "franka_import_smoke"},
+            ],
+        },
+    }
+
+
 def _write_newton_check_config(path: Path, source_dir: Path):
     path.write_text(
         "\n".join(
@@ -1074,7 +1120,16 @@ def test_cli_run_cpd_like_expected_failure_workbench_returns_nonzero_for_partial
     assert captured.err == ""
 
 
-def test_cli_run_newton_native_fitting_comparison_emits_json_without_config(capsys):
+def test_cli_run_newton_native_fitting_comparison_emits_json_without_config(
+    capsys,
+    monkeypatch,
+):
+    monkeypatch.setattr(
+        cli,
+        "build_newton_native_fitting_comparison_report",
+        _newton_native_fitting_comparison_payload,
+    )
+
     assert cli.main(["--run-newton-native-fitting-comparison"]) == 0
 
     captured = capsys.readouterr()
@@ -1117,7 +1172,34 @@ def test_cli_run_newton_native_fitting_comparison_rejects_non_finite_json(
     assert "Traceback" not in captured.err
 
 
-def test_cli_run_newton_native_fitting_comparison_reads_config_subsets(tmp_path, capsys):
+def test_cli_run_newton_native_fitting_comparison_reads_config_subsets(
+    tmp_path,
+    capsys,
+    monkeypatch,
+):
+    calls = []
+
+    def fake_report_builder(*, legacy_subset, native_subset, objective_options):
+        calls.append(
+            {
+                "legacy_subset": legacy_subset,
+                "native_subset": native_subset,
+                "objective_options": objective_options,
+            }
+        )
+        return _newton_native_fitting_comparison_payload(
+            status="partial",
+            claim_boundary=objective_options.claim_boundary,
+            evidence_level=objective_options.evidence_level,
+            legacy_primitive_subset=legacy_subset,
+        )
+
+    monkeypatch.setattr(
+        cli,
+        "build_newton_native_fitting_comparison_report",
+        fake_report_builder,
+    )
+
     config_path = tmp_path / "native_compare.yaml"
     config_path.write_text(
         "\n".join(
@@ -1168,6 +1250,15 @@ def test_cli_run_newton_native_fitting_comparison_reads_config_subsets(tmp_path,
     assert payload["evidence_level"] == "custom_native_evidence"
     assert payload["legacy_primitive_subset"] == ["box", "sphere", "capsule", "cylinder"]
     assert cylindrical["comparison"]["native_selected_newton_extension"] is False
+    assert calls[0]["legacy_subset"] == ("box", "sphere", "capsule", "cylinder")
+    assert calls[0]["native_subset"] == (
+        "box",
+        "sphere",
+        "capsule",
+        "cylinder",
+        "cone",
+        "ellipsoid",
+    )
 
 
 def test_cli_run_real_usd_native_fitting_comparison_reads_roles_from_config(tmp_path, capsys):
@@ -1656,6 +1747,7 @@ def test_cli_run_cpd_like_cost_guided_lookahead_merge_report_rejects_nonfinite_j
     assert "contains non-finite JSON values" in stderr
 
 
+@pytest.mark.paper_offline
 def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
     assert cli.main(["--run-cpd-paper-offline-report"]) == 0
 
@@ -3905,6 +3997,7 @@ def test_cli_run_cpd_paper_offline_report_emits_json(capsys):
         assert case["benchmark_triggered"] is False
 
 
+@pytest.mark.paper_offline
 def test_cli_run_cpd_paper_offline_report_serialization_json_is_deterministic(capsys):
     assert cli.main(["--run-cpd-paper-offline-report"]) == 0
     first_payload = json.loads(capsys.readouterr().out)

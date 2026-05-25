@@ -105,16 +105,31 @@ Install locally:
 python -m pip install -e ".[dev]"
 ```
 
-Run tests:
+Run fast tests:
 
 ```sh
-python -m pytest -q
+make test
 ```
 
-Validate docs and claims:
+Run CPD paper offline contract tests:
 
 ```sh
-python scripts/validate_docs.py
+make test-paper
+```
+
+Run the pre-merge validation lane:
+
+```sh
+make validate-full
+```
+
+Use `make test` for normal development. Use `make test-paper` when changing CPD paper offline
+contracts or report gates. Use `make validate-full` before merging.
+
+Validate docs and claims with the fast lane:
+
+```sh
+make validate
 ```
 
 Whitespace check:
@@ -123,8 +138,22 @@ Whitespace check:
 git diff --check
 ```
 
+## Paper Workspace
+
+Multi-venue LaTeX sources for the ACCV-facing draft:
+
+```sh
+cd paper && make list
+cd paper && make accv      # primary draft
+cd paper && make all       # all venue wrappers
+```
+
+Shared manuscript sections live in `paper/shared/`; venue wrappers live in `paper/venues/`.
+Evidence registries: `paper/shared/evidence/claims.yaml` and `results_manifest.yaml`.
+
 ## Repository Layout
 
+- `paper/`: multi-venue LaTeX paper (ACCV primary; arXiv/ECCV/NeurIPS transfer candidates).
 - `docs/deepdive/`: application-facing framing and reviewer materials.
 - `docs/design/`: roadmap, architecture, evaluation, and benchmark protocols.
 - `docs/reference/`: claim boundaries, related-work notes, and direction references.

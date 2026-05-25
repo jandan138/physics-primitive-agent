@@ -56,6 +56,22 @@ body state, contact behavior, and robot-operation constraints.
 ## Commands
 
 - Install locally: `python -m pip install -e ".[dev]"`
-- Run tests: `python -m pytest -q`
-- Validate docs and claims: `python scripts/validate_docs.py`
+- Run fast tests: `make test`
+- Run CPD paper offline tests: `make test-paper`
+- Validate before merge: `make validate-full`
+- Validate docs and claims with fast tests: `make validate`
+- Build paper (ACCV primary): `cd paper && make accv` or `cd paper && make all`
 - Whitespace check: `git diff --check`
+
+## Paper Workspace
+
+Multi-venue LaTeX sources live under `paper/` (migrated from the `genesis-llm` workflow):
+
+- `paper/shared/`: cross-venue sections, figures, bibliography, and evidence registries
+- `paper/venues/accv/`: ACCV primary wrapper (LNCS)
+- `paper/venues/{arxiv,eccv,neurips}/`: transfer-candidate wrappers
+
+ACCV is the active draft venue. Quantitative claims in paper sources must stay aligned with
+`paper/shared/evidence/claims.yaml`, `docs/reference/claim-boundaries.md`, and dated records under
+`docs/records/`. The Astro site under `site/` is separate reviewer-facing material, not the LaTeX
+build source of truth.

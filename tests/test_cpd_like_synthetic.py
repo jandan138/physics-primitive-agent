@@ -1,5 +1,6 @@
 import json
 import math
+from functools import lru_cache
 
 import numpy as np
 
@@ -49,6 +50,18 @@ from primitive_collision_compiler.baselines.cpd_like.synthetic import (
 from primitive_collision_compiler.contracts import CollisionPackage, PrimitiveSpec
 from primitive_collision_compiler.geometry.mesh import TriangleMesh
 from primitive_collision_compiler.reports.schema import NewtonDiagnosticReport
+
+
+@lru_cache(maxsize=1)
+def _cached_newton_native_fitting_comparison_report():
+    return build_newton_native_fitting_comparison_report()
+
+
+@lru_cache(maxsize=1)
+def _cached_custom_legacy_newton_native_fitting_comparison_report():
+    return build_newton_native_fitting_comparison_report(
+        legacy_subset=("box", "sphere", "capsule", "cylinder"),
+    )
 
 
 def test_synthetic_comparison_report_covers_inspectable_cases():
@@ -465,7 +478,7 @@ def test_near_miss_workbench_reports_cylinder_fixture():
 
 
 def test_newton_native_fitting_comparison_selects_native_primitives():
-    report = build_newton_native_fitting_comparison_report()
+    report = _cached_newton_native_fitting_comparison_report()
 
     assert report["stage"] == "cpd_like_newton_native_fitting_comparison"
     assert report["status"] == "smoke_passed"
@@ -526,7 +539,7 @@ def test_newton_native_fitting_comparison_selects_native_primitives():
 
 
 def test_newton_native_fitting_comparison_report_is_strict_json_serializable():
-    report = build_newton_native_fitting_comparison_report()
+    report = _cached_newton_native_fitting_comparison_report()
 
     encoded = json.dumps(report, allow_nan=False, sort_keys=True)
 
@@ -2189,9 +2202,7 @@ def test_cone_proxy_stays_finite_when_forced_on_non_cone_fixture():
 
 
 def test_newton_native_fitting_comparison_respects_custom_legacy_subset():
-    report = build_newton_native_fitting_comparison_report(
-        legacy_subset=("box", "sphere", "capsule", "cylinder"),
-    )
+    report = _cached_custom_legacy_newton_native_fitting_comparison_report()
 
     cases = {case["case_id"]: case for case in report["cases"]}
     cylindrical = cases["cylindrical_rod"]

@@ -1,0 +1,13 @@
+\section{Background}
+\label{sec:background}
+
+\paragraph{Primitive packages as compound bodies.}
+When multiple primitives attach to one rigid body, simulators aggregate mass properties for the compound.
+A single large flat primitive can shift center of mass and inertia enough to change drop/settle behavior even if the primitive geometry alone is admissible.
+
+\paragraph{Newton diagnostics.}
+We use named probes---drop/settle, contact stress, collision-only throughput, and robot articulation smokes---as acceptance signals.
+Each probe records Newton version, environment, seeds, and pass/fail labels; stronger validation wording requires a documented verification standard and broader coverage than the current Phase~0 subset.
+
+\paragraph{Claim scope.}
+We prefer ``\checker{}'' over formal-verification language and ``\simchecked{}'' only when a dated record links a package to a named task, asset, settings, and report.

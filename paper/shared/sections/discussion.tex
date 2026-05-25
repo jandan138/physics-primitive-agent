@@ -1,0 +1,15 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Why geometry-only selection fails.}
+The bed/Franka cylinder record shows that per-primitive geometric success is insufficient: package context changes compound body state and simulation labels.
+
+\paragraph{Performance versus safety.}
+The contact-throughput microbenchmark motivates keeping accepted native primitives, but throughput alone cannot override a failed body-state or articulation gate.
+
+\paragraph{Limitations.}
+We do not claim a production compiler, calibrated default selector, validated COM/inertia repair, broad cylinder stability, whole-robot manipulation performance, deployment readiness, real-world transfer, or safety certification.
+ACCV-facing experiments still require link-aware robot packages, articulation smoke, and multi-asset paired baselines.
+
+\paragraph{Future work.}
+Checker-guided repair, expanded asset suites, and optional model-based planning remain gated on Phase~0 reproducibility.

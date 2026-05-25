@@ -1,0 +1,32 @@
+schema_version: 1
+results:
+  - id: bed_franka_cylinder_mechanism
+    status: recorded_scoped_mechanism
+    section: experiments
+    evidence_source: docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md
+    reporting_scope: >-
+      Capped bed/Franka diagnostic scope only; not broad cylinder stability or whole-robot validation.
+    metrics:
+      bed_final_speed_mps: 0.082304
+      franka_final_speed_mps: 0.0007108
+      mechanism: full_compound_com_inertia_sensitivity
+  - id: package_body_state_guard_task_path
+    status: recorded_diagnostic_path
+    section: method
+    evidence_source: docs/records/2026-05-22-package-body-state-guard-task-path.md
+    reporting_scope: Opt-in guard on capped packages; not a calibrated default policy.
+  - id: bed_box_contact_throughput_microbenchmark
+    status: recorded_collision_only_single_scene
+    section: experiments
+    evidence_source: docs/records/2026-05-22-bed-aligned-box-primitive-contact-throughput.md
+    reporting_scope: Collision pipeline only; does not imply full simulation speedup.
+    metrics:
+      contact_throughput_ratio: 2.21
+      collision_wall_time_reduction_percent: 5.3
+      primitive_count: 32
+      mesh_proxy_vertices: 64
+  - id: phase0_multi_asset_benchmark
+    status: not_started
+    section: experiments
+    evidence_source: configs/experiments/phase0_baseline.yaml; assets/manifests/phase0_assets.yaml
+    reporting_scope: Required before multi-asset ACCV table claims.

@@ -1,0 +1,57 @@
+schema_version: 1
+claims:
+  - id: bed_franka_cylinder_mechanism
+    status: recorded
+    section: experiments
+    claim: >-
+      For the capped recorded scope, the bed selected-cylinder package fails drop/settle as a
+      full-compound body-state effect while the same cylinder passes in isolation and recorded
+      Franka cylinder packages pass in smaller contexts.
+    evidence_source: >-
+      docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md;
+      paper/shared/evidence/results_manifest.yaml#bed_franka_cylinder_mechanism
+    excluded_from_paper_metrics: false
+    paper_scope: mechanism_study_not_broad_cylinder_stability
+  - id: package_body_state_guard_task_path
+    status: recorded
+    section: method
+    claim: >-
+      An opt-in package body-state guard falls back only the flagged capped bed package while
+      keeping the unflagged Franka cylinder package in the recorded Newton task smoke.
+    evidence_source: >-
+      docs/records/2026-05-22-package-body-state-guard-task-path.md;
+      paper/shared/evidence/results_manifest.yaml#package_body_state_guard_task_path
+    excluded_from_paper_metrics: false
+    paper_scope: diagnostic_guard_prototype
+  - id: bed_box_contact_throughput_microbenchmark
+    status: recorded
+    section: experiments
+    claim: >-
+      In one bed-aligned collision-only pressure scene, native 32-box primitives achieved 2.21x
+      generated-contact throughput versus same-count convex64 mesh proxies with about 5.3%
+      collision-only wall-time reduction.
+    evidence_source: >-
+      docs/records/2026-05-22-bed-aligned-box-primitive-contact-throughput.md;
+      paper/shared/evidence/results_manifest.yaml#bed_box_contact_throughput_microbenchmark
+    excluded_from_paper_metrics: false
+    paper_scope: collision_only_single_scene_not_full_simulation_speedup
+  - id: phase0_multi_asset_benchmark
+    status: planned
+    section: experiments
+    claim: >-
+      Phase 0 paired asset-level accept/fallback rates across geometry-only versus
+      simulation-checked gates on 5-10 assets with simple and decomposition baselines.
+    evidence_source: docs/design/evaluation-plan.md; docs/design/benchmark-protocol.md
+    excluded_from_paper_metrics: true
+    exclusion_reason: Multi-asset benchmark table not yet executed for paper metrics.
+    next_required_step: Run Phase 0 asset suite and update results_manifest.yaml before ACCV metrics claims.
+  - id: franka_articulation_smoke
+    status: planned
+    section: experiments
+    claim: >-
+      Link-aware primitive packages with articulation smoke (joint import, gravity hold,
+      trajectory, self-collision, end-effector pose) for a robot asset.
+    evidence_source: docs/deepdive/evidence-status.md#next-evidence-needed
+    excluded_from_paper_metrics: true
+    exclusion_reason: Whole-robot articulation records do not yet exist.
+    next_required_step: Record link-boundary audit and articulation smoke before whole-robot wording.

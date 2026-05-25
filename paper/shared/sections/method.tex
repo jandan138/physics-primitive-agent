@@ -1,0 +1,19 @@
+\section{Method}
+\label{sec:method}
+
+Our compiler loop has four stages: (i)~import asset provenance and link structure; (ii)~generate or import primitive candidates from heuristics, native lanes, or CPD-style outputs; (iii)~run Newton diagnostics; (iv)~accept, reject, or fallback with an auditable reason.
+
+\paragraph{Candidate generation.}
+Candidate quality is measured by primitive count, geometric residual, and editability, but these signals do not imply simulation acceptance.
+
+\paragraph{Acceptance layer.}
+Body-state and drop/settle gates label residual speed and compound COM/inertia risk.
+Contact probes observe false clearance, blocked openings, and excessive contact counts.
+For robots, a link-boundary audit forbids cross-link merges; articulation smoke checks joint import, gravity hold, simple trajectories, self-collision sanity, and end-effector pose error before any whole-robot claim.
+
+\paragraph{Fallback policy.}
+Failed packages route to CoACD, V-HACD, SDF, convex mesh, or manual review depending on configuration.
+An opt-in package body-state guard can fallback only flagged packages while preserving unflagged packages in the same task smoke, as recorded for capped bed versus Franka cylinders.
+
+\paragraph{Evidence registry.}
+Quantitative statements in this manuscript must match \texttt{paper/shared/evidence/claims.yaml} and link to dated records under \texttt{docs/records/}.

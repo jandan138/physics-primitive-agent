@@ -1,0 +1,7 @@
+schema_version: 1
+figures:
+  - id: pipeline_schematic
+    status: placeholder
+    output: pipeline_schematic.tex
+    evidence: docs/design/system-architecture.md
+    note: Replace with generated figure before camera-ready; not paper metrics.

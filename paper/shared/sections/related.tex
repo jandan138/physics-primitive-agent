@@ -1,0 +1,14 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Primitive and convex collision proxies.}
+Manual primitives, single convex hulls, and decomposition methods such as CoACD, V-HACD, and CPD-style primitive fitting provide candidate collision geometry with different fidelity--complexity trade-offs.
+We treat them as generators or baselines, not as the novelty claim of this work.
+
+\paragraph{Physics-engine validation.}
+Simulators expose contact, penetration, and body-state behavior that geometric fitting cannot see.
+Our framing is a diagnostic checker under named Newton tasks and settings, not formal verification or safety certification.
+
+\paragraph{Robot collision authoring.}
+Articulated assets require link-aware packages: primitives must not merge across joints, and articulation smoke checks are prerequisites for any whole-robot claim.
+Current Franka evidence in this repository is capped package and task-smoke evidence only.

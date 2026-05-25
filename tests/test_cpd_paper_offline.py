@@ -4,6 +4,7 @@ import inspect
 import json
 import sys
 import types
+from functools import lru_cache
 from math import isfinite, pi, sqrt
 from pathlib import Path
 
@@ -25,6 +26,33 @@ from primitive_collision_compiler.baselines.cpd_paper.offline import (
     _paper_require_unique_generation_row_ids,
     build_cpd_paper_offline_report,
 )
+
+pytestmark = pytest.mark.paper_offline
+
+
+@lru_cache(maxsize=1)
+def _cached_cpd_paper_offline_report_json():
+    return json.dumps(build_cpd_paper_offline_report(), allow_nan=False, sort_keys=True)
+
+
+@lru_cache(maxsize=1)
+def _cached_independent_cpd_paper_offline_report_json_for_determinism_check():
+    return json.dumps(build_cpd_paper_offline_report(), allow_nan=False, sort_keys=True)
+
+
+def _fresh_cpd_paper_offline_report():
+    return json.loads(_cached_cpd_paper_offline_report_json())
+
+
+def _fresh_independent_cpd_paper_offline_report_for_determinism_check():
+    return json.loads(
+        _cached_independent_cpd_paper_offline_report_json_for_determinism_check()
+    )
+
+
+@pytest.fixture
+def cpd_paper_report():
+    return _fresh_cpd_paper_offline_report()
 
 EXPECTED_GENERALIZATION_NEXT_ACTION = (
     "Proceed to paper_package_adapter_contract after the changed-decomposition "
@@ -581,14 +609,14 @@ EXPECTED_SCOPE_AUDIT_BLOCKERS = [
 ]
 
 
-def test_cpd_paper_offline_report_failure_labels_point_to_newton_shape_runtime_boundary_gap():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_failure_labels_point_to_newton_shape_runtime_boundary_gap(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
 
 
-def test_cpd_paper_offline_report_next_gate_is_newton_shape_runtime_boundary_preflight_contract():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_next_gate_is_newton_shape_runtime_boundary_preflight_contract(cpd_paper_report):
+    report = cpd_paper_report
 
     assert (
         report["next_required_gate"]
@@ -928,8 +956,8 @@ def _assert_intake_case(case, *, arity, generated_triangles):
     assert case["primitive_fit_audit"]["source_face_ids"] == [0]
 
 
-def test_cpd_paper_offline_report_records_polygon_quad_intake_policy():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_polygon_quad_intake_policy(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
 
     _assert_intake_case(
@@ -944,8 +972,8 @@ def test_cpd_paper_offline_report_records_polygon_quad_intake_policy():
     )
 
 
-def test_cpd_paper_offline_report_records_fixture_breadth_batch_a():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_a(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
 
     mixed = cases["paper_mixed_face_preprocess_operator"]
@@ -1002,8 +1030,8 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_a():
     assert concave["benchmark_triggered"] is False
 
 
-def test_cpd_paper_offline_report_records_fixture_breadth_batch_b():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_b(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
 
     expected_case_ids = {
@@ -1120,9 +1148,10 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_b():
     assert prism["dimensions"]["volume_formula"] == "4*h_x*h_y*(h_zt + h_zb)"
 
 
-def test_cpd_paper_offline_report_records_fixture_breadth_batch_c():
-    report = build_cpd_paper_offline_report()
-    report_again = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_c(cpd_paper_report):
+    report = cpd_paper_report
+    report_again = _fresh_independent_cpd_paper_offline_report_for_determinism_check()
+    assert report_again is not report
     cases = {case["case_id"]: case for case in report["cases"]}
     cases_again = {case["case_id"]: case for case in report_again["cases"]}
 
@@ -1260,8 +1289,8 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_c():
     assert blocked_event["blocked_reason"] == "component_pair_threshold_exceeded"
 
 
-def test_cpd_paper_offline_report_records_fixture_breadth_batch_d():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_d(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
 
     expected_case_ids = {
@@ -1337,8 +1366,8 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_d():
     assert len(capped["final_active_groups"]) == 3
 
 
-def test_cpd_paper_offline_report_records_fixture_breadth_batch_e():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_fixture_breadth_batch_e(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
 
     expected_case_ids = {
@@ -1411,8 +1440,8 @@ def test_cpd_paper_offline_report_records_fixture_breadth_batch_e():
     ]
 
 
-def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_fixture_breadth_completion_review(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -1531,8 +1560,8 @@ def test_cpd_paper_offline_report_records_fixture_breadth_completion_review():
     )
 
 
-def test_cpd_paper_offline_report_records_generalization_plan_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_generalization_plan_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -1635,8 +1664,8 @@ def test_cpd_paper_offline_report_records_generalization_plan_gate():
     ]
 
 
-def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_source_policy_generalization_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -1717,8 +1746,8 @@ def test_cpd_paper_offline_report_records_source_policy_generalization_gate():
     assert payload["benchmark_triggered"] is False
 
 
-def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -1831,8 +1860,8 @@ def test_cpd_paper_offline_report_records_primitive_fit_engine_generalization_ga
     assert runtime_by_primitive["trapezoidal_prism"] == "offline_only_unmapped"
 
 
-def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_search_engine_generalization_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -1926,9 +1955,10 @@ def test_cpd_paper_offline_report_records_search_engine_generalization_gate():
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_search_engine_generalization_rows_match_case_payloads():
-    report = build_cpd_paper_offline_report()
-    report_again = build_cpd_paper_offline_report()
+def test_cpd_paper_search_engine_generalization_rows_match_case_payloads(cpd_paper_report):
+    report = cpd_paper_report
+    report_again = _fresh_independent_cpd_paper_offline_report_for_determinism_check()
+    assert report_again is not report
     cases = {case["case_id"]: case for case in report["cases"]}
     rows = {
         row["row_id"]: row
@@ -2069,8 +2099,8 @@ def test_cpd_paper_search_engine_generalization_rows_match_case_payloads():
     assert capped["skipped_component_pair_count"] == 4
 
 
-def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -2159,8 +2189,8 @@ def test_cpd_paper_offline_report_records_postprocess_policy_generalization_gate
         assert "input_primitives" not in row
 
 
-def test_cpd_paper_postprocess_policy_generalization_rows_match_case_payloads():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_postprocess_policy_generalization_rows_match_case_payloads(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
     rows = {
         row["row_id"]: row
@@ -2246,8 +2276,8 @@ def test_cpd_paper_postprocess_policy_generalization_rows_match_case_payloads():
     assert cross_type["kept_primitive_ids"] == [0, 1]
 
 
-def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_package_boundary_readiness_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -2321,8 +2351,8 @@ def test_cpd_paper_offline_report_records_package_boundary_readiness_gate():
     ]
 
 
-def test_cpd_paper_package_boundary_readiness_keeps_runtime_work_blocked():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_package_boundary_readiness_keeps_runtime_work_blocked(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_generalization_batch_e_package_boundary_readiness"]
 
     forbidden_statuses = {
@@ -2362,8 +2392,8 @@ def test_cpd_paper_package_boundary_readiness_keeps_runtime_work_blocked():
     )
 
 
-def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -2499,8 +2529,8 @@ def test_cpd_paper_offline_report_records_changed_decomposition_output_contract_
     assert "timing" not in payload
 
 
-def test_cpd_paper_changed_decomposition_output_rows_match_search_case_payloads():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_changed_decomposition_output_rows_match_search_case_payloads(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
     payload = report["paper_offline_changed_decomposition_output_contract"]
     rows = payload["decomposition_output_rows"]
@@ -2581,8 +2611,8 @@ def test_cpd_paper_changed_decomposition_output_rows_match_search_case_payloads(
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_changed_decomposition_contract_records_postprocess_state_without_applying_to_search_output():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_changed_decomposition_contract_records_postprocess_state_without_applying_to_search_output(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
     payload = report["paper_offline_changed_decomposition_output_contract"]
     rows = {row["evidence_case_id"]: row for row in payload["postprocess_state_rows"]}
@@ -2619,8 +2649,8 @@ def test_cpd_paper_changed_decomposition_contract_records_postprocess_state_with
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_records_package_adapter_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -2711,8 +2741,8 @@ def test_cpd_paper_offline_report_records_package_adapter_contract_gate():
     assert "PrimitiveSpec" not in payload
 
 
-def test_cpd_paper_package_adapter_contract_summarizes_changed_decomposition_contract():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_package_adapter_contract_summarizes_changed_decomposition_contract(cpd_paper_report):
+    report = cpd_paper_report
     changed = report["paper_offline_changed_decomposition_output_contract"]
     adapter = report["paper_package_adapter_contract"]
 
@@ -2744,8 +2774,8 @@ def test_cpd_paper_package_adapter_contract_summarizes_changed_decomposition_con
     assert len(adapter["primitive_adapter_decision_rows"]) == 16
 
 
-def test_cpd_paper_package_adapter_decision_counts_partition_current_records():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_package_adapter_decision_counts_partition_current_records(cpd_paper_report):
+    report = cpd_paper_report
     adapter = report["paper_package_adapter_contract"]
     summary = adapter["coverage_summary"]
 
@@ -2794,8 +2824,8 @@ def test_cpd_paper_package_adapter_decision_counts_partition_current_records():
         )
 
 
-def test_cpd_paper_package_adapter_contract_stays_report_only():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_package_adapter_contract_stays_report_only(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_package_adapter_contract"]
 
     assert payload["package_generation_allowed"] is False
@@ -2822,8 +2852,8 @@ def test_cpd_paper_package_adapter_contract_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
-def test_cpd_paper_records_unsupported_primitive_policy_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_unsupported_primitive_policy_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -2870,8 +2900,8 @@ def test_cpd_paper_records_unsupported_primitive_policy_gate():
     assert payload["benchmark_triggered"] is False
 
 
-def test_cpd_paper_unsupported_primitive_policy_classifies_paper_families():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_unsupported_primitive_policy_classifies_paper_families(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_package_adapter_unsupported_primitive_policy"]
     rows = {
         row["paper_primitive"]: row
@@ -2917,8 +2947,8 @@ def test_cpd_paper_unsupported_primitive_policy_classifies_paper_families():
     assert rows["frustum"]["current_row_evidence_count"] == 0
 
 
-def test_cpd_paper_unsupported_primitive_policy_blocks_current_unmapped_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_unsupported_primitive_policy_blocks_current_unmapped_rows(cpd_paper_report):
+    report = cpd_paper_report
     adapter = report["paper_package_adapter_contract"]
     payload = report["paper_package_adapter_unsupported_primitive_policy"]
     summary = payload["coverage_summary"]
@@ -2971,8 +3001,8 @@ def test_cpd_paper_unsupported_primitive_policy_blocks_current_unmapped_rows():
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_unsupported_primitive_policy_stays_report_only():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_unsupported_primitive_policy_stays_report_only(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_package_adapter_unsupported_primitive_policy"]
 
     forbidden_keys = {
@@ -2992,8 +3022,8 @@ def test_cpd_paper_unsupported_primitive_policy_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
-def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["failure_labels"] == EXPECTED_GENERALIZATION_FAILURE_LABELS
     assert (
@@ -3043,8 +3073,8 @@ def test_cpd_paper_records_package_conversion_mapped_subset_plan_gate():
     assert payload["benchmark_triggered"] is False
 
 
-def test_cpd_paper_mapped_subset_plan_classifies_paper_families():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_mapped_subset_plan_classifies_paper_families(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_package_conversion_mapped_subset_plan"]
     rows = {
         row["paper_primitive"]: row
@@ -3088,8 +3118,8 @@ def test_cpd_paper_mapped_subset_plan_classifies_paper_families():
     assert rows["trapezoidal_prism"]["current_row_evidence_count"] == 16
 
 
-def test_cpd_paper_mapped_subset_plan_excludes_current_unmapped_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_mapped_subset_plan_excludes_current_unmapped_rows(cpd_paper_report):
+    report = cpd_paper_report
     unsupported = report["paper_package_adapter_unsupported_primitive_policy"]
     payload = report["paper_package_conversion_mapped_subset_plan"]
     summary = payload["coverage_summary"]
@@ -3151,8 +3181,8 @@ def test_cpd_paper_mapped_subset_plan_excludes_current_unmapped_rows():
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_mapped_subset_plan_stays_report_only():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_mapped_subset_plan_stays_report_only(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_package_conversion_mapped_subset_plan"]
 
     forbidden_keys = {
@@ -3182,8 +3212,8 @@ def test_cpd_paper_mapped_subset_plan_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
-def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_conversion_candidate_matrix"]
 
     assert (
@@ -3237,8 +3267,8 @@ def test_cpd_paper_records_mapped_subset_conversion_candidate_matrix_gate():
     assert payload["benchmark_triggered"] is False
 
 
-def test_cpd_paper_candidate_matrix_records_future_family_review_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_candidate_matrix_records_future_family_review_rows(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_conversion_candidate_matrix"]
     rows = {
         row["paper_primitive"]: row
@@ -3297,8 +3327,8 @@ def test_cpd_paper_candidate_matrix_records_future_family_review_rows():
     )
 
 
-def test_cpd_paper_candidate_matrix_blocks_current_unmapped_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_candidate_matrix_blocks_current_unmapped_rows(cpd_paper_report):
+    report = cpd_paper_report
     plan = report["paper_package_conversion_mapped_subset_plan"]
     payload = report["paper_mapped_subset_conversion_candidate_matrix"]
     summary = payload["coverage_summary"]
@@ -3362,8 +3392,8 @@ def test_cpd_paper_candidate_matrix_blocks_current_unmapped_rows():
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_candidate_matrix_stays_report_only():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_candidate_matrix_stays_report_only(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_conversion_candidate_matrix"]
 
     forbidden_keys = {
@@ -3393,8 +3423,8 @@ def test_cpd_paper_candidate_matrix_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
-def test_cpd_paper_records_mapped_subset_adapter_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_adapter_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_adapter_preflight_contract"]
 
     assert (
@@ -3442,8 +3472,8 @@ def test_cpd_paper_records_mapped_subset_adapter_preflight_contract_gate():
     assert payload["remaining_gaps"] == EXPECTED_PREFLIGHT_REMAINING_GAPS
 
 
-def test_cpd_paper_adapter_preflight_records_family_requirements():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_records_family_requirements(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_adapter_preflight_contract"]
     rows = {
         row["paper_primitive"]: row
@@ -3502,8 +3532,8 @@ def test_cpd_paper_adapter_preflight_records_family_requirements():
     assert trapezoid["current_package_conversion_candidate_count"] == 0
 
 
-def test_cpd_paper_adapter_preflight_noops_current_unmapped_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_noops_current_unmapped_rows(cpd_paper_report):
+    report = cpd_paper_report
     matrix = report["paper_mapped_subset_conversion_candidate_matrix"]
     payload = report["paper_mapped_subset_adapter_preflight_contract"]
     summary = payload["coverage_summary"]
@@ -3566,8 +3596,8 @@ def test_cpd_paper_adapter_preflight_noops_current_unmapped_rows():
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_adapter_preflight_stays_report_only():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_stays_report_only(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_adapter_preflight_contract"]
 
     forbidden_keys = {
@@ -3615,8 +3645,8 @@ def test_cpd_paper_adapter_preflight_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
-def test_cpd_paper_adapter_preflight_rejects_wrong_candidate_matrix_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_rejects_wrong_candidate_matrix_gate(cpd_paper_report):
+    report = cpd_paper_report
     candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
     candidate_matrix["gate_id"] = "stale_gate"
 
@@ -3624,8 +3654,8 @@ def test_cpd_paper_adapter_preflight_rejects_wrong_candidate_matrix_gate():
         _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
 
 
-def test_cpd_paper_adapter_preflight_rejects_true_input_trigger_flags():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_rejects_true_input_trigger_flags(cpd_paper_report):
+    report = cpd_paper_report
     candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
     candidate_matrix["package_generation_triggered"] = True
 
@@ -3633,8 +3663,8 @@ def test_cpd_paper_adapter_preflight_rejects_true_input_trigger_flags():
         _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
 
 
-def test_cpd_paper_adapter_preflight_rejects_nonzero_input_candidates():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_rejects_nonzero_input_candidates(cpd_paper_report):
+    report = cpd_paper_report
     candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
     candidate_matrix["coverage_summary"] = {
         **candidate_matrix["coverage_summary"],
@@ -3645,8 +3675,8 @@ def test_cpd_paper_adapter_preflight_rejects_nonzero_input_candidates():
         _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
 
 
-def test_cpd_paper_adapter_preflight_rejects_row_level_current_candidate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_rejects_row_level_current_candidate(cpd_paper_report):
+    report = cpd_paper_report
     candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
     current_rows = [
         dict(row) for row in candidate_matrix["current_row_candidate_matrix_rows"]
@@ -3658,8 +3688,8 @@ def test_cpd_paper_adapter_preflight_rejects_row_level_current_candidate():
         _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
 
 
-def test_cpd_paper_adapter_preflight_rejects_family_level_candidate_count():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_rejects_family_level_candidate_count(cpd_paper_report):
+    report = cpd_paper_report
     candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
     family_rows = [
         dict(row) for row in candidate_matrix["future_family_candidate_matrix_rows"]
@@ -3671,8 +3701,8 @@ def test_cpd_paper_adapter_preflight_rejects_family_level_candidate_count():
         _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
 
 
-def test_cpd_paper_adapter_preflight_rejects_unknown_family_decision():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_rejects_unknown_family_decision(cpd_paper_report):
+    report = cpd_paper_report
     candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
     family_rows = [
         dict(row) for row in candidate_matrix["future_family_candidate_matrix_rows"]
@@ -3684,8 +3714,8 @@ def test_cpd_paper_adapter_preflight_rejects_unknown_family_decision():
         _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
 
 
-def test_cpd_paper_adapter_preflight_rejects_duplicate_input_row_ids():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_adapter_preflight_rejects_duplicate_input_row_ids(cpd_paper_report):
+    report = cpd_paper_report
     candidate_matrix = dict(report["paper_mapped_subset_conversion_candidate_matrix"])
     current_rows = [
         dict(row) for row in candidate_matrix["current_row_candidate_matrix_rows"]
@@ -3699,8 +3729,8 @@ def test_cpd_paper_adapter_preflight_rejects_duplicate_input_row_ids():
         _paper_mapped_subset_adapter_preflight_contract_payload(candidate_matrix)
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_dry_run_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_dry_run_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_dry_run_contract"]
 
     assert (
@@ -3755,8 +3785,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_dry_run_contract_gate():
     assert payload["remaining_gaps"] == EXPECTED_PRIMITIVESPEC_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_dry_run_records_family_requirements():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_records_family_requirements(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_dry_run_contract"]
     rows = {
         row["paper_primitive"]: row
@@ -3826,8 +3856,8 @@ def test_cpd_paper_primitivespec_dry_run_records_family_requirements():
     assert trapezoid["current_row_evidence_count"] == 16
 
 
-def test_cpd_paper_primitivespec_dry_run_noops_current_unmapped_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_noops_current_unmapped_rows(cpd_paper_report):
+    report = cpd_paper_report
     preflight = report["paper_mapped_subset_adapter_preflight_contract"]
     payload = report["paper_mapped_subset_primitivespec_dry_run_contract"]
     summary = payload["coverage_summary"]
@@ -3888,8 +3918,8 @@ def test_cpd_paper_primitivespec_dry_run_noops_current_unmapped_rows():
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_primitivespec_dry_run_stays_report_only():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_stays_report_only(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_dry_run_contract"]
 
     forbidden_keys = {
@@ -3932,8 +3962,8 @@ def test_cpd_paper_primitivespec_dry_run_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_wrong_input_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_wrong_input_gate(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     preflight["gate_id"] = "stale_gate"
 
@@ -3944,8 +3974,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_wrong_input_gate():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_true_input_trigger_flags():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_true_input_trigger_flags(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     preflight["package_generation_triggered"] = True
 
@@ -3953,8 +3983,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_true_input_trigger_flags():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_nonzero_input_candidates():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_nonzero_input_candidates(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     preflight["candidate_count_at_preflight"] = 1
 
@@ -3965,8 +3995,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_nonzero_input_candidates():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_preflight_pass_count():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_preflight_pass_count(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     preflight["coverage_summary"] = {
         **preflight["coverage_summary"],
@@ -3977,8 +4007,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_preflight_pass_count():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_row_level_preflight_pass():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_row_level_preflight_pass(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     current_rows = [
         dict(row) for row in preflight["current_row_adapter_preflight_rows"]
@@ -3990,8 +4020,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_row_level_preflight_pass():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_row_level_candidate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_row_level_candidate(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     current_rows = [
         dict(row) for row in preflight["current_row_adapter_preflight_rows"]
@@ -4006,8 +4036,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_row_level_candidate():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_family_real_usd_flag():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_family_real_usd_flag(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     family_rows = [
         dict(row) for row in preflight["adapter_preflight_requirement_rows"]
@@ -4019,8 +4049,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_family_real_usd_flag():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_current_benchmark_flag():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_current_benchmark_flag(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     current_rows = [
         dict(row) for row in preflight["current_row_adapter_preflight_rows"]
@@ -4032,8 +4062,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_current_benchmark_flag():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_duplicate_preflight_row_ids():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_duplicate_preflight_row_ids(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     current_rows = [
         dict(row) for row in preflight["current_row_adapter_preflight_rows"]
@@ -4047,8 +4077,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_duplicate_preflight_row_ids():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_unknown_family_decision():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_unknown_family_decision(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     family_rows = [
         dict(row) for row in preflight["adapter_preflight_requirement_rows"]
@@ -4060,8 +4090,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_unknown_family_decision():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_missing_current_source_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_missing_current_source_id(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     current_rows = [
         dict(row) for row in preflight["current_row_adapter_preflight_rows"]
@@ -4073,8 +4103,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_missing_current_source_id():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_blank_current_source_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_blank_current_source_id(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     current_rows = [
         dict(row) for row in preflight["current_row_adapter_preflight_rows"]
@@ -4086,8 +4116,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_blank_current_source_id():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_primitivespec_dry_run_rejects_wrong_required_later_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_dry_run_rejects_wrong_required_later_gate(cpd_paper_report):
+    report = cpd_paper_report
     preflight = dict(report["paper_mapped_subset_adapter_preflight_contract"])
     current_rows = [
         dict(row) for row in preflight["current_row_adapter_preflight_rows"]
@@ -4099,8 +4129,8 @@ def test_cpd_paper_primitivespec_dry_run_rejects_wrong_required_later_gate():
         _paper_mapped_subset_primitivespec_dry_run_contract_payload(preflight)
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_validation_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_validation_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_validation_contract"]
 
     assert (
@@ -4145,8 +4175,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_validation_contract_gate(
     assert payload["remaining_gaps"] == EXPECTED_VALIDATION_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_validation_records_family_requirements():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_records_family_requirements(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_validation_contract"]
     rows = {
         row["paper_primitive"]: row
@@ -4188,8 +4218,8 @@ def test_cpd_paper_primitivespec_validation_records_family_requirements():
         assert rows[primitive_name]["benchmark_triggered"] is False
 
 
-def test_cpd_paper_primitivespec_validation_noops_current_unmapped_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_noops_current_unmapped_rows(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = report["paper_mapped_subset_primitivespec_dry_run_contract"]
     payload = report["paper_mapped_subset_primitivespec_validation_contract"]
     summary = payload["coverage_summary"]
@@ -4245,8 +4275,8 @@ def test_cpd_paper_primitivespec_validation_noops_current_unmapped_rows():
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_primitivespec_validation_stays_report_only():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_stays_report_only(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_validation_contract"]
 
     forbidden_keys = {
@@ -4289,8 +4319,8 @@ def test_cpd_paper_primitivespec_validation_stays_report_only():
         assert forbidden_keys.isdisjoint(row)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_wrong_input_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_wrong_input_gate(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     dry_run["gate_id"] = "stale_gate"
 
@@ -4301,8 +4331,8 @@ def test_cpd_paper_primitivespec_validation_rejects_wrong_input_gate():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_true_input_trigger_flags():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_true_input_trigger_flags(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     dry_run["newton_runtime_triggered"] = True
 
@@ -4310,8 +4340,8 @@ def test_cpd_paper_primitivespec_validation_rejects_true_input_trigger_flags():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_nonzero_input_candidates():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_nonzero_input_candidates(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     dry_run["candidate_count_at_dry_run"] = 1
 
@@ -4322,8 +4352,8 @@ def test_cpd_paper_primitivespec_validation_rejects_nonzero_input_candidates():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_required_field_mismatch():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_required_field_mismatch(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     contract = dict(dry_run["primitive_spec_dry_run_contract"])
     contract["required_primitive_spec_fields"] = contract[
@@ -4335,8 +4365,8 @@ def test_cpd_paper_primitivespec_validation_rejects_required_field_mismatch():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_allowed_kind_mismatch():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_allowed_kind_mismatch(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     contract = dict(dry_run["primitive_spec_dry_run_contract"])
     contract["allowed_future_runtime_kinds"] = [
@@ -4349,8 +4379,8 @@ def test_cpd_paper_primitivespec_validation_rejects_allowed_kind_mismatch():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_coverage_count_mismatch():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_coverage_count_mismatch(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     coverage = dict(dry_run["coverage_summary"])
     coverage["current_row_primitivespec_dry_run_row_count"] = 15
@@ -4360,8 +4390,8 @@ def test_cpd_paper_primitivespec_validation_rejects_coverage_count_mismatch():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_duplicate_dry_run_row_ids():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_duplicate_dry_run_row_ids(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4375,8 +4405,8 @@ def test_cpd_paper_primitivespec_validation_rejects_duplicate_dry_run_row_ids():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_unknown_family_decision():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_unknown_family_decision(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4391,8 +4421,8 @@ def test_cpd_paper_primitivespec_validation_rejects_unknown_family_decision():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_missing_future_native_kind():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_missing_future_native_kind(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4404,8 +4434,8 @@ def test_cpd_paper_primitivespec_validation_rejects_missing_future_native_kind()
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_mutated_family_semantics():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_mutated_family_semantics(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4427,8 +4457,8 @@ def test_cpd_paper_primitivespec_validation_rejects_mutated_family_semantics():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_duplicate_family_identity():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_duplicate_family_identity(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4443,8 +4473,8 @@ def test_cpd_paper_primitivespec_validation_rejects_duplicate_family_identity():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_future_mapping_label_mismatch():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_future_mapping_label_mismatch(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4459,8 +4489,8 @@ def test_cpd_paper_primitivespec_validation_rejects_future_mapping_label_mismatc
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_source_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_source_id(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4475,8 +4505,8 @@ def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_source_id(
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_whitespace_requirement_source_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_whitespace_requirement_source_id(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4491,8 +4521,8 @@ def test_cpd_paper_primitivespec_validation_rejects_whitespace_requirement_sourc
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_row_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_row_id(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4507,8 +4537,8 @@ def test_cpd_paper_primitivespec_validation_rejects_blank_requirement_row_id():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_requirement_real_usd_flag():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_requirement_real_usd_flag(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     requirement_rows = [
         dict(row) for row in dry_run["primitive_spec_dry_run_requirement_rows"]
@@ -4523,8 +4553,8 @@ def test_cpd_paper_primitivespec_validation_rejects_requirement_real_usd_flag():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_blank_current_source_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_blank_current_source_id(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4539,8 +4569,8 @@ def test_cpd_paper_primitivespec_validation_rejects_blank_current_source_id():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_whitespace_current_source_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_whitespace_current_source_id(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4555,8 +4585,8 @@ def test_cpd_paper_primitivespec_validation_rejects_whitespace_current_source_id
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_blank_current_row_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_blank_current_row_id(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4571,8 +4601,8 @@ def test_cpd_paper_primitivespec_validation_rejects_blank_current_row_id():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_current_benchmark_flag():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_current_benchmark_flag(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4587,8 +4617,8 @@ def test_cpd_paper_primitivespec_validation_rejects_current_benchmark_flag():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_generated_collision_package_count():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_generated_collision_package_count(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     dry_run["generated_collision_package_count"] = 1
 
@@ -4599,8 +4629,8 @@ def test_cpd_paper_primitivespec_validation_rejects_generated_collision_package_
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_row_level_pass():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_row_level_pass(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4612,8 +4642,8 @@ def test_cpd_paper_primitivespec_validation_rejects_row_level_pass():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_row_level_candidate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_row_level_candidate(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4628,8 +4658,8 @@ def test_cpd_paper_primitivespec_validation_rejects_row_level_candidate():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_generated_spec():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_generated_spec(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4644,8 +4674,8 @@ def test_cpd_paper_primitivespec_validation_rejects_generated_spec():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_missing_current_source_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_missing_current_source_id(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4660,8 +4690,8 @@ def test_cpd_paper_primitivespec_validation_rejects_missing_current_source_id():
         _paper_mapped_subset_primitivespec_validation_contract_payload(dry_run)
 
 
-def test_cpd_paper_primitivespec_validation_rejects_wrong_required_later_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_validation_rejects_wrong_required_later_gate(cpd_paper_report):
+    report = cpd_paper_report
     dry_run = dict(report["paper_mapped_subset_primitivespec_dry_run_contract"])
     current_rows = [
         dict(row) for row in dry_run["current_row_primitivespec_dry_run_rows"]
@@ -4677,14 +4707,14 @@ def test_cpd_paper_primitivespec_validation_rejects_wrong_required_later_gate():
 
 
 def _generation_preflight_validation_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(report["paper_mapped_subset_primitivespec_validation_contract"])
     )
 
 
 def _generation_contract_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4695,14 +4725,14 @@ def _generation_contract_preflight_input() -> dict[str, object]:
 
 
 def _candidate_source_generation_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(report["paper_mapped_subset_primitivespec_generation_contract"])
     )
 
 
 def _native_current_fixture_candidate_source_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report["paper_mapped_subset_primitivespec_candidate_source_contract"]
@@ -4711,19 +4741,19 @@ def _native_current_fixture_candidate_source_input() -> dict[str, object]:
 
 
 def _native_current_fixture_cases_input() -> list[dict[str, object]]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(json.dumps(report["cases"]))
 
 
 def _native_fixture_primitivespec_generation_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(report["paper_mapped_subset_native_current_fixture_contract"])
     )
 
 
 def _native_fixture_primitivespec_serialization_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4734,7 +4764,7 @@ def _native_fixture_primitivespec_serialization_input() -> dict[str, object]:
 
 
 def _runtime_boundary_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4745,7 +4775,7 @@ def _runtime_boundary_preflight_input() -> dict[str, object]:
 
 
 def _runtime_construction_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4756,7 +4786,7 @@ def _runtime_construction_input() -> dict[str, object]:
 
 
 def _collision_package_generation_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4767,7 +4797,7 @@ def _collision_package_generation_preflight_input() -> dict[str, object]:
 
 
 def _collision_package_generation_contract_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4778,7 +4808,7 @@ def _collision_package_generation_contract_input() -> dict[str, object]:
 
 
 def _runtime_admissibility_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4789,7 +4819,7 @@ def _runtime_admissibility_preflight_input() -> dict[str, object]:
 
 
 def _runtime_admissibility_contract_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4800,14 +4830,14 @@ def _runtime_admissibility_contract_input() -> dict[str, object]:
 
 
 def _newton_shape_mapping_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(report["paper_mapped_subset_runtime_admissibility_contract"])
     )
 
 
 def _newton_shape_mapping_contract_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4818,7 +4848,7 @@ def _newton_shape_mapping_contract_input() -> dict[str, object]:
 
 
 def _newton_shape_runtime_boundary_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4829,7 +4859,7 @@ def _newton_shape_runtime_boundary_preflight_input() -> dict[str, object]:
 
 
 def _newton_shape_runtime_construction_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4840,7 +4870,7 @@ def _newton_shape_runtime_construction_input() -> dict[str, object]:
 
 
 def _newton_shape_runtime_builder_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4851,7 +4881,7 @@ def _newton_shape_runtime_builder_preflight_input() -> dict[str, object]:
 
 
 def _newton_shape_runtime_builder_construction_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4862,7 +4892,7 @@ def _newton_shape_runtime_builder_construction_input() -> dict[str, object]:
 
 
 def _newton_shape_runtime_engine_builder_boundary_preflight_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4873,7 +4903,7 @@ def _newton_shape_runtime_engine_builder_boundary_preflight_input() -> dict[str,
 
 
 def _newton_shape_runtime_engine_builder_environment_probe_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -4884,7 +4914,7 @@ def _newton_shape_runtime_engine_builder_environment_probe_input() -> dict[str, 
 
 
 def _newton_shape_runtime_engine_builder_api_surface_input() -> dict[str, object]:
-    report = build_cpd_paper_offline_report()
+    report = _fresh_cpd_paper_offline_report()
     return json.loads(
         json.dumps(
             report[
@@ -8637,8 +8667,8 @@ NEWTON_SHAPE_RUNTIME_ENGINE_BUILDER_CONFIGURED_RUNTIME_LANE_REVIEW_ROW_REQUIRED_
 )
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_primitivespec_generation_preflight_contract"
     ]
@@ -8696,8 +8726,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_generation_preflight_cont
     assert payload["remaining_gaps"] == EXPECTED_GENERATION_PREFLIGHT_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_generation_preflight_records_family_requirements():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_generation_preflight_records_family_requirements(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_generation_preflight_contract"
     ]
     rows = {
@@ -8742,8 +8772,8 @@ def test_cpd_paper_primitivespec_generation_preflight_records_family_requirement
     ] == "noop_unmapped_family_generation_preflight_recorded"
 
 
-def test_cpd_paper_primitivespec_generation_preflight_noops_current_unmapped_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_generation_preflight_noops_current_unmapped_rows(cpd_paper_report):
+    report = cpd_paper_report
     validation = report["paper_mapped_subset_primitivespec_validation_contract"]
     payload = report[
         "paper_mapped_subset_primitivespec_generation_preflight_contract"
@@ -8808,8 +8838,8 @@ def test_cpd_paper_primitivespec_generation_preflight_noops_current_unmapped_row
         )
 
 
-def test_cpd_paper_primitivespec_generation_preflight_stays_report_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_generation_preflight_stays_report_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_generation_preflight_contract"
     ]
 
@@ -9164,8 +9194,8 @@ def test_cpd_paper_primitivespec_generation_preflight_rejects_duplicate_emitted_
         _paper_require_unique_generation_preflight_row_ids(rows)
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_generation_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_generation_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_generation_contract"]
 
     assert (
@@ -9239,8 +9269,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_generation_contract_gate(
     assert payload["remaining_gaps"] == EXPECTED_GENERATION_CONTRACT_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_generation_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_generation_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_generation_contract"
     ]
 
@@ -9283,8 +9313,8 @@ def test_cpd_paper_primitivespec_generation_payload_schema_is_exact():
     }
 
 
-def test_cpd_paper_primitivespec_generation_emits_native_family_templates_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_generation_emits_native_family_templates_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_generation_contract"
     ]
     rows = {
@@ -9334,8 +9364,8 @@ def test_cpd_paper_primitivespec_generation_emits_native_family_templates_only()
             assert row[flag] is False
 
 
-def test_cpd_paper_primitivespec_generation_records_blocked_and_noop_family_rows():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_generation_records_blocked_and_noop_family_rows(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_generation_contract"
     ]
     blocked = {
@@ -9390,8 +9420,8 @@ def test_cpd_paper_primitivespec_generation_records_blocked_and_noop_family_rows
     assert row["required_future_policy"] == "mapped_current_candidate_source"
 
 
-def test_cpd_paper_primitivespec_generation_keeps_current_rows_no_generation():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_generation_keeps_current_rows_no_generation(cpd_paper_report):
+    report = cpd_paper_report
     preflight = report[
         "paper_mapped_subset_primitivespec_generation_preflight_contract"
     ]
@@ -9449,8 +9479,8 @@ def test_cpd_paper_primitivespec_generation_keeps_current_rows_no_generation():
             assert row[flag] is False
 
 
-def test_cpd_paper_primitivespec_generation_coverage_summary_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_generation_coverage_summary_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_generation_contract"
     ]
     assert payload["coverage_summary"] == {
@@ -9471,8 +9501,8 @@ def test_cpd_paper_primitivespec_generation_coverage_summary_is_exact():
     }
 
 
-def test_cpd_paper_primitivespec_generation_stays_report_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_generation_stays_report_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_generation_contract"
     ]
 
@@ -9934,8 +9964,8 @@ def _all_candidate_source_rows(payload: dict[str, object]) -> list[dict[str, obj
     )
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_candidate_source_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_candidate_source_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_primitivespec_candidate_source_contract"]
 
     assert (
@@ -9994,8 +10024,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_candidate_source_contract
     assert payload["remaining_gaps"] == EXPECTED_CANDIDATE_SOURCE_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_candidate_source_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_candidate_source_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_candidate_source_contract"
     ]
 
@@ -10054,8 +10084,8 @@ def test_cpd_paper_primitivespec_candidate_source_payload_schema_is_exact():
         assert payload[flag] is False
 
 
-def test_cpd_paper_primitivespec_candidate_source_classifies_sources():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_candidate_source_classifies_sources(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_candidate_source_contract"
     ]
     native = payload["native_template_candidate_source_audit_rows"]
@@ -10142,8 +10172,8 @@ def test_cpd_paper_primitivespec_candidate_source_classifies_sources():
             assert row[flag] is False
 
 
-def test_cpd_paper_primitivespec_candidate_source_coverage_summary_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_candidate_source_coverage_summary_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_candidate_source_contract"
     ]
 
@@ -10173,8 +10203,8 @@ def test_cpd_paper_primitivespec_candidate_source_coverage_summary_is_exact():
     }
 
 
-def test_cpd_paper_primitivespec_candidate_source_stays_report_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_candidate_source_stays_report_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_candidate_source_contract"
     ]
 
@@ -10498,8 +10528,8 @@ def test_cpd_paper_primitivespec_candidate_source_rejects_duplicate_input_row_id
         )
 
 
-def test_cpd_paper_records_mapped_subset_native_current_fixture_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_native_current_fixture_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_native_current_fixture_contract"]
 
     assert (
@@ -10549,8 +10579,8 @@ def test_cpd_paper_records_mapped_subset_native_current_fixture_contract_gate():
     assert payload["remaining_gaps"] == EXPECTED_NATIVE_CURRENT_FIXTURE_REMAINING_GAPS
 
 
-def test_cpd_paper_native_current_fixture_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_native_current_fixture_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_native_current_fixture_contract"
     ]
 
@@ -10616,8 +10646,8 @@ def test_cpd_paper_native_current_fixture_payload_schema_is_exact():
         assert payload[flag] is False
 
 
-def test_cpd_paper_native_current_fixture_records_one_box_source_row():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_native_current_fixture_records_one_box_source_row(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_native_current_fixture_contract"
     ]
 
@@ -10675,8 +10705,8 @@ def test_cpd_paper_native_current_fixture_records_one_box_source_row():
         assert row[flag] is False
 
 
-def test_cpd_paper_native_current_fixture_coverage_summary_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_native_current_fixture_coverage_summary_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_native_current_fixture_contract"
     ]
 
@@ -10703,8 +10733,8 @@ def test_cpd_paper_native_current_fixture_coverage_summary_is_exact():
     }
 
 
-def test_cpd_paper_native_current_fixture_stays_report_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_native_current_fixture_stays_report_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_native_current_fixture_contract"
     ]
 
@@ -11187,8 +11217,8 @@ def test_cpd_paper_native_current_fixture_rejects_invalid_half_extents():
         )
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_generation_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_generation_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
     ]
@@ -11236,8 +11266,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_generation
     assert payload["remaining_gaps"] == EXPECTED_NATIVE_FIXTURE_GENERATION_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_native_fixture_generation_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_native_fixture_generation_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
     ]
 
@@ -11283,8 +11313,8 @@ def test_cpd_paper_primitivespec_native_fixture_generation_payload_schema_is_exa
         assert payload[flag] is False
 
 
-def test_cpd_paper_primitivespec_native_fixture_generation_emits_one_serialized_box_spec():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_native_fixture_generation_emits_one_serialized_box_spec(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report["paper_mapped_subset_native_current_fixture_contract"][
         "native_current_fixture_source_rows"
     ][0]
@@ -11352,8 +11382,8 @@ def test_cpd_paper_primitivespec_native_fixture_generation_emits_one_serialized_
     }
 
 
-def test_cpd_paper_primitivespec_native_fixture_generation_coverage_summary_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_native_fixture_generation_coverage_summary_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
     ]
 
@@ -11374,8 +11404,8 @@ def test_cpd_paper_primitivespec_native_fixture_generation_coverage_summary_is_e
     }
 
 
-def test_cpd_paper_primitivespec_native_fixture_generation_stays_report_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_native_fixture_generation_stays_report_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
     ]
 
@@ -11579,8 +11609,8 @@ def test_cpd_paper_primitivespec_native_fixture_generation_rejects_invalid_geome
         )
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_serialization_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_serialization_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
     ]
@@ -11618,8 +11648,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_native_fixture_serializat
     assert payload["remaining_gaps"] == EXPECTED_NATIVE_FIXTURE_SERIALIZATION_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_native_fixture_serialization_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_native_fixture_serialization_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
     ]
 
@@ -11675,8 +11705,8 @@ def test_cpd_paper_primitivespec_native_fixture_serialization_payload_schema_is_
         assert payload[flag] is False
 
 
-def test_cpd_paper_primitivespec_native_fixture_serialization_records_one_canonical_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_native_fixture_serialization_records_one_canonical_row(cpd_paper_report):
+    report = cpd_paper_report
     generation_row = report[
         "paper_mapped_subset_primitivespec_native_fixture_generation_contract"
     ]["native_fixture_primitivespec_generation_rows"][0]
@@ -11730,19 +11760,23 @@ def test_cpd_paper_primitivespec_native_fixture_serialization_records_one_canoni
         assert row[flag] is False
 
 
-def test_cpd_paper_primitivespec_native_fixture_serialization_is_deterministic():
-    first = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_native_fixture_serialization_is_deterministic(cpd_paper_report):
+    first = cpd_paper_report[
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
     ]["serialization_rows"][0]["canonical_primitivespec_json"]
-    second = build_cpd_paper_offline_report()[
+    independent_report = (
+        _fresh_independent_cpd_paper_offline_report_for_determinism_check()
+    )
+    assert independent_report is not cpd_paper_report
+    second = independent_report[
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
     ]["serialization_rows"][0]["canonical_primitivespec_json"]
 
     assert first == second
 
 
-def test_cpd_paper_primitivespec_native_fixture_serialization_stays_report_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_native_fixture_serialization_stays_report_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
     ]
 
@@ -11913,8 +11947,8 @@ def test_cpd_paper_primitivespec_native_fixture_serialization_rejects_payload_dr
         )
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_runtime_boundary_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_runtime_boundary_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
     ]
@@ -11951,8 +11985,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_runtime_boundary_prefligh
     assert payload["remaining_gaps"] == EXPECTED_RUNTIME_BOUNDARY_PREFLIGHT_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_runtime_boundary_preflight_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_runtime_boundary_preflight_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
     ]
 
@@ -12001,8 +12035,8 @@ def test_cpd_paper_primitivespec_runtime_boundary_preflight_payload_schema_is_ex
         assert payload[flag] is False
 
 
-def test_cpd_paper_primitivespec_runtime_boundary_preflight_records_one_lineage_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_runtime_boundary_preflight_records_one_lineage_row(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report[
         "paper_mapped_subset_primitivespec_native_fixture_serialization_contract"
     ]["serialization_rows"][0]
@@ -12071,8 +12105,8 @@ def test_cpd_paper_primitivespec_runtime_boundary_preflight_records_one_lineage_
         assert row[flag] is False
 
 
-def test_cpd_paper_primitivespec_runtime_boundary_preflight_stays_report_only():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_runtime_boundary_preflight_stays_report_only(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
     ]
 
@@ -12428,8 +12462,8 @@ def _recursive_package_dicts(value):
             yield from _recursive_package_dicts(item)
 
 
-def test_cpd_paper_records_mapped_subset_primitivespec_runtime_construction_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_primitivespec_runtime_construction_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_primitivespec_runtime_construction_contract"
     ]
@@ -12474,8 +12508,8 @@ def test_cpd_paper_records_mapped_subset_primitivespec_runtime_construction_cont
     assert payload["remaining_gaps"] == EXPECTED_RUNTIME_CONSTRUCTION_REMAINING_GAPS
 
 
-def test_cpd_paper_primitivespec_runtime_construction_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_runtime_construction_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_runtime_construction_contract"
     ]
 
@@ -12521,8 +12555,8 @@ def test_cpd_paper_primitivespec_runtime_construction_payload_schema_is_exact():
         assert payload[flag] is False
 
 
-def test_cpd_paper_primitivespec_runtime_construction_records_one_lineage_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_primitivespec_runtime_construction_records_one_lineage_row(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report[
         "paper_mapped_subset_primitivespec_runtime_boundary_preflight_contract"
     ]["runtime_boundary_preflight_rows"][0]
@@ -12582,8 +12616,8 @@ def test_cpd_paper_primitivespec_runtime_construction_records_one_lineage_row():
         assert row[flag] is False
 
 
-def test_cpd_paper_primitivespec_runtime_construction_stays_package_newton_and_metric_free():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_primitivespec_runtime_construction_stays_package_newton_and_metric_free(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_primitivespec_runtime_construction_contract"
     ]
 
@@ -12977,8 +13011,8 @@ def test_cpd_paper_primitivespec_runtime_construction_rejects_nested_canonical_p
         )
 
 
-def test_cpd_paper_records_mapped_subset_collision_package_generation_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_collision_package_generation_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_collision_package_generation_preflight_contract"
     ]
@@ -13018,11 +13052,11 @@ def test_cpd_paper_records_mapped_subset_collision_package_generation_preflight_
     )
 
 
-def test_cpd_paper_collision_package_generation_preflight_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_collision_package_generation_preflight_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_preflight_contract"
     ]
-    source_row = build_cpd_paper_offline_report()[
+    source_row = cpd_paper_report[
         "paper_mapped_subset_primitivespec_runtime_construction_contract"
     ]["runtime_construction_rows"][0]
 
@@ -13104,8 +13138,8 @@ def test_cpd_paper_collision_package_generation_preflight_payload_schema_is_exac
         assert payload[flag] is False
 
 
-def test_cpd_paper_collision_package_generation_preflight_records_one_lineage_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_collision_package_generation_preflight_records_one_lineage_row(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report[
         "paper_mapped_subset_primitivespec_runtime_construction_contract"
     ]["runtime_construction_rows"][0]
@@ -13176,8 +13210,8 @@ def test_cpd_paper_collision_package_generation_preflight_records_one_lineage_ro
         assert row[flag] is False
 
 
-def test_cpd_paper_collision_package_generation_preflight_stays_package_newton_and_metric_free():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_collision_package_generation_preflight_stays_package_newton_and_metric_free(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_preflight_contract"
     ]
 
@@ -13575,8 +13609,8 @@ def test_cpd_paper_collision_package_generation_preflight_rejects_missing_source
         )
 
 
-def test_cpd_paper_records_mapped_subset_collision_package_generation_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_collision_package_generation_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
@@ -13616,8 +13650,8 @@ def test_cpd_paper_records_mapped_subset_collision_package_generation_contract_g
     )
 
 
-def test_cpd_paper_collision_package_generation_contract_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_collision_package_generation_contract_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
@@ -13696,8 +13730,8 @@ def test_cpd_paper_collision_package_generation_contract_payload_schema_is_exact
     }
 
 
-def test_cpd_paper_collision_package_generation_contract_records_one_package_dict():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_collision_package_generation_contract_records_one_package_dict(cpd_paper_report):
+    report = cpd_paper_report
     preflight_row = report[
         "paper_mapped_subset_collision_package_generation_preflight_contract"
     ]["package_generation_preflight_rows"][0]
@@ -13746,8 +13780,8 @@ def test_cpd_paper_collision_package_generation_contract_records_one_package_dic
     ]
 
 
-def test_cpd_paper_collision_package_generation_contract_stores_package_dict_once():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_collision_package_generation_contract_stores_package_dict_once(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
 
@@ -13759,8 +13793,8 @@ def test_cpd_paper_collision_package_generation_contract_stores_package_dict_onc
     ]
 
 
-def test_cpd_paper_collision_package_generation_contract_source_manifest_sha_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_collision_package_generation_contract_source_manifest_sha_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
     row = payload["collision_package_generation_rows"][0]
@@ -13792,8 +13826,9 @@ def test_cpd_paper_collision_package_generation_contract_source_manifest_sha_is_
 @pytest.mark.parametrize("field_name", COLLISION_PACKAGE_GENERATION_ALLOWED_TRUE_FLAGS)
 def test_cpd_paper_collision_package_generation_contract_allowed_package_flags_are_true(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
 
@@ -13804,8 +13839,9 @@ def test_cpd_paper_collision_package_generation_contract_allowed_package_flags_a
 @pytest.mark.parametrize("field_name", COLLISION_PACKAGE_GENERATION_BOUNDARY_FALSE_FLAGS)
 def test_cpd_paper_collision_package_generation_contract_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
 
@@ -13813,8 +13849,8 @@ def test_cpd_paper_collision_package_generation_contract_boundary_flags_stay_fal
     assert payload["collision_package_generation_rows"][0][field_name] is False
 
 
-def test_cpd_paper_collision_package_generation_contract_stays_newton_usd_and_metric_free():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_collision_package_generation_contract_stays_newton_usd_and_metric_free(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
 
@@ -14081,8 +14117,8 @@ def test_cpd_paper_collision_package_generation_contract_rejects_candidate_dict_
         )
 
 
-def test_cpd_paper_records_mapped_subset_runtime_admissibility_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_runtime_admissibility_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_runtime_admissibility_preflight_contract"
     ]
@@ -14139,8 +14175,8 @@ def test_cpd_paper_records_mapped_subset_runtime_admissibility_preflight_contrac
     )
 
 
-def test_cpd_paper_runtime_admissibility_preflight_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_runtime_admissibility_preflight_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_runtime_admissibility_preflight_contract"
     ]
@@ -14209,8 +14245,8 @@ def test_cpd_paper_runtime_admissibility_preflight_payload_schema_is_exact():
     }
 
 
-def test_cpd_paper_runtime_admissibility_preflight_records_one_candidate_without_copying_package():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_runtime_admissibility_preflight_records_one_candidate_without_copying_package(cpd_paper_report):
+    report = cpd_paper_report
     source_payload = report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]
@@ -14267,8 +14303,9 @@ def test_cpd_paper_runtime_admissibility_preflight_records_one_candidate_without
 @pytest.mark.parametrize("field_name", RUNTIME_ADMISSIBILITY_PREFLIGHT_PAYLOAD_FALSE_FLAGS)
 def test_cpd_paper_runtime_admissibility_preflight_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_runtime_admissibility_preflight_contract"
     ]
 
@@ -14276,8 +14313,8 @@ def test_cpd_paper_runtime_admissibility_preflight_boundary_flags_stay_false(
     assert payload["runtime_admissibility_preflight_rows"][0][field_name] is False
 
 
-def test_cpd_paper_runtime_admissibility_preflight_stays_newton_usd_and_metric_free():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_runtime_admissibility_preflight_stays_newton_usd_and_metric_free(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_runtime_admissibility_preflight_contract"
     ]
 
@@ -14653,8 +14690,8 @@ def test_cpd_paper_runtime_admissibility_preflight_rejects_coupled_source_and_pa
         )
 
 
-def test_cpd_paper_records_mapped_subset_runtime_admissibility_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_runtime_admissibility_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_runtime_admissibility_contract"]
 
     assert (
@@ -14702,8 +14739,8 @@ def test_cpd_paper_records_mapped_subset_runtime_admissibility_contract_gate():
     )
 
 
-def test_cpd_paper_runtime_admissibility_contract_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_runtime_admissibility_contract_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_runtime_admissibility_contract"
     ]
 
@@ -14752,8 +14789,8 @@ def test_cpd_paper_runtime_admissibility_contract_payload_schema_is_exact():
     }
 
 
-def test_cpd_paper_runtime_admissibility_contract_records_static_check_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_runtime_admissibility_contract_records_static_check_row(cpd_paper_report):
+    report = cpd_paper_report
     source_payload = report[
         "paper_mapped_subset_runtime_admissibility_preflight_contract"
     ]
@@ -14809,8 +14846,9 @@ def test_cpd_paper_runtime_admissibility_contract_records_static_check_row():
 @pytest.mark.parametrize("field_name", RUNTIME_ADMISSIBILITY_CONTRACT_PAYLOAD_FALSE_FLAGS)
 def test_cpd_paper_runtime_admissibility_contract_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_runtime_admissibility_contract"
     ]
 
@@ -14965,9 +15003,9 @@ def test_cpd_paper_runtime_admissibility_contract_rejects_preflight_row_drift(
         )
 
 
-def test_cpd_paper_runtime_admissibility_contract_rejects_source_package_copy():
+def test_cpd_paper_runtime_admissibility_contract_rejects_source_package_copy(cpd_paper_report):
     preflight = _runtime_admissibility_contract_input()
-    source_package = build_cpd_paper_offline_report()[
+    source_package = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]["collision_package_generation_rows"][0]["generated_collision_package"]
     preflight["unexpected_package_copy"] = json.loads(json.dumps(source_package))
@@ -15117,8 +15155,8 @@ def test_cpd_paper_runtime_admissibility_contract_static_boundaries():
         assert pattern not in contract_block
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_mapping_preflight_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_mapping_preflight_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_mapping_preflight_contract"
     ]
@@ -15162,8 +15200,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_preflight_gate():
     )
 
 
-def test_cpd_paper_newton_shape_mapping_preflight_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_newton_shape_mapping_preflight_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_mapping_preflight_contract"
     ]
 
@@ -15210,8 +15248,8 @@ def test_cpd_paper_newton_shape_mapping_preflight_payload_schema_is_exact():
     }
 
 
-def test_cpd_paper_newton_shape_mapping_preflight_records_static_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_mapping_preflight_records_static_row(cpd_paper_report):
+    report = cpd_paper_report
     source_payload = report["paper_mapped_subset_runtime_admissibility_contract"]
     source_row = source_payload["runtime_admissibility_rows"][0]
     payload = report[
@@ -15267,8 +15305,9 @@ def test_cpd_paper_newton_shape_mapping_preflight_records_static_row():
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_MAPPING_PREFLIGHT_FALSE_FLAGS)
 def test_cpd_paper_newton_shape_mapping_preflight_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_mapping_preflight_contract"
     ]
 
@@ -15456,9 +15495,9 @@ def test_cpd_paper_newton_shape_mapping_preflight_rejects_source_row_drift(
         )
 
 
-def test_cpd_paper_newton_shape_mapping_preflight_rejects_source_package_copy():
+def test_cpd_paper_newton_shape_mapping_preflight_rejects_source_package_copy(cpd_paper_report):
     runtime_admissibility = _newton_shape_mapping_preflight_input()
-    source_package = build_cpd_paper_offline_report()[
+    source_package = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]["collision_package_generation_rows"][0]["generated_collision_package"]
     runtime_admissibility["unexpected_package_copy"] = json.loads(
@@ -15602,8 +15641,8 @@ def test_cpd_paper_newton_shape_mapping_preflight_static_boundaries():
         assert pattern not in contract_block
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_mapping_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_mapping_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report["paper_mapped_subset_newton_shape_mapping_contract"]
 
     assert report["next_required_gate"] == (
@@ -15640,8 +15679,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_mapping_contract_gate():
     )
 
 
-def test_cpd_paper_newton_shape_mapping_contract_payload_schema_is_exact():
-    payload = build_cpd_paper_offline_report()[
+def test_cpd_paper_newton_shape_mapping_contract_payload_schema_is_exact(cpd_paper_report):
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_mapping_contract"
     ]
 
@@ -15689,8 +15728,8 @@ def test_cpd_paper_newton_shape_mapping_contract_payload_schema_is_exact():
     }
 
 
-def test_cpd_paper_newton_shape_mapping_contract_records_descriptor_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_mapping_contract_records_descriptor_row(cpd_paper_report):
+    report = cpd_paper_report
     preflight_row = report[
         "paper_mapped_subset_newton_shape_mapping_preflight_contract"
     ]["newton_shape_mapping_preflight_rows"][0]
@@ -15749,8 +15788,9 @@ def test_cpd_paper_newton_shape_mapping_contract_records_descriptor_row():
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_MAPPING_CONTRACT_FALSE_FLAGS)
 def test_cpd_paper_newton_shape_mapping_contract_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_mapping_contract"
     ]
 
@@ -15902,9 +15942,9 @@ def test_cpd_paper_newton_shape_mapping_contract_rejects_source_row_drift(
         )
 
 
-def test_cpd_paper_newton_shape_mapping_contract_rejects_source_package_copy():
+def test_cpd_paper_newton_shape_mapping_contract_rejects_source_package_copy(cpd_paper_report):
     preflight = _newton_shape_mapping_contract_input()
-    source_package = build_cpd_paper_offline_report()[
+    source_package = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]["collision_package_generation_rows"][0]["generated_collision_package"]
     preflight["unexpected_package_copy"] = json.loads(json.dumps(source_package))
@@ -16007,8 +16047,8 @@ def test_cpd_paper_newton_shape_mapping_contract_static_boundaries():
         assert pattern not in contract_block
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_boundary_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_boundary_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
     ]
@@ -16051,8 +16091,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_boundary_preflight
     )
 
 
-def test_cpd_paper_newton_shape_runtime_boundary_preflight_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_boundary_preflight_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
     ]
@@ -16137,8 +16177,8 @@ def test_cpd_paper_newton_shape_runtime_boundary_preflight_payload_schema_is_exa
     }
 
 
-def test_cpd_paper_newton_shape_runtime_boundary_preflight_records_one_lineage_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_boundary_preflight_records_one_lineage_row(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report["paper_mapped_subset_newton_shape_mapping_contract"][
         "shape_mapping_rows"
     ][0]
@@ -16195,8 +16235,9 @@ def test_cpd_paper_newton_shape_runtime_boundary_preflight_records_one_lineage_r
 )
 def test_cpd_paper_newton_shape_runtime_boundary_preflight_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
     ]
 
@@ -16591,9 +16632,9 @@ def test_cpd_paper_newton_shape_runtime_boundary_preflight_rejects_descriptor_dr
         )
 
 
-def test_cpd_paper_newton_shape_runtime_boundary_preflight_rejects_source_package_copy():
+def test_cpd_paper_newton_shape_runtime_boundary_preflight_rejects_source_package_copy(cpd_paper_report):
     payload = _newton_shape_runtime_boundary_preflight_input()
-    source_package = build_cpd_paper_offline_report()[
+    source_package = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]["collision_package_generation_rows"][0]["generated_collision_package"]
     payload["source_collision_package_dict"] = json.loads(json.dumps(source_package))
@@ -16658,8 +16699,8 @@ def test_cpd_paper_newton_shape_runtime_boundary_preflight_static_boundary_has_n
         assert pattern not in source
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_construction_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_construction_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_construction_contract"
     ]
@@ -16702,8 +16743,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_construction_contr
     )
 
 
-def test_cpd_paper_newton_shape_runtime_construction_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_construction_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_construction_contract"
     ]
@@ -16772,8 +16813,8 @@ def test_cpd_paper_newton_shape_runtime_construction_payload_schema_is_exact():
     }
 
 
-def test_cpd_paper_newton_shape_runtime_construction_records_one_mapping_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_construction_records_one_mapping_row(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report[
         "paper_mapped_subset_newton_shape_runtime_boundary_preflight_contract"
     ]["newton_shape_runtime_boundary_preflight_rows"][0]
@@ -16835,8 +16876,9 @@ def test_cpd_paper_newton_shape_runtime_construction_records_one_mapping_row():
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_CONSTRUCTION_FALSE_FLAGS)
 def test_cpd_paper_newton_shape_runtime_construction_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_construction_contract"
     ]
 
@@ -16847,8 +16889,9 @@ def test_cpd_paper_newton_shape_runtime_construction_boundary_flags_stay_false(
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_CONSTRUCTION_TRUE_FLAGS)
 def test_cpd_paper_newton_shape_runtime_construction_record_flags_are_narrowly_true(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_construction_contract"
     ]
 
@@ -17220,9 +17263,9 @@ def test_cpd_paper_newton_shape_runtime_construction_rejects_descriptor_drift(
         )
 
 
-def test_cpd_paper_newton_shape_runtime_construction_rejects_source_package_copy():
+def test_cpd_paper_newton_shape_runtime_construction_rejects_source_package_copy(cpd_paper_report):
     payload = _newton_shape_runtime_construction_input()
-    source_package = build_cpd_paper_offline_report()[
+    source_package = cpd_paper_report[
         "paper_mapped_subset_collision_package_generation_contract"
     ]["collision_package_generation_rows"][0]["generated_collision_package"]
     payload["source_collision_package_dict"] = json.loads(json.dumps(source_package))
@@ -17315,8 +17358,8 @@ def test_cpd_paper_newton_shape_runtime_construction_static_boundary_is_record_o
         assert pattern not in source
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
     ]
@@ -17361,8 +17404,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_preflight_
     )
 
 
-def test_cpd_paper_newton_shape_runtime_builder_preflight_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_builder_preflight_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
     ]
@@ -17452,8 +17495,8 @@ def test_cpd_paper_newton_shape_runtime_builder_preflight_payload_schema_is_exac
     }
 
 
-def test_cpd_paper_newton_shape_runtime_builder_preflight_records_one_builder_plan():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_builder_preflight_records_one_builder_plan(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report[
         "paper_mapped_subset_newton_shape_runtime_construction_contract"
     ]["newton_shape_runtime_construction_rows"][0]
@@ -17587,8 +17630,9 @@ def test_cpd_paper_newton_shape_runtime_builder_preflight_records_one_builder_pl
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_FALSE_FLAGS)
 def test_cpd_paper_newton_shape_runtime_builder_preflight_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
     ]
 
@@ -17601,8 +17645,9 @@ def test_cpd_paper_newton_shape_runtime_builder_preflight_boundary_flags_stay_fa
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_BUILDER_PREFLIGHT_TRUE_FLAGS)
 def test_cpd_paper_newton_shape_runtime_builder_preflight_record_flags_are_true(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
     ]
 
@@ -18063,8 +18108,8 @@ def _expected_builder_construction_recorded_call(
     }
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_construction_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_construction_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
     ]
@@ -18106,8 +18151,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_builder_constructi
     )
 
 
-def test_cpd_paper_newton_shape_runtime_builder_construction_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_builder_construction_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
     ]
@@ -18195,8 +18240,8 @@ def test_cpd_paper_newton_shape_runtime_builder_construction_payload_schema_is_e
     }
 
 
-def test_cpd_paper_newton_shape_runtime_builder_construction_records_fake_builder_call():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_builder_construction_records_fake_builder_call(cpd_paper_report):
+    report = cpd_paper_report
     preflight_row = report[
         "paper_mapped_subset_newton_shape_runtime_builder_preflight_contract"
     ]["newton_shape_runtime_builder_preflight_rows"][0]
@@ -18272,8 +18317,9 @@ def test_cpd_paper_newton_shape_runtime_builder_construction_records_fake_builde
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_FALSE_FLAGS)
 def test_cpd_paper_newton_shape_runtime_builder_construction_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
     ]
 
@@ -18286,8 +18332,9 @@ def test_cpd_paper_newton_shape_runtime_builder_construction_boundary_flags_stay
 @pytest.mark.parametrize("field_name", NEWTON_SHAPE_RUNTIME_BUILDER_CONSTRUCTION_TRUE_FLAGS)
 def test_cpd_paper_newton_shape_runtime_builder_construction_record_flags_are_true(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
     ]
 
@@ -18649,8 +18696,8 @@ def test_cpd_paper_newton_shape_runtime_builder_construction_static_boundary_use
             assert node.func.attr not in forbidden_call_attrs
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
     ]
@@ -18698,8 +18745,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_bou
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
     ]
@@ -18798,8 +18845,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_payloa
     }
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_records_one_static_boundary_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_records_one_static_boundary_row(cpd_paper_report):
+    report = cpd_paper_report
     construction_row = report[
         "paper_mapped_subset_newton_shape_runtime_builder_construction_contract"
     ]["newton_shape_runtime_builder_construction_rows"][0]
@@ -18891,8 +18938,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_record
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
     ]
 
@@ -18908,8 +18956,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_bounda
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_boundary_preflight_record_flags_are_true(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
     ]
 
@@ -19375,8 +19424,8 @@ def test_newton_engine_builder_api_surface_helper_reads_source_ast_without_impor
     json.dumps(probe)
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
     ]
@@ -19428,8 +19477,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_env
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
     ]
@@ -19529,8 +19578,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_payload
     }
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_records_one_provenance_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_records_one_provenance_row(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_boundary_preflight_contract"
     ]["newton_shape_runtime_engine_builder_boundary_preflight_rows"][0]
@@ -19640,8 +19689,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_records
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
     ]
 
@@ -19657,8 +19707,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_boundar
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_record_flags_are_true(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
     ]
 
@@ -19958,8 +20009,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_environment_probe_static_
             assert node.func.id not in forbidden_call_attrs
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
     ]
@@ -20008,8 +20059,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_api
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
     ]
@@ -20118,8 +20169,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_payload_schem
     }
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_records_one_source_ast_row():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_records_one_source_ast_row(cpd_paper_report):
+    report = cpd_paper_report
     source_row = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_environment_probe_contract"
     ]["newton_shape_runtime_engine_builder_environment_probe_rows"][0]
@@ -20213,8 +20264,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_records_one_s
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_boundary_flags_stay_false(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
     ]
 
@@ -20230,8 +20282,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_boundary_flag
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_record_flags_are_true(
     field_name,
+    cpd_paper_report,
 ):
-    payload = build_cpd_paper_offline_report()[
+    payload = cpd_paper_report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_api_surface_contract"
     ]
 
@@ -20533,8 +20586,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_api_surface_static_bounda
             assert node.func.id not in forbidden_call_attrs
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_entry_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_entry_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
     ]
@@ -20575,8 +20628,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_ent
     )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
     ]
@@ -20617,8 +20670,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_smo
     )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract"
     ]
@@ -20661,8 +20714,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
     )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract"
     ]
@@ -20708,8 +20761,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_run
     )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract"
     ]
@@ -20764,8 +20817,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_design_contract"
     ]
@@ -20969,8 +21022,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design
         assert payload[flag] is True
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
     ]
@@ -21019,8 +21072,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_preflight_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_preflight_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_preflight_contract"
     ]
@@ -21155,8 +21208,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_prefli
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_preflight_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_preflight_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_design = json.loads(
         json.dumps(
             report[
@@ -21194,8 +21247,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_prefli
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_preflight_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_preflight_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_design = json.loads(
         json.dumps(
             report[
@@ -21238,8 +21291,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_prefli
         )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract"
     ]
@@ -21297,8 +21350,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_validation_contract"
     ]
@@ -21448,8 +21501,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_valida
         assert payload[flag] is True
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract"
     ]
@@ -21517,8 +21570,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_contract"
     ]
@@ -21684,8 +21737,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_validation = json.loads(
         json.dumps(
             report[
@@ -21726,8 +21779,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source_resolution_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_validation = json.loads(
         json.dumps(
             report[
@@ -21770,8 +21823,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_source
         )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
     ]
@@ -21841,8 +21894,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_contract"
     ]
@@ -21997,8 +22050,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_source_resolution = json.loads(
         json.dumps(
             report[
@@ -22039,8 +22092,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device_resolution_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_source_resolution = json.loads(
         json.dumps(
             report[
@@ -22083,8 +22136,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_device
         )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract"
     ]
@@ -22148,8 +22201,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_contract"
     ]
@@ -22313,8 +22366,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_device_resolution = json.loads(
         json.dumps(
             report[
@@ -22421,8 +22474,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_decision_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_device_resolution = json.loads(
         json.dumps(
             report[
@@ -22465,8 +22518,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_entry_
         )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
     ]
@@ -22535,8 +22588,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_smoke_contract"
     ]
@@ -22701,8 +22754,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_entry_decision = json.loads(
         json.dumps(
             report[
@@ -22838,8 +22891,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_entry_decision = json.loads(
         json.dumps(
             report[
@@ -22875,8 +22929,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_entry_decision = json.loads(
         json.dumps(
             report[
@@ -22892,8 +22947,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_entry_decision = json.loads(
         json.dumps(
             report[
@@ -22947,8 +23002,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
 def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_rejects_row_count_drift(
     rows_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_entry_decision = json.loads(
         json.dumps(
             report[
@@ -22997,8 +23053,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_entry_decision = json.loads(
         json.dumps(
             report[
@@ -23016,8 +23073,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_smoke_
         )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract"
     ]
@@ -23097,8 +23154,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_execution_contract"
     ]
@@ -23283,8 +23340,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_smoke = json.loads(
         json.dumps(
             report[
@@ -23364,8 +23421,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_smoke = json.loads(
         json.dumps(
             report[
@@ -23402,8 +23460,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_smoke = json.loads(
         json.dumps(
             report[
@@ -23419,8 +23478,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_smoke = json.loads(
         json.dumps(
             report[
@@ -23474,8 +23533,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
 def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_row_count_drift(
     rows_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_smoke = json.loads(
         json.dumps(
             report[
@@ -23493,8 +23553,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_duplicate_source_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execution_rejects_duplicate_source_rows(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_smoke = json.loads(
         json.dumps(
             report[
@@ -23575,8 +23635,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_smoke = json.loads(
         json.dumps(
             report[
@@ -23594,8 +23655,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_execut
         )
 
 
-def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_lane_review_contract_gate():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_lane_review_contract_gate(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_lane_review_contract"
     ]
@@ -23667,8 +23728,8 @@ def test_cpd_paper_records_mapped_subset_newton_shape_runtime_engine_builder_con
     )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_configured_runtime_lane_review_contract"
     ]
@@ -23846,8 +23907,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_execution = json.loads(
         json.dumps(
             report[
@@ -23930,8 +23991,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_execution = json.loads(
         json.dumps(
             report[
@@ -23968,8 +24030,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_execution = json.loads(
         json.dumps(
             report[
@@ -23985,8 +24048,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_execution = json.loads(
         json.dumps(
             report[
@@ -24040,8 +24103,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
 def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_rejects_row_count_drift(
     rows_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_execution = json.loads(
         json.dumps(
             report[
@@ -24059,8 +24123,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_rejects_duplicate_source_rows():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_review_rejects_duplicate_source_rows(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_execution = json.loads(
         json.dumps(
             report[
@@ -24123,8 +24187,9 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
     field_name,
     bad_value,
     message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     configured_runtime_execution = json.loads(
         json.dumps(
             report[
@@ -24142,8 +24207,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_lane_r
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_rejects_input_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_rejects_input_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_preflight = json.loads(
         json.dumps(
             report[
@@ -24181,8 +24246,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_valida
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_rejects_source_row_schema_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_validation_rejects_source_row_schema_drift(cpd_paper_report):
+    report = cpd_paper_report
     configured_runtime_preflight = json.loads(
         json.dumps(
             report[
@@ -24225,8 +24290,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_valida
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_lane_review_contract"
     ]
@@ -24503,8 +24568,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_paylo
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_runtime_execution_contract"
     ]
@@ -24755,8 +24820,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_payload
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_smoke_contract"
     ]
@@ -24984,8 +25049,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_payload_schema_is_e
         assert payload[flag] is True
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_entry_payload_schema_is_exact():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_entry_payload_schema_is_exact(cpd_paper_report):
+    report = cpd_paper_report
     payload = report[
         "paper_mapped_subset_newton_shape_runtime_engine_builder_entry_contract"
     ]
@@ -25223,9 +25288,10 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_entry_payload_schema_is_e
     ],
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_entry_rejects_input_drift(
-    field, value, message
+    field, value, message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     api_surface = json.loads(
         json.dumps(
             report[
@@ -25241,8 +25307,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_entry_rejects_input_drift
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_entry_rejects_source_row_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_entry_rejects_source_row_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
     api_surface = json.loads(
         json.dumps(
             report[
@@ -25410,9 +25476,10 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_entry_static_boundary_is_
     ],
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_input_drift(
-    field, value, message
+    field, value, message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     entry = json.loads(
         json.dumps(
             report[
@@ -25428,8 +25495,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_input_drift
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_input_coverage_summary_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_input_coverage_summary_drift(cpd_paper_report):
+    report = cpd_paper_report
     entry = json.loads(
         json.dumps(
             report[
@@ -25448,8 +25515,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_input_cover
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_source_row_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_rejects_source_row_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
     entry = json.loads(
         json.dumps(
             report[
@@ -25735,9 +25802,10 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_smoke_static_boundary_is_
     ],
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects_input_drift(
-    field, value, message
+    field, value, message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     smoke = json.loads(
         json.dumps(
             report[
@@ -25753,8 +25821,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects_input_key_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects_input_key_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
 
     smoke = json.loads(
         json.dumps(
@@ -25826,8 +25894,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects_input_coverage_summary_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects_input_coverage_summary_drift(cpd_paper_report):
+    report = cpd_paper_report
     smoke = json.loads(
         json.dumps(
             report[
@@ -25846,8 +25914,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects_source_row_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects_source_row_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
     smoke = json.loads(
         json.dumps(
             report[
@@ -26145,9 +26213,10 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_execution_rejects
     ],
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejects_input_drift(
-    field, value, message
+    field, value, message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     runtime_execution = json.loads(
         json.dumps(
             report[
@@ -26163,8 +26232,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejec
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejects_input_key_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejects_input_key_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
 
     runtime_execution = json.loads(
         json.dumps(
@@ -26236,8 +26305,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejec
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejects_input_coverage_summary_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejects_input_coverage_summary_drift(cpd_paper_report):
+    report = cpd_paper_report
     runtime_execution = json.loads(
         json.dumps(
             report[
@@ -26256,8 +26325,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejec
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejects_source_row_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejects_source_row_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
     runtime_execution = json.loads(
         json.dumps(
             report[
@@ -26569,9 +26638,10 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_rejec
     ],
 )
 def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_rejects_input_drift(
-    field, value, message
+    field, value, message,
+    cpd_paper_report,
 ):
-    report = build_cpd_paper_offline_report()
+    report = cpd_paper_report
     runtime_lane_review = json.loads(
         json.dumps(
             report[
@@ -26587,8 +26657,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_rejects_input_key_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_rejects_input_key_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
 
     runtime_lane_review = json.loads(
         json.dumps(
@@ -26660,8 +26730,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_rejects_input_coverage_summary_drift():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_rejects_input_coverage_summary_drift(cpd_paper_report):
+    report = cpd_paper_report
     runtime_lane_review = json.loads(
         json.dumps(
             report[
@@ -26680,8 +26750,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design
         )
 
 
-def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_rejects_source_row_drift_and_copies():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_newton_shape_runtime_engine_builder_configured_runtime_design_rejects_source_row_drift_and_copies(cpd_paper_report):
+    report = cpd_paper_report
     runtime_lane_review = json.loads(
         json.dumps(
             report[
@@ -27406,8 +27476,8 @@ def test_cpd_paper_newton_shape_runtime_engine_builder_runtime_lane_review_stati
             assert node.func.id not in forbidden_call_attrs
 
 
-def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_records():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_records(cpd_paper_report):
+    report = cpd_paper_report
     changed = dict(report["paper_offline_changed_decomposition_output_contract"])
     output_rows = [
         dict(row) for row in changed["decomposition_output_rows"][:1]
@@ -27449,8 +27519,8 @@ def test_cpd_paper_package_adapter_contract_blocks_malformed_or_duplicate_record
         assert row["benchmark_triggered"] is False
 
 
-def test_cpd_paper_package_adapter_missing_id_fallback_cannot_collide_with_real_id():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_package_adapter_missing_id_fallback_cannot_collide_with_real_id(cpd_paper_report):
+    report = cpd_paper_report
     changed = dict(report["paper_offline_changed_decomposition_output_contract"])
     output_rows = [dict(report["paper_offline_changed_decomposition_output_contract"][
         "decomposition_output_rows"
@@ -27485,8 +27555,8 @@ def test_cpd_paper_package_adapter_missing_id_fallback_cannot_collide_with_real_
     )
 
 
-def test_cpd_paper_source_policy_generalization_rows_match_case_payloads():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_source_policy_generalization_rows_match_case_payloads(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
     payload = report["paper_generalization_batch_a_source_policy"]
     rows = {row["policy_row_id"]: row for row in payload["policy_matrix"]}
@@ -27572,8 +27642,8 @@ def test_cpd_paper_source_policy_generalization_rows_match_case_payloads():
     assert concave_row["primitive_fit_row_count"] == 0
 
 
-def test_cpd_paper_offline_report_covers_first_toy_slice():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_covers_first_toy_slice(cpd_paper_report):
+    report = cpd_paper_report
 
     assert report["stage"] == "cpd_paper_offline_report"
     assert report["status"] == "partial"
@@ -28140,16 +28210,16 @@ def test_cpd_paper_offline_report_covers_first_toy_slice():
     ]
 
 
-def test_cpd_paper_offline_report_is_strict_json_serializable():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_is_strict_json_serializable(cpd_paper_report):
+    report = cpd_paper_report
 
     encoded = json.dumps(report, allow_nan=False, sort_keys=True)
 
     assert "cpd_paper_offline_report" in encoded
 
 
-def test_cpd_paper_offline_report_audits_frustum_and_trapezoidal_prism_candidates():
-    report = build_cpd_paper_offline_report()
+def test_cpd_paper_offline_report_audits_frustum_and_trapezoidal_prism_candidates(cpd_paper_report):
+    report = cpd_paper_report
     cases = {case["case_id"]: case for case in report["cases"]}
 
     frustum_case = cases["paper_frustum_like"]

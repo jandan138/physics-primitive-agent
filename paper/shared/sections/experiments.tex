@@ -1,0 +1,39 @@
+\section{Experiments}
+\label{sec:experiments}
+
+We report scoped evidence from the current bootstrap.
+Phase~0 targets 5--10 provenance-clear assets with paired baselines; the tables below summarize recorded results and mark open slots for the ACCV proof point.
+
+\subsection{Mechanism study: capped bed versus Franka cylinders}
+\label{sec:exp-mechanism}
+
+For the recorded capped scope, the bed selected-cylinder package fails drop/settle with residual final speed about $0.082$\,m/s, while a recorded Franka cost-guided cylinder package passes with about $0.00071$\,m/s.
+The same target bed cylinder passes as an isolated primitive; the failure is a full-compound package effect.
+COM/inertia sensitivity is the strongest supported mechanism; mass alone and contact/floor are rejected as sole explanations in the dated audit.
+
+\subsection{Diagnostic guard}
+An opt-in package body-state guard falls back only the flagged capped bed package while keeping the unflagged Franka cylinder package in the recorded Newton task smoke.
+
+\subsection{Collision-only throughput hook}
+In one bed-aligned pressure scene with 32 accepted box primitives versus 32 convex64 mesh proxies, native primitives report median $2.21\times$ generated contacts per collide call and about $5.3\%$ lower collision-only wall time.
+This is scoped collision-pipeline evidence, not a full-simulation speedup claim.
+
+\subsection{Phase 0 benchmark table (in progress)}
+Table~\ref{tab:phase0-placeholder} lists required Phase~0 rows.
+Populate from \texttt{experiments/registry.yaml} and new dated records before claiming multi-asset generalization.
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Asset & Geometry-only accept & \simchecked{} accept & Fallback reason \\
+    \midrule
+    Bed (capped) & TBD & fail (body-state) & guard / revert \\
+    Franka (capped) & TBD & pass (smoke) & none recorded \\
+    \multicolumn{4}{@{}l@{}}{\emph{Additional Phase~0 assets: pending}} \\
+    \bottomrule
+  \end{tabular}
+  \caption{Phase~0 paired comparison placeholder. Do not treat empty rows as negative results.}
+  \label{tab:phase0-placeholder}
+\end{table}

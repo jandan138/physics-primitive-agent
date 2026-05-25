@@ -59,6 +59,9 @@ SCOPING_MARKERS = (
 REQUIRED_PATHS = (
     "AGENTS.md",
     "README.md",
+    "paper/README.md",
+    "paper/shared/evidence/claims.yaml",
+    "paper/shared/evidence/results_manifest.yaml",
     "assets/manifests/phase0_assets.yaml",
     "configs/deepdive/mvp.yaml",
     "configs/experiments/phase0_baseline.yaml",
