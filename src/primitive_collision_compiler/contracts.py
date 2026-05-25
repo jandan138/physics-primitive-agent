@@ -31,6 +31,7 @@ class PrimitiveSpec:
     volume: float | None = None
     weighted_volume: float | None = None
     conversion_status: str = "candidate"
+    source_links: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, Any]:
         dimensions: Any
@@ -38,7 +39,7 @@ class PrimitiveSpec:
             dimensions = dict(self.dimensions)
         else:
             dimensions = list(self.dimensions)
-        return {
+        payload = {
             "primitive_id": self.primitive_id,
             "kind": self.kind,
             "pose": list(self.pose),
@@ -52,6 +53,9 @@ class PrimitiveSpec:
             "weighted_volume": self.weighted_volume,
             "conversion_status": self.conversion_status,
         }
+        if self.source_links:
+            payload["source_links"] = list(self.source_links)
+        return payload
 
 
 @dataclass(frozen=True)

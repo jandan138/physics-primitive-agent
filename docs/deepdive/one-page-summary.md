@@ -27,7 +27,7 @@ primitive decomposition is an important related candidate generator and baseline
 
 - build a non-LLM candidate-generator plus Newton checker loop;
 - include body-state and contact diagnostics;
-- add link-aware articulation gates for a reproducible robot smoke asset when available;
+- add meshless-link policy and generated-package robot task probes for a reproducible robot smoke asset;
 - compare simple baselines and CPD/CoACD/V-HACD-style candidates where available;
 - report accept/reject/fallback decisions with metrics and provenance.
 
@@ -39,9 +39,11 @@ primitive decomposition is an important related candidate generator and baseline
 - An opt-in package body-state guard task path has real Newton task-smoke evidence for the capped
   bed/Franka slice.
 - A scoped Phase 0 follow-up run exists over the repo-local materialized GRScenes assets and one
-  Franka USD smoke asset, with accept/fallback/dependency-gap/failure outcomes for bounding,
-  CPD-style, CoACD convex-mesh, V-HACD, stack-or-slide, and articulation-smoke lanes. V-HACD
-  generates packages for all five selected rigid assets and records probe failures on bowl/cup/tray.
+  Franka USD smoke asset, with accept/fallback/failure outcomes and zero dependency gaps for
+  bounding, CPD-style, CoACD convex-mesh, V-HACD, stack-or-slide, and articulation-smoke lanes.
+  V-HACD generates packages for all five selected rigid assets and records probe failures on bowl/cup/tray.
+  Franka link-aware package generation records 11 link-framed primitives over 12 detected links
+  with zero cross-link merges and `/panda/panda_link8` as meshless.
 - A preliminary bed-aligned collision-only pressure test records 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies.
 - No broad benchmark-suite, complete collision-quality validation, or whole-robot
@@ -59,7 +61,7 @@ primitive decomposition is an important related candidate generator and baseline
 
 No safety guarantee, no real-world transfer claim, no deployment readiness, no broad benchmark
 superiority or full-simulation speedup claim, no primitive-only sufficiency claim, no full CPD
-reproduction claim, and no whole-robot robot-operation claim before link-aware package generation,
-link-boundary probes, and articulation records exist.
+reproduction claim, and no whole-robot robot-operation claim before generated link-aware packages
+are exercised under robot task probes and broader articulation records exist.
 
 Canonical wording: [message-map.md](message-map.md).

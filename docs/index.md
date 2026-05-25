@@ -46,6 +46,7 @@ contribution is the downstream compiler/checker loop:
 
 - [Phase 0 GRScenes asset intake](records/2026-05-25-phase0-grscenes-asset-intake.md)
 - [Phase 0 V-HACD runtime follow-up](records/2026-05-26-phase0-vhacd-runtime-followup.md)
+- [Link-aware robot package generation](records/2026-05-26-link-aware-robot-package-generation.md)
 - [Phase 0 stack/CoACD/articulation follow-up](records/2026-05-25-phase0-stack-coacd-articulation-followup.md)
 - [Cylinder goal completion audit after contact closure](records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
 - [Package body-state guard task path](records/2026-05-22-package-body-state-guard-task-path.md)

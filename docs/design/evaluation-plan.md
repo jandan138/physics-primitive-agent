@@ -64,7 +64,9 @@ Robot-asset tasks:
 - Current run scope: the follow-up run covers bounding-primitive, CPD-style, CoACD convex-mesh,
   and V-HACD candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain
   probes. It records V-HACD probe failures, single convex hull as fallback, and precision review
-  as manual-review fallback rather than treating them as successful coverage.
+  as manual-review fallback rather than treating them as successful coverage. It also records one
+  Franka link-aware package generation and boundary audit with zero cross-link merges, while
+  `/panda/panda_link8` remains a meshless zero-primitive link.
 - Newton: record exact Newton source/version, Python environment, hardware, solver settings, and
   deviations before reporting results.
 - Primitive generator: start with deterministic non-LLM heuristics, native lanes, or imported

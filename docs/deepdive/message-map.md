@@ -63,8 +63,9 @@ superiority claim.
 The scoped Phase 0 follow-up run adds stack-or-slide execution, CoACD executable convex-mesh
 packages, V-HACD runtime evidence, and one Franka USD articulation smoke to the five-asset GRScenes
 diagnostic table. V-HACD now generates packages for all five selected rigid assets, with recorded
-probe failures on bowl/cup/tray. It is still not complete Phase 0 coverage because link-aware
-robot package generation is not implemented.
+probe failures on bowl/cup/tray. The same report now records a Franka link-aware package with zero
+cross-link merges and a meshless `/panda/panda_link8` boundary. It is still not complete Phase 0
+coverage because generated-package robot task checks and broader pass criteria remain open.
 
 ## DeepDive Proof Point
 
@@ -92,8 +93,8 @@ Do not claim:
 - novelty in automatic primitive collider generation itself;
 - full CPD paper reproduction;
 - calibrated default selector policy;
-- whole-robot Franka or broad robot-operation validation before link-aware package generation,
-  link-boundary probes, and articulation records exist;
+- whole-robot Franka or broad robot-operation validation before generated link-aware packages are
+  exercised under robot task probes and broader articulation records exist;
 - that simulation checks prove collision correctness outside named simulator assumptions.
 
 ## Support Request

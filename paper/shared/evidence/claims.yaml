@@ -44,16 +44,18 @@ claims:
       CPD-style first-mesh, CoACD convex-mesh, and V-HACD candidate packages with Newton contact,
       drop/settle, stack-or-slide, and sphere-rain probes. V-HACD generates packages for all five
       selected assets and records probe failures on bowl/cup/tray. The same report separately
-      includes one Franka USD articulation smoke asset.
+      includes one Franka link-aware package with zero cross-link merges and one Franka USD
+      articulation smoke asset.
     evidence_source: >-
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
+      docs/records/2026-05-26-link-aware-robot-package-generation.md;
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
     paper_scope: >-
-      scoped_diagnostic_not_broad_benchmark_superiority_not_all_vhacd_success_not_link_aware_robot_package
+      scoped_diagnostic_not_broad_benchmark_superiority_not_all_vhacd_success_not_whole_robot_quality
     next_required_step: >-
-      Triage or intentionally preserve the recorded V-HACD probe failures and add link-aware robot
-      package generation before claiming complete Phase 0 coverage.
+      Triage or intentionally preserve the recorded V-HACD probe failures, resolve meshless-link
+      policy, and add generated-package robot task checks before claiming complete Phase 0 coverage.
   - id: franka_articulation_smoke
     status: recorded_scoped
     section: experiments
@@ -62,7 +64,8 @@ claims:
       import, short gravity hold, and simple kinematic trajectory checks.
     evidence_source: >-
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
+      docs/records/2026-05-26-link-aware-robot-package-generation.md;
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
-    paper_scope: articulation_import_smoke_not_link_aware_package_not_whole_robot_validation
-    next_required_step: Record link-aware package generation and link-boundary probes before whole-robot wording.
+    paper_scope: articulation_import_smoke_not_whole_robot_validation
+    next_required_step: Exercise generated link-aware packages under robot task probes before whole-robot wording.

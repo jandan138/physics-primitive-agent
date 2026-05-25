@@ -62,20 +62,19 @@ Current repository state:
 - a scoped Phase 0 follow-up run records bounding-primitive, CPD-style, CoACD convex-mesh, and
   V-HACD candidate lanes across five materialized GRScenes assets with Newton contact,
   drop/settle, stack-or-slide, and sphere-rain probes; V-HACD generates packages for all five
-  assets and records probe failures on bowl/cup/tray; the same report records one Franka USD
-  articulation smoke.
+  assets and records probe failures on bowl/cup/tray; the same report records one Franka
+  link-aware package with zero cross-link merges and one Franka USD articulation smoke.
 
 The current evidence supports a project proposal, a narrow diagnostic mechanism story, and a
 scoped Phase 0 diagnostic table with CoACD and robot-smoke entries. It does not support broad
-benchmark-suite, full-simulation speedup, link-aware robot package generation, whole-robot
-collider quality, or safety claims.
+benchmark-suite, full-simulation speedup, whole-robot collider quality, or safety claims.
 
 ## 0-4 Week Milestone
 
 The first milestone should demonstrate that simulation checks catch errors that geometry-only
 primitive generation would miss:
 
-- add link-aware robot package generation and link-boundary package probes;
+- add meshless-link policy and generated-package robot task probes;
 - triage recorded V-HACD probe failures while keeping them visible as diagnostic failures;
 - generate primitive candidate packages and baseline colliders;
 - forbid primitive merging across robot link/joint boundaries;
@@ -114,8 +113,8 @@ Requested support:
 - No broad benchmark superiority or full-simulation speedup claim.
 - No complete replacement of convex decomposition.
 - No novelty claim for automatic primitive collider generation itself.
-- No whole-robot Franka performance claim before link-aware package generation, link-boundary
-  probes, and articulation records exist.
+- No whole-robot Franka performance claim before generated link-aware packages are exercised under
+  robot task probes and broader articulation records exist.
 - No LLM/VLM improvement claim before ablation evidence exists.
 
 Canonical wording lives in [message-map.md](message-map.md).

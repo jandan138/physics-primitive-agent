@@ -14,7 +14,8 @@ packages in ways that geometry-only generation would miss.
   is generated packages for all five selected assets with recorded probe failures on bowl/cup/tray.
 - Build Newton probes: body-state/drop-settle, contact stress, stack-or-slide, and at least one
   operation-style smoke when feasible.
-- For robot assets, implement link-aware package boundaries before making link-boundary claims.
+- For robot assets, the first Franka link-aware package exists; next add meshless-link policy and
+  generated-package robot task probes before whole-robot claims.
 - Produce the first accept/reject/fallback evidence report.
 
 ## Phase 1: Asset And Robot-Gate Expansion (4-8 Weeks)

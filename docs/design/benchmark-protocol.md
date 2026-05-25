@@ -19,8 +19,8 @@ materialized into ignored repo-local mirrors. It currently contains:
 - one precision negative control.
 
 The current articulated robot smoke asset is tracked separately in
-`assets/manifests/franka_usd_smoke_assets.yaml`. It supports import/short-trajectory smoke only;
-link-aware package generation remains a future gate.
+`assets/manifests/franka_usd_smoke_assets.yaml`. It now has a first link-aware package generation
+and boundary-audit record, while generated-package robot task checks remain a future gate.
 
 ## Robot Package Rules
 

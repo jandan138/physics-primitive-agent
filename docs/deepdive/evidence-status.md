@@ -21,7 +21,9 @@ canonical DeepDive wording.
   asset. It records bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes under
   Newton contact, drop/settle, stack-or-slide, and sphere-rain probes; records V-HACD runtime
   evidence for all five selected rigid assets, including V-HACD probe failures on bowl/cup/tray;
-  and records Franka joint-tree import, short gravity hold, and kinematic trajectory smoke.
+  records a Franka link-aware package with 11 link-framed primitives over 12 detected rigid-body
+  links, zero cross-link merges, and `/panda/panda_link8` as a meshless zero-primitive link; and
+  records Franka joint-tree import, short gravity hold, and kinematic trajectory smoke.
 - The repository has dated records for capped bed/Franka native probe paths and opt-in selected
   cylinder packages.
 - The capped bed/Franka cylinder mechanism question is complete for the recorded scope: the bed
@@ -34,17 +36,18 @@ canonical DeepDive wording.
 - A preliminary bed-aligned, collision-only contact-throughput microbenchmark has been recorded:
   native Newton boxes achieved 2.21x generated-contact throughput versus same-count convex64 mesh
   proxies in one pressure scene, with about 5.3% collision-only wall-time reduction.
-- Current Franka evidence includes capped-package task smokes and one USD articulation smoke. It is
-  not link-aware package generation, whole-robot collider quality, or manipulation evidence.
+- Current Franka evidence includes capped-package task smokes, one link-aware package generation
+  and boundary-audit record, and one USD articulation smoke. It is not whole-robot collider
+  quality or manipulation evidence.
 
 ## Current Unsupported Claims
 
 - No production collision compiler is complete.
 - No broad benchmark-suite result, full-simulation speedup result, or broad benchmark superiority
   claim exists.
-- No complete Phase 0 benchmark coverage exists: CoACD, V-HACD, and stack-or-slide are now present
-  in the scoped run, but selected V-HACD lanes still have recorded probe failures and link-aware
-  robot package generation remains open.
+- No complete Phase 0 benchmark coverage exists: CoACD, V-HACD, stack-or-slide, and a first
+  Franka link-aware package are now present in the scoped run, but selected V-HACD lanes still have
+  recorded probe failures and generated-package robot task checks remain open.
 - No calibrated default primitive selector policy exists.
 - No validated COM/inertia repair policy exists.
 - No broad cylinder stability result exists.
@@ -56,6 +59,7 @@ canonical DeepDive wording.
 ## Current Evidence To Highlight
 
 - [Cylinder goal completion audit after contact closure](../records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
+- [Link-aware robot package generation](../records/2026-05-26-link-aware-robot-package-generation.md)
 - [Phase 0 V-HACD runtime follow-up](../records/2026-05-26-phase0-vhacd-runtime-followup.md)
 - [Phase 0 GRScenes asset intake](../records/2026-05-25-phase0-grscenes-asset-intake.md)
 - [Phase 0 stack/CoACD/articulation follow-up](../records/2026-05-25-phase0-stack-coacd-articulation-followup.md)
@@ -71,10 +75,10 @@ canonical DeepDive wording.
 The next milestone should produce evidence for simulation-checked acceptance rather than more
 paper-lane gate accounting:
 
-- link-aware primitive package generation for an articulated robot asset;
+- meshless-link policy for `/panda/panda_link8` and generated-package robot task checks;
 - V-HACD probe-failure triage for the bowl, cup, and tray lanes, or an explicit decision to keep
   those failures as recorded diagnostic outcomes;
-- proof that primitive merges do not cross link/joint boundaries;
+- broader proof that primitive merges do not cross link/joint boundaries across more robot assets;
 - Newton articulation smoke: joint tree import, gravity hold, simple joint trajectory,
   self-collision sanity, and end-effector pose sanity;
 - contact-operation smoke for at least one manipulation-like task when runtime setup is

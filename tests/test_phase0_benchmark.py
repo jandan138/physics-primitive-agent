@@ -316,14 +316,21 @@ def test_phase0_report_records_articulated_robot_smoke_case(
     robot_case = report["articulation_cases"][0]
     assert robot_case["asset_role"] == "articulated_robot"
     assert robot_case["asset_gate"]["outcome"] == "accept"
+    assert robot_case["robot_package_result"]["status"] == "generated"
+    assert robot_case["robot_package_result"]["primitive_or_hull_count"] == 2
+    assert robot_case["robot_package_result"]["collision_package"]["primitives"][0][
+        "source_links"
+    ] == ["/Robot/link0"]
     assert robot_case["probe_results"]["articulation_smoke_if_robot"]["outcome"] == "accept"
-    assert robot_case["probe_results"]["link_boundary_audit"]["outcome"] == "fallback"
-    assert robot_case["probe_results"]["link_boundary_audit"]["claim_boundary"] == (
-        "phase0_link_boundary_audit_not_link_aware_robot_package_generation_or_whole_robot_validation"
-    )
-    assert robot_case["probe_results"]["link_boundary_audit"]["fallback_reason"] == (
-        "link-aware robot package generation is not implemented in this Phase 0 runner"
-    )
+    link_audit = robot_case["probe_results"]["link_boundary_audit"]
+    assert link_audit["outcome"] == "accept"
+    assert link_audit["metrics"]["link_aware_package_generated"] is True
+    assert link_audit["metrics"]["cross_link_merge_count"] == 0
+    assert link_audit["metrics"]["per_link_primitive_count"] == {
+        "/Robot/link0": 1,
+        "/Robot/link1": 1,
+    }
+    assert report["report_scope"]["link_aware_robot_package_generation"] is True
 
 
 def test_phase0_report_is_strict_json_serializable_without_newton_source(tmp_path):
@@ -429,17 +436,7 @@ def _write_phase0_manifest(tmp_path: Path) -> Path:
 
 def _write_articulated_robot_manifest(tmp_path: Path) -> Path:
     robot_path = tmp_path / "robot.usda"
-    _write_mesh_usd(
-        robot_path,
-        points=[
-            (0, 0, 0),
-            (0.1, 0, 0),
-            (0, 0.1, 0),
-            (0, 0, 0.1),
-        ],
-        face_vertex_counts=[3, 3, 3, 3],
-        face_vertex_indices=[0, 1, 2, 0, 3, 1, 1, 3, 2, 2, 3, 0],
-    )
+    _write_two_link_robot_usd(robot_path)
     manifest_path = tmp_path / "phase0_robot_assets.yaml"
     manifest_path.write_text(
         yaml.safe_dump(
@@ -462,6 +459,33 @@ def _write_articulated_robot_manifest(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     return manifest_path
+
+
+def _write_two_link_robot_usd(path: Path) -> None:
+    Usd = pytest.importorskip("pxr.Usd")
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    UsdPhysics = pytest.importorskip("pxr.UsdPhysics")
+    stage = Usd.Stage.CreateNew(str(path))
+    root = UsdGeom.Xform.Define(stage, "/Robot")
+    link0 = UsdGeom.Xform.Define(stage, "/Robot/link0")
+    link1 = UsdGeom.Xform.Define(stage, "/Robot/link1")
+    UsdPhysics.RigidBodyAPI.Apply(link0.GetPrim())
+    UsdPhysics.RigidBodyAPI.Apply(link1.GetPrim())
+    _define_link_mesh(stage, "/Robot/link0/mesh", points=[(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)])
+    _define_link_mesh(stage, "/Robot/link1/mesh", points=[(2, 0, 0), (3, 0, 0), (2, 1, 0), (2, 0, 1)])
+    joint = UsdPhysics.RevoluteJoint.Define(stage, "/Robot/link0/joint01")
+    joint.CreateBody0Rel().SetTargets([link0.GetPath()])
+    joint.CreateBody1Rel().SetTargets([link1.GetPath()])
+    stage.SetDefaultPrim(root.GetPrim())
+    stage.GetRootLayer().Save()
+
+
+def _define_link_mesh(stage, path: str, *, points) -> None:
+    UsdGeom = pytest.importorskip("pxr.UsdGeom")
+    mesh = UsdGeom.Mesh.Define(stage, path)
+    mesh.CreatePointsAttr(points)
+    mesh.CreateFaceVertexCountsAttr([3, 3, 3, 3])
+    mesh.CreateFaceVertexIndicesAttr([0, 1, 2, 0, 3, 1, 1, 3, 2, 2, 3, 0])
 
 
 def _write_phase0_config(

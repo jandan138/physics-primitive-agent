@@ -50,6 +50,11 @@ from primitive_collision_compiler.newton.stack_slide import (
     StackSlideOptions,
     run_newton_stack_slide,
 )
+from primitive_collision_compiler.robots.link_aware_package import (
+    LINK_AWARE_PACKAGE_CLAIM_BOUNDARY,
+    LINK_AWARE_PACKAGE_EVIDENCE_LEVEL,
+    build_link_aware_robot_package,
+)
 
 PHASE0_STAGE = "phase0_asset_diagnostic_benchmark"
 PHASE0_CLAIM_BOUNDARY = (
@@ -133,7 +138,9 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
             "report_scope": {
                 "rigid_asset_diagnostic_cases": len(cases),
                 "articulation_smoke_cases": len(articulation_cases),
-                "link_aware_robot_package_generation": False,
+                "link_aware_robot_package_generation": _has_link_aware_robot_package(
+                    articulation_cases
+                ),
                 "whole_robot_collision_quality": False,
             },
             "run_semantics": "record_generation_not_validation_gate",
@@ -308,6 +315,17 @@ def _articulation_case_report(
     smoke_report = inspect_usd_asset(raw_asset).to_dict()
     asset_gate = _asset_gate(smoke_report)
     if asset_gate["outcome"] == "accept":
+        robot_package_result = _build_robot_package_result(
+            resolved.path,
+            asset_id=asset_id,
+            source_sha256=str(
+                raw_asset.get("source_sha256")
+                or raw_asset.get("sha256")
+                or raw_asset.get("local_sha256")
+                or ""
+            ),
+        )
+        link_boundary_audit = dict(robot_package_result["link_boundary_audit"])
         articulation = _run_articulation_smoke_probe(
             resolved.path,
             source_dir=source_dir,
@@ -315,6 +333,8 @@ def _articulation_case_report(
             options=options,
         )
     else:
+        robot_package_result = _robot_package_blocked_by_asset(asset_gate)
+        link_boundary_audit = _robot_link_boundary_audit(role)
         articulation = _blocked_probe(
             "articulation_smoke_if_robot",
             status="blocked_by_asset_smoke",
@@ -336,14 +356,16 @@ def _articulation_case_report(
         },
         "asset_smoke": smoke_report,
         "asset_gate": asset_gate,
+        "robot_package_result": robot_package_result,
         "probe_results": {
-            "link_boundary_audit": _robot_link_boundary_audit(role),
+            "link_boundary_audit": link_boundary_audit,
             "articulation_smoke_if_robot": articulation,
         },
         "outcome_counts": _articulation_case_outcome_counts(
             asset_gate=asset_gate,
+            robot_package_result=robot_package_result,
             probe_results={
-                "link_boundary_audit": _robot_link_boundary_audit(role),
+                "link_boundary_audit": link_boundary_audit,
                 "articulation_smoke_if_robot": articulation,
             },
         ),
@@ -728,6 +750,84 @@ def _link_boundary_audit(package: CollisionPackage | None, role: str) -> dict[st
         "claim_boundary": PHASE0_CLAIM_BOUNDARY,
         "evidence_level": PHASE0_EVIDENCE_LEVEL,
         "fallback_reason": "rigid_asset_no_articulation_links",
+    }
+
+
+def _build_robot_package_result(
+    asset_path: str,
+    *,
+    asset_id: str,
+    source_sha256: str,
+) -> dict[str, object]:
+    try:
+        return build_link_aware_robot_package(
+            asset_path=asset_path,
+            asset_id=asset_id,
+            source_sha256=source_sha256,
+        ).to_dict()
+    except Exception as exc:
+        return {
+            "stage": "phase0_link_aware_robot_package_generation",
+            "status": _dependency_or_failure_status(str(exc)),
+            "outcome": _outcome_for_status(_dependency_or_failure_status(str(exc))),
+            "primitive_or_hull_count": 0,
+            "collision_package": None,
+            "links": [],
+            "joint_edges": [],
+            "link_boundary_audit": {
+                "stage": "phase0_link_boundary_audit",
+                "status": _dependency_or_failure_status(str(exc)),
+                "probe_type": "link_boundary_audit",
+                "outcome": _outcome_for_status(_dependency_or_failure_status(str(exc))),
+                "metrics": {
+                    "link_aware_package_generated": False,
+                    "link_count": 0,
+                    "primitive_count": 0,
+                    "cross_link_merge_count": None,
+                    "per_link_primitive_count": {},
+                },
+                "failure_labels": ["link_aware_package_generation_failed"],
+                "claim_boundary": PHASE0_LINK_BOUNDARY_CLAIM_BOUNDARY,
+                "evidence_level": PHASE0_LINK_BOUNDARY_EVIDENCE_LEVEL,
+                "fallback_reason": f"{type(exc).__name__}: {exc}",
+            },
+            "claim_boundary": LINK_AWARE_PACKAGE_CLAIM_BOUNDARY,
+            "evidence_level": LINK_AWARE_PACKAGE_EVIDENCE_LEVEL,
+            "fallback_reason": f"{type(exc).__name__}: {exc}",
+        }
+
+
+def _robot_package_blocked_by_asset(asset_gate: Mapping[str, object]) -> dict[str, object]:
+    outcome = str(asset_gate.get("outcome", "failure"))
+    reason = str(asset_gate.get("fallback_reason") or asset_gate.get("status"))
+    return {
+        "stage": "phase0_link_aware_robot_package_generation",
+        "status": "blocked_by_asset_smoke",
+        "outcome": outcome,
+        "primitive_or_hull_count": 0,
+        "collision_package": None,
+        "links": [],
+        "joint_edges": [],
+        "link_boundary_audit": {
+            "stage": "phase0_link_boundary_audit",
+            "status": "blocked_by_asset_smoke",
+            "probe_type": "link_boundary_audit",
+            "outcome": outcome,
+            "metrics": {
+                "link_aware_package_generated": False,
+                "link_count": 0,
+                "primitive_count": 0,
+                "cross_link_merge_count": None,
+                "per_link_primitive_count": {},
+            },
+            "failure_labels": ["asset_smoke_blocked_link_package_generation"],
+            "claim_boundary": PHASE0_LINK_BOUNDARY_CLAIM_BOUNDARY,
+            "evidence_level": PHASE0_LINK_BOUNDARY_EVIDENCE_LEVEL,
+            "fallback_reason": reason,
+        },
+        "claim_boundary": LINK_AWARE_PACKAGE_CLAIM_BOUNDARY,
+        "evidence_level": LINK_AWARE_PACKAGE_EVIDENCE_LEVEL,
+        "fallback_reason": reason,
     }
 
 
@@ -1300,6 +1400,9 @@ def _articulation_case_outcomes(case: Mapping[str, object]) -> list[str]:
     asset_gate = case.get("asset_gate", {})
     if isinstance(asset_gate, Mapping):
         outcomes.append(str(asset_gate.get("outcome", "failure")))
+    robot_package_result = case.get("robot_package_result", {})
+    if isinstance(robot_package_result, Mapping):
+        outcomes.append(str(robot_package_result.get("outcome", "failure")))
     probe_results = case.get("probe_results", {})
     if isinstance(probe_results, Mapping):
         outcomes.extend(
@@ -1337,16 +1440,37 @@ def _case_outcome_counts(
 def _articulation_case_outcome_counts(
     *,
     asset_gate: Mapping[str, object],
+    robot_package_result: Mapping[str, object],
     probe_results: Mapping[str, Mapping[str, object]],
 ) -> dict[str, int]:
     counter: Counter[str] = Counter({key: 0 for key in OUTCOME_KEYS})
     counter.update([str(asset_gate.get("outcome", "failure"))])
+    counter.update([str(robot_package_result.get("outcome", "failure"))])
     counter.update(
         str(result.get("outcome", "failure"))
         for result in probe_results.values()
         if isinstance(result, Mapping)
     )
     return {key: int(counter.get(key, 0)) for key in OUTCOME_KEYS}
+
+
+def _has_link_aware_robot_package(cases: list[dict[str, object]]) -> bool:
+    for case in cases:
+        robot_package_result = case.get("robot_package_result", {})
+        probe_results = case.get("probe_results", {})
+        link_audit = (
+            probe_results.get("link_boundary_audit", {})
+            if isinstance(probe_results, Mapping)
+            else {}
+        )
+        if (
+            isinstance(robot_package_result, Mapping)
+            and isinstance(link_audit, Mapping)
+            and robot_package_result.get("status") == "generated"
+            and link_audit.get("status") == "smoke_passed"
+        ):
+            return True
+    return False
 
 
 def _aggregate_outcome_status(outcomes: Counter[str]) -> str:

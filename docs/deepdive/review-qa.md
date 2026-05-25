@@ -69,13 +69,14 @@ that must move relative to each other.
 **Question: Does current Franka evidence prove whole-robot behavior?**
 
 No. Current Franka evidence is capped-package and task-smoke evidence. It does not prove full
-articulated Franka joint performance. A separate articulation smoke goal is required.
+articulated Franka joint performance. The first link-aware package record is generation and
+boundary accounting only; generated-package robot task probes are still required.
 
 **Question: What would make the robot claim credible?**
 
-A dated record should show link-aware package generation, no cross-link merges, preserved joint
-tree, gravity hold, scripted joint trajectory, self-collision sanity, end-effector pose sanity, and
-task/contact behavior under named Newton settings.
+A dated record should show generated link-aware packages exercised under named Newton robot task
+settings: no cross-link merges, preserved joint tree, gravity hold, scripted joint trajectory,
+self-collision sanity, end-effector pose sanity, and task/contact behavior.
 
 ## Value Delivering
 
@@ -118,5 +119,5 @@ LLM/VLM adds no measurable value after deterministic baselines.
 
 No safety guarantee, real-world transfer, deployment readiness, broad benchmark superiority,
 full-simulation speedup, full CPD reproduction, complete replacement of convex decomposition, or
-whole-robot robot-operation claim before link-aware package generation, link-boundary probes, and
-articulation records exist.
+whole-robot robot-operation claim before generated link-aware packages are exercised under robot
+task probes and broader articulation records exist.
