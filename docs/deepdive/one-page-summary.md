@@ -38,6 +38,8 @@ primitive decomposition is an important related candidate generator and baseline
 - A recorded bed/Franka cylinder mechanism shows why engine-level body-state diagnostics matter.
 - An opt-in package body-state guard task path has real Newton task-smoke evidence for the capped
   bed/Franka slice.
+- A Phase 0 GRScenes rigid-asset intake exists as a repo-local materialized manifest, but the
+  Phase 0 benchmark has not been run.
 - A preliminary bed-aligned collision-only pressure test records 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies.
 - No broad benchmark-suite, complete collision-quality validation, or whole-robot

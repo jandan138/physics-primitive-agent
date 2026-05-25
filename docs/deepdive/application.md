@@ -68,7 +68,7 @@ not support broad benchmark-suite, full-simulation speedup, whole-robot, or safe
 The first milestone should demonstrate that simulation checks catch errors that geometry-only
 primitive generation would miss:
 
-- select 5-10 provenance-clear rigid assets;
+- run the materialized Phase 0 GRScenes rigid-asset manifest;
 - include one reproducible articulated robot smoke asset if available;
 - generate primitive candidate packages and baseline colliders;
 - forbid primitive merging across robot link/joint boundaries;

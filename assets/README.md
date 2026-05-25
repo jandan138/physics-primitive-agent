@@ -33,3 +33,16 @@ path. This keeps local DLC/checker runs stable without committing raw USD, MDL, 
 The current materializer records unresolved dependencies instead of hiding them. For example,
 Franka mirrors currently record unresolved `OmniPBR.mdl`; this is acceptable for current geometry
 smokes because the local USD still opens, but it is not a complete visual/material package.
+
+## Current Manifests
+
+- `assets/manifests/cpd_like_smoke_assets.yaml`: current capped bed and Franka smoke assets.
+- `assets/manifests/phase0_assets.yaml`: five Phase 0 GRScenes rigid assets selected from the
+  user-provided dataset path and materialized under
+  `assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/`.
+
+The Phase 0 manifest keeps original GRScenes paths only as `source_path`. Runtime `path` and
+`local_path` point at the repo-local ignored mirror. Its tracked materialization metadata includes
+the local root USD hash, concrete localized MDL/texture filenames, extension counts, dependency
+counts, and unresolved dependency counts. The generated raw mirror and JSON materialization report
+remain ignored by git.

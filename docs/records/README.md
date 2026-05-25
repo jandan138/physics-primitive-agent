@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-05-25 Phase 0 GRScenes Asset Intake](2026-05-25-phase0-grscenes-asset-intake.md):
+  five selected GRScenes rigid assets materialized into ignored repo-local mirrors with tracked
+  source/local hashes and USD/MDL/texture dependency metadata; this is asset intake evidence, not
+  Phase 0 benchmark evidence.
 - [2026-05-22 DeepDive Direction Shift To Simulation-Checked Robotics](2026-05-22-deepdive-direction-shift-to-simulation-checked-robotics.md):
   current-facing documentation alignment that shifts the DeepDive story from CPD-like
   reproduction toward simulation-checked primitive collider acceptance, with robot articulation

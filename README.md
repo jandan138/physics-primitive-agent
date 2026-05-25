@@ -64,6 +64,8 @@ Supported today:
 - DeepDive framing, config examples, package skeleton, dry-run/reporting surfaces, USD asset intake
   diagnostics, environment-readiness diagnostics, CPD-like geometry smoke paths, and several named
   Newton diagnostic smokes.
+- A Phase 0 GRScenes rigid-asset intake manifest with five repo-local materialized USD dependency
+  closures. This is asset readiness for the benchmark, not a benchmark result.
 - A dated capped bed/Franka mechanism audit explaining why the recorded bed cylinder package fails
   while recorded Franka cylinder packages pass.
 - An explicitly opt-in package body-state guard task path that falls back only the flagged bed
@@ -87,7 +89,7 @@ Not supported today:
 The next DeepDive-facing proof point should shift from "primitive-first only" to
 "simulation-checked and robot-operation-aware":
 
-- test a small provenance-clear asset set;
+- run the materialized Phase 0 GRScenes rigid-asset set in `assets/manifests/phase0_assets.yaml`;
 - include at least one articulated robot smoke asset such as Franka when licensing and runtime setup
   are reproducible;
 - keep primitive merging link-aware and forbid cross-joint merges;

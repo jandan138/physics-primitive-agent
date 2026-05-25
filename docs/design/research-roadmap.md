@@ -7,7 +7,7 @@ packages in ways that geometry-only generation would miss.
 
 - Finalize DeepDive claim boundaries and support request.
 - Maintain clean Newton environment provenance for every runtime claim.
-- Prepare 5-10 provenance-clear assets.
+- Use the materialized Phase 0 GRScenes rigid-asset manifest as the first asset set.
 - Include one articulated robot smoke asset if licensing and runtime setup are reproducible.
 - Generate primitive candidates from deterministic heuristics, native lanes, or CPD-style outputs.
 - Compare against simple baselines: bounding primitive, single convex hull, and CoACD/V-HACD or

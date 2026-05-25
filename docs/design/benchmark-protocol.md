@@ -9,14 +9,17 @@ Newton, but it does not certify real-world safety.
 
 ## Phase 0 Asset Subset
 
-Use 5-10 provenance-clear assets for the first diagnostic proof point:
+The current Phase 0 rigid-asset subset is tracked in `assets/manifests/phase0_assets.yaml` and
+materialized into ignored repo-local mirrors. It currently contains:
 
-- 2-3 simple rigid props;
-- 1-2 stackable objects;
-- 1-2 graspable objects with handles or contact affordances;
-- 1 container or bowl if available;
-- 1 precision or thin-wall negative control if available;
-- 1 articulated robot smoke asset if licensing and runtime setup are reproducible.
+- one simple rigid prop;
+- one stackable object;
+- one contact-affordance object;
+- one container/bowl;
+- one precision negative control.
+
+The articulated robot smoke asset remains separate and should be added only if licensing and
+runtime setup are reproducible.
 
 ## Robot Package Rules
 

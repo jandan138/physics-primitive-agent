@@ -67,7 +67,7 @@ geometry-only primitive generation would miss.
 
 Minimum proof point:
 
-- 5-10 provenance-clear rigid assets;
+- the materialized Phase 0 GRScenes rigid-asset manifest;
 - at least one articulated robot smoke asset if licensing and runtime setup are reproducible;
 - primitive candidates from deterministic heuristics, existing native lanes, or CPD-style outputs;
 - Newton body-state, drop/settle, and contact-stress diagnostics;

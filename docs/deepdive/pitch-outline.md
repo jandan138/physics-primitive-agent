@@ -60,7 +60,7 @@ Time: 4-5 minutes.
 
 0-4 weeks:
 
-- run a small provenance-clear asset set;
+- run the materialized Phase 0 GRScenes rigid-asset set;
 - include one articulated robot smoke asset if reproducible;
 - forbid cross-link primitive merges;
 - run body-state, contact, and articulation gates;
