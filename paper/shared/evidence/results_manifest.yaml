@@ -41,7 +41,8 @@ results:
       Scoped five-asset GRScenes rigid diagnostic run plus one Franka USD articulation smoke over
       repo-local mirrors. Bounding primitive, CPD-style first-mesh, and CoACD convex-mesh
       candidates are recorded with Newton contact, drop/settle, stack-or-slide, and sphere-rain
-      outcomes. V-HACD runtime evidence is recorded for all five assets with probe failures, and
+      outcomes. V-HACD runtime evidence is recorded for all five assets with probe failures on
+      bowl/cup/tray treated as simulation-check rejections rather than dependency gaps, and
       Franka link-aware package generation records all detected links covered, zero cross-link
       merges, and one meshless placeholder link. The same report records one generated-package
       Franka task smoke where all generated package primitives are attached to Newton bodies and

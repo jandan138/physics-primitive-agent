@@ -22,6 +22,7 @@ This is scoped collision-pipeline evidence, not a full-simulation speedup claim.
 Table~\ref{tab:phase0-grscenes-rigid} summarizes the current scoped Phase~0 rigid run over five materialized GRScenes assets.
 The run records first-mesh bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain probes.
 It also records V-HACD runtime evidence for all five assets, with V-HACD probe failures on bowl, cup, and tray.
+We treat these V-HACD failures as recorded diagnostic outcomes: the packages are generated and mapped, but the Newton task probes reject them, supporting simulation-checked acceptance rather than geometry-only candidate generation.
 It also includes one Franka link-aware package generation record, one Franka USD articulation smoke, and one generated-package Franka task smoke.
 It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless placeholder link, and robot generated-package checks currently cover only one Franka smoke asset.
 

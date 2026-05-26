@@ -41,7 +41,8 @@ primitive decomposition is an important related candidate generator and baseline
 - A scoped Phase 0 follow-up run exists over the repo-local materialized GRScenes assets and one
   Franka USD smoke asset, with accept/fallback/failure outcomes and zero dependency gaps for
   bounding, CPD-style, CoACD convex-mesh, V-HACD, stack-or-slide, and articulation-smoke lanes.
-  V-HACD generates packages for all five selected rigid assets and records probe failures on bowl/cup/tray.
+  V-HACD generates packages for all five selected rigid assets and records probe failures on
+  bowl/cup/tray as simulation-check rejections, not hidden dependency gaps.
   Franka link-aware package generation records 12 link-framed primitives over 12 detected links
   with zero cross-link merges and `/panda/panda_link8` as a meshless placeholder.
 - A preliminary bed-aligned collision-only pressure test records 2.21x generated-contact throughput

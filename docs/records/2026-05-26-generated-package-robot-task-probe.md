@@ -97,6 +97,7 @@ The generated-package probe status is `smoke_passed`, outcome `accept`, and
 
 ## Next Action
 
-Keep V-HACD probe-failure triage as a secondary baseline-stability task. The next robot-facing
-step should broaden link-aware/generated-package checks to more robot assets or add a contact
-operation smoke before any stronger robot-operation wording.
+Keep the recorded V-HACD probe failures visible as baseline diagnostic outcomes unless a bounded
+baseline-sensitivity rerun is needed. The next robot-facing step should broaden
+link-aware/generated-package checks to more robot assets or add a contact operation smoke before
+any stronger robot-operation wording.

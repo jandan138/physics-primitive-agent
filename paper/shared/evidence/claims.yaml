@@ -43,10 +43,11 @@ claims:
       dependency-gap count for five materialized GRScenes rigid assets under bounding-primitive,
       CPD-style first-mesh, CoACD convex-mesh, and V-HACD candidate packages with Newton contact,
       drop/settle, stack-or-slide, and sphere-rain probes. V-HACD generates packages for all five
-      selected assets and records probe failures on bowl/cup/tray. The same report separately
-      includes one Franka link-aware package with all detected links covered, zero cross-link
-      merges, one meshless placeholder link, one Franka USD articulation smoke asset, and one
-      generated-package Franka task smoke that consumes all generated package primitives.
+      selected assets and records probe failures on bowl/cup/tray as simulation-check rejections
+      rather than dependency gaps. The same report separately includes one Franka link-aware
+      package with all detected links covered, zero cross-link merges, one meshless placeholder
+      link, one Franka USD articulation smoke asset, and one generated-package Franka task smoke
+      that consumes all generated package primitives.
     evidence_source: >-
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
@@ -56,8 +57,9 @@ claims:
     paper_scope: >-
       scoped_diagnostic_not_broad_benchmark_superiority_not_all_vhacd_success_not_whole_robot_quality
     next_required_step: >-
-      Triage or intentionally preserve the recorded V-HACD probe failures and broaden
-      generated-package robot task checks before claiming complete Phase 0 coverage.
+      Preserve the recorded V-HACD probe failures as diagnostic outcomes unless a bounded
+      baseline-sensitivity rerun is needed; broaden generated-package robot task checks before
+      claiming complete Phase 0 coverage.
   - id: franka_articulation_smoke
     status: recorded_scoped
     section: experiments

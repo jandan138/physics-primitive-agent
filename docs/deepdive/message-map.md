@@ -64,11 +64,13 @@ The scoped Phase 0 follow-up run adds stack-or-slide execution, CoACD executable
 packages, V-HACD runtime evidence, one Franka USD articulation smoke, and one generated-package
 Franka task smoke to the five-asset GRScenes
 diagnostic table. V-HACD now generates packages for all five selected rigid assets, with recorded
-probe failures on bowl/cup/tray. The same report now records a Franka link-aware package with all
-detected links covered, zero cross-link merges, a meshless `/panda/panda_link8` placeholder, and
-12 generated package primitives consumed by Newton in the generated-package task smoke. It is still
-not complete Phase 0 coverage because broader robot task coverage and broader pass criteria remain
-open.
+probe failures on bowl/cup/tray. Those failures are not hidden baseline breakage: the packages
+exist, map into Newton, and are rejected by named task probes. That is useful evidence for the
+checker story, not evidence for broad V-HACD inferiority. The same report now records a Franka
+link-aware package with all detected links covered, zero cross-link merges, a meshless
+`/panda/panda_link8` placeholder, and 12 generated package primitives consumed by Newton in the
+generated-package task smoke. It is still not complete Phase 0 coverage because broader robot task
+coverage and broader pass criteria remain open.
 
 ## DeepDive Proof Point
 

@@ -26,6 +26,9 @@ canonical DeepDive wording.
   records Franka joint-tree import, short gravity hold, and kinematic trajectory smoke; and
   records a generated-package robot task smoke where all 12 generated package primitives are
   attached to Newton bodies and consumed with source USD shapes suppressed.
+- The V-HACD bowl/cup/tray failures are evidence-bearing diagnostic outcomes, not dependency
+  gaps: the packages generate and map into Newton, but named Newton task probes reject them. This
+  supports the simulation-checked acceptance story without claiming broad superiority over V-HACD.
 - The repository has dated records for capped bed/Franka native probe paths and opt-in selected
   cylinder packages.
 - The capped bed/Franka cylinder mechanism question is complete for the recorded scope: the bed
@@ -80,8 +83,8 @@ canonical DeepDive wording.
 The next milestone should produce evidence for simulation-checked acceptance rather than more
 paper-lane gate accounting:
 
-- V-HACD probe-failure triage for the bowl, cup, and tray lanes, or an explicit decision to keep
-  those failures as recorded diagnostic outcomes;
+- preserve the bowl/cup/tray V-HACD probe failures as explicit diagnostic outcomes unless a
+  reviewer-facing baseline-sensitivity question requires a bounded rerun;
 - broader proof that primitive merges do not cross link/joint boundaries across more robot assets;
 - broader generated-package robot task checks beyond the single Franka smoke asset;
 - Newton articulation smoke on additional robot assets: joint tree import, gravity hold, simple

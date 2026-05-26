@@ -48,7 +48,9 @@ V-HACD summary:
 
 Generated V-HACD packages are not all accepted by the Newton probes: the bowl/container V-HACD
 package records drop/settle and stack-or-slide failures, while the cup/contact-affordance and
-tray/stackable V-HACD packages record drop/settle failures.
+tray/stackable V-HACD packages record drop/settle failures. These are evidence-bearing diagnostic
+outcomes rather than missing-backend failures: the packages are generated, mapped, and then
+rejected by named Newton task probes.
 
 Franka articulation smoke still passes. The same report now also records link-aware robot package
 generation and a generated-package robot task smoke for the Franka smoke asset; see
@@ -80,12 +82,17 @@ generation and a generated-package robot task smoke for the Franka smoke asset; 
 - Supports the claim that Phase 0 now has V-HACD runtime evidence in the clean Newton environment.
 - Supports the claim that V-HACD failures are recorded as diagnostic outcomes instead of being
   hidden or treated as missing dependencies.
+- Supports the paper story that geometry-only candidate generation is insufficient without
+  simulation-checked acceptance gates.
 - Does not support complete V-HACD probe success across the selected assets because bowl, cup, and
   tray record V-HACD probe failures.
+- Does not support a claim that primitive packages broadly outperform V-HACD.
 - Does not support whole-robot Franka collider quality, broad benchmark superiority, deployment
   readiness, real-world transfer, or safety certification.
 
 ## Next Action
 
-Keep V-HACD probe-failure triage as a secondary baseline-stability task. Use the separate
+Keep the recorded V-HACD probe failures visible as baseline diagnostic outcomes. Do not treat
+passing all V-HACD lanes as a prerequisite for the current paper story. Only run bounded V-HACD
+sensitivity follow-ups if reviewer-facing baseline context requires it; use the separate
 link-aware robot package record for robot package-generation follow-up.
