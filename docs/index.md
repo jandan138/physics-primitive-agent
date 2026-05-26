@@ -44,6 +44,7 @@ contribution is the downstream compiler/checker loop:
 
 ## Key Evidence Records
 
+- [ACCV paper visual expansion plan](records/2026-05-26-accv-paper-visual-expansion-plan.md)
 - [Phase 0 paper evidence closure](records/2026-05-26-phase0-paper-evidence-closure.md)
 - [Phase 0 GRScenes asset intake](records/2026-05-25-phase0-grscenes-asset-intake.md)
 - [Generated-package robot task probe](records/2026-05-26-generated-package-robot-task-probe.md)

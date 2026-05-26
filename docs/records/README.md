@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-05-26 ACCV Paper Visual Expansion Plan](2026-05-26-accv-paper-visual-expansion-plan.md):
+  planned 13--14 page ACCV expansion using deterministic Phase 0 asset/package overlays,
+  collision-probe scene renders, outcome matrices, mechanism figures, and Franka link-aware task
+  visuals while preserving claim and artifact boundaries.
 - [2026-05-26 ACCV Submission Readiness Pass](2026-05-26-accv-submission-readiness-pass.md):
   ACCV policy check, related-work/citation update, method/experiment narrative alignment, and
   final preflight record for the scoped Phase 0 submission candidate.
