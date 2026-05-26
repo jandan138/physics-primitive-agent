@@ -31,7 +31,7 @@ Generated report:
 
 Overall recorded outcomes:
 
-- accept: 98
+- accept: 99
 - dependency gap: 0
 - failure: 11
 - fallback: 30
@@ -42,6 +42,7 @@ Report scope:
 - rigid assets: 5 from `assets/manifests/phase0_assets.yaml`
 - articulated assets: 1 from `assets/manifests/franka_usd_smoke_assets.yaml`
 - `link_aware_robot_package_generation`: true
+- `generated_package_robot_task_checks`: true
 - `whole_robot_collision_quality`: false
 
 Franka link-aware package summary:
@@ -56,6 +57,7 @@ Franka link-aware package summary:
 | links without primitives | 0 |
 | link-boundary audit status | `smoke_passed` |
 | articulation smoke status | `smoke_passed` |
+| generated-package task status | `smoke_passed` |
 
 Per-link primitive counts:
 
@@ -71,11 +73,12 @@ Per-link primitive counts:
 - Direct Franka package generation smoke:
   generated 12 primitives over 12 links with `cross_link_merge_count: 0`,
   `links_without_primitive_count: 0`, and `meshless_link_placeholder_count: 1`.
-- `time -p timeout 1200 env NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/phase0_baseline.yaml --run-phase0-benchmark > reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json`:
-  exit 0, `real 928.84`, report status `completed_with_recorded_failures`.
+- Follow-up generated-package robot task run:
+  `time -p timeout 1200 env NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/phase0_baseline.yaml --run-phase0-benchmark`:
+  exit 0, `real 987.38`, report status `completed_with_recorded_failures`.
 - Parsed the generated JSON successfully. The report records link-aware robot package generation as
-  true, Franka package status `generated`, link-boundary audit `smoke_passed`, and articulation
-  smoke `smoke_passed`.
+  true, Franka package status `generated`, link-boundary audit `smoke_passed`, articulation smoke
+  `smoke_passed`, and generated-package task smoke `smoke_passed`.
 
 ## Artifacts
 
@@ -99,5 +102,5 @@ Per-link primitive counts:
 
 ## Next Action
 
-Keep the next robot objective focused on running articulation/task checks with generated
-link-aware packages, while preserving the whole-robot claim boundary.
+Use `docs/records/2026-05-26-generated-package-robot-task-probe.md` for the generated-package
+task-smoke follow-up. Broaden robot evidence only under the same claim boundary.

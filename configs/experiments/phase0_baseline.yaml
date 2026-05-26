@@ -10,6 +10,7 @@ task:
     - sphere_rain
     - link_boundary_audit
     - articulation_smoke_if_robot
+    - generated_package_robot_task_if_robot
     - precision_rejection
 compile:
   method: simulation_checked_primitive_candidates
@@ -26,6 +27,7 @@ compile:
     - sphere_rain
     - link_boundary_audit
     - articulation_smoke_if_robot
+    - generated_package_robot_task_if_robot
     - precision_rejection
   keep_visual: true
 phase0_defaults:
@@ -168,6 +170,30 @@ phase0_defaults:
         - self_collision_sanity
         - end_effector_pose_error
       pass_condition: complete_and_label_articulation_failures
+    generated_package_robot_task_if_robot:
+      initial_conditions:
+        asset_role: articulated_robot_if_present
+        collision_source: generated_link_aware_package
+        source_usd_collision_shapes: ignored_when_separate_from_rigid_body
+        joint_command: simple_scripted_trajectory
+        mesh_approximation: ""
+        collapse_fixed_joints: false
+        enable_self_collisions: false
+      solver:
+        engine: newton
+        settings: generated_package_recorded
+        duration_seconds: 0.25
+        seeds: 1
+        substeps: 2
+        iterations: 2
+      metrics:
+        - generated_package_consumed
+        - generated_collision_shape_count
+        - missing_body_link_count
+        - source_usd_shape_count
+        - gravity_hold_drift
+        - trajectory_completion
+      pass_condition: generated_package_consumed_and_robot_task_smoke_passed
     precision_rejection:
       initial_conditions:
         asset_role: precision_negative_control
@@ -191,6 +217,7 @@ phase0_defaults:
     - penetration_or_jitter
     - link_boundary_status
     - articulation_drift
+    - generated_package_consumption_status
 report:
   output_dir: reports/generated/phase0_baseline
   record_template: docs/records/README.md

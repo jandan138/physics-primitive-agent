@@ -9,7 +9,8 @@ Candidate quality is measured by primitive count, geometric residual, and editab
 \paragraph{Acceptance layer.}
 Body-state and drop/settle gates label residual speed and compound COM/inertia risk.
 Contact probes observe false clearance, blocked openings, and excessive contact counts.
-For robots, a link-boundary audit forbids cross-link merges; articulation smoke checks joint import, gravity hold, simple trajectories, self-collision sanity, and end-effector pose error before any whole-robot claim.
+For robots, a link-boundary audit forbids cross-link merges; articulation smoke gates joint import, gravity hold, and simple trajectories before any broader robot claim.
+The current generated-package robot task smoke verifies package consumption in that bounded task path; it disables generated self-collision pairs for the smoke and does not establish whole-robot collision quality, manipulation performance, or end-effector accuracy.
 
 \paragraph{Fallback policy.}
 Failed packages route to CoACD, V-HACD, SDF, convex mesh, or manual review depending on configuration.

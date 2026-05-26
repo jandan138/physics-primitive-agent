@@ -45,6 +45,7 @@ contribution is the downstream compiler/checker loop:
 ## Key Evidence Records
 
 - [Phase 0 GRScenes asset intake](records/2026-05-25-phase0-grscenes-asset-intake.md)
+- [Generated-package robot task probe](records/2026-05-26-generated-package-robot-task-probe.md)
 - [Phase 0 V-HACD runtime follow-up](records/2026-05-26-phase0-vhacd-runtime-followup.md)
 - [Link-aware robot package generation](records/2026-05-26-link-aware-robot-package-generation.md)
 - [Phase 0 stack/CoACD/articulation follow-up](records/2026-05-25-phase0-stack-coacd-articulation-followup.md)

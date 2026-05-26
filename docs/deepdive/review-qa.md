@@ -69,8 +69,9 @@ that must move relative to each other.
 **Question: Does current Franka evidence prove whole-robot behavior?**
 
 No. Current Franka evidence is capped-package and task-smoke evidence. It does not prove full
-articulated Franka joint performance. The first link-aware package record is generation and
-boundary accounting only; generated-package robot task probes are still required.
+articulated Franka joint performance. The first link-aware package record and generated-package
+task smoke prove package generation, boundary accounting, and package consumption for one short
+Franka smoke, not whole-robot quality or manipulation behavior.
 
 **Question: What would make the robot claim credible?**
 

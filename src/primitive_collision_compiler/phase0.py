@@ -32,8 +32,10 @@ from primitive_collision_compiler.contracts import CollisionPackage, FallbackSpe
 from primitive_collision_compiler.newton.diagnostics import run_newton_contact_smoke
 from primitive_collision_compiler.newton.articulation_smoke import (
     ARTICULATION_SMOKE_CLAIM_BOUNDARY,
+    GENERATED_PACKAGE_ROBOT_TASK_CLAIM_BOUNDARY,
     ArticulationSmokeOptions,
     run_newton_articulation_smoke,
+    run_newton_generated_package_robot_task_probe,
 )
 from primitive_collision_compiler.newton.drop_settle import (
     DROP_SETTLE_CLAIM_BOUNDARY,
@@ -94,6 +96,11 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
     stack_options = _stack_slide_options(phase0_section, diagnostic_section)
     sphere_options = _sphere_rain_options(phase0_section, diagnostic_section)
     articulation_options = _articulation_smoke_options(phase0_section, diagnostic_section)
+    generated_package_robot_task_options = _generated_package_robot_task_options(
+        phase0_section,
+        diagnostic_section,
+        articulation_options,
+    )
 
     cases: list[dict[str, object]] = []
     outcome_counter: Counter[str] = Counter({key: 0 for key in OUTCOME_KEYS})
@@ -116,6 +123,7 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
         source_dir=source_dir,
         device=device,
         options=articulation_options,
+        generated_package_options=generated_package_robot_task_options,
     )
     for case in articulation_cases:
         outcome_counter.update(_articulation_case_outcomes(case))
@@ -139,6 +147,9 @@ def build_phase0_rigid_benchmark_report(config_path: str | Path) -> dict[str, ob
                 "rigid_asset_diagnostic_cases": len(cases),
                 "articulation_smoke_cases": len(articulation_cases),
                 "link_aware_robot_package_generation": _has_link_aware_robot_package(
+                    articulation_cases
+                ),
+                "generated_package_robot_task_checks": _has_generated_package_robot_task_check(
                     articulation_cases
                 ),
                 "whole_robot_collision_quality": False,
@@ -278,6 +289,7 @@ def _articulation_cases(
     source_dir: str,
     device: str,
     options: ArticulationSmokeOptions,
+    generated_package_options: ArticulationSmokeOptions,
 ) -> list[dict[str, object]]:
     manifest_path = str(phase0_section.get("articulated_robot_manifest") or "")
     if not manifest_path:
@@ -296,6 +308,7 @@ def _articulation_cases(
                 source_dir=source_dir,
                 device=device,
                 options=options,
+                generated_package_options=generated_package_options,
             )
         )
     return cases
@@ -307,6 +320,7 @@ def _articulation_case_report(
     source_dir: str,
     device: str,
     options: ArticulationSmokeOptions,
+    generated_package_options: ArticulationSmokeOptions,
 ) -> dict[str, object]:
     raw_asset = dict(asset)
     role = str(raw_asset.get("role") or raw_asset.get("id") or "articulated_robot")
@@ -332,11 +346,44 @@ def _articulation_case_report(
             device=device,
             options=options,
         )
+        if (
+            robot_package_result.get("status") == "generated"
+            and link_boundary_audit.get("status") == "smoke_passed"
+        ):
+            generated_package_robot_task = _run_generated_package_robot_task_probe(
+                resolved.path,
+                collision_package=robot_package_result.get("collision_package"),
+                source_dir=source_dir,
+                device=device,
+                options=generated_package_options,
+            )
+        else:
+            generated_package_robot_task = _blocked_probe(
+                "generated_package_robot_task_if_robot",
+                status="blocked_by_link_boundary_audit",
+                reason=str(
+                    link_boundary_audit.get("fallback_reason")
+                    or robot_package_result.get("fallback_reason")
+                    or link_boundary_audit.get("status")
+                    or robot_package_result.get("status")
+                ),
+                outcome=str(
+                    robot_package_result.get("outcome")
+                    or link_boundary_audit.get("outcome")
+                    or "failure"
+                ),
+            )
     else:
         robot_package_result = _robot_package_blocked_by_asset(asset_gate)
         link_boundary_audit = _robot_link_boundary_audit(role)
         articulation = _blocked_probe(
             "articulation_smoke_if_robot",
+            status="blocked_by_asset_smoke",
+            reason=str(asset_gate.get("fallback_reason") or asset_gate.get("status")),
+            outcome=str(asset_gate.get("outcome", "failure")),
+        )
+        generated_package_robot_task = _blocked_probe(
+            "generated_package_robot_task_if_robot",
             status="blocked_by_asset_smoke",
             reason=str(asset_gate.get("fallback_reason") or asset_gate.get("status")),
             outcome=str(asset_gate.get("outcome", "failure")),
@@ -360,6 +407,7 @@ def _articulation_case_report(
         "probe_results": {
             "link_boundary_audit": link_boundary_audit,
             "articulation_smoke_if_robot": articulation,
+            "generated_package_robot_task_if_robot": generated_package_robot_task,
         },
         "outcome_counts": _articulation_case_outcome_counts(
             asset_gate=asset_gate,
@@ -367,6 +415,7 @@ def _articulation_case_report(
             probe_results={
                 "link_boundary_audit": link_boundary_audit,
                 "articulation_smoke_if_robot": articulation,
+                "generated_package_robot_task_if_robot": generated_package_robot_task,
             },
         ),
     }
@@ -704,6 +753,24 @@ def _run_articulation_smoke_probe(
         device=device,
         options=options,
         claim_boundary=ARTICULATION_SMOKE_CLAIM_BOUNDARY,
+    )
+
+
+def _run_generated_package_robot_task_probe(
+    asset_path: str,
+    *,
+    collision_package: Mapping[str, object] | None,
+    source_dir: str,
+    device: str,
+    options: ArticulationSmokeOptions,
+) -> dict[str, object]:
+    return run_newton_generated_package_robot_task_probe(
+        asset_path=asset_path,
+        collision_package=collision_package,
+        source_dir=source_dir,
+        device=device,
+        options=options,
+        claim_boundary=GENERATED_PACKAGE_ROBOT_TASK_CLAIM_BOUNDARY,
     )
 
 
@@ -1298,6 +1365,95 @@ def _articulation_smoke_options(
     )
 
 
+def _generated_package_robot_task_options(
+    phase0_section: Mapping[str, object],
+    diagnostic_section: Mapping[str, object],
+    base_options: ArticulationSmokeOptions,
+) -> ArticulationSmokeOptions:
+    probe = _probe_config(phase0_section, "generated_package_robot_task_if_robot")
+    initial = _mapping_section(
+        probe.get("initial_conditions"),
+        "generated_package_robot_task_if_robot.initial_conditions",
+        default={},
+    )
+    solver = _mapping_section(
+        probe.get("solver"),
+        "generated_package_robot_task_if_robot.solver",
+        default={},
+    )
+    generated_section = _mapping_section(
+        diagnostic_section.get("generated_package_robot_task_if_robot"),
+        "newton_diagnostic.generated_package_robot_task_if_robot",
+        default={},
+    )
+    return ArticulationSmokeOptions(
+        hold_frames=int(
+            generated_section.get("hold_frames")
+            or (
+                _duration_frames(phase0_section, probe)
+                if probe
+                else base_options.hold_frames
+            )
+        ),
+        trajectory_delta_rad=float(
+            generated_section.get(
+                "trajectory_delta_rad",
+                base_options.trajectory_delta_rad,
+            )
+        ),
+        max_gravity_hold_joint_drift=float(
+            generated_section.get(
+                "max_gravity_hold_joint_drift",
+                base_options.max_gravity_hold_joint_drift,
+            )
+        ),
+        min_end_effector_pose_delta_m=float(
+            generated_section.get(
+                "min_end_effector_pose_delta_m",
+                base_options.min_end_effector_pose_delta_m,
+            )
+        ),
+        substeps=int(
+            generated_section.get(
+                "substeps",
+                solver.get("substeps", base_options.substeps),
+            )
+        ),
+        frame_dt_seconds=float(
+            generated_section.get(
+                "frame_dt_seconds",
+                solver.get("frame_dt_seconds", base_options.frame_dt_seconds),
+            )
+        ),
+        iterations=int(
+            generated_section.get(
+                "iterations",
+                solver.get("iterations", base_options.iterations),
+            )
+        ),
+        mesh_approximation=str(
+            generated_section.get(
+                "mesh_approximation",
+                initial.get("mesh_approximation", ""),
+            )
+        ),
+        collapse_fixed_joints=bool(
+            generated_section.get(
+                "collapse_fixed_joints",
+                initial.get("collapse_fixed_joints", False),
+            )
+        ),
+        enable_self_collisions=bool(
+            generated_section.get(
+                "enable_self_collisions",
+                initial.get("enable_self_collisions", base_options.enable_self_collisions),
+            )
+        ),
+        load_visual_shapes=bool(generated_section.get("load_visual_shapes", False)),
+        hide_collision_shapes=bool(generated_section.get("hide_collision_shapes", True)),
+    )
+
+
 def _probe_config(phase0_section: Mapping[str, object], probe_id: str) -> Mapping[str, object]:
     probes = _mapping_section(phase0_section.get("probes"), "phase0_defaults.probes", default={})
     return _mapping_section(probes.get(probe_id), probe_id, default={})
@@ -1475,6 +1631,29 @@ def _has_link_aware_robot_package(cases: list[dict[str, object]]) -> bool:
             and isinstance(link_audit, Mapping)
             and robot_package_result.get("status") == "generated"
             and link_audit.get("status") == "smoke_passed"
+        ):
+            return True
+    return False
+
+
+def _has_generated_package_robot_task_check(cases: list[dict[str, object]]) -> bool:
+    for case in cases:
+        probe_results = case.get("probe_results", {})
+        generated_probe = (
+            probe_results.get("generated_package_robot_task_if_robot", {})
+            if isinstance(probe_results, Mapping)
+            else {}
+        )
+        metrics = (
+            generated_probe.get("metrics", {})
+            if isinstance(generated_probe, Mapping)
+            else {}
+        )
+        if (
+            isinstance(generated_probe, Mapping)
+            and isinstance(metrics, Mapping)
+            and generated_probe.get("status") == "smoke_passed"
+            and metrics.get("generated_package_consumed") is True
         ):
             return True
     return False

@@ -22,8 +22,8 @@ This is scoped collision-pipeline evidence, not a full-simulation speedup claim.
 Table~\ref{tab:phase0-grscenes-rigid} summarizes the current scoped Phase~0 rigid run over five materialized GRScenes assets.
 The run records first-mesh bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain probes.
 It also records V-HACD runtime evidence for all five assets, with V-HACD probe failures on bowl, cup, and tray.
-It also includes one Franka link-aware package generation record and one Franka USD articulation smoke.
-It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless placeholder link, and generated-package robot task checks remain open.
+It also includes one Franka link-aware package generation record, one Franka USD articulation smoke, and one generated-package Franka task smoke.
+It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless placeholder link, and robot generated-package checks currently cover only one Franka smoke asset.
 
 \begin{table}[t]
   \centering
@@ -48,4 +48,5 @@ The Phase~0 follow-up report includes one Franka USD smoke asset.
 The link-aware package generator detects 12 rigid-body links and 12 joint edges, emits 12 link-framed box primitives, and records zero cross-link merges.
 The `/panda/panda_link8` primitive is an explicit meshless placeholder because that link has no mesh in the source USD mirror.
 The articulation smoke records joint-tree import, a short gravity hold, and a simple kinematic trajectory as passed.
-This is not whole-robot collider quality or manipulation evidence because the generated package has not yet been exercised under robot task probes.
+The generated-package task smoke separately suppresses source USD shapes, attaches all 12 generated package primitives to Newton bodies, records zero missing body links, and passes the same short hold/trajectory probe.
+This is generated-package consumption evidence for one Franka smoke asset, not whole-robot collider quality or manipulation evidence.

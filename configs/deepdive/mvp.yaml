@@ -10,6 +10,7 @@ task:
     - sphere_rain
     - link_boundary_audit
     - articulation_smoke_if_robot
+    - generated_package_robot_task_if_robot
 compile:
   method: simulation_checked_primitive_candidates
   max_primitives: 16
@@ -24,6 +25,7 @@ compile:
     - sphere_rain
     - link_boundary_audit
     - articulation_smoke_if_robot
+    - generated_package_robot_task_if_robot
   keep_visual: true
 report:
   evidence_status: proposal_config_only

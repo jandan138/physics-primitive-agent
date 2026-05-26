@@ -35,6 +35,7 @@ results:
       docs/records/2026-05-25-phase0-stack-coacd-articulation-followup.md;
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
+      docs/records/2026-05-26-generated-package-robot-task-probe.md;
       reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json
     reporting_scope: >-
       Scoped five-asset GRScenes rigid diagnostic run plus one Franka USD articulation smoke over
@@ -42,7 +43,9 @@ results:
       candidates are recorded with Newton contact, drop/settle, stack-or-slide, and sphere-rain
       outcomes. V-HACD runtime evidence is recorded for all five assets with probe failures, and
       Franka link-aware package generation records all detected links covered, zero cross-link
-      merges, and one meshless placeholder link.
+      merges, and one meshless placeholder link. The same report records one generated-package
+      Franka task smoke where all generated package primitives are attached to Newton bodies and
+      consumed with source USD shapes suppressed.
     metrics:
       asset_count: 5
       articulation_asset_count: 1
@@ -59,8 +62,15 @@ results:
       franka_meshless_link_placeholder_count: 1
       bounding_primitive_lanes_drop_and_sphere_passed: 5
       franka_articulation_smoke_passed: true
+      franka_generated_package_robot_task_passed: true
+      franka_generated_package_consumed: true
+      franka_generated_package_shape_count: 12
+      franka_generated_package_consumed_primitive_count: 12
+      franka_generated_package_missing_body_link_count: 0
+      franka_generated_package_source_usd_shape_count: 0
+      franka_generated_package_self_collision_filter_pair_count: 66
       recorded_failure_count: 11
-      recorded_accept_count: 98
+      recorded_accept_count: 99
       recorded_dependency_gap_count: 0
       recorded_fallback_count: 30
       recorded_not_applicable_count: 70

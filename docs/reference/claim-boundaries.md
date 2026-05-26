@@ -35,9 +35,10 @@ baseline. It is not the novelty claim by itself.
   narrow performance hook: native Newton boxes achieved 2.21x generated-contact throughput versus
   same-count convex64 mesh proxies in one pressure scene, with about 5.3% collision-only wall-time
   reduction.
-- Current Franka evidence includes capped package/task-smoke evidence and one USD articulation
-  smoke. It is not link-aware package generation, whole-robot collider quality, manipulation, or
-  broad articulated-dynamics evidence.
+- Current Franka evidence includes capped package/task-smoke evidence, one USD articulation smoke,
+  one link-aware package generation and boundary-audit record, and one generated-package robot
+  task smoke where all 12 generated package primitives are consumed by Newton. It is not
+  whole-robot collider quality, manipulation, or broad articulated-dynamics evidence.
 - "Simulation-checked" may be used only when a dated record links a generated package to a named
   Newton task, settings, asset, environment, and report.
 - "Diagnostic checker" is preferred over formal-verification language.
@@ -49,8 +50,9 @@ baseline. It is not the novelty claim by itself.
 - Prefer "candidate generator" for primitive or CPD-style outputs before Newton diagnostics.
 - Prefer "fallback-aware" rather than "primitive-only".
 - Use "Franka articulation smoke" only for the recorded USD import/short-trajectory smoke.
-  Use link-aware package or whole-robot wording only after link-aware package generation and
-  link-boundary probes exist.
+  Use "generated-package Franka task smoke" only for the recorded run where the link-aware
+  generated package is attached to Newton bodies and exercised by the short hold/trajectory probe.
+  Do not shorten this to whole-robot quality or manipulation wording.
 - Use "body-state risk guard" only for the opt-in diagnostic path unless calibrated threshold
   evidence exists.
 
@@ -89,6 +91,7 @@ Before claiming whole-robot Franka or broader robot-operation behavior, record:
 - source robot asset, license/provenance, and hash;
 - link/joint graph preservation;
 - proof that primitive merges do not cross link boundaries;
+- proof that generated packages are consumed by the robot task runtime;
 - whether collision proxies affect dynamic inertial properties;
 - Newton joint tree import;
 - gravity hold;

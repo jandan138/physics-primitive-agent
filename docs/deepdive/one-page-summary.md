@@ -27,7 +27,7 @@ primitive decomposition is an important related candidate generator and baseline
 
 - build a non-LLM candidate-generator plus Newton checker loop;
 - include body-state and contact diagnostics;
-- add generated-package robot task probes for a reproducible robot smoke asset;
+- broaden generated-package robot task probes beyond the first Franka smoke asset;
 - compare simple baselines and CPD/CoACD/V-HACD-style candidates where available;
 - report accept/reject/fallback decisions with metrics and provenance.
 

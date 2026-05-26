@@ -63,7 +63,8 @@ Current repository state:
   V-HACD candidate lanes across five materialized GRScenes assets with Newton contact,
   drop/settle, stack-or-slide, and sphere-rain probes; V-HACD generates packages for all five
   assets and records probe failures on bowl/cup/tray; the same report records one Franka
-  link-aware package with zero cross-link merges and one Franka USD articulation smoke.
+  link-aware package with zero cross-link merges, one Franka USD articulation smoke, and one
+  generated-package Franka task smoke that consumes all 12 generated package primitives.
 
 The current evidence supports a project proposal, a narrow diagnostic mechanism story, and a
 scoped Phase 0 diagnostic table with CoACD and robot-smoke entries. It does not support broad
@@ -74,7 +75,7 @@ benchmark-suite, full-simulation speedup, whole-robot collider quality, or safet
 The first milestone should demonstrate that simulation checks catch errors that geometry-only
 primitive generation would miss:
 
-- add generated-package robot task probes;
+- broaden generated-package robot task probes beyond the first Franka smoke asset;
 - triage recorded V-HACD probe failures while keeping them visible as diagnostic failures;
 - generate primitive candidate packages and baseline colliders;
 - forbid primitive merging across robot link/joint boundaries;

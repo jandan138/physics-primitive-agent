@@ -25,7 +25,7 @@ Generated report:
 
 Overall recorded outcomes:
 
-- accept: 98
+- accept: 99
 - dependency gap: 0
 - failure: 11
 - fallback: 30
@@ -51,8 +51,9 @@ package records drop/settle and stack-or-slide failures, while the cup/contact-a
 tray/stackable V-HACD packages record drop/settle failures.
 
 Franka articulation smoke still passes. The same report now also records link-aware robot package
-generation for the Franka smoke asset; see
-`docs/records/2026-05-26-link-aware-robot-package-generation.md` for that scope.
+generation and a generated-package robot task smoke for the Franka smoke asset; see
+`docs/records/2026-05-26-link-aware-robot-package-generation.md` and
+`docs/records/2026-05-26-generated-package-robot-task-probe.md` for those robot scopes.
 
 ## Verification
 
@@ -60,6 +61,8 @@ generation for the Franka smoke asset; see
   5 passed before the full report rerun.
 - `time -p timeout 1200 env NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/phase0_baseline.yaml --run-phase0-benchmark > reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json`:
   exit 0, `real 928.84`, report status `completed_with_recorded_failures`.
+- Follow-up generated-package robot task run against the same report path:
+  exit 0, `real 987.38`, report status `completed_with_recorded_failures`, accept count 99.
 - Parsed the generated JSON successfully. The report records zero dependency gaps and V-HACD
   generated packages for all five selected rigid assets with backend
   `trimesh_4.12.2_vhacdx_0.0.10`.

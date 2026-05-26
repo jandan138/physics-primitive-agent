@@ -69,8 +69,9 @@ Supported today:
   convex-mesh candidate lanes. The latest follow-up includes stack-or-slide probes, V-HACD runtime
   evidence for all five selected rigid assets, recorded V-HACD probe failures on bowl/cup/tray,
   one Franka link-aware package generation record with all detected links covered and zero
-  cross-link merges, and one Franka USD articulation smoke; it is not a complete Phase 0 benchmark or broad
-  generalization result.
+  cross-link merges, one Franka USD articulation smoke, and one generated-package Franka task
+  smoke that consumes all 12 generated package primitives; it is not a complete Phase 0 benchmark
+  or broad generalization result.
 - A dated capped bed/Franka mechanism audit explaining why the recorded bed cylinder package fails
   while recorded Franka cylinder packages pass.
 - An explicitly opt-in package body-state guard task path that falls back only the flagged bed
@@ -85,7 +86,8 @@ Not supported today:
 - full-simulation speedup;
 - full CPD paper reproduction;
 - calibrated default selector policy;
-- complete Phase 0 coverage with broader pass criteria and generated-package robot task checks;
+- complete Phase 0 coverage with broader pass criteria and multi-robot generated-package task
+  checks;
 - complete collision-quality validation;
 - whole-robot articulated Franka performance evidence;
 - deployment readiness, real-world transfer, or safety certification.
@@ -95,7 +97,7 @@ Not supported today:
 The next DeepDive-facing proof point should shift from "primitive-first only" to
 "simulation-checked and robot-operation-aware":
 
-- add generated-package robot task probes;
+- broaden generated-package robot task probes beyond the first Franka smoke asset;
 - triage recorded V-HACD probe failures while keeping them visible as diagnostic failures;
 - keep primitive merging link-aware and forbid cross-joint merges;
 - run Newton drop/settle, contact stress, and body-state diagnostics;
@@ -181,6 +183,7 @@ Evidence registries: `paper/shared/evidence/claims.yaml` and `results_manifest.y
 - No finished production compiler claim.
 - No claim that primitive colliders replace convex decomposition.
 - No broad robot-operation evidence yet; current Franka evidence includes a first link-aware
-  package record but not whole-robot articulated performance validation.
+  package record and generated-package task smoke but not whole-robot articulated performance
+  validation.
 - No broad benchmark superiority or full-simulation speedup claim.
 - No deployment, real-world transfer, or safety guarantee.

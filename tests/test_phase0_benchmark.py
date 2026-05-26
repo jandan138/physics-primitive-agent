@@ -277,6 +277,7 @@ def test_phase0_report_records_articulated_robot_smoke_case(
         articulated_robot_manifest=robot_manifest_path,
     )
     captured_options = {}
+    captured_generated_package = {}
 
     def fake_articulation_smoke(*, asset_path, source_dir, device, options, claim_boundary):
         captured_options["hold_frames"] = options.hold_frames
@@ -300,6 +301,51 @@ def test_phase0_report_records_articulated_robot_smoke_case(
             "evidence_level": "newton_articulation_smoke",
         }
 
+    def fake_generated_package_robot_task(
+        *,
+        asset_path,
+        collision_package,
+        source_dir,
+        device,
+        options,
+        claim_boundary,
+    ):
+        captured_generated_package["primitive_count"] = len(
+            collision_package["primitives"]
+        )
+        captured_generated_package["collapse_fixed_joints"] = (
+            options.collapse_fixed_joints
+        )
+        captured_generated_package["mesh_approximation"] = options.mesh_approximation
+        return {
+            "stage": "newton_generated_package_robot_task_probe",
+            "status": "smoke_passed",
+            "outcome": "accept",
+            "asset_path": asset_path,
+            "probe_type": "generated_package_robot_task_if_robot",
+            "device": device,
+            "metrics": {
+                "generated_package_consumed": True,
+                "package_consumption": {
+                    "package_id": collision_package["package_id"],
+                    "package_primitive_count": len(collision_package["primitives"]),
+                    "generated_collision_shape_count": len(
+                        collision_package["primitives"]
+                    ),
+                    "consumed_primitive_count": len(collision_package["primitives"]),
+                    "missing_body_link_count": 0,
+                    "source_usd_shape_count": 0,
+                },
+                "joint_tree_import": "passed",
+                "gravity_hold_drift": 0.0,
+                "trajectory_completion": "passed",
+            },
+            "failure_labels": [],
+            "fallback_reason": None,
+            "claim_boundary": claim_boundary,
+            "evidence_level": "newton_generated_package_robot_task_smoke",
+        }
+
     import primitive_collision_compiler.phase0 as phase0
 
     monkeypatch.setattr(
@@ -308,11 +354,22 @@ def test_phase0_report_records_articulated_robot_smoke_case(
         fake_articulation_smoke,
         raising=False,
     )
+    monkeypatch.setattr(
+        phase0,
+        "run_newton_generated_package_robot_task_probe",
+        fake_generated_package_robot_task,
+        raising=False,
+    )
 
     report = build_phase0_rigid_benchmark_report(config_path)
 
     assert report["articulation_asset_count"] == 1
     assert captured_options == {"hold_frames": 15, "substeps": 2, "iterations": 3}
+    assert captured_generated_package == {
+        "primitive_count": 3,
+        "collapse_fixed_joints": False,
+        "mesh_approximation": "",
+    }
     robot_case = report["articulation_cases"][0]
     assert robot_case["asset_role"] == "articulated_robot"
     assert robot_case["asset_gate"]["outcome"] == "accept"
@@ -337,6 +394,94 @@ def test_phase0_report_records_articulated_robot_smoke_case(
         "/Robot/link2": 1,
     }
     assert report["report_scope"]["link_aware_robot_package_generation"] is True
+    assert robot_case["probe_results"]["generated_package_robot_task_if_robot"][
+        "outcome"
+    ] == "accept"
+    assert (
+        robot_case["probe_results"]["generated_package_robot_task_if_robot"][
+            "metrics"
+        ]["generated_package_consumed"]
+        is True
+    )
+    assert report["report_scope"]["generated_package_robot_task_checks"] is True
+
+
+def test_phase0_blocks_generated_package_robot_task_when_link_audit_fails(
+    tmp_path,
+    monkeypatch,
+):
+    manifest_path = _write_phase0_manifest(tmp_path)
+    robot_manifest_path = _write_articulated_robot_manifest(tmp_path)
+    config_path = _write_phase0_config(
+        tmp_path,
+        manifest_path,
+        articulated_robot_manifest=robot_manifest_path,
+    )
+
+    def fake_robot_package_result(*args, **kwargs):
+        return {
+            "stage": "phase0_link_aware_robot_package_generation",
+            "status": "fallback",
+            "outcome": "fallback",
+            "primitive_or_hull_count": 0,
+            "collision_package": None,
+            "links": [],
+            "joint_edges": [],
+            "link_boundary_audit": {
+                "stage": "phase0_link_boundary_audit",
+                "status": "runtime_failure",
+                "probe_type": "link_boundary_audit",
+                "outcome": "failure",
+                "metrics": {
+                    "link_aware_package_generated": False,
+                    "cross_link_merge_count": 1,
+                    "links_without_primitive_count": 1,
+                    "per_link_primitive_count": {},
+                },
+                "failure_labels": ["link_without_primitive"],
+                "fallback_reason": "link_boundary_audit_failed",
+            },
+            "fallback_reason": "link_boundary_audit_failed",
+        }
+
+    def fake_articulation_smoke(*, asset_path, source_dir, device, options, claim_boundary):
+        return {
+            "stage": "newton_articulation_smoke",
+            "status": "smoke_passed",
+            "outcome": "accept",
+            "asset_path": asset_path,
+            "probe_type": "articulation_smoke_if_robot",
+            "device": device,
+            "metrics": {},
+            "failure_labels": [],
+            "fallback_reason": None,
+            "claim_boundary": claim_boundary,
+            "evidence_level": "newton_articulation_smoke",
+        }
+
+    def fail_generated_package_robot_task(**kwargs):
+        raise AssertionError("generated-package task should be blocked by link audit")
+
+    import primitive_collision_compiler.phase0 as phase0
+
+    monkeypatch.setattr(phase0, "_build_robot_package_result", fake_robot_package_result)
+    monkeypatch.setattr(phase0, "run_newton_articulation_smoke", fake_articulation_smoke)
+    monkeypatch.setattr(
+        phase0,
+        "run_newton_generated_package_robot_task_probe",
+        fail_generated_package_robot_task,
+        raising=False,
+    )
+
+    report = build_phase0_rigid_benchmark_report(config_path)
+
+    generated_probe = report["articulation_cases"][0]["probe_results"][
+        "generated_package_robot_task_if_robot"
+    ]
+    assert generated_probe["status"] == "blocked_by_link_boundary_audit"
+    assert generated_probe["outcome"] == "fallback"
+    assert generated_probe["fallback_reason"] == "link_boundary_audit_failed"
+    assert report["report_scope"]["generated_package_robot_task_checks"] is False
 
 
 def test_phase0_report_is_strict_json_serializable_without_newton_source(tmp_path):
@@ -519,6 +664,7 @@ def _write_phase0_config(
                 "sphere_rain",
                 "link_boundary_audit",
                 "articulation_smoke_if_robot",
+                "generated_package_robot_task_if_robot",
                 "precision_rejection",
             ],
         },
@@ -564,6 +710,18 @@ def _write_phase0_config(
                 "link_boundary_audit": {"initial_conditions": {"simulation_required": False}},
                 "articulation_smoke_if_robot": {
                     "initial_conditions": {"simulation_required": False},
+                    "solver": {
+                        "duration_seconds": 0.25,
+                        "substeps": 2,
+                        "iterations": 3,
+                    },
+                },
+                "generated_package_robot_task_if_robot": {
+                    "initial_conditions": {
+                        "simulation_required": True,
+                        "mesh_approximation": "",
+                        "collapse_fixed_joints": False,
+                    },
                     "solver": {
                         "duration_seconds": 0.25,
                         "substeps": 2,

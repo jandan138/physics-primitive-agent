@@ -31,6 +31,7 @@ def test_phase0_baseline_config_loads():
         "sphere_rain",
         "link_boundary_audit",
         "articulation_smoke_if_robot",
+        "generated_package_robot_task_if_robot",
         "precision_rejection",
     )
     assert config.protocol["phase0_defaults"]["seeds"] == 3
@@ -172,6 +173,21 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
     )
     assert probes["articulation_smoke_if_robot"]["solver"]["duration_seconds"] == 0.25
     assert probes["articulation_smoke_if_robot"]["solver"]["substeps"] == 2
+    generated_probe = probes["generated_package_robot_task_if_robot"]
+    assert (
+        generated_probe["pass_condition"]
+        == "generated_package_consumed_and_robot_task_smoke_passed"
+    )
+    assert generated_probe["initial_conditions"]["collapse_fixed_joints"] is False
+    assert generated_probe["initial_conditions"]["mesh_approximation"] == ""
+    assert set(generated_probe["metrics"]) >= {
+        "generated_package_consumed",
+        "generated_collision_shape_count",
+        "missing_body_link_count",
+        "source_usd_shape_count",
+        "gravity_hold_drift",
+        "trajectory_completion",
+    }
     assert probes["precision_rejection"]["pass_condition"] == "reject_or_fallback"
     assert cpd_like["component_merge"] == "virtual_pairwise"
     assert cpd_like["max_source_faces_by_role"]["container"] == 256
@@ -183,3 +199,4 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
     assert data["phase0_defaults"]["articulated_robot_roles"] == ["franka_import_smoke"]
     assert "displacement" in required_metrics
     assert "link_boundary_status" in required_metrics
+    assert "generated_package_consumption_status" in required_metrics

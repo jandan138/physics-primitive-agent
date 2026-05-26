@@ -45,16 +45,18 @@ claims:
       drop/settle, stack-or-slide, and sphere-rain probes. V-HACD generates packages for all five
       selected assets and records probe failures on bowl/cup/tray. The same report separately
       includes one Franka link-aware package with all detected links covered, zero cross-link
-      merges, one meshless placeholder link, and one Franka USD articulation smoke asset.
+      merges, one meshless placeholder link, one Franka USD articulation smoke asset, and one
+      generated-package Franka task smoke that consumes all generated package primitives.
     evidence_source: >-
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
+      docs/records/2026-05-26-generated-package-robot-task-probe.md;
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
     paper_scope: >-
       scoped_diagnostic_not_broad_benchmark_superiority_not_all_vhacd_success_not_whole_robot_quality
     next_required_step: >-
-      Triage or intentionally preserve the recorded V-HACD probe failures and add
+      Triage or intentionally preserve the recorded V-HACD probe failures and broaden
       generated-package robot task checks before claiming complete Phase 0 coverage.
   - id: franka_articulation_smoke
     status: recorded_scoped
@@ -68,4 +70,17 @@ claims:
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
     paper_scope: articulation_import_smoke_not_whole_robot_validation
-    next_required_step: Exercise generated link-aware packages under robot task probes before whole-robot wording.
+    next_required_step: Broaden generated-package robot task probes before whole-robot wording.
+  - id: franka_generated_package_robot_task_smoke
+    status: recorded_scoped
+    section: experiments
+    claim: >-
+      The Phase 0 follow-up report includes a generated-package Franka task smoke where all 12
+      link-aware package primitives are attached to Newton bodies and consumed during a short
+      gravity-hold and kinematic trajectory probe with source USD shapes suppressed.
+    evidence_source: >-
+      docs/records/2026-05-26-generated-package-robot-task-probe.md;
+      paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
+    excluded_from_paper_metrics: false
+    paper_scope: generated_package_consumption_smoke_not_whole_robot_validation
+    next_required_step: Broaden to more robot assets or contact-operation robot smokes.

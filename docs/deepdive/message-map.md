@@ -61,11 +61,14 @@ primitive-aware acceptance story, while staying below any full-simulation or bro
 superiority claim.
 
 The scoped Phase 0 follow-up run adds stack-or-slide execution, CoACD executable convex-mesh
-packages, V-HACD runtime evidence, and one Franka USD articulation smoke to the five-asset GRScenes
+packages, V-HACD runtime evidence, one Franka USD articulation smoke, and one generated-package
+Franka task smoke to the five-asset GRScenes
 diagnostic table. V-HACD now generates packages for all five selected rigid assets, with recorded
 probe failures on bowl/cup/tray. The same report now records a Franka link-aware package with all
-detected links covered, zero cross-link merges, and a meshless `/panda/panda_link8` placeholder. It is still not complete Phase 0
-coverage because generated-package robot task checks and broader pass criteria remain open.
+detected links covered, zero cross-link merges, a meshless `/panda/panda_link8` placeholder, and
+12 generated package primitives consumed by Newton in the generated-package task smoke. It is still
+not complete Phase 0 coverage because broader robot task coverage and broader pass criteria remain
+open.
 
 ## DeepDive Proof Point
 
