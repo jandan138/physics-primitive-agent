@@ -14,7 +14,21 @@ figures:
       assets/manifests/phase0_assets.yaml
     note: >-
       Deterministic mesh/package overlay figure for selected Phase 0 rigid assets. Generated from
-      repo-local ignored asset mirrors and report package fields; raw assets stay uncommitted.
+      repo-local ignored asset mirrors and report package fields; high-count lanes draw representative
+      subsets with visible overflow markers while counts stay tied to the recorded package; raw assets
+      stay uncommitted.
+  - id: phase0_asset_package_control_overlays
+    status: generated
+    output: generated/phase0_asset_package_control_overlays.pdf
+    generated_manifest: generated/accv_visuals_manifest.json
+    evidence: >-
+      reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json;
+      assets/manifests/phase0_assets.yaml
+    note: >-
+      Deterministic mesh/package overlay figure for the stackable tray and precision negative-control
+      keyboard rows. The keyboard input column uses aggregated USD default/render mesh prims for
+      recognizability; high-count keyboard package cells draw a labeled representative local marker
+      with visible overflow counts while remaining tied to recorded report package fields.
   - id: phase0_collision_probe_scenes
     status: generated
     output: generated/phase0_collision_probe_scenes.pdf

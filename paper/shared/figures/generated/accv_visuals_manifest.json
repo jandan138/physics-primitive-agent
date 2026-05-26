@@ -12,6 +12,15 @@
       ]
     },
     {
+      "evidence": "phase0 report + repo-local USD mirrors; precision/control rows",
+      "id": "phase0_asset_package_control_overlays",
+      "path": "paper/shared/figures/generated/phase0_asset_package_control_overlays.pdf",
+      "source_records": [
+        "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md",
+        "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
+      ]
+    },
+    {
       "evidence": "phase0 Newton probe outcomes",
       "id": "phase0_collision_probe_scenes",
       "path": "paper/shared/figures/generated/phase0_collision_probe_scenes.pdf",

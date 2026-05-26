@@ -39,8 +39,8 @@ We treat these V-HACD failures as recorded diagnostic outcomes: the packages are
 It also includes one Franka link-aware package generation record, one Franka USD articulation smoke, and one generated-package Franka task smoke.
 It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless link sentinel, and robot generated-package checks currently cover only one Franka smoke asset.
 
-Figure~\ref{fig:phase0-overlays} shows why a table alone is insufficient.
-Each row starts from the actual asset mesh loaded through the repo-local USD mirror, then shows the
+Figures~\ref{fig:phase0-overlays} and~\ref{fig:phase0-control-overlays} show why a table alone is insufficient.
+Each row starts from default/render mesh prims loaded through the repo-local USD mirror, then shows the
 candidate package geometry that the diagnostics consume.
 The bowl, cup, and tray rows are especially informative: all three have V-HACD hull packages, so
 the later failures are not dependency gaps or missing-baseline artifacts.
@@ -51,8 +51,15 @@ policy still routes the asset to manual review rather than promoting it as a sol
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/generated/phase0_asset_package_overlays.pdf}
-  \caption{Deterministic Phase~0 asset/package overlays generated from the recorded report and repo-local USD mirrors. Columns show the input mesh and four generated candidate lanes. Counts below each package are primitive or hull counts in the recorded package, not claims of physical acceptance.}
+  \caption{Deterministic Phase~0 asset/package overlays for the representative rigid prop, container, and contact-affordance rows. Columns show the input mesh and four generated candidate lanes. High-count lanes draw a readable representative subset with a visible $+N$ marker; counts below each package remain primitive or hull counts in the recorded package, not claims of physical acceptance.}
   \label{fig:phase0-overlays}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/generated/phase0_asset_package_control_overlays.pdf}
+  \caption{Additional Phase~0 asset/package overlay rows for the stackable tray and the precision negative-control keyboard. The keyboard input column shows aggregated USD default/render mesh prims for recognizability; high-count keyboard package cells draw a labeled representative local marker with a visible $+N$ overflow count. The split keeps the control rows readable while preserving the same candidate-lane ordering and recorded count semantics as Figure~\ref{fig:phase0-overlays}.}
+  \label{fig:phase0-control-overlays}
 \end{figure}
 
 Figure~\ref{fig:phase0-outcome-matrix} expands the table into the full rigid diagnostic matrix.
