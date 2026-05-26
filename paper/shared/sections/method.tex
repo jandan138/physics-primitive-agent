@@ -10,6 +10,14 @@ Each asset is first normalized into a package manifest that preserves source ass
 Rigid assets can receive bounding primitives, native primitive lanes, CPD-style primitive packages~\cite{cpd2026}, and convex-mesh baselines such as CoACD and V-HACD~\cite{coacd2022,vhacd}.
 For articulated assets, candidate generation is link-framed: a primitive is emitted under the link that owns its source geometry, and the package records whether any primitive crosses a joint boundary.
 Candidate quality is summarized by primitive or hull count, geometric residual when available, and editability, but these signals do not imply simulation acceptance.
+The Phase~0 implementation keeps four generated rigid lanes visible in the paper: a first-mesh
+bounding primitive, a CPD-style primitive package, a CoACD convex-hull package, and a V-HACD
+convex-hull package.
+The single-convex-hull lane is retained as a fallback accounting lane even when it is not promoted
+as a generated primitive package.
+This distinction matters for interpretation: a green geometry-generation row means that a package
+was produced and mapped, while a later red diagnostic row means that Newton rejected the same
+package under a named task.
 
 \paragraph{Acceptance layer.}
 The acceptance layer converts each candidate package into a Newton task scene and records a pass/fail label with configuration, seed, and package metadata~\cite{newton2026}.
@@ -18,6 +26,28 @@ Contact probes observe false clearance, blocked openings, excessive contact coun
 For robots, a link-boundary audit forbids cross-link merges; articulation smoke gates joint import, gravity hold, and simple trajectories before any broader robot claim.
 The current generated-package robot task smoke verifies package consumption in that bounded task path.
 It disables generated self-collision pairs for the smoke and does not establish whole-robot collision quality, manipulation performance, or end-effector accuracy.
+Each probe emits an outcome from a small vocabulary: \emph{accept}, \emph{failure},
+\emph{fallback}, \emph{not applicable}, or \emph{dependency gap}.
+We do not collapse these categories into a single success rate because the categories answer
+different engineering questions.
+An accept means that the package survived the recorded task.
+A failure means that the package was available and mapped but produced a named runtime or
+diagnostic label.
+A fallback means that the configured lane did not provide an executable primitive package for that
+probe and was routed away explicitly.
+A not-applicable label prevents rigid-asset probes from being misread as robot failures and vice
+versa.
+
+\paragraph{Collision-probe scenes.}
+The diagnostic scenes are intentionally small.
+The drop/settle scene places the package above a static plane and records descent, contact
+observation, floor breach, final support height, and final linear speed.
+The stack-or-slide scene treats the package as the support, places a small probe box above it, and
+records final contact, horizontal displacement, probe height, and support breach.
+The sphere-rain scene uses a fixed set of small probes to stress contact coverage without turning
+the run into a full manipulation benchmark.
+These scenes are not meant to approximate a real application workload; they are repeatable checks
+that expose when a plausible collision proxy becomes unusable under the recorded simulated probe.
 
 \paragraph{Fallback policy.}
 Failed packages route to another candidate lane, a convex-mesh fallback, SDF or manual review depending on configuration.
@@ -28,3 +58,7 @@ This keeps the selector conservative: accepted primitive packages remain native 
 \paragraph{Evidence registry.}
 Quantitative statements in this manuscript must match the shared \texttt{claims.yaml} registry and dated records under \texttt{docs/records/}.
 If a table cell has no dated record, the paper treats it as an open item rather than an implied result.
+The generated figures follow the same rule.
+They are deterministic diagnostic visualizations produced from the recorded Phase~0 report and
+repo-local ignored USD mirrors; they are not additional experiments and do not upgrade the claim
+boundary.

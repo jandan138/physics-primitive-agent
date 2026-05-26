@@ -1,0 +1,63 @@
+{
+  "asset_root": "/cpfs/user/zhuzihou/dev/physics-primitive-agent",
+  "claim_boundary": "diagnostic_visualization_not_photorealistic_render_or_new_experiment",
+  "figures": [
+    {
+      "evidence": "phase0 report + repo-local USD mirrors",
+      "id": "phase0_asset_package_overlays",
+      "path": "paper/shared/figures/generated/phase0_asset_package_overlays.pdf",
+      "source_records": [
+        "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md",
+        "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
+      ]
+    },
+    {
+      "evidence": "phase0 Newton probe outcomes",
+      "id": "phase0_collision_probe_scenes",
+      "path": "paper/shared/figures/generated/phase0_collision_probe_scenes.pdf",
+      "source_records": [
+        "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md",
+        "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
+      ]
+    },
+    {
+      "evidence": "phase0 report outcome labels",
+      "id": "phase0_outcome_matrix",
+      "path": "paper/shared/figures/generated/phase0_outcome_matrix.pdf",
+      "source_records": [
+        "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md",
+        "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
+      ]
+    },
+    {
+      "evidence": "2026-05-22 cylinder mechanism records",
+      "id": "bed_franka_mechanism_diagnostic",
+      "path": "paper/shared/figures/generated/bed_franka_mechanism_diagnostic.pdf",
+      "source_records": [
+        "docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md",
+        "paper/shared/evidence/results_manifest.yaml"
+      ]
+    },
+    {
+      "evidence": "link-aware package and generated-package robot task records",
+      "id": "franka_link_aware_task_scene",
+      "path": "paper/shared/figures/generated/franka_link_aware_task_scene.pdf",
+      "source_records": [
+        "docs/records/2026-05-26-link-aware-robot-package-generation.md",
+        "docs/records/2026-05-26-generated-package-robot-task-probe.md"
+      ]
+    }
+  ],
+  "generation": "deterministic_matplotlib_diagnostic_visualization",
+  "report_path": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json",
+  "report_sha256": "785a2c38b9a7ad6caae400fe06e5993cef6214ecfa13861bacb8328bcf95e74a",
+  "schema_version": 1,
+  "source_record_hashes": {
+    "docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md": "7e0e5690333a84bfea70281e7106d1f76a72579495d1d5571933ac831b894ac7",
+    "docs/records/2026-05-26-generated-package-robot-task-probe.md": "b80dbb6d33fe4067b947ce8b0e5966c0ef7d782cda3221fb8a5569658efc233f",
+    "docs/records/2026-05-26-link-aware-robot-package-generation.md": "5dccacc1ef1f2361e0de41842a0875de5d53acc9e391812bb0ffcb2e15541eb7",
+    "docs/records/2026-05-26-phase0-paper-evidence-closure.md": "b3f37c83cc7455e82c6e2004e341b0f179db414cbf2ab74a3c89c72d9e7d45ea",
+    "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md": "ff138df351ee07cdc43aec80831bdd4f3b69e661be421989a29eb2765989f61a",
+    "paper/shared/evidence/results_manifest.yaml": "50c379ee512e65880133d9658c5faff7451a7cd5e0630134e90c60935bb8ed9a"
+  }
+}

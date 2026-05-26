@@ -6,40 +6,44 @@ figures:
     evidence: docs/design/system-architecture.md
     note: Text schematic for submission-readiness; not paper metrics.
   - id: phase0_asset_package_overlays
-    status: planned
+    status: generated
     output: generated/phase0_asset_package_overlays.pdf
+    generated_manifest: generated/accv_visuals_manifest.json
     evidence: >-
       reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json;
       assets/manifests/phase0_assets.yaml
     note: >-
-      Planned deterministic mesh/package overlay figure for selected Phase 0 rigid assets.
-      Generated from repo-local ignored asset mirrors and report package fields; raw assets stay
-      uncommitted.
+      Deterministic mesh/package overlay figure for selected Phase 0 rigid assets. Generated from
+      repo-local ignored asset mirrors and report package fields; raw assets stay uncommitted.
   - id: phase0_collision_probe_scenes
-    status: planned
+    status: generated
     output: generated/phase0_collision_probe_scenes.pdf
+    generated_manifest: generated/accv_visuals_manifest.json
     evidence: >-
       reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json;
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md
     note: >-
-      Planned diagnostic collision-scene render panels for bowl, cup, tray, and related probe
-      outcomes. These are evidence visualizations, not photorealistic rendering claims.
+      Diagnostic collision-scene render panels for bowl, cup, tray, and related probe outcomes.
+      These are evidence visualizations, not photorealistic rendering claims.
   - id: phase0_outcome_matrix
-    status: planned
+    status: generated
     output: generated/phase0_outcome_matrix.pdf
+    generated_manifest: generated/accv_visuals_manifest.json
     evidence: reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json
-    note: Planned accept/failure/fallback/not-applicable matrix derived from recorded outcomes.
+    note: Accept/failure/fallback/not-applicable matrix derived from recorded outcomes.
   - id: bed_franka_mechanism_diagnostic
-    status: planned
+    status: generated
     output: generated/bed_franka_mechanism_diagnostic.pdf
+    generated_manifest: generated/accv_visuals_manifest.json
     evidence: docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md
-    note: Planned mechanism figure for the capped bed/Franka full-compound sensitivity story.
+    note: Mechanism figure for the capped bed/Franka full-compound sensitivity story.
   - id: franka_link_aware_task_scene
-    status: planned
+    status: generated
     output: generated/franka_link_aware_task_scene.pdf
+    generated_manifest: generated/accv_visuals_manifest.json
     evidence: >-
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
       docs/records/2026-05-26-generated-package-robot-task-probe.md
     note: >-
-      Planned link-aware generated-package and task-smoke scene figure. It supports generated
-      package consumption evidence only, not whole-robot collision-quality or manipulation claims.
+      Link-aware generated-package and task-smoke scene figure. It supports generated package
+      consumption evidence only, not whole-robot collision-quality or manipulation claims.

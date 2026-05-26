@@ -9,7 +9,24 @@ results:
     metrics:
       bed_final_speed_mps: 0.082304
       franka_final_speed_mps: 0.0007108
+      settle_gate_mps: 0.05
       mechanism: full_compound_com_inertia_sensitivity
+      audit_rows:
+        - label: Isolated target primitive
+          result: bed passes
+          status: supported
+        - label: Full compound package
+          result: bed fails
+          status: failure
+        - label: Contact/floor sole cause
+          result: rejected
+          status: rejected
+        - label: Mass-only explanation
+          result: rejected
+          status: rejected
+        - label: COM/inertia sensitivity
+          result: supported
+          status: supported
   - id: package_body_state_guard_task_path
     status: recorded_diagnostic_path
     section: method
