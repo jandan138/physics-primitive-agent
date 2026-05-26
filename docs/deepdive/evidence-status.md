@@ -66,6 +66,7 @@ canonical DeepDive wording.
 ## Current Evidence To Highlight
 
 - [Cylinder goal completion audit after contact closure](../records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md)
+- [Phase 0 paper evidence closure](../records/2026-05-26-phase0-paper-evidence-closure.md)
 - [Generated-package robot task probe](../records/2026-05-26-generated-package-robot-task-probe.md)
 - [Link-aware robot package generation](../records/2026-05-26-link-aware-robot-package-generation.md)
 - [Phase 0 V-HACD runtime follow-up](../records/2026-05-26-phase0-vhacd-runtime-followup.md)

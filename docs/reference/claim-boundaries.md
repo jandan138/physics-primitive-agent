@@ -35,6 +35,9 @@ baseline. It is not the novelty claim by itself.
   narrow performance hook: native Newton boxes achieved 2.21x generated-contact throughput versus
   same-count convex64 mesh proxies in one pressure scene, with about 5.3% collision-only wall-time
   reduction.
+- The scoped Phase 0 V-HACD results can be described as diagnostic outcomes: V-HACD generated
+  packages for all five selected rigid assets, and the bowl/cup/tray packages were rejected by
+  named Newton probes. This does not imply broad V-HACD inferiority.
 - Current Franka evidence includes capped package/task-smoke evidence, one USD articulation smoke,
   one link-aware package generation and boundary-audit record, and one generated-package robot
   task smoke where all 12 generated package primitives are consumed by Newton. It is not

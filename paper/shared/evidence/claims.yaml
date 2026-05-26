@@ -52,6 +52,7 @@ claims:
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
       docs/records/2026-05-26-generated-package-robot-task-probe.md;
+      docs/records/2026-05-26-phase0-paper-evidence-closure.md;
       paper/shared/evidence/results_manifest.yaml#phase0_multi_asset_benchmark
     excluded_from_paper_metrics: false
     paper_scope: >-

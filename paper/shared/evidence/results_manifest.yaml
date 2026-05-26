@@ -36,6 +36,7 @@ results:
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
       docs/records/2026-05-26-generated-package-robot-task-probe.md;
+      docs/records/2026-05-26-phase0-paper-evidence-closure.md;
       reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json
     reporting_scope: >-
       Scoped five-asset GRScenes rigid diagnostic run plus one Franka USD articulation smoke over
