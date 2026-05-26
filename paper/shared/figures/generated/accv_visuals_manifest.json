@@ -21,7 +21,7 @@
       ]
     },
     {
-      "evidence": "phase0 Newton probe outcomes",
+      "evidence": "phase0 report + newton-render diagnostic scene reconstructions",
       "id": "phase0_collision_probe_scenes",
       "path": "paper/shared/figures/generated/phase0_collision_probe_scenes.pdf",
       "source_records": [

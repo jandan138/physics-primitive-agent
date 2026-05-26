@@ -1,9 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import math
+import os
+import subprocess
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -89,6 +93,21 @@ class FigureOutput:
     source_records: tuple[str, ...] = ()
 
 
+@dataclass(frozen=True)
+class Phase0ProbeScenePanelSpec:
+    case: Mapping[str, Any]
+    panel_kind: str
+    probe_name: str
+    lane: str = "vhacd_if_available"
+
+
+@dataclass(frozen=True)
+class Phase0RenderedProbePanel:
+    spec: Phase0ProbeScenePanelSpec
+    output_png: Path
+    bundle_dir: Path
+
+
 def load_phase0_report(path: str | Path) -> dict[str, Any]:
     report_path = Path(path)
     with report_path.open("r", encoding="utf-8") as fh:
@@ -116,6 +135,13 @@ def case_label(case: Mapping[str, Any]) -> str:
     else:
         name = asset_id.split("_")[1] if "_" in asset_id else asset_id
     return f"{role}\n{name}"
+
+
+def _phase0_probe_scene_case_label(case: Mapping[str, Any]) -> str:
+    role = str(case.get("asset_role", "")).replace("_", " ")
+    if role == "contact affordance":
+        return "cylindrical contact\nprop"
+    return case_label(case)
 
 
 def resolve_asset_path(case: Mapping[str, Any], asset_root: str | Path) -> Path:
@@ -199,6 +225,325 @@ def probe_failure_labels(result: Mapping[str, Any] | None) -> tuple[str, ...]:
     return tuple(dict.fromkeys(labels))
 
 
+def _phase0_probe_scene_panel_specs(report: Mapping[str, Any]) -> list[Phase0ProbeScenePanelSpec]:
+    selected_roles = ("container", "contact_affordance", "stackable")
+    panel_specs: list[Phase0ProbeScenePanelSpec] = []
+    for case in report.get("cases", []) or []:
+        if case.get("asset_role") not in selected_roles:
+            continue
+        panel_specs.extend(
+            [
+                Phase0ProbeScenePanelSpec(case=case, panel_kind="package_overlay", probe_name="package_overlay"),
+                Phase0ProbeScenePanelSpec(
+                    case=case,
+                    panel_kind="drop_settle",
+                    probe_name="body_state_drop_settle",
+                ),
+                Phase0ProbeScenePanelSpec(case=case, panel_kind="stack_slide", probe_name="stack_or_slide"),
+            ]
+        )
+    return panel_specs
+
+
+def _render_vec3_y_up(value: Sequence[float]) -> list[float]:
+    if len(value) != 3:
+        raise ValueError(f"expected length-3 vector, got {value!r}")
+    x, y, z = (float(value[0]), float(value[1]), float(value[2]))
+    return [x, z, y]
+
+
+def _phase0_render_package_y_up(package: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    if not package:
+        return None
+    converted = copy.deepcopy(dict(package))
+    primitives = converted.get("primitives", [])
+    if not isinstance(primitives, list):
+        return converted
+    for primitive in primitives:
+        if not isinstance(primitive, dict):
+            continue
+        center = primitive.get("center")
+        if isinstance(center, list) and len(center) == 3:
+            primitive["center"] = _render_vec3_y_up(center)
+        axes = primitive.get("axes")
+        if isinstance(axes, list):
+            primitive["axes"] = [
+                _render_vec3_y_up(axis)
+                for axis in axes
+                if isinstance(axis, list) and len(axis) == 3
+            ]
+        dimensions = primitive.get("dimensions")
+        if isinstance(dimensions, dict):
+            vertices = dimensions.get("vertices")
+            if isinstance(vertices, list):
+                dimensions["vertices"] = [
+                    _render_vec3_y_up(vertex)
+                    for vertex in vertices
+                    if isinstance(vertex, list) and len(vertex) == 3
+                ]
+            half_extents = dimensions.get("half_extents")
+            if isinstance(half_extents, list) and len(half_extents) == 3:
+                dimensions["half_extents"] = _render_vec3_y_up(half_extents)
+    return converted
+
+
+def _phase0_probe_scene_payload(
+    spec: Phase0ProbeScenePanelSpec,
+    *,
+    report_path: Path,
+    report_sha256: str,
+) -> dict[str, Any]:
+    case = spec.case
+    package = package_for_lane(case, spec.lane)
+    asset_id = str(case.get("asset_id", ""))
+    asset_role = str(case.get("asset_role", ""))
+    package_id = str((package or {}).get("package_id", f"{asset_role}_{spec.lane}:phase0_vhacd"))
+    if spec.panel_kind == "package_overlay":
+        return {
+            "schema_version": 1,
+            "source_report": report_path.as_posix(),
+            "source_report_sha256": report_sha256,
+            "asset_id": asset_id,
+            "asset_role": asset_role,
+            "lane": spec.lane,
+            "package_id": package_id,
+            "probe_type": "package_overlay",
+            "outcome": str(((case.get("baseline_results") or {}).get(spec.lane) or {}).get("outcome", "accept")),
+            "failure_labels": [],
+            "recorded_metrics": {},
+            "reconstruction_semantics": {
+                "mode": "collision_package_overlay",
+                "full_pose_recorded": True,
+                "text": "Asset mesh with selected collision primitive overlay.",
+            },
+        }
+
+    result = probe_result(case, spec.lane, spec.probe_name) or {}
+    runs = result.get("drop_settle_runs" if spec.panel_kind == "drop_settle" else "stack_slide_runs") or []
+    first_run = runs[0] if runs and isinstance(runs[0], Mapping) else {}
+    initial_conditions = result.get("initial_conditions") or {}
+    if spec.panel_kind == "drop_settle":
+        metrics = {
+            "initial_height": float(initial_conditions.get("height_m", first_run.get("initial_height", 0.25))),
+            "final_height": float(first_run.get("final_height", 0.25)),
+            "min_height": float(first_run.get("min_height", first_run.get("final_height", 0.25))),
+            "horizontal_displacement_m": None,
+            "support_top_height": None,
+        }
+        semantics = {
+            "mode": "metric_anchored_reconstruction",
+            "full_pose_recorded": False,
+            "text": "Start/final placements are visual reconstructions anchored to recorded scalar metrics.",
+        }
+    elif spec.panel_kind == "stack_slide":
+        initial_position = first_run.get("initial_probe_position", [0.0, 0.0, 0.0])
+        final_position = first_run.get("final_probe_position", initial_position)
+        half_extents = initial_conditions.get("probe_half_extents_m", [0.05, 0.05, 0.05])
+        metrics = {
+            "initial_probe_position": _render_vec3_y_up(initial_position),
+            "final_probe_position": _render_vec3_y_up(final_position),
+            "horizontal_displacement_m": float(first_run.get("horizontal_displacement_m", 0.0)),
+            "support_top_height": float(first_run.get("support_top_height", 0.0)),
+            "probe_half_extents_m": _render_vec3_y_up(half_extents),
+        }
+        semantics = {
+            "mode": "recorded_probe_position_reconstruction",
+            "full_pose_recorded": True,
+            "text": "Probe start/final centers are read from the recorded stack/slide run.",
+        }
+    else:
+        raise ValueError(f"unsupported phase0 probe panel kind: {spec.panel_kind}")
+
+    return {
+        "schema_version": 1,
+        "source_report": report_path.as_posix(),
+        "source_report_sha256": report_sha256,
+        "asset_id": asset_id,
+        "asset_role": asset_role,
+        "lane": spec.lane,
+        "package_id": package_id,
+        "probe_type": spec.probe_name,
+        "outcome": str(result.get("outcome", "unknown")),
+        "failure_labels": list(probe_failure_labels(result)),
+        "recorded_metrics": metrics,
+        "reconstruction_semantics": semantics,
+    }
+
+
+def _phase0_probe_panel_slug(spec: Phase0ProbeScenePanelSpec) -> str:
+    role = str(spec.case.get("asset_role", "asset"))
+    asset_id = str(spec.case.get("asset_id", "unknown"))
+    if "bowl" in asset_id:
+        asset_name = "bowl"
+    elif "cup" in asset_id:
+        asset_name = "cup"
+    elif "tray" in asset_id:
+        asset_name = "tray"
+    else:
+        asset_name = asset_id.split("_")[1] if "_" in asset_id else asset_id
+    return f"{role}_{asset_name}_{spec.panel_kind}"
+
+
+def _phase0_probe_scene_camera(case: Mapping[str, Any]) -> dict[str, float | str]:
+    role = str(case.get("asset_role", ""))
+    asset_id = str(case.get("asset_id", ""))
+    if role == "container" or "bowl" in asset_id:
+        return {
+            "preset": "phase0_container_open_rim",
+            "elev": 38,
+            "azim": 10,
+            "zoom": 1.35,
+        }
+    if role == "stackable" or "tray" in asset_id:
+        return {
+            "preset": "phase0_three_quarter",
+            "elev": 22,
+            "azim": -42,
+            "zoom": 1.22,
+        }
+    return {
+        "preset": "phase0_three_quarter",
+        "elev": 22,
+        "azim": -42,
+        "zoom": 1.35,
+    }
+
+
+def _write_phase0_probe_scene_bundle(
+    spec: Phase0ProbeScenePanelSpec,
+    *,
+    mesh: Any,
+    bundle_dir: Path,
+    report_path: Path,
+    report_sha256: str,
+) -> None:
+    try:
+        import yaml
+    except ImportError as exc:
+        raise RuntimeError("PyYAML is required to write newton-render bundles") from exc
+
+    bundle_dir.mkdir(parents=True, exist_ok=True)
+    slug = _phase0_probe_panel_slug(spec)
+    label = _phase0_probe_scene_case_label(spec.case).replace("\n", " ")
+    meta = {
+        "figure_id": f"physics_primitive.phase0.{slug}",
+        "recipe": "phase0_probe_scene",
+        "paper": "physics_primitive",
+        "panel_kind": spec.panel_kind,
+        "asset_label": label,
+        "asset_role": str(spec.case.get("asset_role", "")),
+        "asset_id": str(spec.case.get("asset_id", "")),
+        "lane": spec.lane,
+        "camera": _phase0_probe_scene_camera(spec.case),
+        "style": {"background": "paper_light"},
+        "overlay_max_primitives": 3,
+    }
+    if spec.panel_kind == "stack_slide":
+        meta["stack_use_package_support"] = True
+    (bundle_dir / "meta.yaml").write_text(yaml.safe_dump(meta, sort_keys=False), encoding="utf-8")
+    payload = _phase0_probe_scene_payload(
+        spec,
+        report_path=report_path,
+        report_sha256=report_sha256,
+    )
+    (bundle_dir / "probe_scene.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    package = _phase0_render_package_y_up(package_for_lane(spec.case, spec.lane))
+    if package:
+        (bundle_dir / "collision_package.json").write_text(json.dumps(package, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    _write_obj_mesh_y_up(mesh, bundle_dir / "mesh.obj")
+
+
+def _write_obj_mesh_y_up(mesh: Any, path: Path) -> None:
+    lines: list[str] = []
+    for point in np.asarray(mesh.points, dtype=float):
+        x, y, z = _render_vec3_y_up(point.tolist())
+        lines.append(f"v {x:.9f} {y:.9f} {z:.9f}")
+    for face in np.asarray(mesh.faces, dtype=int):
+        indices = [str(int(index) + 1) for index in face]
+        lines.append(f"f {' '.join(indices)}")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def _run_newton_render_phase0_panel(
+    *,
+    newton_render_root: Path,
+    bundle_dir: Path,
+    output_png: Path,
+    python_executable: str | Path | None = None,
+) -> Path:
+    root = Path(newton_render_root)
+    executable = str(python_executable or _newton_render_python_executable())
+    env = os.environ.copy()
+    src_path = str((root / "src").resolve())
+    existing_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = src_path if not existing_pythonpath else f"{src_path}{os.pathsep}{existing_pythonpath}"
+    output_png.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        executable,
+        "-m",
+        "newton_render.cli",
+        "render-figure",
+        "--bundle",
+        str(bundle_dir),
+        "--recipe",
+        "phase0_probe_scene",
+        "--output",
+        str(output_png),
+    ]
+    subprocess.run(cmd, cwd=root, env=env, check=True, capture_output=True, text=True)
+    return output_png
+
+
+def _newton_render_python_executable() -> str:
+    configured = os.environ.get("NEWTON_RENDER_PYTHON") or os.environ.get("NR_PYTHON")
+    if configured:
+        return configured
+    sandbox_python = Path("/cpfs/user/zhuzihou/conda-managed/envs/newton-render-py310/bin/python")
+    if sandbox_python.exists():
+        return str(sandbox_python)
+    return sys.executable
+
+
+def _render_phase0_probe_scene_panels(
+    report: Mapping[str, Any],
+    *,
+    asset_root: Path,
+    report_path: Path,
+    bundle_root: Path,
+    panel_output_dir: Path,
+    newton_render_root: Path,
+) -> list[Phase0RenderedProbePanel]:
+    report_sha256 = _sha256_file(report_path)
+    bundle_root.mkdir(parents=True, exist_ok=True)
+    panel_output_dir.mkdir(parents=True, exist_ok=True)
+    panels: list[Phase0RenderedProbePanel] = []
+    for spec in _phase0_probe_scene_panel_specs(report):
+        slug = _phase0_probe_panel_slug(spec)
+        bundle_dir = bundle_root / slug
+        mesh = _load_mesh(resolve_asset_path(spec.case, asset_root), max_faces=_phase0_probe_scene_mesh_face_cap(spec.case))
+        _write_phase0_probe_scene_bundle(
+            spec,
+            mesh=mesh,
+            bundle_dir=bundle_dir,
+            report_path=report_path,
+            report_sha256=report_sha256,
+        )
+        output_png = panel_output_dir / f"{slug}.png"
+        rendered = _run_newton_render_phase0_panel(
+            newton_render_root=newton_render_root,
+            bundle_dir=bundle_dir,
+            output_png=output_png,
+        )
+        panels.append(Phase0RenderedProbePanel(spec=spec, output_png=rendered, bundle_dir=bundle_dir))
+    return panels
+
+
+def _phase0_probe_scene_mesh_face_cap(case: Mapping[str, Any]) -> int:
+    if case.get("asset_role") == "precision_negative_control":
+        return 1800
+    return 1200
+
+
 def outcome_matrix(report: Mapping[str, Any]) -> tuple[list[str], list[str], np.ndarray]:
     rows = [case_label(case) for case in report.get("cases", [])]
     columns: list[str] = []
@@ -248,7 +593,7 @@ def generate_accv_visuals(
 
     figures = [
         *_save_asset_package_overlays(report, Path(asset_root), output, plt),
-        _save_collision_probe_scenes(report, Path(asset_root), output, plt),
+        _save_collision_probe_scenes(report, Path(asset_root), output, plt, report_path=Path(report_path)),
         _save_outcome_matrix(report, output, plt),
         _save_mechanism_diagnostic(output, plt),
         _save_franka_task_scene(report, output, plt),
@@ -419,7 +764,26 @@ def _save_collision_probe_scenes(
     asset_root: Path,
     output: Path,
     plt: Any,
+    *,
+    report_path: Path | None = None,
 ) -> FigureOutput:
+    render_root = _phase0_newton_render_root()
+    if render_root is not None and report_path is not None and _phase0_probe_scene_assets_available(report, asset_root):
+        try:
+            panels = _render_phase0_probe_scene_panels(
+                report,
+                asset_root=asset_root,
+                report_path=report_path,
+                bundle_root=REPO_ROOT / "reports/generated/accv_phase0_probe_scene_bundles",
+                panel_output_dir=REPO_ROOT / "reports/generated/accv_phase0_probe_scene_panels",
+                newton_render_root=render_root,
+            )
+            if panels:
+                return _save_collision_probe_scenes_from_rendered_panels(panels, output, plt)
+        except Exception:
+            if os.environ.get("NEWTON_RENDER_ROOT"):
+                raise
+
     selected_roles = ("container", "contact_affordance", "stackable")
     cases = [case for case in report.get("cases", []) if case.get("asset_role") in selected_roles]
     fig = plt.figure(figsize=(12.6, 7.4), constrained_layout=False)
@@ -466,7 +830,15 @@ def _save_collision_probe_scenes(
         render_points = _combine_points(mesh.points, package_vertices(package))
         _finish_3d_axis(render_ax, render_points, min_radius=0.12, zoom=1.22)
         render_ax.set_title("V-HACD package" if row == 0 else "")
-        render_ax.text2D(-0.045, 0.5, case_label(case), transform=render_ax.transAxes, ha="right", va="center", fontsize=8)
+        render_ax.text2D(
+            -0.045,
+            0.5,
+            _phase0_probe_scene_case_label(case),
+            transform=render_ax.transAxes,
+            ha="right",
+            va="center",
+            fontsize=8,
+        )
 
         drop_ax = fig.add_subplot(grid[row, 1])
         _draw_drop_probe_panel(drop_ax, probe_result(case, "vhacd_if_available", "body_state_drop_settle"))
@@ -486,6 +858,75 @@ def _save_collision_probe_scenes(
         "phase0 Newton probe outcomes",
         PHASE0_SOURCE_RECORDS,
     )
+
+
+def _save_collision_probe_scenes_from_rendered_panels(
+    panels: Sequence[Phase0RenderedProbePanel],
+    output: Path,
+    plt: Any,
+) -> FigureOutput:
+    if len(panels) % 3 != 0:
+        raise ValueError(f"expected rendered probe panels in triples, got {len(panels)}")
+    rows = len(panels) // 3
+    fig = plt.figure(figsize=(12.6, max(3.05, 3.05 * rows)), constrained_layout=False)
+    grid = fig.add_gridspec(
+        rows,
+        3,
+        left=0.065,
+        right=0.995,
+        top=0.925,
+        bottom=0.04,
+        wspace=0.035,
+        hspace=0.08,
+    )
+    titles = ("V-HACD package", "Drop/settle probe", "Stack/slide probe")
+    for index, panel in enumerate(panels):
+        row = index // 3
+        col = index % 3
+        ax = fig.add_subplot(grid[row, col])
+        image = plt.imread(panel.output_png)
+        ax.imshow(image)
+        ax.axis("off")
+        if row == 0:
+            ax.set_title(titles[col], pad=2)
+        if col == 0:
+            ax.text(
+                -0.045,
+                0.5,
+                _phase0_probe_scene_case_label(panel.spec.case),
+                transform=ax.transAxes,
+                ha="right",
+                va="center",
+                fontsize=8,
+            )
+    path = output / "phase0_collision_probe_scenes.pdf"
+    _save_pdf(fig, path)
+    plt.close(fig)
+    return FigureOutput(
+        "phase0_collision_probe_scenes",
+        path,
+        "phase0 report + newton-render diagnostic scene reconstructions",
+        PHASE0_SOURCE_RECORDS,
+    )
+
+
+def _phase0_newton_render_root() -> Path | None:
+    disabled = os.environ.get("PPA_DISABLE_NEWTON_RENDER", "").strip().lower()
+    if disabled in {"1", "true", "yes"}:
+        return None
+    configured = os.environ.get("NEWTON_RENDER_ROOT")
+    candidates = [Path(configured)] if configured else [Path("/cpfs/user/zhuzihou/dev/newton-render")]
+    for candidate in candidates:
+        if (candidate / "src/newton_render/render/phase0_probe_scene.py").is_file():
+            return candidate
+    return None
+
+
+def _phase0_probe_scene_assets_available(report: Mapping[str, Any], asset_root: Path) -> bool:
+    try:
+        return all(resolve_asset_path(spec.case, asset_root).exists() for spec in _phase0_probe_scene_panel_specs(report))
+    except Exception:
+        return False
 
 
 def _collision_scene_width_ratios() -> tuple[float, float, float]:

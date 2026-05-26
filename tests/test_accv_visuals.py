@@ -1,13 +1,23 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import numpy as np
 import pytest
 
+import primitive_collision_compiler.paper.accv_visuals as accv_visuals
 from primitive_collision_compiler.paper.accv_visuals import (
     PDF_METADATA,
     PROBE_SHORT_LABELS,
+    _phase0_probe_scene_panel_specs,
+    _phase0_probe_scene_payload,
+    Phase0RenderedProbePanel,
+    _render_phase0_probe_scene_panels,
+    _render_vec3_y_up,
+    _run_newton_render_phase0_panel,
+    _save_collision_probe_scenes_from_rendered_panels,
+    _write_phase0_probe_scene_bundle,
     _collision_scene_package_max_primitives,
     _collision_scene_subset_label,
     _collision_scene_width_ratios,
@@ -38,6 +48,303 @@ from primitive_collision_compiler.paper.accv_visuals import (
     primitive_vertices,
     summarize_probe_outcomes,
 )
+
+
+def _vhacd_probe_case(asset_role: str, asset_id: str = "grscenes_bowl_fixture") -> dict:
+    package = {
+        "package_id": f"{asset_role}_vhacd_if_available:phase0_vhacd",
+        "asset_id": asset_id,
+        "status": "generated",
+        "primitives": [
+            {
+                "primitive_id": "p0",
+                "kind": "convex_mesh",
+                "center": [1.0, 2.0, 3.0],
+                "axes": [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+                "dimensions": {
+                    "vertices": [[0.0, 1.0, 2.0], [1.0, 1.0, 2.0], [0.0, 2.0, 3.0]],
+                    "faces": [[0, 1, 2]],
+                },
+            }
+        ],
+    }
+    return {
+        "asset_id": asset_id,
+        "asset_role": asset_role,
+        "local_path": "assets/raw/example.usd",
+        "baseline_results": {
+            "vhacd_if_available": {
+                "collision_package": package,
+                "outcome": "accept",
+            }
+        },
+        "probe_results": {
+            "vhacd_if_available": {
+                "body_state_drop_settle": {
+                    "outcome": "failure",
+                    "initial_conditions": {"height_m": 0.25},
+                    "drop_settle_runs": [
+                        {
+                            "final_height": 0.50,
+                            "min_height": -0.10,
+                            "failure_labels": ["not_settled", "floor_breach"],
+                        }
+                    ],
+                },
+                "stack_or_slide": {
+                    "outcome": "failure",
+                    "initial_conditions": {
+                        "probe_half_extents_m": [0.05, 0.06, 0.07],
+                    },
+                    "stack_slide_runs": [
+                        {
+                            "initial_probe_position": [1.0, 2.0, 3.0],
+                            "final_probe_position": [4.0, 5.0, 6.0],
+                            "horizontal_displacement_m": 1.25,
+                            "support_top_height": 2.75,
+                            "failure_labels": ["excess_horizontal_slide"],
+                        }
+                    ],
+                },
+            }
+        },
+    }
+
+
+def test_phase0_probe_scene_panel_specs_cover_selected_vhacd_panels() -> None:
+    report = {
+        "cases": [
+            _vhacd_probe_case("container", "grscenes_bowl_fixture"),
+            _vhacd_probe_case("contact_affordance", "grscenes_cup_fixture"),
+            _vhacd_probe_case("stackable", "grscenes_tray_fixture"),
+            _vhacd_probe_case("precision_negative_control", "grscenes_keyboard_fixture"),
+        ]
+    }
+
+    specs = _phase0_probe_scene_panel_specs(report)
+
+    assert [spec.case["asset_role"] for spec in specs] == [
+        "container",
+        "container",
+        "container",
+        "contact_affordance",
+        "contact_affordance",
+        "contact_affordance",
+        "stackable",
+        "stackable",
+        "stackable",
+    ]
+    assert [spec.panel_kind for spec in specs[:3]] == ["package_overlay", "drop_settle", "stack_slide"]
+
+
+def test_case_label_keeps_role_asset_name_for_contact_affordance_cup() -> None:
+    label = accv_visuals.case_label(_vhacd_probe_case("contact_affordance", "grscenes_cup_fixture"))
+
+    assert label == "contact affordance\ncup"
+
+
+def test_phase0_probe_scene_case_label_uses_visual_description_for_contact_prop() -> None:
+    label = accv_visuals._phase0_probe_scene_case_label(
+        _vhacd_probe_case("contact_affordance", "grscenes_cup_fixture")
+    )
+
+    assert label == "cylindrical contact\nprop"
+
+
+def test_phase0_probe_scene_payload_converts_stack_coordinates_to_renderer_y_up() -> None:
+    case = _vhacd_probe_case("container")
+    spec = _phase0_probe_scene_panel_specs({"cases": [case]})[2]
+
+    payload = _phase0_probe_scene_payload(
+        spec,
+        report_path=Path("reports/generated/phase0.json"),
+        report_sha256="abc123",
+    )
+
+    metrics = payload["recorded_metrics"]
+    assert _render_vec3_y_up([1.0, 2.0, 3.0]) == [1.0, 3.0, 2.0]
+    assert metrics["initial_probe_position"] == [1.0, 3.0, 2.0]
+    assert metrics["final_probe_position"] == [4.0, 6.0, 5.0]
+    assert metrics["support_top_height"] == 2.75
+    assert payload["reconstruction_semantics"]["mode"] == "recorded_probe_position_reconstruction"
+
+
+def test_write_phase0_probe_scene_bundle_uses_newton_render_contract(tmp_path: Path) -> None:
+    yaml = pytest.importorskip("yaml")
+    case = _vhacd_probe_case("container")
+    spec = _phase0_probe_scene_panel_specs({"cases": [case]})[0]
+    mesh = type(
+        "Mesh",
+        (),
+        {
+            "points": np.asarray([[0.0, 1.0, 2.0], [1.0, 1.0, 2.0], [0.0, 2.0, 3.0]], dtype=float),
+            "faces": np.asarray([[0, 1, 2]], dtype=int),
+        },
+    )()
+
+    bundle_dir = tmp_path / "bundle"
+    _write_phase0_probe_scene_bundle(
+        spec,
+        mesh=mesh,
+        bundle_dir=bundle_dir,
+        report_path=Path("reports/generated/phase0.json"),
+        report_sha256="abc123",
+    )
+
+    meta = yaml.safe_load((bundle_dir / "meta.yaml").read_text(encoding="utf-8"))
+    probe_scene = __import__("json").loads((bundle_dir / "probe_scene.json").read_text(encoding="utf-8"))
+    package = __import__("json").loads((bundle_dir / "collision_package.json").read_text(encoding="utf-8"))
+    obj_text = (bundle_dir / "mesh.obj").read_text(encoding="utf-8")
+
+    assert meta["recipe"] == "phase0_probe_scene"
+    assert meta["panel_kind"] == "package_overlay"
+    assert meta["camera"]["elev"] == 38
+    assert meta["camera"]["azim"] == 10
+    assert meta["camera"]["zoom"] == 1.35
+    assert probe_scene["source_report_sha256"] == "abc123"
+    assert package["primitives"][0]["center"] == [1.0, 3.0, 2.0]
+    assert "v 0.000000000 2.000000000 1.000000000" in obj_text
+    assert "f 1 2 3" in obj_text
+
+
+def test_phase0_probe_scene_camera_keeps_stackable_label_clearance() -> None:
+    specs = _phase0_probe_scene_panel_specs(
+        {"cases": [_vhacd_probe_case("stackable", "grscenes_tray_fixture")]}
+    )
+
+    camera = accv_visuals._phase0_probe_scene_camera(specs[0].case)
+
+    assert camera["zoom"] == 1.22
+
+
+def test_run_newton_render_phase0_panel_invokes_recipe_cli(tmp_path: Path) -> None:
+    fake_root = tmp_path / "newton-render"
+    package_dir = fake_root / "src/newton_render"
+    package_dir.mkdir(parents=True)
+    (package_dir / "__init__.py").write_text("", encoding="utf-8")
+    (package_dir / "cli.py").write_text(
+        """
+from __future__ import annotations
+
+import json
+import os
+import sys
+from pathlib import Path
+
+args = sys.argv[1:]
+output = Path(args[args.index("--output") + 1])
+output.parent.mkdir(parents=True, exist_ok=True)
+output.write_text("rendered", encoding="utf-8")
+output.with_suffix(".json").write_text(json.dumps({"args": args, "pythonpath": os.environ.get("PYTHONPATH", "")}), encoding="utf-8")
+""".strip(),
+        encoding="utf-8",
+    )
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    output = tmp_path / "panel.png"
+
+    path = _run_newton_render_phase0_panel(
+        newton_render_root=fake_root,
+        bundle_dir=bundle,
+        output_png=output,
+        python_executable=sys.executable,
+    )
+
+    sidecar = __import__("json").loads(output.with_suffix(".json").read_text(encoding="utf-8"))
+    assert path == output
+    assert output.read_text(encoding="utf-8") == "rendered"
+    assert "--recipe" in sidecar["args"]
+    assert "phase0_probe_scene" in sidecar["args"]
+    assert str(fake_root / "src") in sidecar["pythonpath"]
+
+
+def test_render_phase0_probe_scene_panels_exports_ordered_bundles(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    report = {"cases": [_vhacd_probe_case("container", "grscenes_bowl_fixture")]}
+    report_path = tmp_path / "phase0.json"
+    report_path.write_text("{}", encoding="utf-8")
+    mesh = type(
+        "Mesh",
+        (),
+        {
+            "points": np.asarray([[0.0, 1.0, 2.0], [1.0, 1.0, 2.0], [0.0, 2.0, 3.0]], dtype=float),
+            "faces": np.asarray([[0, 1, 2]], dtype=int),
+        },
+    )()
+
+    def fake_render(**kwargs):
+        output_png = kwargs["output_png"]
+        output_png.write_text("rendered", encoding="utf-8")
+        return output_png
+
+    monkeypatch.setattr(accv_visuals, "_load_mesh", lambda path, max_faces: mesh)
+    monkeypatch.setattr(accv_visuals, "_run_newton_render_phase0_panel", fake_render)
+
+    panels = _render_phase0_probe_scene_panels(
+        report,
+        asset_root=tmp_path,
+        report_path=report_path,
+        bundle_root=tmp_path / "bundles",
+        panel_output_dir=tmp_path / "panels",
+        newton_render_root=tmp_path / "newton-render",
+    )
+
+    assert [panel.spec.panel_kind for panel in panels] == ["package_overlay", "drop_settle", "stack_slide"]
+    assert all(panel.output_png.read_text(encoding="utf-8") == "rendered" for panel in panels)
+    assert (tmp_path / "bundles/container_bowl_package_overlay/meta.yaml").is_file()
+    assert (tmp_path / "bundles/container_bowl_stack_slide/collision_package.json").is_file()
+
+
+def test_save_collision_probe_scenes_from_rendered_panels_creates_pdf(tmp_path: Path) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    specs = _phase0_probe_scene_panel_specs({"cases": [_vhacd_probe_case("container")]})
+    panels = []
+    for index, spec in enumerate(specs):
+        png = tmp_path / f"panel_{index}.png"
+        plt.imsave(png, np.ones((12, 16, 3), dtype=float) * (0.25 + index * 0.2))
+        panels.append(Phase0RenderedProbePanel(spec=spec, output_png=png, bundle_dir=tmp_path / f"bundle_{index}"))
+
+    figure = _save_collision_probe_scenes_from_rendered_panels(panels, tmp_path, plt)
+
+    assert figure.figure_id == "phase0_collision_probe_scenes"
+    assert figure.path.is_file()
+    assert figure.path.suffix == ".pdf"
+    assert "newton-render" in figure.evidence
+
+
+def test_save_collision_probe_scenes_from_rendered_panels_keeps_panel_rows_readable(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    specs = _phase0_probe_scene_panel_specs({"cases": [_vhacd_probe_case("container")]})
+    panels = []
+    for index, spec in enumerate(specs):
+        png = tmp_path / f"panel_{index}.png"
+        plt.imsave(png, np.ones((12, 16, 3), dtype=float) * (0.25 + index * 0.2))
+        panels.append(Phase0RenderedProbePanel(spec=spec, output_png=png, bundle_dir=tmp_path / f"bundle_{index}"))
+
+    saved_sizes: list[tuple[float, float]] = []
+
+    def capture_save(fig, path):
+        saved_sizes.append(tuple(float(value) for value in fig.get_size_inches()))
+        fig.savefig(path)
+
+    monkeypatch.setattr(accv_visuals, "_save_pdf", capture_save)
+
+    _save_collision_probe_scenes_from_rendered_panels(panels, tmp_path, plt)
+
+    assert saved_sizes == [(12.6, 3.05)]
 
 
 def test_box_primitive_vertices_uses_center_and_half_extents() -> None:
