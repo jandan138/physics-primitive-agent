@@ -4,15 +4,15 @@
 Collision proxies gate what simulators and robot stacks can trust.
 Primitive colliders remain attractive because they are editable, inspectable, and fast in many engines, yet a package that fits the input mesh can still change compound body state, destabilize contact, or violate link structure when imported into Newton.
 
-Recent primitive-decomposition methods, including CPD-style bottom-up fitting, optimize geometric fidelity and proxy complexity.
+Recent methods, including convex primitive decomposition (CPD)~\cite{cpd2026}, collision-aware convex decomposition (CoACD)~\cite{coacd2022}, and V-HACD-style voxelized decomposition~\cite{vhacd}, optimize geometric fidelity and proxy complexity.
 They do not, by themselves, answer whether a generated package should be accepted for simulation, articulation, or task operation under recorded settings.
 
-We study \emph{simulation-checked} acceptance: generate or import primitive candidates, preserve provenance and link boundaries, run Newton diagnostics over body state and contact, and fall back when checks expose risk.
+We study \emph{simulation-checked} acceptance: generate or import primitive candidates, preserve USD provenance and link boundaries~\cite{openusd2026}, run Newton diagnostics~\cite{newton2026} over body state and contact, and fall back when checks expose risk.
 Fallback is an expected compiler output, not a failure to hide.
 
-Our current repository is a DeepDive-stage bootstrap with dated records rather than a completed production compiler.
+We report a scoped bootstrap study with dated records rather than a completed production compiler.
 The strongest existing story is diagnostic: a capped bed cylinder package fails drop/settle as a full compound while isolated geometry passes, and recorded Franka cylinder packages pass in smaller contexts.
 The current Phase~0 evidence extends that story to multi-asset candidate lanes: V-HACD packages generate for all five selected rigid assets but fail named Newton probes on bowl, cup, and tray, and one generated Franka link-aware package is consumed by a Newton robot task smoke.
-The paper workspace versions in this repository keep claims aligned with those records while Phase~0 diagnostic tables are closed.
+The manuscript keeps claims aligned with recorded diagnostics while the Phase~0 tables are closed for this proof point.
 
 \input{../../shared/figures/pipeline_schematic}

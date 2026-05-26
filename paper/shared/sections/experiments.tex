@@ -2,7 +2,7 @@
 \label{sec:experiments}
 
 We report scoped evidence from the current bootstrap.
-Phase~0 targets 5--10 provenance-clear assets with paired baselines; the tables below summarize recorded results and mark open slots for the ACCV proof point.
+Phase~0 targets 5--10 provenance-clear assets with paired baselines; the tables below summarize the recorded ACCV proof point without treating unrun lanes as hidden successes.
 
 \subsection{Mechanism study: capped bed versus Franka cylinders}
 \label{sec:exp-mechanism}
@@ -24,19 +24,19 @@ The run records first-mesh bounding-primitive, CPD-style, and CoACD convex-mesh 
 It also records V-HACD runtime evidence for all five assets, with V-HACD probe failures on bowl, cup, and tray.
 We treat these V-HACD failures as recorded diagnostic outcomes: the packages are generated and mapped, but the Newton task probes reject them, supporting simulation-checked acceptance rather than geometry-only candidate generation.
 It also includes one Franka link-aware package generation record, one Franka USD articulation smoke, and one generated-package Franka task smoke.
-It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless placeholder link, and robot generated-package checks currently cover only one Franka smoke asset.
+It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless link sentinel, and robot generated-package checks currently cover only one Franka smoke asset.
 
 \begin{table}[t]
   \centering
-  \small
-  \begin{tabular}{@{}llll@{}}
+  \footnotesize
+  \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}p{0.25\textwidth}@{}}
     \toprule
     Asset role & Candidate lanes & \simchecked{} outcome & Recorded fallback/failure \\
     \midrule
     rigid prop & bbox 1; CoACD 1; V-HACD 1; CPD 12 & generated lanes pass & single-convex fallback \\
     container & bbox 1; CoACD 9; V-HACD 16; CPD 16 & bbox pass; sphere pass & single-convex fallback; CoACD/CPD/V-HACD drop+stack failures \\
     contact affordance & bbox 1; CoACD 5; V-HACD 16; CPD 16 & bbox pass; sphere pass & single-convex fallback; CoACD/CPD/V-HACD drop; CPD stack failure \\
-    stackable & bbox 1; CoACD 1; V-HACD 16; CPD 16 & bbox/CoACD/CPD pass & single-convex fallback; V-HACD drop failure \\
+    stackable & bbox 1; CoACD 1; V-HACD 16; CPD 16 & bbox, CoACD, CPD pass & single-convex fallback; V-HACD drop failure \\
     precision control & bbox 1; CoACD 1; V-HACD 16; CPD 12 & tested lanes pass & single-convex fallback; manual review required \\
     \bottomrule
   \end{tabular}
@@ -47,7 +47,7 @@ It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes,
 \subsection{Franka articulation smoke}
 The Phase~0 follow-up report includes one Franka USD smoke asset.
 The link-aware package generator detects 12 rigid-body links and 12 joint edges, emits 12 link-framed box primitives, and records zero cross-link merges.
-The `/panda/panda_link8` primitive is an explicit meshless placeholder because that link has no mesh in the source USD mirror.
+The \texttt{panda\_link8} primitive is an explicit meshless sentinel because that link has no mesh in the source USD mirror.
 The articulation smoke records joint-tree import, a short gravity hold, and a simple kinematic trajectory as passed.
 The generated-package task smoke separately suppresses source USD shapes, attaches all 12 generated package primitives to Newton bodies, records zero missing body links, and passes the same short hold/trajectory probe.
 This is generated-package consumption evidence for one Franka smoke asset, not whole-robot collider quality or manipulation evidence.

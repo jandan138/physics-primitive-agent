@@ -46,6 +46,9 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-05-26 ACCV Submission Readiness Pass](2026-05-26-accv-submission-readiness-pass.md):
+  ACCV policy check, related-work/citation update, method/experiment narrative alignment, and
+  final preflight record for the scoped Phase 0 submission candidate.
 - [2026-05-26 Link-Aware Robot Package Generation](2026-05-26-link-aware-robot-package-generation.md):
   first Phase 0 Franka link-aware package generation record; 12 rigid-body links detected, 12
   link-framed box primitives generated, zero cross-link merges, and `/panda/panda_link8` recorded

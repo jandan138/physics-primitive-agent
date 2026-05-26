@@ -1,8 +1,25 @@
-% Placeholder figure: compiler/checker pipeline schematic.
 \begin{figure}[t]
   \centering
   \fbox{\parbox[c][1.2in][c]{0.92\linewidth}{\centering\small
-    Placeholder: asset $\rightarrow$ primitive candidates $\rightarrow$ Newton diagnostics $\rightarrow$ accept / fallback}}
+    \begin{minipage}{0.17\linewidth}\centering
+      Asset\\provenance\\[-1pt]
+      {\scriptsize USD links, units}
+    \end{minipage}\hfill
+    $\rightarrow$\hfill
+    \begin{minipage}{0.18\linewidth}\centering
+      Candidate\\packages\\[-1pt]
+      {\scriptsize primitives, convex lanes}
+    \end{minipage}\hfill
+    $\rightarrow$\hfill
+    \begin{minipage}{0.18\linewidth}\centering
+      Newton\\diagnostics\\[-1pt]
+      {\scriptsize body, contact, robot}
+    \end{minipage}\hfill
+    $\rightarrow$\hfill
+    \begin{minipage}{0.17\linewidth}\centering
+      Accept or\\fallback\\[-1pt]
+      {\scriptsize recorded decision}
+    \end{minipage}}}
   \caption{Simulation-checked primitive collider workflow. Quantitative tables in the experiments section link to dated records; this schematic is not itself evidence.}
   \label{fig:pipeline}
 \end{figure}

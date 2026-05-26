@@ -155,11 +155,12 @@ git diff --check
 
 ## Paper Workspace
 
-Multi-venue LaTeX sources for the ACCV-facing draft:
+Multi-venue LaTeX sources for the ACCV submission candidate:
 
 ```sh
 cd paper && make list
-cd paper && make accv      # primary draft
+cd paper && make check-template-accv
+cd paper && make accv      # ACCV primary submission candidate
 cd paper && make all       # all venue wrappers
 ```
 

@@ -1,5 +1,5 @@
 \begin{abstract}
-Automatic primitive collider generation can produce geometry-plausible packages that still fail once they enter a physics engine: compound center-of-mass and inertia accounting, contact behavior, and robot articulation constraints are not visible from mesh fit alone.
+Automatic primitive collider generation can emit plausible packages that still fail inside a physics engine: compound mass properties, contact behavior, and robot articulation constraints are not visible from mesh fit alone.
 We propose a \simchecked{} primitive collider compiler for Newton workflows that treats candidate packages as safety-affecting artifacts until named diagnostics accept, reject, or route them to fallback.
 CPD-style primitive decomposition and convex decomposition methods remain candidate generators and baselines; our contribution is the downstream acceptance layer that closes the loop with executable simulation checks.
 Recorded evidence on capped bed and Franka assets shows a geometry-passing bed cylinder can fail drop/settle only in a full compound package because of body-state sensitivity, while smaller Franka cylinder packages pass under their recorded gates.

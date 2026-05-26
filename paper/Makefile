@@ -26,7 +26,12 @@ check-latex-tools:
 	fi
 
 check-template-accv:
-	@$(MAKE) check-external-class VENUE=accv CLASS=llncs.cls
+	@for file in accv.sty accvabbrv.sty llncs.cls splncs04.bst ACCV_TEMPLATE_LICENSE; do \
+		if [ ! -f "venues/accv/$$file" ]; then \
+			echo "Missing official ACCV template file: venues/accv/$$file"; \
+			exit 1; \
+		fi; \
+	done
 
 check-template-arxiv:
 	@true

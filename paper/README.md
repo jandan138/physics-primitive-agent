@@ -1,7 +1,7 @@
 # Newton Primitive Collision Compiler — Paper Workspace
 
 Multi-venue LaTeX structure migrated from the `genesis-llm` paper workflow. **ACCV** is the
-active primary draft for the simulation-checked primitive collider compiler story. **arXiv**,
+active submission-readiness candidate for the simulation-checked primitive collider compiler story. **arXiv**,
 **ECCV**, and **NeurIPS** are transfer-candidate wrappers that share manuscript sections and
 evidence registries.
 
@@ -20,9 +20,10 @@ paper/
 
 ```bash
 cd paper && make list
-cd paper && make template-check
-cd paper && make accv          # primary draft
+cd paper && make accv          # primary submission candidate
+cd paper && make check-template-accv
 cd paper && make all           # every venue (fails clearly if a template is missing)
+cd paper && make template-check # all venue template check, including transfer candidates
 cd paper && make clean
 ```
 
@@ -41,7 +42,7 @@ be recorded in that venue's `STATUS.md`.
 
 | Venue | Template source | Expected class | Readiness intent |
 | --- | --- | --- | --- |
-| accv | Springer LNCS from TeX Live or committed class | `llncs.cls` | primary-draft |
+| accv | committed official ACCV 2026 template files | `accv.sty`, `accvabbrv.sty`, `llncs.cls`, `splncs04.bst` | submission-readiness candidate |
 | arxiv | standard article | `article` | transfer-preparation |
 | eccv | official ECCV class from TeX Live or committed file | `eccv.sty` + `eccvabbrv.bst` | transfer-preparation |
 | neurips | copied NeurIPS 2026 style in repo | `neurips_2026.sty` | transfer-preparation |

@@ -1,12 +1,15 @@
-% ACCV primary preamble (Springer LNCS).
+% ACCV primary preamble (official ACCV 2026 LNCS-style template).
 
 \makeatletter
 \def\input@path{{../../shared/}{./}}
 \makeatother
 
+\usepackage[review,year=2026,ID=*****]{accv}
+\usepackage{accvabbrv}
 \usepackage{graphicx}
 \graphicspath{{../../shared/}{./}}
 \usepackage{amsmath,amssymb}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage{float}
 \usepackage{xcolor}
@@ -15,4 +18,4 @@
 \input{../../shared/math_commands}
 \input{../../shared/venue_macros}
 
-\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[pagebackref,breaklinks,colorlinks,citecolor=accvblue]{hyperref}

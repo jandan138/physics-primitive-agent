@@ -2,13 +2,18 @@
 \label{sec:related}
 
 \paragraph{Primitive and convex collision proxies.}
-Manual primitives, single convex hulls, and decomposition methods such as CoACD, V-HACD, and CPD-style primitive fitting provide candidate collision geometry with different fidelity--complexity trade-offs.
-We treat them as generators or baselines, not as the novelty claim of this work.
+Manual primitives, single convex hulls, and convex decomposition methods are standard tools for making collision checks tractable in real-time systems~\cite{ericson2004}.
+Approximate convex decomposition methods trade geometric fidelity against collision cost; examples include animated-mesh transfer~\cite{thul2018acd}, V-HACD~\cite{vhacd}, and collision-aware decomposition with tree search~\cite{coacd2022}.
+Recent CPD-style work fits compact primitive sets directly for rigid-body collision use~\cite{cpd2026}.
+We treat these systems as candidate generators or baselines, not as the novelty claim of this work.
 
 \paragraph{Physics-engine validation.}
-Simulators expose contact, penetration, and body-state behavior that geometric fitting cannot see.
+Physics engines expose contact, penetration, body-state, and articulation behavior that geometric fitting cannot see.
+Newton is a useful target for this study because it is built around robotics simulation, OpenUSD import, and Warp-backed computation~\cite{newton2026,warp2022,openusd2026}.
 Our framing is a diagnostic checker under named Newton tasks and settings, not formal verification or safety certification.
+The difference matters: a candidate can be geometrically plausible and still be rejected when simulation probes expose unstable compound state, blocked contact affordances, or task-specific robot import risk.
 
 \paragraph{Robot collision authoring.}
 Articulated assets require link-aware packages: primitives must not merge across joints, and articulation smoke checks are prerequisites for any whole-robot claim.
-Current Franka evidence in this repository includes capped package task smokes, one link-aware package generation record with boundary audit, one USD articulation smoke, and one generated-package robot task smoke that consumes the link-aware package, but not whole-robot collider-quality evidence.
+Current Franka evidence includes capped package task smokes, one link-aware package generation record with boundary audit, one USD articulation smoke, and one generated-package robot task smoke that consumes the link-aware package.
+That evidence supports package-consumption readiness for a bounded smoke path, but not whole-robot collider quality, manipulation performance, or end-effector accuracy.
