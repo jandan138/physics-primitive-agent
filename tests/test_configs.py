@@ -157,7 +157,15 @@ def test_phase0_config_defines_baselines_probes_and_required_metrics():
         0.05,
     ]
     assert probes["sphere_rain"]["initial_conditions"]["sphere_count"] == 32
-    assert probes["link_boundary_audit"]["pass_condition"] == "zero_cross_link_merges"
+    assert probes["link_boundary_audit"]["pass_condition"] == (
+        "zero_cross_link_merges_and_full_link_coverage"
+    )
+    assert set(probes["link_boundary_audit"]["metrics"]) >= {
+        "cross_link_merge_count",
+        "links_without_primitive_count",
+        "meshless_link_placeholder_count",
+        "per_link_primitive_count",
+    }
     assert (
         probes["articulation_smoke_if_robot"]["pass_condition"]
         == "complete_and_label_articulation_failures"

@@ -27,7 +27,7 @@ primitive decomposition is an important related candidate generator and baseline
 
 - build a non-LLM candidate-generator plus Newton checker loop;
 - include body-state and contact diagnostics;
-- add meshless-link policy and generated-package robot task probes for a reproducible robot smoke asset;
+- add generated-package robot task probes for a reproducible robot smoke asset;
 - compare simple baselines and CPD/CoACD/V-HACD-style candidates where available;
 - report accept/reject/fallback decisions with metrics and provenance.
 
@@ -42,8 +42,8 @@ primitive decomposition is an important related candidate generator and baseline
   Franka USD smoke asset, with accept/fallback/failure outcomes and zero dependency gaps for
   bounding, CPD-style, CoACD convex-mesh, V-HACD, stack-or-slide, and articulation-smoke lanes.
   V-HACD generates packages for all five selected rigid assets and records probe failures on bowl/cup/tray.
-  Franka link-aware package generation records 11 link-framed primitives over 12 detected links
-  with zero cross-link merges and `/panda/panda_link8` as meshless.
+  Franka link-aware package generation records 12 link-framed primitives over 12 detected links
+  with zero cross-link merges and `/panda/panda_link8` as a meshless placeholder.
 - A preliminary bed-aligned collision-only pressure test records 2.21x generated-contact throughput
   for Newton-native boxes versus same-count convex64 mesh proxies.
 - No broad benchmark-suite, complete collision-quality validation, or whole-robot

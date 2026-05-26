@@ -784,6 +784,9 @@ def _build_robot_package_result(
                     "link_count": 0,
                     "primitive_count": 0,
                     "cross_link_merge_count": None,
+                    "links_without_primitive_count": None,
+                    "links_without_primitives": [],
+                    "meshless_link_placeholder_count": 0,
                     "per_link_primitive_count": {},
                 },
                 "failure_labels": ["link_aware_package_generation_failed"],
@@ -818,6 +821,9 @@ def _robot_package_blocked_by_asset(asset_gate: Mapping[str, object]) -> dict[st
                 "link_count": 0,
                 "primitive_count": 0,
                 "cross_link_merge_count": None,
+                "links_without_primitive_count": None,
+                "links_without_primitives": [],
+                "meshless_link_placeholder_count": 0,
                 "per_link_primitive_count": {},
             },
             "failure_labels": ["asset_smoke_blocked_link_package_generation"],
@@ -840,14 +846,15 @@ def _robot_link_boundary_audit(role: str) -> dict[str, object]:
         "metrics": {
             "asset_role": role,
             "cross_link_merge_count": None,
+            "links_without_primitive_count": None,
+            "links_without_primitives": [],
+            "meshless_link_placeholder_count": 0,
             "per_link_primitive_count": {},
             "link_aware_package_generated": False,
         },
         "claim_boundary": PHASE0_LINK_BOUNDARY_CLAIM_BOUNDARY,
         "evidence_level": PHASE0_LINK_BOUNDARY_EVIDENCE_LEVEL,
-        "fallback_reason": (
-            "link-aware robot package generation is not implemented in this Phase 0 runner"
-        ),
+        "fallback_reason": "asset_smoke_blocked_link_package_generation",
     }
 
 

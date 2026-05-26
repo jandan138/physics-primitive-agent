@@ -44,8 +44,8 @@ claims:
       CPD-style first-mesh, CoACD convex-mesh, and V-HACD candidate packages with Newton contact,
       drop/settle, stack-or-slide, and sphere-rain probes. V-HACD generates packages for all five
       selected assets and records probe failures on bowl/cup/tray. The same report separately
-      includes one Franka link-aware package with zero cross-link merges and one Franka USD
-      articulation smoke asset.
+      includes one Franka link-aware package with all detected links covered, zero cross-link
+      merges, one meshless placeholder link, and one Franka USD articulation smoke asset.
     evidence_source: >-
       docs/records/2026-05-26-phase0-vhacd-runtime-followup.md;
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
@@ -54,8 +54,8 @@ claims:
     paper_scope: >-
       scoped_diagnostic_not_broad_benchmark_superiority_not_all_vhacd_success_not_whole_robot_quality
     next_required_step: >-
-      Triage or intentionally preserve the recorded V-HACD probe failures, resolve meshless-link
-      policy, and add generated-package robot task checks before claiming complete Phase 0 coverage.
+      Triage or intentionally preserve the recorded V-HACD probe failures and add
+      generated-package robot task checks before claiming complete Phase 0 coverage.
   - id: franka_articulation_smoke
     status: recorded_scoped
     section: experiments

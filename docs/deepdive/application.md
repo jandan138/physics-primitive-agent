@@ -74,7 +74,7 @@ benchmark-suite, full-simulation speedup, whole-robot collider quality, or safet
 The first milestone should demonstrate that simulation checks catch errors that geometry-only
 primitive generation would miss:
 
-- add meshless-link policy and generated-package robot task probes;
+- add generated-package robot task probes;
 - triage recorded V-HACD probe failures while keeping them visible as diagnostic failures;
 - generate primitive candidate packages and baseline colliders;
 - forbid primitive merging across robot link/joint boundaries;

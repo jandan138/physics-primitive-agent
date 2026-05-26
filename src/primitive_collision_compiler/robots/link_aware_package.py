@@ -15,6 +15,8 @@ LINK_BOUNDARY_AUDIT_CLAIM_BOUNDARY = (
     "link_boundary_audit_not_whole_robot_collision_quality_or_safety_validation"
 )
 LINK_AWARE_PACKAGE_EVIDENCE_LEVEL = "phase0_link_aware_robot_package_smoke"
+MESHLESS_LINK_PLACEHOLDER_STATUS = "placeholder_meshless_link"
+MESHLESS_LINK_PLACEHOLDER_HALF_EXTENT = 0.001
 
 
 @dataclass(frozen=True)
@@ -22,12 +24,14 @@ class RobotLinkSummary:
     link_path: str
     mesh_paths: tuple[str, ...]
     primitive_count: int
+    placeholder_primitive_count: int = 0
 
     def to_dict(self) -> dict[str, object]:
         return {
             "link_path": self.link_path,
             "mesh_paths": list(self.mesh_paths),
             "primitive_count": self.primitive_count,
+            "placeholder_primitive_count": self.placeholder_primitive_count,
         }
 
 
@@ -114,15 +118,21 @@ def build_link_aware_robot_package(
         mesh_paths = tuple(link_mesh_paths[link_path])
         point_blocks = link_mesh_points[link_path]
         primitive_count = 0
+        placeholder_primitive_count = 0
         if point_blocks:
             points = np.concatenate(point_blocks, axis=0)
             primitives.append(_box_primitive_for_link(asset_id, link_path, len(primitives), points))
             primitive_count = 1
+        else:
+            primitives.append(_meshless_placeholder_primitive(asset_id, link_path, len(primitives)))
+            primitive_count = 1
+            placeholder_primitive_count = 1
         links.append(
             RobotLinkSummary(
                 link_path=link_path,
                 mesh_paths=mesh_paths,
                 primitive_count=primitive_count,
+                placeholder_primitive_count=placeholder_primitive_count,
             )
         )
 
@@ -160,6 +170,7 @@ def audit_link_boundaries(
     missing_link_count = 0
     unknown_link_count = 0
     mismatched_frame_count = 0
+    meshless_link_placeholder_count = 0
 
     for primitive in package.primitives:
         source_links = tuple(str(link) for link in primitive.source_links)
@@ -175,6 +186,12 @@ def audit_link_boundaries(
             mismatched_frame_count += 1
             continue
         per_link[link_path] += 1
+        if primitive.conversion_status == MESHLESS_LINK_PLACEHOLDER_STATUS:
+            meshless_link_placeholder_count += 1
+
+    links_without_primitives = [
+        link_path for link_path, primitive_count in per_link.items() if primitive_count == 0
+    ]
 
     failure_labels: list[str] = []
     if cross_link_merge_count:
@@ -185,6 +202,8 @@ def audit_link_boundaries(
         failure_labels.append("primitive_unknown_source_link")
     if mismatched_frame_count:
         failure_labels.append("primitive_frame_source_link_mismatch")
+    if links_without_primitives:
+        failure_labels.append("link_without_primitive")
     if not link_paths:
         failure_labels.append("no_robot_links_detected")
     if not package.primitives:
@@ -204,6 +223,9 @@ def audit_link_boundaries(
             "missing_link_primitive_count": missing_link_count,
             "unknown_link_primitive_count": unknown_link_count,
             "mismatched_frame_primitive_count": mismatched_frame_count,
+            "links_without_primitive_count": len(links_without_primitives),
+            "links_without_primitives": links_without_primitives,
+            "meshless_link_placeholder_count": meshless_link_placeholder_count,
             "per_link_primitive_count": per_link,
         },
         "failure_labels": failure_labels,
@@ -300,6 +322,24 @@ def _box_primitive_for_link(
         volume=volume,
         weighted_volume=volume,
         conversion_status="candidate",
+    )
+
+
+def _meshless_placeholder_primitive(asset_id: str, link_path: str, index: int) -> PrimitiveSpec:
+    link_id = link_path.strip("/").replace("/", "_")
+    half_extents = [MESHLESS_LINK_PLACEHOLDER_HALF_EXTENT] * 3
+    volume = float(8.0 * half_extents[0] * half_extents[1] * half_extents[2])
+    return PrimitiveSpec(
+        primitive_id=f"{asset_id}:{link_id}:primitive:{index}:meshless_placeholder",
+        kind="box",
+        dimensions={"half_extents": half_extents},
+        center=(0.0, 0.0, 0.0),
+        frame=link_path,
+        source_links=(link_path,),
+        contains_assigned_points=False,
+        volume=volume,
+        weighted_volume=volume,
+        conversion_status=MESHLESS_LINK_PLACEHOLDER_STATUS,
     )
 
 

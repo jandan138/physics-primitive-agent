@@ -317,18 +317,24 @@ def test_phase0_report_records_articulated_robot_smoke_case(
     assert robot_case["asset_role"] == "articulated_robot"
     assert robot_case["asset_gate"]["outcome"] == "accept"
     assert robot_case["robot_package_result"]["status"] == "generated"
-    assert robot_case["robot_package_result"]["primitive_or_hull_count"] == 2
+    assert robot_case["robot_package_result"]["primitive_or_hull_count"] == 3
     assert robot_case["robot_package_result"]["collision_package"]["primitives"][0][
         "source_links"
     ] == ["/Robot/link0"]
+    placeholder = robot_case["robot_package_result"]["collision_package"]["primitives"][1]
+    assert placeholder["source_links"] == ["/Robot/link1"]
+    assert placeholder["conversion_status"] == "placeholder_meshless_link"
     assert robot_case["probe_results"]["articulation_smoke_if_robot"]["outcome"] == "accept"
     link_audit = robot_case["probe_results"]["link_boundary_audit"]
     assert link_audit["outcome"] == "accept"
     assert link_audit["metrics"]["link_aware_package_generated"] is True
     assert link_audit["metrics"]["cross_link_merge_count"] == 0
+    assert link_audit["metrics"]["meshless_link_placeholder_count"] == 1
+    assert link_audit["metrics"]["links_without_primitive_count"] == 0
     assert link_audit["metrics"]["per_link_primitive_count"] == {
         "/Robot/link0": 1,
         "/Robot/link1": 1,
+        "/Robot/link2": 1,
     }
     assert report["report_scope"]["link_aware_robot_package_generation"] is True
 
@@ -469,13 +475,18 @@ def _write_two_link_robot_usd(path: Path) -> None:
     root = UsdGeom.Xform.Define(stage, "/Robot")
     link0 = UsdGeom.Xform.Define(stage, "/Robot/link0")
     link1 = UsdGeom.Xform.Define(stage, "/Robot/link1")
+    link2 = UsdGeom.Xform.Define(stage, "/Robot/link2")
     UsdPhysics.RigidBodyAPI.Apply(link0.GetPrim())
     UsdPhysics.RigidBodyAPI.Apply(link1.GetPrim())
+    UsdPhysics.RigidBodyAPI.Apply(link2.GetPrim())
     _define_link_mesh(stage, "/Robot/link0/mesh", points=[(0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)])
-    _define_link_mesh(stage, "/Robot/link1/mesh", points=[(2, 0, 0), (3, 0, 0), (2, 1, 0), (2, 0, 1)])
+    _define_link_mesh(stage, "/Robot/link2/mesh", points=[(2, 0, 0), (3, 0, 0), (2, 1, 0), (2, 0, 1)])
     joint = UsdPhysics.RevoluteJoint.Define(stage, "/Robot/link0/joint01")
     joint.CreateBody0Rel().SetTargets([link0.GetPath()])
     joint.CreateBody1Rel().SetTargets([link1.GetPath()])
+    joint2 = UsdPhysics.RevoluteJoint.Define(stage, "/Robot/link1/joint12")
+    joint2.CreateBody0Rel().SetTargets([link1.GetPath()])
+    joint2.CreateBody1Rel().SetTargets([link2.GetPath()])
     stage.SetDefaultPrim(root.GetPrim())
     stage.GetRootLayer().Save()
 

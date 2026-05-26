@@ -41,7 +41,8 @@ results:
       repo-local mirrors. Bounding primitive, CPD-style first-mesh, and CoACD convex-mesh
       candidates are recorded with Newton contact, drop/settle, stack-or-slide, and sphere-rain
       outcomes. V-HACD runtime evidence is recorded for all five assets with probe failures, and
-      Franka link-aware package generation records zero cross-link merges with one meshless link.
+      Franka link-aware package generation records all detected links covered, zero cross-link
+      merges, and one meshless placeholder link.
     metrics:
       asset_count: 5
       articulation_asset_count: 1
@@ -52,9 +53,10 @@ results:
       vhacd_timeout_assets: 0
       franka_link_aware_package_generated: true
       franka_link_count: 12
-      franka_link_aware_primitive_count: 11
+      franka_link_aware_primitive_count: 12
       franka_cross_link_merge_count: 0
-      franka_meshless_zero_primitive_links: [/panda/panda_link8]
+      franka_meshless_placeholder_links: [/panda/panda_link8]
+      franka_meshless_link_placeholder_count: 1
       bounding_primitive_lanes_drop_and_sphere_passed: 5
       franka_articulation_smoke_passed: true
       recorded_failure_count: 11

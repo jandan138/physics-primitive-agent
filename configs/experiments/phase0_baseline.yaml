@@ -143,8 +143,10 @@ phase0_defaults:
         seeds: 1
       metrics:
         - cross_link_merge_count
+        - links_without_primitive_count
+        - meshless_link_placeholder_count
         - per_link_primitive_count
-      pass_condition: zero_cross_link_merges
+      pass_condition: zero_cross_link_merges_and_full_link_coverage
     articulation_smoke_if_robot:
       initial_conditions:
         asset_role: articulated_robot_if_present

@@ -47,9 +47,9 @@ Proposed | In progress | Complete | Failed | Superseded
 ## Current Record Index
 
 - [2026-05-26 Link-Aware Robot Package Generation](2026-05-26-link-aware-robot-package-generation.md):
-  first Phase 0 Franka link-aware package generation record; 12 rigid-body links detected, 11
+  first Phase 0 Franka link-aware package generation record; 12 rigid-body links detected, 12
   link-framed box primitives generated, zero cross-link merges, and `/panda/panda_link8` recorded
-  as a meshless zero-primitive link.
+  as a meshless placeholder.
 - [2026-05-26 Phase 0 V-HACD Runtime Follow-Up](2026-05-26-phase0-vhacd-runtime-followup.md):
   scoped follow-up run after installing `vhacdx`; V-HACD generates hull packages for all five
   GRScenes rigid assets, records V-HACD probe failures on bowl/cup/tray, and has zero dependency

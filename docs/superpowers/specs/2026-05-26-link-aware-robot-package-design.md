@@ -17,6 +17,7 @@ This design covers the first Phase 0 link-aware package path:
 - inspect a USD articulation asset for rigid-body link prims and joint relationships;
 - collect mesh geometry under each link prim;
 - generate bounded box primitives per link from that link's own mesh points;
+- generate a clearly flagged placeholder box for rigid-body links with no mesh points;
 - record a link-boundary audit with per-link primitive counts and cross-link merge count;
 - integrate the package and audit into Phase 0 articulated robot cases.
 
@@ -34,10 +35,17 @@ Use USD Physics structure rather than path-name heuristics:
 4. A generated primitive must carry `frame=<link path>` and `source_links=(<link path>,)`.
 5. The audit fails if a primitive names zero links, more than one source link, or a source link that
    does not match its frame.
+6. The audit also fails if any detected link has zero primitives. Meshless links may satisfy this
+   coverage gate only through a deterministic placeholder primitive with
+   `conversion_status="placeholder_meshless_link"`.
 
 Fixed joints are still kept as separate links for this first package. This is conservative: it
 prevents accidental cross-joint merges until a later, explicitly recorded fixed-joint-collapse
 policy exists.
+
+Meshless placeholder primitives are coverage artifacts, not geometry-quality evidence. They are
+small link-local boxes at the link origin, counted separately in the audit, and keep the package
+reviewable without borrowing geometry across fixed or articulated joints.
 
 ## Interfaces
 
@@ -69,7 +77,10 @@ articulated case generated a link-aware package and its link-boundary audit pass
 Tests must be written first and cover:
 
 - a synthetic USD robot with two rigid-body links and one joint produces one primitive per link;
+- a synthetic meshless rigid-body link still receives a flagged placeholder primitive and the audit
+  reports full link coverage;
 - the audit rejects a synthetic primitive with `source_links` spanning two links;
+- the audit rejects packages where any detected link has zero primitives;
 - Phase 0 articulated robot case records `link_aware_package_generated: true`,
   `cross_link_merge_count: 0`, and per-link counts while articulation smoke remains separate.
 

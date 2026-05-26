@@ -23,7 +23,7 @@ Table~\ref{tab:phase0-grscenes-rigid} summarizes the current scoped Phase~0 rigi
 The run records first-mesh bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain probes.
 It also records V-HACD runtime evidence for all five assets, with V-HACD probe failures on bowl, cup, and tray.
 It also includes one Franka link-aware package generation record and one Franka USD articulation smoke.
-It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless zero-primitive link, and generated-package robot task checks remain open.
+It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes, the Franka package records a meshless placeholder link, and generated-package robot task checks remain open.
 
 \begin{table}[t]
   \centering
@@ -32,11 +32,11 @@ It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes,
     \toprule
     Asset role & Candidate lanes & \simchecked{} outcome & Recorded fallback/failure \\
     \midrule
-    rigid prop & bbox 1; CoACD 1; V-HACD 1; CPD 12 & generated lanes pass & single-convex fallback only \\
-    container & bbox 1; CoACD 9; V-HACD 16; CPD 16 & bbox pass; sphere pass & CoACD/CPD/V-HACD drop+stack failures \\
-    contact affordance & bbox 1; CoACD 5; V-HACD 16; CPD 16 & bbox pass; sphere pass & CoACD/CPD/V-HACD drop; CPD stack failure \\
-    stackable & bbox 1; CoACD 1; V-HACD 16; CPD 16 & bbox/CoACD/CPD pass & V-HACD drop failure \\
-    precision control & bbox 1; CoACD 1; V-HACD 16; CPD 12 & tested lanes pass & manual review required \\
+    rigid prop & bbox 1; CoACD 1; V-HACD 1; CPD 12 & generated lanes pass & single-convex fallback \\
+    container & bbox 1; CoACD 9; V-HACD 16; CPD 16 & bbox pass; sphere pass & single-convex fallback; CoACD/CPD/V-HACD drop+stack failures \\
+    contact affordance & bbox 1; CoACD 5; V-HACD 16; CPD 16 & bbox pass; sphere pass & single-convex fallback; CoACD/CPD/V-HACD drop; CPD stack failure \\
+    stackable & bbox 1; CoACD 1; V-HACD 16; CPD 16 & bbox/CoACD/CPD pass & single-convex fallback; V-HACD drop failure \\
+    precision control & bbox 1; CoACD 1; V-HACD 16; CPD 12 & tested lanes pass & single-convex fallback; manual review required \\
     \bottomrule
   \end{tabular}
   \caption{Scoped Phase~0 GRScenes diagnostic summary. Counts are primitive or hull counts in the recorded package lanes; fallback and failure entries are recorded outcomes, not hidden exclusions.}
@@ -45,7 +45,7 @@ It is not a complete Phase~0 benchmark: selected V-HACD lanes still fail probes,
 
 \subsection{Franka articulation smoke}
 The Phase~0 follow-up report includes one Franka USD smoke asset.
-The link-aware package generator detects 12 rigid-body links and 12 joint edges, emits 11 link-framed box primitives, and records zero cross-link merges.
-The remaining zero-primitive link is `/panda/panda_link8`, which has no mesh in the source USD mirror and remains a recorded meshless-link policy gap.
+The link-aware package generator detects 12 rigid-body links and 12 joint edges, emits 12 link-framed box primitives, and records zero cross-link merges.
+The `/panda/panda_link8` primitive is an explicit meshless placeholder because that link has no mesh in the source USD mirror.
 The articulation smoke records joint-tree import, a short gravity hold, and a simple kinematic trajectory as passed.
 This is not whole-robot collider quality or manipulation evidence because the generated package has not yet been exercised under robot task probes.

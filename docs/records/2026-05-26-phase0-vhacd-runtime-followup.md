@@ -59,7 +59,7 @@ generation for the Franka smoke asset; see
 - `python -m pytest tests/test_convex_decomposition.py tests/test_phase0_benchmark.py::test_phase0_vhacd_runtime_failure_records_failed_baseline tests/test_configs.py::test_phase0_config_defines_baselines_probes_and_required_metrics -q`:
   5 passed before the full report rerun.
 - `time -p timeout 1200 env NEWTON_SOURCE_DIR=/cpfs/user/zhuzihou/dev/newton /cpfs/user/zhuzihou/conda-managed/envs/physics-primitive-newton-py310/bin/python -m primitive_collision_compiler.cli --config configs/experiments/phase0_baseline.yaml --run-phase0-benchmark > reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json`:
-  exit 0, `real 925.98`, report status `completed_with_recorded_failures`.
+  exit 0, `real 928.84`, report status `completed_with_recorded_failures`.
 - Parsed the generated JSON successfully. The report records zero dependency gaps and V-HACD
   generated packages for all five selected rigid assets with backend
   `trimesh_4.12.2_vhacdx_0.0.10`.

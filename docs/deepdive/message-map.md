@@ -63,8 +63,8 @@ superiority claim.
 The scoped Phase 0 follow-up run adds stack-or-slide execution, CoACD executable convex-mesh
 packages, V-HACD runtime evidence, and one Franka USD articulation smoke to the five-asset GRScenes
 diagnostic table. V-HACD now generates packages for all five selected rigid assets, with recorded
-probe failures on bowl/cup/tray. The same report now records a Franka link-aware package with zero
-cross-link merges and a meshless `/panda/panda_link8` boundary. It is still not complete Phase 0
+probe failures on bowl/cup/tray. The same report now records a Franka link-aware package with all
+detected links covered, zero cross-link merges, and a meshless `/panda/panda_link8` placeholder. It is still not complete Phase 0
 coverage because generated-package robot task checks and broader pass criteria remain open.
 
 ## DeepDive Proof Point

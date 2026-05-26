@@ -68,8 +68,8 @@ Supported today:
   closures, plus a scoped Newton diagnostic follow-up over bounding-primitive, CPD-style, and CoACD
   convex-mesh candidate lanes. The latest follow-up includes stack-or-slide probes, V-HACD runtime
   evidence for all five selected rigid assets, recorded V-HACD probe failures on bowl/cup/tray,
-  one Franka link-aware package generation record with zero cross-link merges, and one Franka USD
-  articulation smoke; it is not a complete Phase 0 benchmark or broad
+  one Franka link-aware package generation record with all detected links covered and zero
+  cross-link merges, and one Franka USD articulation smoke; it is not a complete Phase 0 benchmark or broad
   generalization result.
 - A dated capped bed/Franka mechanism audit explaining why the recorded bed cylinder package fails
   while recorded Franka cylinder packages pass.
@@ -95,7 +95,7 @@ Not supported today:
 The next DeepDive-facing proof point should shift from "primitive-first only" to
 "simulation-checked and robot-operation-aware":
 
-- add meshless-link policy and generated-package robot task probes;
+- add generated-package robot task probes;
 - triage recorded V-HACD probe failures while keeping them visible as diagnostic failures;
 - keep primitive merging link-aware and forbid cross-joint merges;
 - run Newton drop/settle, contact stress, and body-state diagnostics;

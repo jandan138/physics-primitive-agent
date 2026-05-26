@@ -21,8 +21,8 @@ canonical DeepDive wording.
   asset. It records bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes under
   Newton contact, drop/settle, stack-or-slide, and sphere-rain probes; records V-HACD runtime
   evidence for all five selected rigid assets, including V-HACD probe failures on bowl/cup/tray;
-  records a Franka link-aware package with 11 link-framed primitives over 12 detected rigid-body
-  links, zero cross-link merges, and `/panda/panda_link8` as a meshless zero-primitive link; and
+  records a Franka link-aware package with 12 link-framed primitives over 12 detected rigid-body
+  links, zero cross-link merges, and `/panda/panda_link8` as an explicit meshless placeholder; and
   records Franka joint-tree import, short gravity hold, and kinematic trajectory smoke.
 - The repository has dated records for capped bed/Franka native probe paths and opt-in selected
   cylinder packages.
@@ -75,7 +75,7 @@ canonical DeepDive wording.
 The next milestone should produce evidence for simulation-checked acceptance rather than more
 paper-lane gate accounting:
 
-- meshless-link policy for `/panda/panda_link8` and generated-package robot task checks;
+- generated-package robot task checks for the link-aware Franka package;
 - V-HACD probe-failure triage for the bowl, cup, and tray lanes, or an explicit decision to keep
   those failures as recorded diagnostic outcomes;
 - broader proof that primitive merges do not cross link/joint boundaries across more robot assets;
