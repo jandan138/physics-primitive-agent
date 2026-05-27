@@ -15,5 +15,5 @@ The difference matters: a candidate can be geometrically plausible and still be 
 
 \paragraph{Robot collision authoring.}
 Articulated assets require link-aware packages: primitives must not merge across joints, and articulation smoke checks are prerequisites for any whole-robot claim.
-Current Franka evidence includes capped package task smokes, one link-aware package generation record with boundary audit, one USD articulation smoke, and one generated-package robot task smoke that consumes the link-aware package.
+Current Franka evidence includes capped package task smokes, one link-aware package generation record with a boundary check, one USD articulation smoke, and one generated-package robot task smoke that consumes the link-aware package.
 That evidence supports package-consumption readiness for a bounded smoke path, but not whole-robot collider quality, manipulation performance, or end-effector accuracy.

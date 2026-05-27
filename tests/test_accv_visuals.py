@@ -25,8 +25,6 @@ from primitive_collision_compiler.paper.accv_visuals import (
     _collision_scene_width_ratios,
     _franka_label_indices,
     _franka_metric_color,
-    _mechanism_audit_display_row,
-    _mechanism_diagnostic_width_ratios,
     _mechanism_failure_callout_positions,
     _mechanism_scene_title,
     _mechanism_visual_labels,
@@ -533,6 +531,10 @@ def test_mechanism_scene_payload_preserves_recorded_metrics() -> None:
     assert payload["annotations"]["bed_speed_label"] == "0.082 > 0.05 m/s"
     assert payload["claim_boundary_note"] == "Diagnostic rendering; not a new Newton run."
     assert payload["status_label_entries"] == ["failure", "accept"]
+    assert payload["labels"] == {
+        "failure": "",
+        "accept": "",
+    }
 
 
 def test_franka_task_scene_payload_preserves_consumption_metrics() -> None:
@@ -546,9 +548,9 @@ def test_franka_task_scene_payload_preserves_consumption_metrics() -> None:
     assert payload["metrics"]["task_outcome"] == "accept"
     assert "panda_link8" in payload["sentinel_links"]
     assert payload["labels"] == {
-        "failure": "red task obstacle",
-        "accept": "green link-local packages",
-        "meshless_sentinel": "amber link sentinel",
+        "failure": "",
+        "accept": "",
+        "meshless_sentinel": "",
     }
 
 
@@ -566,12 +568,6 @@ def test_write_paper_scene_bundle_uses_newton_render_contract(tmp_path: Path) ->
     meta = yaml.safe_load((bundle / "meta.yaml").read_text(encoding="utf-8"))
     assert meta["recipe"] == "franka_task_scene"
     assert meta["figure_id"] == "franka_task_scene"
-
-
-def test_mechanism_audit_display_rows_avoid_ambiguous_bed_pass_wording() -> None:
-    row = {"label": "Isolated target primitive", "result": "bed passes", "status": "supported"}
-
-    assert _mechanism_audit_display_row(row) == ("Isolated target check", "target passes", "supported")
 
 
 def test_collision_scene_layout_gives_package_panel_more_width() -> None:
@@ -714,12 +710,8 @@ def test_franka_schematic_labels_are_derived_from_link_metadata() -> None:
     }
 
 
-def test_mechanism_layout_keeps_title_short_and_audit_panel_spaced() -> None:
+def test_mechanism_layout_keeps_title_short_for_single_visual_plate() -> None:
     assert _mechanism_scene_title() == "Mechanism diagnostic: package context matters"
-    scene_ratio, audit_ratio = _mechanism_diagnostic_width_ratios()
-    assert scene_ratio > audit_ratio
-    assert scene_ratio >= 1.82
-    assert audit_ratio >= 1.02
 
 
 def test_mechanism_failure_callouts_are_spaced_from_top_geometry() -> None:
@@ -746,6 +738,34 @@ def test_save_mechanism_diagnostic_from_rendered_panel_creates_pdf(tmp_path: Pat
     assert figure.figure_id == "bed_franka_mechanism_diagnostic"
     assert figure.path.is_file()
     assert "newton-render" in figure.evidence
+
+
+def test_save_mechanism_diagnostic_from_rendered_panel_uses_single_visual_plate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    image = np.ones((240, 420, 3), dtype=np.float32)
+    panel = tmp_path / "mechanism.png"
+    plt.imsave(panel, image)
+    saved_axes_counts: list[int] = []
+    saved_sizes: list[tuple[float, float]] = []
+
+    def capture_save(fig, path):
+        saved_axes_counts.append(len(fig.axes))
+        saved_sizes.append(tuple(float(value) for value in fig.get_size_inches()))
+        fig.savefig(path)
+
+    monkeypatch.setattr(accv_visuals, "_save_pdf", capture_save)
+
+    accv_visuals._save_mechanism_diagnostic_from_rendered_panel(panel, tmp_path, plt)
+
+    assert saved_axes_counts == [1]
+    assert saved_sizes == [(12.2, 3.25)]
 
 
 def test_save_mechanism_diagnostic_invokes_renderer_when_available(
@@ -804,11 +824,26 @@ def test_save_mechanism_diagnostic_falls_back_without_renderer(
 
     monkeypatch.setattr(accv_visuals, "_phase0_newton_render_root", lambda: None)
     monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: None)
+    saved_axes_counts: list[int] = []
+    saved_sizes: list[tuple[float, float]] = []
+    saved_titles: list[list[str]] = []
+
+    def capture_save(fig, path):
+        saved_axes_counts.append(len(fig.axes))
+        saved_sizes.append(tuple(float(value) for value in fig.get_size_inches()))
+        saved_titles.append([axis.get_title() for axis in fig.axes])
+        fig.savefig(path)
+
+    monkeypatch.setattr(accv_visuals, "_save_pdf", capture_save)
 
     figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
 
     assert figure.path.is_file()
     assert figure.evidence == "2026-05-22 cylinder mechanism records"
+    assert saved_axes_counts == [1]
+    assert saved_sizes == [(12.2, 3.25)]
+    assert saved_titles == [["Mechanism diagnostic: package context matters"]]
+    assert "Recorded audit checks" not in saved_titles[0]
 
 
 def test_save_mechanism_diagnostic_raises_for_explicit_renderer_failure(
@@ -918,6 +953,39 @@ def test_save_franka_task_scene_from_rendered_panel_creates_pdf(tmp_path: Path) 
     assert "newton-render" in figure.evidence
 
 
+def test_save_franka_task_scene_from_rendered_panel_uses_single_visual_plate(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    image = np.ones((240, 420, 3), dtype=np.float32)
+    panel = tmp_path / "franka.png"
+    plt.imsave(panel, image)
+    saved_axes_counts: list[int] = []
+    saved_sizes: list[tuple[float, float]] = []
+
+    def capture_save(fig, path):
+        saved_axes_counts.append(len(fig.axes))
+        saved_sizes.append(tuple(float(value) for value in fig.get_size_inches()))
+        fig.savefig(path)
+
+    monkeypatch.setattr(accv_visuals, "_save_pdf", capture_save)
+
+    accv_visuals._save_franka_task_scene_from_rendered_panel(
+        _franka_task_report_fixture(),
+        panel,
+        tmp_path,
+        plt,
+    )
+
+    assert saved_axes_counts == [1]
+    assert saved_sizes == [(12.2, 3.25)]
+
+
 def test_save_franka_task_scene_invokes_renderer_when_available(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -973,11 +1041,26 @@ def test_save_franka_task_scene_falls_back_without_renderer(
 
     monkeypatch.setattr(accv_visuals, "_phase0_newton_render_root", lambda: None)
     monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: None)
+    saved_axes_counts: list[int] = []
+    saved_sizes: list[tuple[float, float]] = []
+    saved_titles: list[list[str]] = []
+
+    def capture_save(fig, path):
+        saved_axes_counts.append(len(fig.axes))
+        saved_sizes.append(tuple(float(value) for value in fig.get_size_inches()))
+        saved_titles.append([axis.get_title() for axis in fig.axes])
+        fig.savefig(path)
+
+    monkeypatch.setattr(accv_visuals, "_save_pdf", capture_save)
 
     figure = accv_visuals._save_franka_task_scene(_franka_task_report_fixture(), tmp_path, plt)
 
     assert figure.path.is_file()
     assert figure.evidence == "link-aware package and generated-package robot task records"
+    assert saved_axes_counts == [1]
+    assert saved_sizes == [(12.2, 3.25)]
+    assert saved_titles == [["Franka generated-package task smoke"]]
+    assert "Package consumption metrics" not in saved_titles[0]
 
 
 def test_save_franka_task_scene_raises_for_explicit_renderer_failure(

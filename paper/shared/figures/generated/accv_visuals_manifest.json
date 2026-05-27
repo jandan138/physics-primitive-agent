@@ -53,10 +53,10 @@
           "figure_id": "bed_franka_mechanism_diagnostic",
           "input_hashes": {
             "meta.yaml": "7c5bf558962ae3ee0011201793ccf4ee7e7dbc55666274ec4e51cc03be701952",
-            "scene.json": "48a2da81f5ca7f53066341c790716d7e3d910169013da97ed83ea36d95f9d3ca"
+            "scene.json": "cb2d61dace4395c04eae1fff53911eb0d296b66dc17ba93989bd3fd3f99e3bc9"
           },
           "mechanism_visual_mode": "subscene_status_scene",
-          "output_png_sha256": "9448a2415b912ebb3626ff1f3c522ad8385482837f1a15322bd1f08d9b8e26d6",
+          "output_png_sha256": "56572f55d9ff60c899cfcc12ff16a6b8107c31d3bd7d0a47d5c19bce3a4e8f84",
           "paper_readability": {
             "annotation_scale": "large_paper_panel",
             "label_contrast": "bold_paper_labels",
@@ -75,18 +75,7 @@
           ],
           "source_claim_boundary_note": "Diagnostic rendering; not a new Newton run.",
           "status_label_layout": {
-            "entries": [
-              {
-                "color": "#b94b48",
-                "key": "failure",
-                "label": "red failure"
-              },
-              {
-                "color": "#2e7d59",
-                "key": "accept",
-                "label": "green accept"
-              }
-            ],
+            "entries": [],
             "font_size": 7.4,
             "mode": "stacked_top_right",
             "title_visible": false
@@ -119,10 +108,10 @@
           "franka_visual_mode": "link_chain_task_smoke",
           "input_hashes": {
             "meta.yaml": "14d3b4b312c850b8a95d1209d94448295fecfedbfb1111659e763cc42eed52b2",
-            "scene.json": "9fa3cd80d7c81539191bdd99328e2e17da6bb764ef49c276e5e4beefdb759821"
+            "scene.json": "3817ba6c76c2b13711cf6034850e9d2b64b983df4d57fdd9f35101ad71555a03"
           },
           "link_count": 12,
-          "output_png_sha256": "338a27e5cd9178ed6da1df324ea0fcbadfb645ed831bd7982570e73be8d87f44",
+          "output_png_sha256": "db171d403029a17673d4f1887c2f4fa5149321ce8498ab992ef922105bda53cc",
           "paper_readability": {
             "annotation_scale": "large_paper_panel",
             "label_contrast": "bold_paper_labels",
@@ -139,23 +128,7 @@
           ],
           "source_claim_boundary_note": "Task-smoke rendering; not whole-robot quality evidence.",
           "status_label_layout": {
-            "entries": [
-              {
-                "color": "#b94b48",
-                "key": "failure",
-                "label": "red task obstacle"
-              },
-              {
-                "color": "#2e7d59",
-                "key": "accept",
-                "label": "green link-local packages"
-              },
-              {
-                "color": "#c48922",
-                "key": "meshless_sentinel",
-                "label": "amber link sentinel"
-              }
-            ],
+            "entries": [],
             "font_size": 7.4,
             "mode": "stacked_top_right",
             "title_visible": false

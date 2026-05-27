@@ -1184,15 +1184,9 @@ def _save_mechanism_diagnostic(output: Path, plt: Any) -> FigureOutput:
             renderer_metadata=_paper_scene_renderer_metadata(render_root, panel),
         )
 
-    fig, axes = plt.subplots(
-        1,
-        2,
-        figsize=(12.2, 4.55),
-        constrained_layout=True,
-        gridspec_kw={"width_ratios": _mechanism_diagnostic_width_ratios(), "wspace": 0.10},
-    )
-    _draw_mechanism_scene(axes[0], metrics, plt)
-    _draw_mechanism_audit_table(axes[1], metrics)
+    fig, ax = plt.subplots(figsize=(12.2, 3.25), constrained_layout=True)
+    _draw_mechanism_scene(ax, metrics, plt)
+    _draw_mechanism_summary_badges(ax, metrics)
     path = output / "bed_franka_mechanism_diagnostic.pdf"
     _save_pdf(fig, path)
     plt.close(fig)
@@ -1213,17 +1207,11 @@ def _save_mechanism_diagnostic_from_rendered_panel(
 ) -> FigureOutput:
     entry = _load_result_entry("bed_franka_cylinder_mechanism")
     metrics = entry.get("metrics") or {}
-    fig, axes = plt.subplots(
-        1,
-        2,
-        figsize=(12.2, 4.55),
-        constrained_layout=True,
-        gridspec_kw={"width_ratios": _mechanism_diagnostic_width_ratios(), "wspace": 0.10},
-    )
-    axes[0].imshow(plt.imread(panel_png))
-    axes[0].axis("off")
-    axes[0].set_title(_mechanism_scene_title())
-    _draw_mechanism_audit_table(axes[1], metrics)
+    fig, ax = plt.subplots(figsize=(12.2, 3.25), constrained_layout=True)
+    ax.imshow(plt.imread(panel_png))
+    ax.axis("off")
+    ax.set_title(_mechanism_scene_title())
+    _draw_mechanism_summary_badges(ax, metrics)
     path = output / "bed_franka_mechanism_diagnostic.pdf"
     _save_pdf(fig, path)
     plt.close(fig)
@@ -1234,21 +1222,6 @@ def _save_mechanism_diagnostic_from_rendered_panel(
         _mechanism_source_records(),
         renderer_metadata,
     )
-
-
-def _mechanism_diagnostic_width_ratios() -> tuple[float, float]:
-    return (1.82, 1.02)
-
-
-def _mechanism_audit_display_row(row: Mapping[str, Any]) -> tuple[str, str, str]:
-    left = str(row.get("label", ""))
-    right = str(row.get("result", ""))
-    status = str(row.get("status", right))
-    if left == "Isolated target primitive":
-        return "Isolated target check", "target passes", status
-    if left == "Full compound package":
-        return "Full bed package", "bed package fails", status
-    return left, right, status
 
 
 def _mechanism_visual_labels(metrics: Mapping[str, Any]) -> tuple[str, ...]:
@@ -1268,6 +1241,10 @@ def _mechanism_scene_payload(metrics: Mapping[str, Any]) -> dict[str, Any]:
     gate = float(metrics["settle_gate_mps"])
     return {
         "claim_boundary_note": "Diagnostic rendering; not a new Newton run.",
+        "labels": {
+            "failure": "",
+            "accept": "",
+        },
         "status_label_entries": ["failure", "accept"],
         "settle_gate_mps": gate,
         "subscenes": [
@@ -1303,42 +1280,24 @@ def _mechanism_scene_payload(metrics: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _draw_mechanism_summary_badges(ax: Any, metrics: Mapping[str, Any]) -> None:
+    del metrics
+    _draw_visual_notes(
+        ax,
+        (
+            ("isolated: pass", "#2e7d59"),
+            ("full package: fail", "#b94b48"),
+            ("COM/inertia supported", "#a76f1b"),
+        ),
+        columns=3,
+    )
+
+
 def _mechanism_source_records() -> tuple[str, ...]:
     entry = _load_result_entry("bed_franka_cylinder_mechanism")
     return tuple(_split_evidence_sources(entry.get("evidence_source", ""))) + (
         "paper/shared/evidence/results_manifest.yaml",
     )
-
-
-def _draw_mechanism_audit_table(ax: Any, metrics: Mapping[str, Any]) -> None:
-    mechanism_rows = metrics.get("audit_rows") or []
-    if not mechanism_rows:
-        raise RuntimeError(f"missing mechanism audit rows in {RESULTS_MANIFEST}")
-    ax.axis("off")
-    ax.set_title("Recorded audit checks")
-    ax.text(
-        0.02,
-        0.95,
-        f"Settle gate: {float(metrics['settle_gate_mps']):.2f} m/s",
-        ha="left",
-        va="center",
-        fontsize=8.2,
-        transform=ax.transAxes,
-    )
-    y = 0.82
-    for row in mechanism_rows:
-        left, right, status = _mechanism_audit_display_row(row)
-        color = _audit_status_color(status)
-        ax.text(0.02, y, left, ha="left", va="center", fontsize=8.0, transform=ax.transAxes)
-        ax.text(0.98, y, right, ha="right", va="center", fontsize=8.0, color=color, transform=ax.transAxes)
-        ax.plot(
-            [0.02, 0.98],
-            [y - 0.065, y - 0.065],
-            color="#d8d8d8",
-            linewidth=0.6,
-            transform=ax.transAxes,
-        )
-        y -= 0.145
 
 
 def _draw_mechanism_scene(ax: Any, metrics: Mapping[str, Any], plt: Any) -> None:
@@ -1502,19 +1461,13 @@ def _save_franka_task_scene(report: Mapping[str, Any], output: Path, plt: Any) -
     robot_result = articulation.get("robot_package_result") or {}
     links = robot_result.get("links", []) or []
 
-    fig, axes = plt.subplots(
-        1,
-        2,
-        figsize=(12.2, 4.5),
-        constrained_layout=True,
-        gridspec_kw={"width_ratios": [1.18, 1.0]},
-    )
-    axes[0].set_title("Franka generated-package task smoke")
-    axes[0].set_xlim(-0.2, 1.05)
-    axes[0].set_ylim(-0.08, 1.05)
-    axes[0].axis("off")
-    _draw_franka_task_schematic(axes[0], links, plt)
-    _draw_franka_metric_table(axes[1], _franka_metric_rows(report))
+    fig, ax = plt.subplots(figsize=(12.2, 3.25), constrained_layout=True)
+    ax.set_title("Franka generated-package task smoke")
+    ax.set_xlim(-0.2, 1.05)
+    ax.set_ylim(-0.08, 1.05)
+    ax.axis("off")
+    _draw_franka_task_schematic(ax, links, plt)
+    _draw_franka_summary_badges(ax, _franka_metric_rows(report))
 
     path = output / "franka_link_aware_task_scene.pdf"
     _save_pdf(fig, path)
@@ -1540,9 +1493,9 @@ def _franka_task_scene_payload(report: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "claim_boundary_note": "Task-smoke rendering; not whole-robot quality evidence.",
         "labels": {
-            "failure": "red task obstacle",
-            "accept": "green link-local packages",
-            "meshless_sentinel": "amber link sentinel",
+            "failure": "",
+            "accept": "",
+            "meshless_sentinel": "",
         },
         "links": [
             {
@@ -1591,18 +1544,6 @@ def _franka_metric_rows(report: Mapping[str, Any]) -> list[tuple[str, Any]]:
     ]
 
 
-def _draw_franka_metric_table(ax: Any, rows: Sequence[tuple[str, Any]]) -> None:
-    ax.axis("off")
-    ax.set_title("Package consumption metrics")
-    y = 0.88
-    for left, right in rows:
-        color = _franka_metric_color(left, right)
-        ax.text(0.04, y, left, ha="left", va="center", transform=ax.transAxes)
-        ax.text(0.96, y, str(right), ha="right", va="center", color=color, transform=ax.transAxes)
-        ax.plot([0.04, 0.96], [y - 0.06, y - 0.06], color="#d8d8d8", linewidth=0.6, transform=ax.transAxes)
-        y -= 0.14
-
-
 def _save_franka_task_scene_from_rendered_panel(
     report: Mapping[str, Any],
     panel_png: Path,
@@ -1611,17 +1552,11 @@ def _save_franka_task_scene_from_rendered_panel(
     *,
     renderer_metadata: Mapping[str, Any] | None = None,
 ) -> FigureOutput:
-    fig, axes = plt.subplots(
-        1,
-        2,
-        figsize=(12.2, 4.5),
-        constrained_layout=True,
-        gridspec_kw={"width_ratios": [1.18, 1.0]},
-    )
-    axes[0].imshow(plt.imread(panel_png))
-    axes[0].axis("off")
-    axes[0].set_title("Franka generated-package task smoke")
-    _draw_franka_metric_table(axes[1], _franka_metric_rows(report))
+    fig, ax = plt.subplots(figsize=(12.2, 3.25), constrained_layout=True)
+    ax.imshow(plt.imread(panel_png))
+    ax.axis("off")
+    ax.set_title("Franka generated-package task smoke")
+    _draw_franka_summary_badges(ax, _franka_metric_rows(report))
     path = output / "franka_link_aware_task_scene.pdf"
     _save_pdf(fig, path)
     plt.close(fig)
@@ -1645,6 +1580,47 @@ def _franka_metric_color(label: str, value: Any) -> str:
             return "#b94b48"
         return "#a76f1b"
     return "#333333"
+
+
+def _draw_franka_summary_badges(ax: Any, rows: Sequence[tuple[str, Any]]) -> None:
+    metrics = dict(rows)
+    task_outcome = str(metrics.get("task outcome", "n/a"))
+    _draw_visual_notes(
+        ax,
+        (
+            (f"{metrics.get('detected links', 0)}/{metrics.get('generated primitives', 0)} links", "#333333"),
+            (f"{metrics.get('missing body links', 0)} missing", _franka_metric_color("missing body links", metrics.get("missing body links", 0))),
+            (task_outcome, _franka_metric_color("task outcome", task_outcome)),
+        ),
+        columns=3,
+    )
+
+
+def _draw_visual_notes(
+    ax: Any,
+    badges: Sequence[tuple[str, str]],
+    *,
+    columns: int,
+) -> None:
+    if columns < 1:
+        raise ValueError("columns must be positive")
+    column_width = 0.94 / columns
+    for index, (label, color) in enumerate(badges):
+        row = index // columns
+        column = index % columns
+        ax.text(
+            0.03 + column * column_width,
+            0.035 + row * 0.075,
+            label,
+            transform=ax.transAxes,
+            ha="left",
+            va="bottom",
+            fontsize=7.6,
+            weight="normal",
+            color=color,
+            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.78, "pad": 0.9},
+            zorder=100,
+        )
 
 
 def _safe_int(value: Any) -> int | None:
@@ -2389,10 +2365,6 @@ def _load_result_entry(result_id: str) -> Mapping[str, Any]:
 
 def _split_evidence_sources(value: str) -> tuple[str, ...]:
     return tuple(part.strip() for part in value.split(";") if part.strip())
-
-
-def _audit_status_color(status: str) -> str:
-    return "#2e7d59" if status in {"supported", "bed passes"} else "#b94b48"
 
 
 def _source_record_hashes(records: Sequence[str]) -> dict[str, str]:

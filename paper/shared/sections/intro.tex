@@ -4,15 +4,16 @@
 Collision proxies gate what simulators and robot stacks can trust.
 Primitive colliders remain attractive because they are editable, inspectable, and fast in many engines, yet a package that fits the input mesh can still change compound body state, destabilize contact, or violate link structure when imported into Newton.
 
-Recent methods, including convex primitive decomposition (CPD)~\cite{cpd2026}, collision-aware convex decomposition (CoACD)~\cite{coacd2022}, and V-HACD-style voxelized decomposition~\cite{vhacd}, optimize geometric fidelity and proxy complexity.
+Recent CPD, CoACD, and V-HACD-style methods optimize geometric fidelity and proxy complexity~\cite{cpd2026,coacd2022,vhacd}.
 They do not, by themselves, answer whether a generated package should be accepted for simulation, articulation, or task operation under recorded settings.
 
 We study \emph{simulation-checked} acceptance: generate or import primitive candidates, preserve USD provenance and link boundaries~\cite{openusd2026}, run Newton diagnostics~\cite{newton2026} over body state and contact, and fall back when checks expose risk.
-Fallback is an expected compiler output, not a failure to hide.
+Fallback is an explicit diagnostic outcome, not a failure to hide.
 
-We report a scoped bootstrap study with dated records rather than a completed production compiler.
-The strongest existing story is diagnostic: a capped bed cylinder package fails drop/settle as a full compound while isolated geometry passes, and recorded Franka cylinder packages pass in smaller contexts.
-The current Phase~0 evidence extends that story to multi-asset candidate lanes: V-HACD packages generate for all five selected rigid assets but fail named Newton probes on bowl, cup, and tray, and one generated Franka link-aware package is consumed by a Newton robot task smoke.
-The manuscript keeps claims aligned with recorded diagnostics while the Phase~0 tables are closed for this proof point.
+We report a scoped bootstrap study with auditable Newton diagnostics rather than a completed production compiler.
+The study makes three bounded contributions.
+First, it formulates a diagnostic acceptance layer that separates candidate generation from simulation acceptance.
+Second, it shows that geometry-plausible packages can diverge under compound body-state and contact probes: a capped bed cylinder package fails drop/settle as a full compound while isolated geometry passes, and V-HACD packages that generate and map for bowl, cup, and tray still fail named Newton probes.
+Third, it records a link-aware Franka package-consumption smoke that exercises Newton body ownership without claiming whole-robot collision quality or manipulation performance.
 
 \input{../../shared/figures/pipeline_schematic}
