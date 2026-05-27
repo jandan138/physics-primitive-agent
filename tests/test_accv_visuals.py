@@ -764,6 +764,7 @@ def test_save_mechanism_diagnostic_invokes_renderer_when_available(
     def fake_run(**kwargs: Any) -> Path:
         calls.append(kwargs["recipe"])
         out = kwargs["output_png"]
+        out.parent.mkdir(parents=True, exist_ok=True)
         plt.imsave(out, np.ones((100, 160, 3)))
         out.with_suffix(".json").write_text(
             json.dumps(
@@ -933,6 +934,7 @@ def test_save_franka_task_scene_invokes_renderer_when_available(
     def fake_run(**kwargs: Any) -> Path:
         calls.append(kwargs["recipe"])
         out = kwargs["output_png"]
+        out.parent.mkdir(parents=True, exist_ok=True)
         plt.imsave(out, np.ones((100, 160, 3)))
         out.with_suffix(".json").write_text(
             json.dumps(
