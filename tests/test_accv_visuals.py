@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
@@ -108,6 +110,36 @@ def _vhacd_probe_case(asset_role: str, asset_id: str = "grscenes_bowl_fixture") 
                 },
             }
         },
+    }
+
+
+def _franka_task_report_fixture() -> dict:
+    return {
+        "articulation_cases": [
+            {
+                "robot_package_result": {
+                    "primitive_or_hull_count": 12,
+                    "links": [
+                        {"link_path": "/panda/panda_link0", "placeholder_primitive_count": 0},
+                        {"link_path": "/panda/panda_link8", "placeholder_primitive_count": 1},
+                        {"link_path": "/panda/panda_rightfinger", "placeholder_primitive_count": 0},
+                    ],
+                    "link_boundary_audit": {"metrics": {"link_count": 12}},
+                },
+                "probe_results": {
+                    "generated_package_robot_task_if_robot": {
+                        "outcome": "accept",
+                        "metrics": {
+                            "package_consumption": {
+                                "missing_body_link_count": 0,
+                                "source_usd_shape_count": 0,
+                                "generated_self_collision_filter_pair_count": 66,
+                            }
+                        },
+                    }
+                },
+            }
+        ]
     }
 
 
@@ -489,6 +521,53 @@ def test_mechanism_visual_labels_name_scene_and_root_cause() -> None:
     assert "COM/inertia sensitivity supported" in labels
 
 
+def test_mechanism_scene_payload_preserves_recorded_metrics() -> None:
+    entry = _load_result_entry("bed_franka_cylinder_mechanism")
+    payload = accv_visuals._mechanism_scene_payload(entry["metrics"])
+
+    assert [scene["id"] for scene in payload["subscenes"]] == [
+        "bed_full_package_fail",
+        "isolated_target_pass",
+        "franka_link_local_pass",
+    ]
+    assert payload["annotations"]["bed_speed_label"] == "0.082 > 0.05 m/s"
+    assert payload["claim_boundary_note"] == "Diagnostic rendering; not a new Newton run."
+    assert payload["status_label_entries"] == ["failure", "accept"]
+
+
+def test_franka_task_scene_payload_preserves_consumption_metrics() -> None:
+    payload = accv_visuals._franka_task_scene_payload(_franka_task_report_fixture())
+
+    assert payload["metrics"]["detected_links"] == 12
+    assert payload["metrics"]["generated_primitives"] == 12
+    assert payload["metrics"]["missing_body_links"] == 0
+    assert payload["metrics"]["source_usd_shapes"] == 0
+    assert payload["metrics"]["self_collision_filters"] == 66
+    assert payload["metrics"]["task_outcome"] == "accept"
+    assert "panda_link8" in payload["sentinel_links"]
+    assert payload["labels"] == {
+        "failure": "red task obstacle",
+        "accept": "green link-local packages",
+        "meshless_sentinel": "amber link sentinel",
+    }
+
+
+def test_write_paper_scene_bundle_uses_newton_render_contract(tmp_path: Path) -> None:
+    yaml = pytest.importorskip("yaml")
+    bundle = accv_visuals._write_paper_scene_bundle(
+        tmp_path / "bundle",
+        figure_id="franka_task_scene",
+        recipe="franka_task_scene",
+        scene_payload={"links": [], "metrics": {"task_outcome": "accept"}},
+    )
+
+    assert (bundle / "meta.yaml").is_file()
+    assert (bundle / "scene.json").is_file()
+    meta = yaml.safe_load((bundle / "meta.yaml").read_text(encoding="utf-8"))
+    assert meta["recipe"] == "franka_task_scene"
+    assert meta["figure_id"] == "franka_task_scene"
+
+
 def test_mechanism_audit_display_rows_avoid_ambiguous_bed_pass_wording() -> None:
     row = {"label": "Isolated target primitive", "result": "bed passes", "status": "supported"}
 
@@ -651,12 +730,344 @@ def test_mechanism_failure_callouts_are_spaced_from_top_geometry() -> None:
     assert positions["settle_label"][1] < positions["com_label"][1] - 0.10
 
 
+def test_save_mechanism_diagnostic_from_rendered_panel_creates_pdf(tmp_path: Path) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    image = np.ones((240, 420, 3), dtype=np.float32)
+    image[:, :, 0] = 0.92
+    panel = tmp_path / "mechanism.png"
+    plt.imsave(panel, image)
+
+    figure = accv_visuals._save_mechanism_diagnostic_from_rendered_panel(panel, tmp_path, plt)
+
+    assert figure.figure_id == "bed_franka_mechanism_diagnostic"
+    assert figure.path.is_file()
+    assert "newton-render" in figure.evidence
+
+
+def test_save_mechanism_diagnostic_invokes_renderer_when_available(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    calls: list[str] = []
+    fake_root = tmp_path / "newton-render"
+    (fake_root / "src/newton_render/render").mkdir(parents=True)
+    (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
+
+    def fake_run(**kwargs: Any) -> Path:
+        calls.append(kwargs["recipe"])
+        out = kwargs["output_png"]
+        plt.imsave(out, np.ones((100, 160, 3)))
+        out.with_suffix(".json").write_text(
+            json.dumps(
+                {
+                    "recipe": kwargs["recipe"],
+                    "output_png_sha256": "fake-panel-sha",
+                    "input_hashes": {"scene.json": "fake-scene-sha"},
+                    "source_claim_boundary_note": "Diagnostic rendering; not a new Newton run.",
+                    "mechanism_visual_mode": "subscene_status_scene",
+                    "rendered_component_ids": ["bed_full_package_fail"],
+                    "subscene_ids": ["bed_full_package_fail"],
+                    "status_label_layout": {"entries": [{"key": "failure"}]},
+                }
+            ),
+            encoding="utf-8",
+        )
+        return out
+
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+
+    figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
+
+    assert calls == ["mechanism_diagnostic_scene"]
+    assert figure.path.is_file()
+    assert figure.renderer_metadata["recipe"] == "mechanism_diagnostic_scene"
+    assert "src/newton_render/render/paper_diagnostic_scenes.py" in figure.renderer_metadata["renderer_source_hashes"]
+
+
+def test_save_mechanism_diagnostic_falls_back_without_renderer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    monkeypatch.setattr(accv_visuals, "_phase0_newton_render_root", lambda: None)
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: None)
+
+    figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
+
+    assert figure.path.is_file()
+    assert figure.evidence == "2026-05-22 cylinder mechanism records"
+
+
+def test_save_mechanism_diagnostic_raises_for_explicit_renderer_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    fake_root = tmp_path / "newton-render"
+    (fake_root / "src/newton_render/render").mkdir(parents=True)
+    (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
+
+    monkeypatch.setenv("NEWTON_RENDER_ROOT", str(fake_root))
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+
+    def fake_run(**kwargs: Any) -> Path:
+        raise RuntimeError("renderer failed")
+
+    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+
+    with pytest.raises(RuntimeError, match="renderer failed"):
+        accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
+
+
+def test_paper_scene_newton_render_root_raises_for_explicit_missing_root(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    missing_root = tmp_path / "missing-newton-render"
+    monkeypatch.setenv("NEWTON_RENDER_ROOT", str(missing_root))
+
+    with pytest.raises(RuntimeError, match="paper_diagnostic_scenes.py"):
+        accv_visuals._paper_scene_newton_render_root()
+
+
+def test_paper_scene_newton_render_root_requires_explicit_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("NEWTON_RENDER_ROOT", raising=False)
+    monkeypatch.delenv("PPA_DISABLE_NEWTON_RENDER", raising=False)
+
+    with pytest.raises(RuntimeError, match="NEWTON_RENDER_ROOT is required"):
+        accv_visuals._paper_scene_newton_render_root()
+
+
+def test_paper_scene_newton_render_root_can_be_explicitly_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("NEWTON_RENDER_ROOT", raising=False)
+    monkeypatch.setenv("PPA_DISABLE_NEWTON_RENDER", "1")
+
+    assert accv_visuals._paper_scene_newton_render_root() is None
+
+
+def test_paper_scene_newton_render_root_raises_for_explicit_missing_recipe(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake_root = tmp_path / "newton-render"
+    (fake_root / "src/newton_render/render").mkdir(parents=True)
+    (fake_root / "src/newton_render/render/phase0_probe_scene.py").write_text("", encoding="utf-8")
+    monkeypatch.setenv("NEWTON_RENDER_ROOT", str(fake_root))
+
+    with pytest.raises(RuntimeError, match="paper_diagnostic_scenes.py"):
+        accv_visuals._paper_scene_newton_render_root()
+
+
+def test_save_mechanism_diagnostic_raises_when_auto_renderer_invocation_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    fake_root = tmp_path / "newton-render"
+    (fake_root / "src/newton_render/render").mkdir(parents=True)
+    (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
+
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+
+    def fake_run(**kwargs: Any) -> Path:
+        raise RuntimeError("auto renderer failed")
+
+    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+
+    with pytest.raises(RuntimeError, match="auto renderer failed"):
+        accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
+
+
+def test_save_franka_task_scene_from_rendered_panel_creates_pdf(tmp_path: Path) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    image = np.ones((240, 420, 3), dtype=np.float32)
+    image[:, :, 1] = 0.92
+    panel = tmp_path / "franka.png"
+    plt.imsave(panel, image)
+
+    figure = accv_visuals._save_franka_task_scene_from_rendered_panel(
+        _franka_task_report_fixture(),
+        panel,
+        tmp_path,
+        plt,
+    )
+
+    assert figure.figure_id == "franka_link_aware_task_scene"
+    assert figure.path.is_file()
+    assert "newton-render" in figure.evidence
+
+
+def test_save_franka_task_scene_invokes_renderer_when_available(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    calls: list[str] = []
+    fake_root = tmp_path / "newton-render"
+    (fake_root / "src/newton_render/render").mkdir(parents=True)
+    (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
+
+    def fake_run(**kwargs: Any) -> Path:
+        calls.append(kwargs["recipe"])
+        out = kwargs["output_png"]
+        plt.imsave(out, np.ones((100, 160, 3)))
+        out.with_suffix(".json").write_text(
+            json.dumps(
+                {
+                    "recipe": kwargs["recipe"],
+                    "output_png_sha256": "fake-panel-sha",
+                    "input_hashes": {"scene.json": "fake-scene-sha"},
+                    "source_claim_boundary_note": "Task-smoke rendering; not whole-robot quality evidence.",
+                    "franka_visual_mode": "link_chain_task_smoke",
+                    "link_count": 12,
+                    "sentinel_link_names": ["panda_link8"],
+                    "status_label_layout": {"entries": [{"key": "failure"}, {"key": "accept"}]},
+                }
+            ),
+            encoding="utf-8",
+        )
+        return out
+
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+
+    figure = accv_visuals._save_franka_task_scene(_franka_task_report_fixture(), tmp_path, plt)
+
+    assert calls == ["franka_task_scene"]
+    assert figure.path.is_file()
+    assert figure.renderer_metadata["recipe"] == "franka_task_scene"
+
+
+def test_save_franka_task_scene_falls_back_without_renderer(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    monkeypatch.setattr(accv_visuals, "_phase0_newton_render_root", lambda: None)
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: None)
+
+    figure = accv_visuals._save_franka_task_scene(_franka_task_report_fixture(), tmp_path, plt)
+
+    assert figure.path.is_file()
+    assert figure.evidence == "link-aware package and generated-package robot task records"
+
+
+def test_save_franka_task_scene_raises_for_explicit_renderer_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    fake_root = tmp_path / "newton-render"
+    (fake_root / "src/newton_render/render").mkdir(parents=True)
+    (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
+
+    monkeypatch.setenv("NEWTON_RENDER_ROOT", str(fake_root))
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+
+    def fake_run(**kwargs: Any) -> Path:
+        raise RuntimeError("renderer failed")
+
+    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+
+    with pytest.raises(RuntimeError, match="renderer failed"):
+        accv_visuals._save_franka_task_scene(_franka_task_report_fixture(), tmp_path, plt)
+
+
+def test_save_franka_task_scene_raises_when_auto_renderer_invocation_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    fake_root = tmp_path / "newton-render"
+    (fake_root / "src/newton_render/render").mkdir(parents=True)
+    (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
+
+    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+
+    def fake_run(**kwargs: Any) -> Path:
+        raise RuntimeError("auto renderer failed")
+
+    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+
+    with pytest.raises(RuntimeError, match="auto renderer failed"):
+        accv_visuals._save_franka_task_scene(_franka_task_report_fixture(), tmp_path, plt)
+
+
 def test_manifest_helpers_keep_source_records_and_pdf_metadata_stable() -> None:
     records = _split_evidence_sources("a.md; b.md; ; c.md")
 
     assert records == ("a.md", "b.md", "c.md")
     assert PDF_METADATA["Creator"] == "primitive_collision_compiler.paper.accv_visuals"
     assert PDF_METADATA["CreationDate"] == PDF_METADATA["ModDate"]
+
+
+def test_write_manifest_preserves_renderer_provenance(tmp_path: Path) -> None:
+    report = tmp_path / "report.json"
+    report.write_text('{"cases": []}\n', encoding="utf-8")
+    figure_pdf = tmp_path / "figure.pdf"
+    figure_pdf.write_bytes(b"%PDF-1.4\n")
+    manifest = tmp_path / "manifest.json"
+
+    accv_visuals._write_manifest(
+        manifest,
+        report_path=report,
+        asset_root=tmp_path,
+        figures=[
+            accv_visuals.FigureOutput(
+                "rendered_figure",
+                figure_pdf,
+                "newton-render test evidence",
+                renderer_metadata={
+                    "recipe": "mechanism_diagnostic_scene",
+                    "renderer_source_hashes": {
+                        "src/newton_render/render/paper_diagnostic_scenes.py": "abc123",
+                    },
+                    "sidecar": {"source_claim_boundary_note": "Diagnostic rendering; not a new Newton run."},
+                },
+            )
+        ],
+    )
+
+    payload = json.loads(manifest.read_text(encoding="utf-8"))
+    rendered = payload["figures"][0]
+    assert rendered["renderer_metadata"]["recipe"] == "mechanism_diagnostic_scene"
+    assert (
+        rendered["renderer_metadata"]["renderer_source_hashes"]["src/newton_render/render/paper_diagnostic_scenes.py"]
+        == "abc123"
+    )
+    assert rendered["renderer_metadata"]["sidecar"]["source_claim_boundary_note"].startswith("Diagnostic rendering")
 
 
 def test_source_record_hashes_fail_closed_for_missing_records() -> None:

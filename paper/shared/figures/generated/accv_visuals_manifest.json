@@ -39,18 +39,129 @@
       ]
     },
     {
-      "evidence": "2026-05-22 cylinder mechanism records",
+      "evidence": "newton-render diagnostic scene reconstruction + 2026-05-22 cylinder mechanism records",
       "id": "bed_franka_mechanism_diagnostic",
       "path": "paper/shared/figures/generated/bed_franka_mechanism_diagnostic.pdf",
+      "renderer_metadata": {
+        "recipe": "mechanism_diagnostic_scene",
+        "renderer_source_hashes": {
+          "src/newton_render/figures/engine.py": "da08c3decb0f1de3b766f938cf56e64902d1cf5bc5c337e79890b8dc9a8a1655",
+          "src/newton_render/render/paper_diagnostic_scenes.py": "11788501cacb4284d0a316b52e565709c4ed1105a8b91508085017d3477add6d"
+        },
+        "sidecar": {
+          "claim_boundary_note": "Diagnostic scene recipe for simulation-checked primitive collider packages; not compiler functionality, benchmark superiority, deployment readiness, or safety certification.",
+          "figure_id": "bed_franka_mechanism_diagnostic",
+          "input_hashes": {
+            "meta.yaml": "7c5bf558962ae3ee0011201793ccf4ee7e7dbc55666274ec4e51cc03be701952",
+            "scene.json": "48a2da81f5ca7f53066341c790716d7e3d910169013da97ed83ea36d95f9d3ca"
+          },
+          "mechanism_visual_mode": "subscene_status_scene",
+          "output_png_sha256": "9448a2415b912ebb3626ff1f3c522ad8385482837f1a15322bd1f08d9b8e26d6",
+          "paper_readability": {
+            "annotation_scale": "large_paper_panel",
+            "label_contrast": "bold_paper_labels",
+            "tight_crop": true
+          },
+          "recipe": "mechanism_diagnostic_scene",
+          "render_quality": {
+            "default_zoom": 1.38,
+            "dpi": 260,
+            "ground_extent": 1.55
+          },
+          "rendered_component_ids": [
+            "bed_full_package_fail",
+            "isolated_target_pass",
+            "franka_link_local_pass"
+          ],
+          "source_claim_boundary_note": "Diagnostic rendering; not a new Newton run.",
+          "status_label_layout": {
+            "entries": [
+              {
+                "color": "#b94b48",
+                "key": "failure",
+                "label": "red failure"
+              },
+              {
+                "color": "#2e7d59",
+                "key": "accept",
+                "label": "green accept"
+              }
+            ],
+            "font_size": 7.4,
+            "mode": "stacked_top_right",
+            "title_visible": false
+          },
+          "subscene_ids": [
+            "bed_full_package_fail",
+            "isolated_target_pass",
+            "franka_link_local_pass"
+          ]
+        }
+      },
       "source_records": [
         "docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md",
         "paper/shared/evidence/results_manifest.yaml"
       ]
     },
     {
-      "evidence": "link-aware package and generated-package robot task records",
+      "evidence": "newton-render diagnostic scene reconstruction + link-aware package and generated-package robot task records",
       "id": "franka_link_aware_task_scene",
       "path": "paper/shared/figures/generated/franka_link_aware_task_scene.pdf",
+      "renderer_metadata": {
+        "recipe": "franka_task_scene",
+        "renderer_source_hashes": {
+          "src/newton_render/figures/engine.py": "da08c3decb0f1de3b766f938cf56e64902d1cf5bc5c337e79890b8dc9a8a1655",
+          "src/newton_render/render/paper_diagnostic_scenes.py": "11788501cacb4284d0a316b52e565709c4ed1105a8b91508085017d3477add6d"
+        },
+        "sidecar": {
+          "claim_boundary_note": "Diagnostic scene recipe for simulation-checked primitive collider packages; not compiler functionality, benchmark superiority, deployment readiness, or safety certification.",
+          "figure_id": "franka_link_aware_task_scene",
+          "franka_visual_mode": "link_chain_task_smoke",
+          "input_hashes": {
+            "meta.yaml": "14d3b4b312c850b8a95d1209d94448295fecfedbfb1111659e763cc42eed52b2",
+            "scene.json": "9fa3cd80d7c81539191bdd99328e2e17da6bb764ef49c276e5e4beefdb759821"
+          },
+          "link_count": 12,
+          "output_png_sha256": "338a27e5cd9178ed6da1df324ea0fcbadfb645ed831bd7982570e73be8d87f44",
+          "paper_readability": {
+            "annotation_scale": "large_paper_panel",
+            "label_contrast": "bold_paper_labels",
+            "tight_crop": true
+          },
+          "recipe": "franka_task_scene",
+          "render_quality": {
+            "default_zoom": 1.38,
+            "dpi": 260,
+            "ground_extent": 1.55
+          },
+          "sentinel_link_names": [
+            "panda_link8"
+          ],
+          "source_claim_boundary_note": "Task-smoke rendering; not whole-robot quality evidence.",
+          "status_label_layout": {
+            "entries": [
+              {
+                "color": "#b94b48",
+                "key": "failure",
+                "label": "red task obstacle"
+              },
+              {
+                "color": "#2e7d59",
+                "key": "accept",
+                "label": "green link-local packages"
+              },
+              {
+                "color": "#c48922",
+                "key": "meshless_sentinel",
+                "label": "amber link sentinel"
+              }
+            ],
+            "font_size": 7.4,
+            "mode": "stacked_top_right",
+            "title_visible": false
+          }
+        }
+      },
       "source_records": [
         "docs/records/2026-05-26-link-aware-robot-package-generation.md",
         "docs/records/2026-05-26-generated-package-robot-task-probe.md"

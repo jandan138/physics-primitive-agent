@@ -83,6 +83,27 @@ FRANKA_SOURCE_RECORDS: tuple[str, ...] = (
     "docs/records/2026-05-26-link-aware-robot-package-generation.md",
     "docs/records/2026-05-26-generated-package-robot-task-probe.md",
 )
+PAPER_SCENE_RENDERER_SOURCE_FILES: tuple[str, ...] = (
+    "src/newton_render/render/paper_diagnostic_scenes.py",
+    "src/newton_render/figures/engine.py",
+)
+PAPER_SCENE_SIDECAR_MANIFEST_KEYS: tuple[str, ...] = (
+    "recipe",
+    "figure_id",
+    "output_png_sha256",
+    "input_hashes",
+    "claim_boundary_note",
+    "source_claim_boundary_note",
+    "paper_readability",
+    "render_quality",
+    "mechanism_visual_mode",
+    "rendered_component_ids",
+    "subscene_ids",
+    "franka_visual_mode",
+    "link_count",
+    "sentinel_link_names",
+    "status_label_layout",
+)
 
 
 @dataclass(frozen=True)
@@ -91,6 +112,7 @@ class FigureOutput:
     path: Path
     evidence: str
     source_records: tuple[str, ...] = ()
+    renderer_metadata: Mapping[str, Any] | None = None
 
 
 @dataclass(frozen=True)
@@ -494,6 +516,39 @@ def _run_newton_render_phase0_panel(
     return output_png
 
 
+def _run_newton_render_paper_scene(
+    *,
+    newton_render_root: Path,
+    bundle_dir: Path,
+    output_png: Path,
+    recipe: str,
+    python_executable: str | Path | None = None,
+) -> Path:
+    root = Path(newton_render_root)
+    executable = str(python_executable or _newton_render_python_executable())
+    env = os.environ.copy()
+    src_path = str((root / "src").resolve())
+    existing_pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = src_path if not existing_pythonpath else f"{src_path}{os.pathsep}{existing_pythonpath}"
+    output_png.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        executable,
+        "-m",
+        "newton_render.cli",
+        "render-figure",
+        "--bundle",
+        str(bundle_dir),
+        "--recipe",
+        recipe,
+        "--output",
+        str(output_png),
+    ]
+    subprocess.run(cmd, cwd=root, env=env, check=True, capture_output=True, text=True)
+    if not output_png.is_file():
+        raise RuntimeError(f"newton-render did not create {output_png}")
+    return output_png
+
+
 def _newton_render_python_executable() -> str:
     configured = os.environ.get("NEWTON_RENDER_PYTHON") or os.environ.get("NR_PYTHON")
     if configured:
@@ -502,6 +557,68 @@ def _newton_render_python_executable() -> str:
     if sandbox_python.exists():
         return str(sandbox_python)
     return sys.executable
+
+
+def _write_paper_scene_bundle(
+    bundle_dir: Path,
+    *,
+    figure_id: str,
+    recipe: str,
+    scene_payload: Mapping[str, Any],
+) -> Path:
+    try:
+        import yaml
+    except ImportError as exc:
+        raise RuntimeError("PyYAML is required to write newton-render bundles") from exc
+
+    bundle_dir.mkdir(parents=True, exist_ok=True)
+    meta = {
+        "figure_id": figure_id,
+        "recipe": recipe,
+        "paper": "physics_primitive",
+        "style": {"background": "paper_light"},
+        "paper_readability": {
+            "tight_crop": True,
+            "annotation_scale": "large_paper_panel",
+            "label_contrast": "bold_paper_labels",
+        },
+    }
+    (bundle_dir / "meta.yaml").write_text(yaml.safe_dump(meta, sort_keys=False), encoding="utf-8")
+    (bundle_dir / "scene.json").write_text(
+        json.dumps(dict(scene_payload), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return bundle_dir
+
+
+def _paper_scene_renderer_metadata(newton_render_root: Path, panel_png: Path) -> dict[str, Any]:
+    sidecar_path = panel_png.with_suffix(".json")
+    if not sidecar_path.is_file():
+        raise RuntimeError(f"newton-render did not create sidecar metadata: {sidecar_path}")
+    sidecar_payload = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    if not isinstance(sidecar_payload, dict):
+        raise RuntimeError(f"newton-render sidecar must be a JSON object: {sidecar_path}")
+    return {
+        "recipe": str(sidecar_payload.get("recipe", "")),
+        "renderer_source_hashes": _newton_render_source_hashes(newton_render_root),
+        "sidecar": {
+            key: copy.deepcopy(sidecar_payload[key])
+            for key in PAPER_SCENE_SIDECAR_MANIFEST_KEYS
+            if key in sidecar_payload
+        },
+    }
+
+
+def _newton_render_source_hashes(newton_render_root: Path) -> dict[str, str]:
+    hashes: dict[str, str] = {}
+    root = Path(newton_render_root)
+    for relative_path in PAPER_SCENE_RENDERER_SOURCE_FILES:
+        source_path = root / relative_path
+        if source_path.is_file():
+            hashes[relative_path] = _sha256_file(source_path)
+    if not hashes:
+        raise RuntimeError(f"newton-render source files not found under {root}")
+    return hashes
 
 
 def _render_phase0_probe_scene_panels(
@@ -910,16 +1027,32 @@ def _save_collision_probe_scenes_from_rendered_panels(
     )
 
 
-def _phase0_newton_render_root() -> Path | None:
+def _newton_render_root_for_module(module_name: str, *, require_explicit: bool = False) -> Path | None:
     disabled = os.environ.get("PPA_DISABLE_NEWTON_RENDER", "").strip().lower()
     if disabled in {"1", "true", "yes"}:
         return None
     configured = os.environ.get("NEWTON_RENDER_ROOT")
+    if not configured and require_explicit:
+        raise RuntimeError(
+            "NEWTON_RENDER_ROOT is required for paper diagnostic scene rendering; "
+            "set PPA_DISABLE_NEWTON_RENDER=1 only when intentionally regenerating schematic fallback figures"
+        )
     candidates = [Path(configured)] if configured else [Path("/cpfs/user/zhuzihou/dev/newton-render")]
+    recipe_path = Path("src/newton_render/render") / f"{module_name}.py"
     for candidate in candidates:
-        if (candidate / "src/newton_render/render/phase0_probe_scene.py").is_file():
+        if (candidate / recipe_path).is_file():
             return candidate
+    if configured:
+        raise RuntimeError(f"NEWTON_RENDER_ROOT={configured} is missing {recipe_path.as_posix()}")
     return None
+
+
+def _phase0_newton_render_root() -> Path | None:
+    return _newton_render_root_for_module("phase0_probe_scene")
+
+
+def _paper_scene_newton_render_root() -> Path | None:
+    return _newton_render_root_for_module("paper_diagnostic_scenes", require_explicit=True)
 
 
 def _phase0_probe_scene_assets_available(report: Mapping[str, Any], asset_root: Path) -> bool:
@@ -1030,9 +1163,27 @@ def _outcome_matrix_title() -> str:
 def _save_mechanism_diagnostic(output: Path, plt: Any) -> FigureOutput:
     entry = _load_result_entry("bed_franka_cylinder_mechanism")
     metrics = entry.get("metrics") or {}
-    source_records = tuple(_split_evidence_sources(entry.get("evidence_source", ""))) + (
-        "paper/shared/evidence/results_manifest.yaml",
-    )
+    render_root = _paper_scene_newton_render_root()
+    if render_root is not None:
+        bundle_dir = _write_paper_scene_bundle(
+            REPO_ROOT / "reports/generated/accv_paper_scene_bundles/bed_franka_mechanism_diagnostic",
+            figure_id="bed_franka_mechanism_diagnostic",
+            recipe="mechanism_diagnostic_scene",
+            scene_payload=_mechanism_scene_payload(metrics),
+        )
+        panel = _run_newton_render_paper_scene(
+            newton_render_root=render_root,
+            bundle_dir=bundle_dir,
+            output_png=REPO_ROOT / "reports/generated/accv_paper_scene_panels/bed_franka_mechanism_diagnostic.png",
+            recipe="mechanism_diagnostic_scene",
+        )
+        return _save_mechanism_diagnostic_from_rendered_panel(
+            panel,
+            output,
+            plt,
+            renderer_metadata=_paper_scene_renderer_metadata(render_root, panel),
+        )
+
     fig, axes = plt.subplots(
         1,
         2,
@@ -1041,34 +1192,7 @@ def _save_mechanism_diagnostic(output: Path, plt: Any) -> FigureOutput:
         gridspec_kw={"width_ratios": _mechanism_diagnostic_width_ratios(), "wspace": 0.10},
     )
     _draw_mechanism_scene(axes[0], metrics, plt)
-    mechanism_rows = metrics.get("audit_rows") or []
-    if not mechanism_rows:
-        raise RuntimeError(f"missing mechanism audit rows in {RESULTS_MANIFEST}")
-    axes[1].axis("off")
-    axes[1].set_title("Recorded audit checks")
-    axes[1].text(
-        0.02,
-        0.95,
-        f"Settle gate: {float(metrics['settle_gate_mps']):.2f} m/s",
-        ha="left",
-        va="center",
-        fontsize=8.2,
-        transform=axes[1].transAxes,
-    )
-    y = 0.82
-    for row in mechanism_rows:
-        left, right, status = _mechanism_audit_display_row(row)
-        color = _audit_status_color(status)
-        axes[1].text(0.02, y, left, ha="left", va="center", fontsize=8.0, transform=axes[1].transAxes)
-        axes[1].text(0.98, y, right, ha="right", va="center", fontsize=8.0, color=color, transform=axes[1].transAxes)
-        axes[1].plot(
-            [0.02, 0.98],
-            [y - 0.065, y - 0.065],
-            color="#d8d8d8",
-            linewidth=0.6,
-            transform=axes[1].transAxes,
-        )
-        y -= 0.145
+    _draw_mechanism_audit_table(axes[1], metrics)
     path = output / "bed_franka_mechanism_diagnostic.pdf"
     _save_pdf(fig, path)
     plt.close(fig)
@@ -1076,7 +1200,39 @@ def _save_mechanism_diagnostic(output: Path, plt: Any) -> FigureOutput:
         "bed_franka_mechanism_diagnostic",
         path,
         "2026-05-22 cylinder mechanism records",
-        source_records,
+        _mechanism_source_records(),
+    )
+
+
+def _save_mechanism_diagnostic_from_rendered_panel(
+    panel_png: Path,
+    output: Path,
+    plt: Any,
+    *,
+    renderer_metadata: Mapping[str, Any] | None = None,
+) -> FigureOutput:
+    entry = _load_result_entry("bed_franka_cylinder_mechanism")
+    metrics = entry.get("metrics") or {}
+    fig, axes = plt.subplots(
+        1,
+        2,
+        figsize=(12.2, 4.55),
+        constrained_layout=True,
+        gridspec_kw={"width_ratios": _mechanism_diagnostic_width_ratios(), "wspace": 0.10},
+    )
+    axes[0].imshow(plt.imread(panel_png))
+    axes[0].axis("off")
+    axes[0].set_title(_mechanism_scene_title())
+    _draw_mechanism_audit_table(axes[1], metrics)
+    path = output / "bed_franka_mechanism_diagnostic.pdf"
+    _save_pdf(fig, path)
+    plt.close(fig)
+    return FigureOutput(
+        "bed_franka_mechanism_diagnostic",
+        path,
+        "newton-render diagnostic scene reconstruction + 2026-05-22 cylinder mechanism records",
+        _mechanism_source_records(),
+        renderer_metadata,
     )
 
 
@@ -1104,6 +1260,85 @@ def _mechanism_visual_labels(metrics: Mapping[str, Any]) -> tuple[str, ...]:
         f"bed final speed {float(metrics['bed_final_speed_mps']):.3f} m/s",
         f"Franka final speed {float(metrics['franka_final_speed_mps']):.5f} m/s",
     )
+
+
+def _mechanism_scene_payload(metrics: Mapping[str, Any]) -> dict[str, Any]:
+    bed_speed = float(metrics["bed_final_speed_mps"])
+    franka_speed = float(metrics["franka_final_speed_mps"])
+    gate = float(metrics["settle_gate_mps"])
+    return {
+        "claim_boundary_note": "Diagnostic rendering; not a new Newton run.",
+        "status_label_entries": ["failure", "accept"],
+        "settle_gate_mps": gate,
+        "subscenes": [
+            {
+                "id": "bed_full_package_fail",
+                "status": "failure",
+                "label": "full package fails",
+                "speed_mps": bed_speed,
+                "speed_gate_mps": gate,
+                "highlight": "large_flat_cylinder",
+            },
+            {
+                "id": "isolated_target_pass",
+                "status": "accept",
+                "label": "isolated target passes",
+                "speed_gate_mps": gate,
+                "highlight": "target_cylinder",
+            },
+            {
+                "id": "franka_link_local_pass",
+                "status": "accept",
+                "label": "Franka link-local package passes",
+                "speed_mps": franka_speed,
+                "speed_gate_mps": gate,
+                "highlight": "link_local_primitives",
+            },
+        ],
+        "annotations": {
+            "bed_speed_label": f"{bed_speed:.3f} > {gate:.2f} m/s",
+            "franka_speed_label": f"{franka_speed:.5f} <= {gate:.2f} m/s",
+            "root_cause_label": "COM/inertia sensitivity supported",
+        },
+    }
+
+
+def _mechanism_source_records() -> tuple[str, ...]:
+    entry = _load_result_entry("bed_franka_cylinder_mechanism")
+    return tuple(_split_evidence_sources(entry.get("evidence_source", ""))) + (
+        "paper/shared/evidence/results_manifest.yaml",
+    )
+
+
+def _draw_mechanism_audit_table(ax: Any, metrics: Mapping[str, Any]) -> None:
+    mechanism_rows = metrics.get("audit_rows") or []
+    if not mechanism_rows:
+        raise RuntimeError(f"missing mechanism audit rows in {RESULTS_MANIFEST}")
+    ax.axis("off")
+    ax.set_title("Recorded audit checks")
+    ax.text(
+        0.02,
+        0.95,
+        f"Settle gate: {float(metrics['settle_gate_mps']):.2f} m/s",
+        ha="left",
+        va="center",
+        fontsize=8.2,
+        transform=ax.transAxes,
+    )
+    y = 0.82
+    for row in mechanism_rows:
+        left, right, status = _mechanism_audit_display_row(row)
+        color = _audit_status_color(status)
+        ax.text(0.02, y, left, ha="left", va="center", fontsize=8.0, transform=ax.transAxes)
+        ax.text(0.98, y, right, ha="right", va="center", fontsize=8.0, color=color, transform=ax.transAxes)
+        ax.plot(
+            [0.02, 0.98],
+            [y - 0.065, y - 0.065],
+            color="#d8d8d8",
+            linewidth=0.6,
+            transform=ax.transAxes,
+        )
+        y -= 0.145
 
 
 def _draw_mechanism_scene(ax: Any, metrics: Mapping[str, Any], plt: Any) -> None:
@@ -1241,14 +1476,31 @@ def _draw_franka_mechanism_scene(ax: Any, speed: float, gate: float, plt: Any) -
 
 
 def _save_franka_task_scene(report: Mapping[str, Any], output: Path, plt: Any) -> FigureOutput:
+    render_root = _paper_scene_newton_render_root()
+    if render_root is not None:
+        bundle_dir = _write_paper_scene_bundle(
+            REPO_ROOT / "reports/generated/accv_paper_scene_bundles/franka_link_aware_task_scene",
+            figure_id="franka_link_aware_task_scene",
+            recipe="franka_task_scene",
+            scene_payload=_franka_task_scene_payload(report),
+        )
+        panel = _run_newton_render_paper_scene(
+            newton_render_root=render_root,
+            bundle_dir=bundle_dir,
+            output_png=REPO_ROOT / "reports/generated/accv_paper_scene_panels/franka_link_aware_task_scene.png",
+            recipe="franka_task_scene",
+        )
+        return _save_franka_task_scene_from_rendered_panel(
+            report,
+            panel,
+            output,
+            plt,
+            renderer_metadata=_paper_scene_renderer_metadata(render_root, panel),
+        )
+
     articulation = (report.get("articulation_cases") or [{}])[0]
     robot_result = articulation.get("robot_package_result") or {}
     links = robot_result.get("links", []) or []
-    metrics = ((articulation.get("probe_results") or {}).get("generated_package_robot_task_if_robot") or {}).get(
-        "metrics", {}
-    )
-    package_consumption = metrics.get("package_consumption") or {}
-    audit_metrics = ((robot_result.get("link_boundary_audit") or {}).get("metrics") or {})
 
     fig, axes = plt.subplots(
         1,
@@ -1262,24 +1514,8 @@ def _save_franka_task_scene(report: Mapping[str, Any], output: Path, plt: Any) -
     axes[0].set_ylim(-0.08, 1.05)
     axes[0].axis("off")
     _draw_franka_task_schematic(axes[0], links, plt)
+    _draw_franka_metric_table(axes[1], _franka_metric_rows(report))
 
-    axes[1].axis("off")
-    axes[1].set_title("Package consumption metrics")
-    rows = [
-        ("detected links", audit_metrics.get("link_count", len(links))),
-        ("generated primitives", robot_result.get("primitive_or_hull_count", 0)),
-        ("missing body links", package_consumption.get("missing_body_link_count", 0)),
-        ("source USD shapes", package_consumption.get("source_usd_shape_count", 0)),
-        ("self-collision filters", package_consumption.get("generated_self_collision_filter_pair_count", 0)),
-        ("task outcome", ((articulation.get("probe_results") or {}).get("generated_package_robot_task_if_robot") or {}).get("outcome", "n/a")),
-    ]
-    y = 0.88
-    for left, right in rows:
-        color = _franka_metric_color(left, right)
-        axes[1].text(0.04, y, left, ha="left", va="center", transform=axes[1].transAxes)
-        axes[1].text(0.96, y, str(right), ha="right", va="center", color=color, transform=axes[1].transAxes)
-        axes[1].plot([0.04, 0.96], [y - 0.06, y - 0.06], color="#d8d8d8", linewidth=0.6, transform=axes[1].transAxes)
-        y -= 0.14
     path = output / "franka_link_aware_task_scene.pdf"
     _save_pdf(fig, path)
     plt.close(fig)
@@ -1288,6 +1524,113 @@ def _save_franka_task_scene(report: Mapping[str, Any], output: Path, plt: Any) -
         path,
         "link-aware package and generated-package robot task records",
         FRANKA_SOURCE_RECORDS,
+    )
+
+
+def _franka_task_scene_payload(report: Mapping[str, Any]) -> dict[str, Any]:
+    articulation = (report.get("articulation_cases") or [{}])[0]
+    robot_result = articulation.get("robot_package_result") or {}
+    links = robot_result.get("links", []) or []
+    rows = dict(_franka_metric_rows(report))
+    sentinel_links = [
+        _short_link_name(link.get("link_path", ""))
+        for link in links
+        if _safe_int(link.get("placeholder_primitive_count", 0)) and link.get("link_path")
+    ]
+    return {
+        "claim_boundary_note": "Task-smoke rendering; not whole-robot quality evidence.",
+        "labels": {
+            "failure": "red task obstacle",
+            "accept": "green link-local packages",
+            "meshless_sentinel": "amber link sentinel",
+        },
+        "links": [
+            {
+                "name": _short_link_name(str(link.get("link_path", f"link_{index}"))),
+                "kind": "meshless_sentinel"
+                if _safe_int(link.get("placeholder_primitive_count", 0))
+                else "normal",
+                "index": index,
+            }
+            for index, link in enumerate(links)
+        ],
+        "sentinel_links": sentinel_links,
+        "metrics": {
+            "detected_links": _safe_int(rows.get("detected links")) or 0,
+            "generated_primitives": _safe_int(rows.get("generated primitives")) or 0,
+            "missing_body_links": _safe_int(rows.get("missing body links")) or 0,
+            "source_usd_shapes": _safe_int(rows.get("source USD shapes")) or 0,
+            "self_collision_filters": _safe_int(rows.get("self-collision filters")) or 0,
+            "task_outcome": str(rows.get("task outcome", "n/a")),
+        },
+        "trajectory": {"start": [0.52, 0.76], "end": [0.72, 0.58]},
+    }
+
+
+def _short_link_name(link_path: str) -> str:
+    return link_path.rstrip("/").split("/")[-1]
+
+
+def _franka_metric_rows(report: Mapping[str, Any]) -> list[tuple[str, Any]]:
+    articulation = (report.get("articulation_cases") or [{}])[0]
+    robot_result = articulation.get("robot_package_result") or {}
+    links = robot_result.get("links", []) or []
+    metrics = ((articulation.get("probe_results") or {}).get("generated_package_robot_task_if_robot") or {}).get(
+        "metrics", {}
+    )
+    package_consumption = metrics.get("package_consumption") or {}
+    audit_metrics = ((robot_result.get("link_boundary_audit") or {}).get("metrics") or {})
+    probe = (articulation.get("probe_results") or {}).get("generated_package_robot_task_if_robot") or {}
+    return [
+        ("detected links", audit_metrics.get("link_count", len(links))),
+        ("generated primitives", robot_result.get("primitive_or_hull_count", 0)),
+        ("missing body links", package_consumption.get("missing_body_link_count", 0)),
+        ("source USD shapes", package_consumption.get("source_usd_shape_count", 0)),
+        ("self-collision filters", package_consumption.get("generated_self_collision_filter_pair_count", 0)),
+        ("task outcome", probe.get("outcome", "n/a")),
+    ]
+
+
+def _draw_franka_metric_table(ax: Any, rows: Sequence[tuple[str, Any]]) -> None:
+    ax.axis("off")
+    ax.set_title("Package consumption metrics")
+    y = 0.88
+    for left, right in rows:
+        color = _franka_metric_color(left, right)
+        ax.text(0.04, y, left, ha="left", va="center", transform=ax.transAxes)
+        ax.text(0.96, y, str(right), ha="right", va="center", color=color, transform=ax.transAxes)
+        ax.plot([0.04, 0.96], [y - 0.06, y - 0.06], color="#d8d8d8", linewidth=0.6, transform=ax.transAxes)
+        y -= 0.14
+
+
+def _save_franka_task_scene_from_rendered_panel(
+    report: Mapping[str, Any],
+    panel_png: Path,
+    output: Path,
+    plt: Any,
+    *,
+    renderer_metadata: Mapping[str, Any] | None = None,
+) -> FigureOutput:
+    fig, axes = plt.subplots(
+        1,
+        2,
+        figsize=(12.2, 4.5),
+        constrained_layout=True,
+        gridspec_kw={"width_ratios": [1.18, 1.0]},
+    )
+    axes[0].imshow(plt.imread(panel_png))
+    axes[0].axis("off")
+    axes[0].set_title("Franka generated-package task smoke")
+    _draw_franka_metric_table(axes[1], _franka_metric_rows(report))
+    path = output / "franka_link_aware_task_scene.pdf"
+    _save_pdf(fig, path)
+    plt.close(fig)
+    return FigureOutput(
+        "franka_link_aware_task_scene",
+        path,
+        "newton-render diagnostic scene reconstruction + link-aware package and generated-package robot task records",
+        FRANKA_SOURCE_RECORDS,
+        renderer_metadata,
     )
 
 
@@ -2004,6 +2347,17 @@ def _write_manifest(
     figures: Sequence[FigureOutput],
 ) -> None:
     source_records = tuple(dict.fromkeys(record for figure in figures for record in figure.source_records))
+    figure_entries = []
+    for figure in figures:
+        entry = {
+            "id": figure.figure_id,
+            "path": str(figure.path),
+            "evidence": figure.evidence,
+            "source_records": list(figure.source_records),
+        }
+        if figure.renderer_metadata:
+            entry["renderer_metadata"] = copy.deepcopy(dict(figure.renderer_metadata))
+        figure_entries.append(entry)
     payload = {
         "schema_version": 1,
         "report_path": str(report_path),
@@ -2012,15 +2366,7 @@ def _write_manifest(
         "generation": "deterministic_matplotlib_diagnostic_visualization",
         "claim_boundary": "diagnostic_visualization_not_photorealistic_render_or_new_experiment",
         "source_record_hashes": _source_record_hashes(source_records),
-        "figures": [
-            {
-                "id": figure.figure_id,
-                "path": str(figure.path),
-                "evidence": figure.evidence,
-                "source_records": list(figure.source_records),
-            }
-            for figure in figures
-        ],
+        "figures": figure_entries,
     }
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
