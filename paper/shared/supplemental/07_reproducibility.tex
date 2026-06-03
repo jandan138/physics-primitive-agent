@@ -36,20 +36,22 @@ content outside the PDF package.
 
 \begin{table}[t]
 \centering
-\small
+\footnotesize
 \caption{Supplement artifact provenance table. Paths are repository-relative paper or record
 artifacts, not raw asset locations.}
 \label{tab:supp-artifact-provenance}
-\begin{tabular}{p{0.28\linewidth}p{0.34\linewidth}p{0.25\linewidth}}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}@{\hspace{0.035\linewidth}}>{\raggedright\arraybackslash}p{0.43\linewidth}@{\hspace{0.035\linewidth}}>{\raggedright\arraybackslash}p{0.22\linewidth}@{}}
 \toprule
 Artifact class & Reviewer-facing role & Commit policy \\
 \midrule
-Supplement LaTeX source & section text, equations, tables, figure references & committed \\
-Generated supplement figures & deterministic tutorial visuals used in the PDF & committed as small PDF/PNG files \\
+Supplement source & section text, equations, tables, and figure references & committed \\
+Generated figures & deterministic tutorial visuals used in the PDF & committed as small PDF/PNG files \\
 Figure manifest & hashes, source-record names, claim-boundary notes & committed \\
-Configs and evidence registries & threshold ownership and claim alignment & committed \\
-Dated records & durable provenance summaries & committed when compact \\
-Raw 3D assets, logs, videos & large or source-sensitive runtime material & not committed \\
+Configs and registries & threshold ownership and claim alignment & committed \\
+Dated records & durable compact provenance summaries & committed when compact \\
+Raw assets and logs & large or source-sensitive runtime material & not committed \\
 \bottomrule
 \end{tabular}
 \end{table}

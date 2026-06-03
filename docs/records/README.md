@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-03 ACCV Supplement Tutorial Atlas](2026-06-03-accv-supplement-tutorial-atlas.md):
+  adds a separate ACCV supplement with tutorial-heavy derivations, supplement-only figures and
+  tables, deterministic figure provenance, layout guards against duplicated main-paper artifacts,
+  and scoped claim-boundary language.
 - [2026-06-03 ACCV Franka RTX Body Figure](2026-06-03-accv-franka-rtx-body-figure.md):
   replaces the ACCV Franka task-smoke body figure with a Newton ViewerRTX visual plate, records
   provenance and clean-room visual review, and keeps the figure as generated-package consumption

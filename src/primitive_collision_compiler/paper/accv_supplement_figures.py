@@ -209,9 +209,9 @@ def _compose_plate(spec: SupplementFigureSpec) -> Image.Image:
     _draw_background(draw)
     title_font = _font(54, bold=True)
     subtitle_font = _font(30)
-    label_font = _font(25, bold=True)
-    body_font = _font(24)
-    small_font = _font(20)
+    label_font = _font(26, bold=True)
+    body_font = _font(25)
+    small_font = _font(22)
 
     draw.text((78, 58), spec.title, font=title_font, fill=TEXT)
     draw.text((82, 126), spec.subtitle, font=subtitle_font, fill=MUTED)
@@ -239,8 +239,8 @@ class _PanelScenes:
     def __init__(self, draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:
         self.draw = draw
         self.box = box
-        self.font = _font(22)
-        self.bold = _font(22, bold=True)
+        self.font = _font(23)
+        self.bold = _font(24, bold=True)
 
     def draw_drop_settle(self, idx: int) -> None:
         x0, y0, x1, y1 = self.box
@@ -378,16 +378,20 @@ class _PanelScenes:
     def draw_provenance(self, idx: int) -> None:
         steps = ("config", "record", "manifest", "supplement")
         x0, y0, x1, y1 = self.box
-        for n, step in enumerate(steps):
-            x = x0 + 42 + n * 118
-            self._box((x, y0 + 98, x + 100, y0 + 170), _palette(n))
-            self.draw.text((x, y0 + 188), step, font=self.font, fill=TEXT)
-            if n < len(steps) - 1:
-                self._arrow((x + 105, y0 + 134), (x + 148, y0 + 134), MUTED)
+        step = steps[idx]
+        cx = (x0 + x1) // 2
+        card = (cx - 78, y0 + 94, cx + 78, y0 + 176)
+        if idx > 0:
+            self._arrow((x0 + 22, y0 + 135), (card[0] - 16, y0 + 135), MUTED)
+        self._box(card, _palette(idx))
+        _center_text(self.draw, step, (card[0], y0 + 195, card[2], y0 + 228), self.bold, TEXT)
+        _center_text(self.draw, f"step {idx + 1}", (card[0], card[1] + 24, card[2], card[3] - 20), self.font, MUTED)
+        if idx < len(steps) - 1:
+            self._arrow((card[2] + 16, y0 + 135), (x1 - 22, y0 + 135), MUTED)
         if idx == 2:
-            self.draw.text((x0 + 48, y1 - 70), "hashes bind generated figures", font=self.bold, fill=TEXT)
+            _center_text(self.draw, "hash-bound figures", (x0 + 20, y1 - 76, x1 - 20, y1 - 36), self.font, TEXT)
         elif idx == 3:
-            self.draw.text((x0 + 48, y1 - 70), "raw assets stay out of git", font=self.bold, fill=TEXT)
+            _center_text(self.draw, "raw assets stay out of git", (x0 + 20, y1 - 76, x1 - 20, y1 - 36), self.font, TEXT)
 
     def _box(self, box: tuple[int, int, int, int], color: str) -> None:
         _rounded(self.draw, box, 14, "#f8fafc", color, 5)
@@ -416,16 +420,21 @@ class _PanelScenes:
                 self.draw.rectangle((joint[0] - 42, joint[1] - 42, joint[0] + 42, joint[1] + 42), outline=RED, width=4)
 
     def _link_chain(self, labels: Sequence[str]) -> None:
-        x0, y0, _, _ = self.box
+        x0, y0, x1, _ = self.box
         last = None
+        radius = 34
+        left = x0 + 40
+        right = x1 - 40
+        step = (right - left) / max(len(labels) - 1, 1)
         for n, label in enumerate(labels):
-            x = x0 + 48 + n * 105
-            y = y0 + 132 + int(42 * math.sin(n))
-            self.draw.ellipse((x, y, x + 72, y + 72), fill="#f8fafc", outline=_palette(n), width=5)
-            self.draw.text((x + 5, y + 88), label, font=self.font, fill=TEXT)
+            cx = int(left + n * step)
+            cy = y0 + 158 + int(32 * math.sin(n))
+            circle = (cx - radius, cy - radius, cx + radius, cy + radius)
             if last:
-                self.draw.line((last[0] + 72, last[1] + 36, x, y + 36), fill=MUTED, width=5)
-            last = (x, y)
+                self.draw.line((last[0], last[1], cx, cy), fill=MUTED, width=5)
+            self.draw.ellipse(circle, fill="#f8fafc", outline=_palette(n), width=5)
+            _center_text(self.draw, label, (cx - 54, cy + 48, cx + 54, cy + 86), self.font, TEXT)
+            last = (cx, cy)
 
     def _bowl_scene(self, tilted: bool) -> None:
         x0, y0, x1, y1 = self.box
@@ -434,9 +443,15 @@ class _PanelScenes:
         self.draw.line((x0 + 80, y1 - 42, x1 - 80, y1 - 42), fill="#2f3946", width=4)
 
     def _cup_scene(self) -> None:
-        x0, y0, _, y1 = self.box
-        self.draw.rectangle((x0 + 190, y0 + 82, x0 + 340, y1 - 48), fill="#eef4fb", outline=BLUE, width=7)
-        self.draw.arc((x0 + 315, y0 + 140, x0 + 430, y0 + 230), 270, 90, fill=BLUE, width=7)
+        x0, y0, x1, y1 = self.box
+        width = x1 - x0
+        cup_left = x0 + int(width * 0.30)
+        cup_right = x0 + int(width * 0.66)
+        cup_top = y0 + 82
+        cup_bottom = y1 - 50
+        self.draw.rectangle((cup_left, cup_top, cup_right, cup_bottom), fill="#eef4fb", outline=BLUE, width=7)
+        handle = (cup_right - 6, y0 + 140, min(x1 - 28, cup_right + int(width * 0.26)), y0 + 230)
+        self.draw.arc(handle, 270, 90, fill=BLUE, width=7)
 
     def _tray_scene(self) -> None:
         x0, y0, x1, y1 = self.box
@@ -451,9 +466,10 @@ class _PanelScenes:
 
     def _label_card(self, title: str, color: str, label: str) -> None:
         x0, y0, x1, y1 = self.box
-        _rounded(self.draw, (x0 + 86, y0 + 86, x1 - 86, y1 - 70), 22, "#fff7ed", color, 5)
-        self.draw.text((x0 + 122, y0 + 122), title, font=self.bold, fill=TEXT)
-        self.draw.text((x0 + 122, y0 + 172), label, font=_font(32, bold=True), fill=color)
+        card = (x0 + 62, y0 + 88, x1 - 62, y1 - 76)
+        _rounded(self.draw, card, 22, "#fff7ed", color, 5)
+        _center_text(self.draw, title, (card[0] + 14, y0 + 124, card[2] - 14, y0 + 158), self.font, TEXT)
+        _center_text(self.draw, label, (card[0] + 14, y0 + 172, card[2] - 14, y0 + 220), _font(29, bold=True), color)
 
 
 def _panel_boxes(count: int) -> list[tuple[int, int, int, int]]:
@@ -489,7 +505,22 @@ def _callout(
     y = box[1] + 72
     for line in _wrap(body, 66):
         draw.text((box[0] + 36, y), line, font=body_font, fill=TEXT)
-        y += 28
+        y += 31
+
+
+def _center_text(
+    draw: ImageDraw.ImageDraw,
+    text: str,
+    box: tuple[int, int, int, int],
+    font: ImageFont.FreeTypeFont | ImageFont.ImageFont,
+    fill: str,
+) -> None:
+    bbox = draw.textbbox((0, 0), text, font=font)
+    width = bbox[2] - bbox[0]
+    height = bbox[3] - bbox[1]
+    x = box[0] + max((box[2] - box[0] - width) // 2, 0)
+    y = box[1] + max((box[3] - box[1] - height) // 2, 0)
+    draw.text((x, y), text, font=font, fill=fill)
 
 
 def _rounded(

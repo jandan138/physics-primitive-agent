@@ -6,9 +6,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_drop_settle",
       "pdf": "supplement_predicate_drop_settle.pdf",
-      "pdf_sha256": "8ac7f6dd4ac18daf3741b15d208277993344a254bfa6bc28db0b465721d9e36a",
+      "pdf_sha256": "9bf2cf8bbeb2dfecf54fe2d5e297aad9d4db98ad6abca146e68a3b95c36a9eee",
       "png": "supplement_predicate_drop_settle.png",
-      "png_sha256": "ea62785017477185aba4750fa534f376c93d6b249ccba4fff71a37a651412472",
+      "png_sha256": "215b87339bf0f5398754b8e4b9103d26c5d7984fc735902cc87ae69e425f675f",
       "source_records": [
         "docs/records/diagnostic-predicate-design.md"
       ],
@@ -20,9 +20,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_stack_slide",
       "pdf": "supplement_predicate_stack_slide.pdf",
-      "pdf_sha256": "43f2e28a78086e6a67faa3ddf1034269a3a5af273e5aa81cb1f7583da346b104",
+      "pdf_sha256": "95fcb5d81760865efbe77706d29b99e2318f7b8360f8cc872be64952f3e52493",
       "png": "supplement_predicate_stack_slide.png",
-      "png_sha256": "01feb811d46ee854c77e2f2b435abc9c86b13ae62958b943349e7da7d4f99ea1",
+      "png_sha256": "4a100de4870cc96fb78e617ffe44e182a3c7964b925209921be4cbb12620f4ab",
       "source_records": [
         "configs/experiments/phase0_baseline.yaml"
       ],
@@ -34,9 +34,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_sphere_rain",
       "pdf": "supplement_predicate_sphere_rain.pdf",
-      "pdf_sha256": "8342c4f992970a99244a7b49f45a74acdee776087b2bca11302b4f6818d474b0",
+      "pdf_sha256": "84d953ab79b2947a4925a19d48927600b17a7c2a5db886e512b7abfbb1440209",
       "png": "supplement_predicate_sphere_rain.png",
-      "png_sha256": "d043feaf64282c616f3a7454fc6afb1e147c4ae8af4c9e49bde4695690ce3709",
+      "png_sha256": "e51336ac7e5c0638033a65f48e8b31302c3b86818e8ef6e6133069e7b89c65c8",
       "source_records": [
         "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
       ],
@@ -48,9 +48,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_generated_package_consumption",
       "pdf": "supplement_generated_package_consumption.pdf",
-      "pdf_sha256": "184c8d2913413d9185e5ffbb96b750186f73347602b2c81c44e9bd8b82d4b37f",
+      "pdf_sha256": "366f5fbb13cbdacf54fea65757384635458e326906cb3b9d5887a9aa535d162d",
       "png": "supplement_generated_package_consumption.png",
-      "png_sha256": "57b5a76b4b04c7e94cbbdb00e322af6693a0ab30c96883a119a541d2247efaa0",
+      "png_sha256": "a22883cd65b0fdec045c2feabbda859382e38e6cf6f9481bba56c55e45db79b5",
       "source_records": [
         "docs/records/2026-05-26-generated-package-robot-task-probe.md"
       ],
@@ -62,9 +62,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_compound_body_state_teaching",
       "pdf": "supplement_compound_body_state_teaching.pdf",
-      "pdf_sha256": "198c9cedbea90995e5201d96cc599d79b454ae67fc6e464a2dbbdc6165f17338",
+      "pdf_sha256": "9232f46875de0edb1cf8e3e0d1aea60071040aaf39742c4b2c276ffdef54a91c",
       "png": "supplement_compound_body_state_teaching.png",
-      "png_sha256": "7752fed69fbb33aefd509e120d1b7125fe916d6f4128076bf0584d37f29add97",
+      "png_sha256": "58c444635300c8da14bfb9ced6ad260cadcfafeae56e4861dd0121c52c8237c7",
       "source_records": [
         "docs/records/2026-05-26-accv-paper-visual-expansion-plan.md"
       ],
@@ -76,9 +76,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_franka_link_frames",
       "pdf": "supplement_franka_link_frames.pdf",
-      "pdf_sha256": "2a7ae01f83f189bd633fee51e6ae5e3dd3ecf3bc67aa8228a5336ce7e9d51994",
+      "pdf_sha256": "6c7ca743c4cfd4e5e5944e67cf057aedae708837e07645f8297f045770ad20cb",
       "png": "supplement_franka_link_frames.png",
-      "png_sha256": "11755914ac04fef673d966bc9c24fa8d1ddb7901045198d5cd4493d604cb46f0",
+      "png_sha256": "311ddef60dc3e35756ae12ece5a236888fba832c36ac769820bcd003c481d291",
       "source_records": [
         "docs/records/2026-05-26-link-aware-robot-package-generation.md"
       ],
@@ -90,9 +90,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_franka_source_suppression",
       "pdf": "supplement_franka_source_suppression.pdf",
-      "pdf_sha256": "4226eeeab990006dd3f1ee8b7a14f603fd3ac7772fb9f732f936c0d091ec0a86",
+      "pdf_sha256": "49b2dfed460900c4864f68e0bf07a9598e4641a956d03d583a0708678dc72036",
       "png": "supplement_franka_source_suppression.png",
-      "png_sha256": "e6f166b7e77bc73a11caa755ca531774155269f5b9018847f85dce74efc9f14c",
+      "png_sha256": "91d498624d420bfa21afb6f7cf8ef4fe346b7a04cd9ba2a2dbc6b3a34d769568",
       "source_records": [
         "docs/records/2026-05-26-generated-package-robot-task-probe.md"
       ],
@@ -104,9 +104,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_failure_storyboard_bowl",
       "pdf": "supplement_failure_storyboard_bowl.pdf",
-      "pdf_sha256": "635d3cb57b8410409397c92d5981afe09fd45c73fb61c9a9c3c8277a0baff95f",
+      "pdf_sha256": "9f19b52542fb88aebb57c9e2a11c5668a362cdfe9aa296080d9385173b3ef284",
       "png": "supplement_failure_storyboard_bowl.png",
-      "png_sha256": "89cdc1b9fe892f11a9fa12d25f620f388926795819a28da3ded5230f349e3ef4",
+      "png_sha256": "35d09a0387be9791a864231be3c35558c7aefd6375b84005d2bcb79d22943b4f",
       "source_records": [
         "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
       ],
@@ -118,9 +118,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_failure_storyboard_cup_tray",
       "pdf": "supplement_failure_storyboard_cup_tray.pdf",
-      "pdf_sha256": "30e918419e16d5a50d0d0396ebbb5c9d0eb1622179701aaa3a6c5abfc7b7bc82",
+      "pdf_sha256": "a40a8049b9d4c3d06a6ece6f0f9c36ec407284c3bc56a3400ba166f350f4aee4",
       "png": "supplement_failure_storyboard_cup_tray.png",
-      "png_sha256": "f66e6e95f805556a5a93c5f1df2448002cea21ca45e9deb07ddc85dca501e5ac",
+      "png_sha256": "a0cbaea1afa5caeb5d52180312f3ec2c5691d2fb6f64ccac6ba3c8af97fa75ed",
       "source_records": [
         "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md"
       ],
@@ -132,9 +132,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_candidate_lane_anatomy",
       "pdf": "supplement_candidate_lane_anatomy.pdf",
-      "pdf_sha256": "94bcc2434cbd500c2319c0a387064fb604c277ec1ba835f4e30f0bafabca469b",
+      "pdf_sha256": "f21a2a525c31c14c5614cec3eac4389ccac195aff7e018cac58bc753d16149b6",
       "png": "supplement_candidate_lane_anatomy.png",
-      "png_sha256": "250420ab85bda85f36af337bf1860cf5ecf152473bb43fbd3b9b6ff0ad146cd7",
+      "png_sha256": "cad38cd183a53438128efe86a5d933b9883d7de7270e6dbc9abc8c2d223ed36c",
       "source_records": [
         "paper/shared/evidence/results_manifest.yaml"
       ],
@@ -146,9 +146,9 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_provenance_flow",
       "pdf": "supplement_provenance_flow.pdf",
-      "pdf_sha256": "70d3b0e0a82545bcfaf3bf22e2aae4acfa3163741ec06701187cb901891eda69",
+      "pdf_sha256": "ae0b89b07107fcd0523c60b14caf04f657cbc9be5750c688dbc6b8e9db335d91",
       "png": "supplement_provenance_flow.png",
-      "png_sha256": "f8ce162c82c95722977e5129898c459e1296bb84403d18e7b25c4fba8b53ba99",
+      "png_sha256": "4f96d101799bbf6ea7c6b23e748aac7918659b757d3ec4a4a9baa49326354b65",
       "source_records": [
         "docs/reference/claim-boundaries.md"
       ],

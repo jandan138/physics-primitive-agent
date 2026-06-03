@@ -72,10 +72,17 @@ suppression, and filter accounting are shown before the task outcome is read.}
 Figure~\ref{fig:supp-generated-package-consumption} teaches the bookkeeping step between package
 generation and robot task smoke. It helps reviewers check that the generated shapes, not stale
 source collision shapes, are entering the diagnostic scene.
+The practical audit order is: first check that every generated primitive has a target body; next
+check that source collision shapes were suppressed; then check that generated self-collision filter
+pairs were counted under the smoke configuration; only after those accounting checks should the
+hold or trajectory outcome be read. This order prevents a visually plausible robot scene from
+masking a stale source-shape path.
 
 \paragraph{What this does not show.}
 The figure is not contact-operation evidence and is not deployment readiness for a robot
-application.
+application. It also does not calibrate self-collision behavior. The filter count is useful because
+it records that generated pairs were handled explicitly in the smoke scene, but a contact-operation
+claim would require separate robot tasks and additional records.
 
 \begin{figure}[H]
 \centering
