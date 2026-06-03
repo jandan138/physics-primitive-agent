@@ -104,7 +104,14 @@ $(ACCV_SUPP_PDF): $(ACCV_SUPP_MAIN) $(accv_LOCAL) $(SHARED_SRCS) | $(accv_BUILDD
 	@if command -v latexmk >/dev/null 2>&1; then \
 		cd venues/accv && latexmk -cd -pdf -outdir=build -interaction=nonstopmode -halt-on-error supplement.tex; \
 	else \
-		cd venues/accv && pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex && BIBINPUTS="$$(pwd)/../../shared:" bibtex build/supplement && pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex && pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex; \
+		cd venues/accv && pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex && \
+		if grep -q '\\citation' build/supplement.aux; then \
+			BIBINPUTS="$$(pwd)/../../shared:" bibtex build/supplement; \
+		else \
+			echo 'No citations in supplement; skipping bibtex.'; \
+		fi && \
+		pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex && \
+		pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex; \
 	fi
 
 accv-supplement: $(ACCV_SUPP_PDF)

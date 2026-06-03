@@ -39,6 +39,8 @@ def test_makefile_has_accv_supplement_targets() -> None:
     assert "accv-all:" in makefile
     assert "supplement.pdf" in makefile
     assert "bibtex build/supplement" in makefile
+    assert r"grep -q '\\citation' build/supplement.aux" in makefile
+    assert "No citations in supplement; skipping bibtex." in makefile
 
 
 def test_supplement_does_not_duplicate_main_figures_or_tables() -> None:

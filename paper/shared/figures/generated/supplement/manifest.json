@@ -1,0 +1,161 @@
+{
+  "figure_count": 11,
+  "figures": [
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_predicate_drop_settle",
+      "pdf": "supplement_predicate_drop_settle.pdf",
+      "pdf_sha256": "8ac7f6dd4ac18daf3741b15d208277993344a254bfa6bc28db0b465721d9e36a",
+      "png": "supplement_predicate_drop_settle.png",
+      "png_sha256": "ea62785017477185aba4750fa534f376c93d6b249ccba4fff71a37a651412472",
+      "source_records": [
+        "docs/records/diagnostic-predicate-design.md"
+      ],
+      "source_sha256": "01005aa4054115e9987aaa41d95b32978ef6cbd04fda9f3b221a1dda3c6592ba",
+      "title": "Drop/settle predicate anatomy"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_predicate_stack_slide",
+      "pdf": "supplement_predicate_stack_slide.pdf",
+      "pdf_sha256": "43f2e28a78086e6a67faa3ddf1034269a3a5af273e5aa81cb1f7583da346b104",
+      "png": "supplement_predicate_stack_slide.png",
+      "png_sha256": "01feb811d46ee854c77e2f2b435abc9c86b13ae62958b943349e7da7d4f99ea1",
+      "source_records": [
+        "configs/experiments/phase0_baseline.yaml"
+      ],
+      "source_sha256": "f4c0c0460d10ff45ad55121968c15cd6594b3011f5f8aac21c81fda56f04f331",
+      "title": "Stack-or-slide predicate anatomy"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_predicate_sphere_rain",
+      "pdf": "supplement_predicate_sphere_rain.pdf",
+      "pdf_sha256": "8342c4f992970a99244a7b49f45a74acdee776087b2bca11302b4f6818d474b0",
+      "png": "supplement_predicate_sphere_rain.png",
+      "png_sha256": "d043feaf64282c616f3a7454fc6afb1e147c4ae8af4c9e49bde4695690ce3709",
+      "source_records": [
+        "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
+      ],
+      "source_sha256": "dd6aa1330fc10f9716a86cbba2f3b8865397141e66c6233f6036d9a626b36d9c",
+      "title": "Sphere-rain contact coverage"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_generated_package_consumption",
+      "pdf": "supplement_generated_package_consumption.pdf",
+      "pdf_sha256": "184c8d2913413d9185e5ffbb96b750186f73347602b2c81c44e9bd8b82d4b37f",
+      "png": "supplement_generated_package_consumption.png",
+      "png_sha256": "57b5a76b4b04c7e94cbbdb00e322af6693a0ab30c96883a119a541d2247efaa0",
+      "source_records": [
+        "docs/records/2026-05-26-generated-package-robot-task-probe.md"
+      ],
+      "source_sha256": "10b33167566adbe83ba14051c7d78597d169140f2d3099b4317787a6a8882b2f",
+      "title": "Generated-package consumption check"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_compound_body_state_teaching",
+      "pdf": "supplement_compound_body_state_teaching.pdf",
+      "pdf_sha256": "198c9cedbea90995e5201d96cc599d79b454ae67fc6e464a2dbbdc6165f17338",
+      "png": "supplement_compound_body_state_teaching.png",
+      "png_sha256": "7752fed69fbb33aefd509e120d1b7125fe916d6f4128076bf0584d37f29add97",
+      "source_records": [
+        "docs/records/2026-05-26-accv-paper-visual-expansion-plan.md"
+      ],
+      "source_sha256": "ae500ff3be65b4dc6e813ea490343120b92207a2807905e26baa1613d3e03b6b",
+      "title": "Compound body-state mechanism"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_franka_link_frames",
+      "pdf": "supplement_franka_link_frames.pdf",
+      "pdf_sha256": "2a7ae01f83f189bd633fee51e6ae5e3dd3ecf3bc67aa8228a5336ce7e9d51994",
+      "png": "supplement_franka_link_frames.png",
+      "png_sha256": "11755914ac04fef673d966bc9c24fa8d1ddb7901045198d5cd4493d604cb46f0",
+      "source_records": [
+        "docs/records/2026-05-26-link-aware-robot-package-generation.md"
+      ],
+      "source_sha256": "2616cb80ad776377573064dae961b8b47d840338578a9d08ff18021d564b8543",
+      "title": "Franka link ownership frames"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_franka_source_suppression",
+      "pdf": "supplement_franka_source_suppression.pdf",
+      "pdf_sha256": "4226eeeab990006dd3f1ee8b7a14f603fd3ac7772fb9f732f936c0d091ec0a86",
+      "png": "supplement_franka_source_suppression.png",
+      "png_sha256": "e6f166b7e77bc73a11caa755ca531774155269f5b9018847f85dce74efc9f14c",
+      "source_records": [
+        "docs/records/2026-05-26-generated-package-robot-task-probe.md"
+      ],
+      "source_sha256": "93925a69c445e374f4ad49e71fd12e10f7923ceae33480d53b0e48c00c2a3b67",
+      "title": "Source-shape suppression accounting"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_failure_storyboard_bowl",
+      "pdf": "supplement_failure_storyboard_bowl.pdf",
+      "pdf_sha256": "635d3cb57b8410409397c92d5981afe09fd45c73fb61c9a9c3c8277a0baff95f",
+      "png": "supplement_failure_storyboard_bowl.png",
+      "png_sha256": "89cdc1b9fe892f11a9fa12d25f620f388926795819a28da3ded5230f349e3ef4",
+      "source_records": [
+        "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
+      ],
+      "source_sha256": "b9efbcf2625f59b92647da173209f5cc52547556ab0c3d332c7fcb048f09cef9",
+      "title": "Bowl failure storyboard"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_failure_storyboard_cup_tray",
+      "pdf": "supplement_failure_storyboard_cup_tray.pdf",
+      "pdf_sha256": "30e918419e16d5a50d0d0396ebbb5c9d0eb1622179701aaa3a6c5abfc7b7bc82",
+      "png": "supplement_failure_storyboard_cup_tray.png",
+      "png_sha256": "f66e6e95f805556a5a93c5f1df2448002cea21ca45e9deb07ddc85dca501e5ac",
+      "source_records": [
+        "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md"
+      ],
+      "source_sha256": "0ef8a9313541f25aef409718c910a4f7ac9c8972ea27d5c5e8e5cf4c2b280b52",
+      "title": "Cup and tray failure storyboards"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_candidate_lane_anatomy",
+      "pdf": "supplement_candidate_lane_anatomy.pdf",
+      "pdf_sha256": "94bcc2434cbd500c2319c0a387064fb604c277ec1ba835f4e30f0bafabca469b",
+      "png": "supplement_candidate_lane_anatomy.png",
+      "png_sha256": "250420ab85bda85f36af337bf1860cf5ecf152473bb43fbd3b9b6ff0ad146cd7",
+      "source_records": [
+        "paper/shared/evidence/results_manifest.yaml"
+      ],
+      "source_sha256": "329ffd5826d1e75287d9ace6fb6f5a9a1423bdf9b894c486b04cd23d1ac7a14b",
+      "title": "Candidate-lane anatomy"
+    },
+    {
+      "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "figure_id": "supplement_provenance_flow",
+      "pdf": "supplement_provenance_flow.pdf",
+      "pdf_sha256": "70d3b0e0a82545bcfaf3bf22e2aae4acfa3163741ec06701187cb901891eda69",
+      "png": "supplement_provenance_flow.png",
+      "png_sha256": "f8ce162c82c95722977e5129898c459e1296bb84403d18e7b25c4fba8b53ba99",
+      "source_records": [
+        "docs/reference/claim-boundaries.md"
+      ],
+      "source_sha256": "375dc9d179fd64dd4b2ef2e52923530f5914f82a5a9449d9eedd23f3f85bf295",
+      "title": "Artifact and provenance flow"
+    }
+  ],
+  "manifest_path": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/.worktrees/accv-supplement-tutorial-atlas/paper/shared/figures/generated/supplement/manifest.json",
+  "schema_version": 1
+}
