@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import math
+import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Iterable, Sequence
@@ -14,6 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "paper/shared/figures/generated/supplement"
 CANVAS_SIZE = (1800, 1120)
+DETERMINISTIC_PDF_TIME = time.gmtime(0)
 PANEL_FILL = "#ffffff"
 PANEL_STROKE = "#ccd5e3"
 TEXT = "#172033"
@@ -52,7 +54,7 @@ FIGURE_SPECS: tuple[SupplementFigureSpec, ...] = (
         panels=("initial height", "settle window", "accept terms"),
         shows="How one vertical probe becomes velocity, height, and descent clauses.",
         does_not_show="It does not certify behavior outside the recorded diagnostic scene.",
-        source_records=("docs/records/diagnostic-predicate-design.md",),
+        source_records=("docs/records/2026-05-14-newton-drop-settle.md",),
     ),
     SupplementFigureSpec(
         figure_id="supplement_predicate_stack_slide",
@@ -167,7 +169,16 @@ def generate_supplement_figures(output_dir: str | Path = DEFAULT_OUTPUT_DIR) -> 
         png_path = out / f"{spec.figure_id}.png"
         pdf_path = out / f"{spec.figure_id}.pdf"
         image.save(png_path)
-        image.save(pdf_path, "PDF", resolution=180.0)
+        image.save(
+            pdf_path,
+            "PDF",
+            resolution=180.0,
+            creationDate=DETERMINISTIC_PDF_TIME,
+            modDate=DETERMINISTIC_PDF_TIME,
+            title=spec.figure_id,
+            creator="primitive_collision_compiler.paper.accv_supplement_figures",
+            producer="primitive_collision_compiler.paper.accv_supplement_figures",
+        )
         spec_hash = _sha256_text(_canonical_spec(spec))
         figures.append(
             {
@@ -186,7 +197,7 @@ def generate_supplement_figures(output_dir: str | Path = DEFAULT_OUTPUT_DIR) -> 
     manifest_path = out / "manifest.json"
     manifest: dict[str, Any] = {
         "schema_version": 1,
-        "manifest_path": str(manifest_path),
+        "manifest_path": _portable_manifest_path(manifest_path),
         "figure_count": len(figures),
         "figures": figures,
     }
@@ -576,6 +587,14 @@ def _wrap(text: str, width: int) -> list[str]:
 
 def _canonical_spec(spec: SupplementFigureSpec) -> str:
     return json.dumps(asdict(spec), sort_keys=True, separators=(",", ":"))
+
+
+def _portable_manifest_path(path: Path) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return resolved.name
 
 
 def _sha256_text(text: str) -> str:

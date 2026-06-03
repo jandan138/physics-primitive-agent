@@ -22,6 +22,8 @@ Complete
   assets, not copies of main-paper result tables.
 - Iterated figure and table layout after visual review so dense pages contain explanatory text and
   the updated Franka, cup/tray, and provenance figure panels do not clip or spill into gutters.
+- Resolved merge-review provenance issues by making the committed manifest path portable, fixing
+  deterministic PDF metadata, and replacing a missing source-record reference.
 
 ## Verification
 
@@ -36,6 +38,8 @@ Complete
 - Independent clean-room visual review of pages 12, 16, 17, 18, 19, and 20 plus the standalone
   Franka link, cup/tray storyboard, and provenance-flow figures returned PASS with high
   confidence. The review found no required retake or relayout.
+- Added regression coverage for manifest double-blind scanning, portable manifest paths,
+  source-record existence, and stable regenerated figure hashes.
 
 ## Artifacts
 

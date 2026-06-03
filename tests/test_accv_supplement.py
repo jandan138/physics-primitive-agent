@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import time
 from pathlib import Path
 
 
@@ -85,7 +87,14 @@ def test_supplement_records_hard_constraints_and_claim_boundaries() -> None:
 
 
 def test_supplement_source_preserves_double_blind_review() -> None:
-    combined = read_text(PAPER / "venues/accv/supplement.tex") + "\n" + supplement_source_text()
+    manifest = PAPER / "shared/figures/generated/supplement/manifest.json"
+    combined = (
+        read_text(PAPER / "venues/accv/supplement.tex")
+        + "\n"
+        + supplement_source_text()
+        + "\n"
+        + read_text(manifest)
+    )
     forbidden = (
         "github.com",
         "zhuzihou",
@@ -105,6 +114,11 @@ def test_supplement_figure_manifest_records_sources() -> None:
     assert "supplement_predicate_drop_settle" in text
     assert "source_sha256" in text
     assert "claim_boundary" in text
+    data = json.loads(text)
+    assert not Path(data["manifest_path"]).is_absolute()
+    for figure in data["figures"]:
+        for source_record in figure["source_records"]:
+            assert (ROOT / source_record).exists(), source_record
 
 
 def test_supplement_figure_generator_outputs_non_main_figure_names(tmp_path: Path) -> None:
@@ -120,9 +134,25 @@ def test_supplement_figure_generator_outputs_non_main_figure_names(tmp_path: Pat
     assert all(path.name.startswith("supplement_") for path in output_dir.glob("*.pdf"))
     assert "phase0_outcome_matrix" not in "\n".join(SUPPLEMENT_FIGURE_IDS)
     assert manifest["schema_version"] == 1
-    assert manifest["manifest_path"] == str(output_dir / "manifest.json")
+    assert manifest["manifest_path"].endswith("manifest.json")
+    assert not Path(manifest["manifest_path"]).is_absolute()
     assert all(item["claim_boundary"] for item in manifest["figures"])
     assert all(item["source_sha256"] for item in manifest["figures"])
+
+
+def test_supplement_figure_generation_is_reproducible(tmp_path: Path) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import generate_supplement_figures
+
+    first = generate_supplement_figures(output_dir=tmp_path / "first")
+    time.sleep(1.1)
+    second = generate_supplement_figures(output_dir=tmp_path / "second")
+
+    fields = ("figure_id", "png_sha256", "pdf_sha256", "source_sha256")
+    assert [
+        tuple(figure[field] for field in fields) for figure in first["figures"]
+    ] == [
+        tuple(figure[field] for field in fields) for figure in second["figures"]
+    ]
 
 
 def test_supplement_body_uses_new_figures_and_teaching_material() -> None:

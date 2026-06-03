@@ -6,13 +6,13 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_drop_settle",
       "pdf": "supplement_predicate_drop_settle.pdf",
-      "pdf_sha256": "9bf2cf8bbeb2dfecf54fe2d5e297aad9d4db98ad6abca146e68a3b95c36a9eee",
+      "pdf_sha256": "d590258724d0244e52ed8f554419d08c8ddf68fd4f410d7805012c17dbb8a30e",
       "png": "supplement_predicate_drop_settle.png",
       "png_sha256": "215b87339bf0f5398754b8e4b9103d26c5d7984fc735902cc87ae69e425f675f",
       "source_records": [
-        "docs/records/diagnostic-predicate-design.md"
+        "docs/records/2026-05-14-newton-drop-settle.md"
       ],
-      "source_sha256": "01005aa4054115e9987aaa41d95b32978ef6cbd04fda9f3b221a1dda3c6592ba",
+      "source_sha256": "08265bf60dc41ecb2b6b9220384cbe4b041ff4dab0cbd6371bc6fa11426a7c3b",
       "title": "Drop/settle predicate anatomy"
     },
     {
@@ -20,7 +20,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_stack_slide",
       "pdf": "supplement_predicate_stack_slide.pdf",
-      "pdf_sha256": "95fcb5d81760865efbe77706d29b99e2318f7b8360f8cc872be64952f3e52493",
+      "pdf_sha256": "80041b2323bca4bb5c2fdd9871a3a3ecb29cc47b4b810fcd8654cc4464d96099",
       "png": "supplement_predicate_stack_slide.png",
       "png_sha256": "4a100de4870cc96fb78e617ffe44e182a3c7964b925209921be4cbb12620f4ab",
       "source_records": [
@@ -34,7 +34,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_sphere_rain",
       "pdf": "supplement_predicate_sphere_rain.pdf",
-      "pdf_sha256": "84d953ab79b2947a4925a19d48927600b17a7c2a5db886e512b7abfbb1440209",
+      "pdf_sha256": "9568f412694f973e7b048707292285a11b6b2803951c213a24a5d3523ce6a883",
       "png": "supplement_predicate_sphere_rain.png",
       "png_sha256": "e51336ac7e5c0638033a65f48e8b31302c3b86818e8ef6e6133069e7b89c65c8",
       "source_records": [
@@ -48,7 +48,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_generated_package_consumption",
       "pdf": "supplement_generated_package_consumption.pdf",
-      "pdf_sha256": "366f5fbb13cbdacf54fea65757384635458e326906cb3b9d5887a9aa535d162d",
+      "pdf_sha256": "c8d06a8afc88fd05f1ede8ed80bab8f897ffa4ab68cc31512b9712af3b3615fb",
       "png": "supplement_generated_package_consumption.png",
       "png_sha256": "a22883cd65b0fdec045c2feabbda859382e38e6cf6f9481bba56c55e45db79b5",
       "source_records": [
@@ -62,7 +62,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_compound_body_state_teaching",
       "pdf": "supplement_compound_body_state_teaching.pdf",
-      "pdf_sha256": "9232f46875de0edb1cf8e3e0d1aea60071040aaf39742c4b2c276ffdef54a91c",
+      "pdf_sha256": "5071a8254ffa30858e251ed9f7619089e8d808582d2fd500bf66a2a5906b668f",
       "png": "supplement_compound_body_state_teaching.png",
       "png_sha256": "58c444635300c8da14bfb9ced6ad260cadcfafeae56e4861dd0121c52c8237c7",
       "source_records": [
@@ -76,7 +76,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_franka_link_frames",
       "pdf": "supplement_franka_link_frames.pdf",
-      "pdf_sha256": "6c7ca743c4cfd4e5e5944e67cf057aedae708837e07645f8297f045770ad20cb",
+      "pdf_sha256": "4e836e7349d11d63738bfe9b8b409e5c452b146f86c7e96dbcfe243b7e757841",
       "png": "supplement_franka_link_frames.png",
       "png_sha256": "311ddef60dc3e35756ae12ece5a236888fba832c36ac769820bcd003c481d291",
       "source_records": [
@@ -90,7 +90,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_franka_source_suppression",
       "pdf": "supplement_franka_source_suppression.pdf",
-      "pdf_sha256": "49b2dfed460900c4864f68e0bf07a9598e4641a956d03d583a0708678dc72036",
+      "pdf_sha256": "3370b902c0d2bb0b690742fc3b9342f8d515c93109488a78d453b410212411b1",
       "png": "supplement_franka_source_suppression.png",
       "png_sha256": "91d498624d420bfa21afb6f7cf8ef4fe346b7a04cd9ba2a2dbc6b3a34d769568",
       "source_records": [
@@ -104,7 +104,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_failure_storyboard_bowl",
       "pdf": "supplement_failure_storyboard_bowl.pdf",
-      "pdf_sha256": "9f19b52542fb88aebb57c9e2a11c5668a362cdfe9aa296080d9385173b3ef284",
+      "pdf_sha256": "fa78593de291b0b5c924615da3888a2b5b96e8c22866d2950377ece31017e34a",
       "png": "supplement_failure_storyboard_bowl.png",
       "png_sha256": "35d09a0387be9791a864231be3c35558c7aefd6375b84005d2bcb79d22943b4f",
       "source_records": [
@@ -118,7 +118,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_failure_storyboard_cup_tray",
       "pdf": "supplement_failure_storyboard_cup_tray.pdf",
-      "pdf_sha256": "a40a8049b9d4c3d06a6ece6f0f9c36ec407284c3bc56a3400ba166f350f4aee4",
+      "pdf_sha256": "5055b1a0b5b9705ff3caec3960b12cb8857ecf12922e3724fa0e908ca7b6226d",
       "png": "supplement_failure_storyboard_cup_tray.png",
       "png_sha256": "a0cbaea1afa5caeb5d52180312f3ec2c5691d2fb6f64ccac6ba3c8af97fa75ed",
       "source_records": [
@@ -132,7 +132,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_candidate_lane_anatomy",
       "pdf": "supplement_candidate_lane_anatomy.pdf",
-      "pdf_sha256": "f21a2a525c31c14c5614cec3eac4389ccac195aff7e018cac58bc753d16149b6",
+      "pdf_sha256": "bc3b22a109d3215b13677e399746a3bf1c006f0153a604f597ca44e040e2a231",
       "png": "supplement_candidate_lane_anatomy.png",
       "png_sha256": "cad38cd183a53438128efe86a5d933b9883d7de7270e6dbc9abc8c2d223ed36c",
       "source_records": [
@@ -146,7 +146,7 @@
       "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_provenance_flow",
       "pdf": "supplement_provenance_flow.pdf",
-      "pdf_sha256": "ae0b89b07107fcd0523c60b14caf04f657cbc9be5750c688dbc6b8e9db335d91",
+      "pdf_sha256": "48f61db3f3a12dfba1ce8adc02779f375a4b1073ba20b2fc47e985decc986452",
       "png": "supplement_provenance_flow.png",
       "png_sha256": "4f96d101799bbf6ea7c6b23e748aac7918659b757d3ec4a4a9baa49326354b65",
       "source_records": [
@@ -156,6 +156,6 @@
       "title": "Artifact and provenance flow"
     }
   ],
-  "manifest_path": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/.worktrees/accv-supplement-tutorial-atlas/paper/shared/figures/generated/supplement/manifest.json",
+  "manifest_path": "paper/shared/figures/generated/supplement/manifest.json",
   "schema_version": 1
 }
