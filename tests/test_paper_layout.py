@@ -147,3 +147,17 @@ def test_experiments_section_avoids_unsupported_superiority_claims() -> None:
             if any(marker in lower for marker in negation_markers):
                 continue
             assert False, forbidden
+
+
+def test_accv_status_and_main_pdf_boundary_are_current() -> None:
+    status = read_text(PAPER / "venues/accv/STATUS.md")
+    main = read_text(PAPER / "venues/accv/main.tex")
+    experiments = read_text(PAPER / "shared/sections/experiments.tex")
+
+    assert "at 7 pages" not in status
+    assert "14 main-content pages" in status
+    assert "reference-only page" in status
+    assert r"\input{../../shared/sections/appendix}" not in main
+    assert r"\bibliography{references}" in main
+    assert experiments.count(r"\label{tab:phase0-failure-labels}") == 1
+    assert r"\begin{table}[H]" in experiments

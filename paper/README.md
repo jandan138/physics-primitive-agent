@@ -57,24 +57,27 @@ figure values, table values, seed reporting, or venue-specific scientific claims
 evidence remains canonical in `docs/records/`; the paper registry links to those records rather
 than duplicating full logs.
 
-## ACCV Visual Expansion Target
+## ACCV Visual Expansion Status
 
-The active ACCV candidate is currently a compact evidence skeleton. The next paper-writing target
-is a 13--14 page main paper, with a working target of about 13.5 pages to stay below the ACCV
-14-page limit for main-paper content including figures and tables.
+The active ACCV candidate is a 14-page submission-readiness draft for the scoped
+simulation-checked diagnostic story. The visual expansion pass has been implemented with
+deterministic Phase 0 figures, an AI-slot Fig. 1 protocol schematic, and ACCV main-PDF references
+kept separate from appendix material.
 
-The approved expansion direction is evidence-first:
+The current figure set is evidence-first:
 
 - deterministic Phase 0 asset and primitive-package overlay figures;
-- real collision-probe scene render panels for bowl, cup, tray, and Franka task smoke cases;
+- diagnostic collision-probe scene panels for bowl, cup, tray, and Franka task smoke cases;
 - a Phase 0 accept/failure/fallback outcome matrix;
 - a capped bed/Franka mechanism diagnostic figure;
-- a Franka link-aware generated-package consumption figure.
+- a Franka link-aware generated-package consumption figure;
+- an AI-slot Fig. 1 protocol schematic whose generated visuals are exposition only, not
+  experimental evidence.
 
-Use `docs/records/2026-05-26-accv-paper-visual-expansion-plan.md` as the current source of truth
-for page-budget, figure-scope, artifact, and claim-boundary rules. Do not commit raw USD assets,
-large generated render directories, videos, or logs; commit only small paper figures, manifests,
-and reproducible scripts when needed.
+Use `docs/records/2026-05-26-accv-paper-visual-expansion-plan.md` and later dated records as the
+source of truth for page-budget, figure-scope, artifact, and claim-boundary rules. Do not commit
+raw USD assets, large generated render directories, videos, or logs; commit only small paper
+figures, manifests, and reproducible scripts when needed.
 
 ## Claim Boundary
 

@@ -1,0 +1,18 @@
+schema_version: 1
+figure_id: pipeline_schematic_ai_slot
+mode: ai_slot_composition
+overview_candidates:
+  - paper/shared/figures/assets/fig1_ai_slots/overview_candidate_01.png
+selected_overview: paper/shared/figures/assets/fig1_ai_slots/overview_candidate_01.png
+slots:
+  asset_intake: paper/shared/figures/assets/fig1_ai_slots/asset_intake_ai.png
+  candidate_package: paper/shared/figures/assets/fig1_ai_slots/candidate_package_ai.png
+  newton_diagnostics: paper/shared/figures/assets/fig1_ai_slots/newton_diagnostics_ai.png
+  decision_report: paper/shared/figures/assets/fig1_ai_slots/decision_report_ai.png
+replaceable_by_real_render:
+  - asset_intake
+  - candidate_package
+  - newton_diagnostics
+  - decision_report
+claim_boundary: AI slot visuals are exposition only; not experimental evidence.
+generator: built_in_imagegen_slots_plus_deterministic_pil_composition
