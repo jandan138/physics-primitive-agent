@@ -1,0 +1,36 @@
+\section{Notation and Package Model}
+
+Let an input asset contain source shapes indexed by $s \in S$ and candidate primitive colliders
+indexed by $i \in I$. A candidate primitive package is written
+\[
+  p_i = (k_i, F_i, T_i, \theta_i, \ell_i),
+\]
+where $k_i$ is the primitive kind, $F_i$ is the source frame, $T_i$ is the primitive transform,
+$\theta_i$ stores dimensions and material-side metadata, and $\ell_i$ is the owning link identity
+when one is available.
+
+\begin{table}[t]
+\centering
+\caption{Supplement-only notation table. It defines audit terms used by the derivations and does
+not duplicate a main-paper result table.}
+\label{tab:supp-notation}
+\begin{tabular}{ll}
+\toprule
+Symbol & Meaning \\
+\midrule
+$S$ & source collision or visual shapes attached to an asset \\
+$I$ & candidate primitive collider indices \\
+$p_i$ & one generated primitive collider candidate \\
+$B$ & simulated rigid bodies or robot links \\
+$a(p_i)$ & body attachment map for a primitive candidate \\
+$D$ & diagnostic scene with probes and acceptance predicates \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For a link-preserving package, the attachment map is constrained by
+\[
+  a(p_i) = b_{\ell_i}.
+\]
+The equality is a structural requirement: a generated primitive for one link must not be silently
+attached to a neighboring link just because the combined geometry looks plausible in isolation.

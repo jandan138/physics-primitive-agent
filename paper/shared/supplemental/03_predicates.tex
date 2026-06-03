@@ -1,0 +1,21 @@
+\section{Diagnostic Predicate Derivations}
+
+The checker converts a simulated probe trajectory into named predicate terms. For a drop/settle
+probe with final speed $v_T$, final height $z_T$, and floor height $z_f$, the schematic acceptance
+form is
+\[
+  A_{\mathrm{drop}} =
+  [\|v_T\| \leq \epsilon_v] \land [z_T \geq z_f-\epsilon_z] \land
+  [\Delta z_{\mathrm{descent}} > 0].
+\]
+This predicate is diagnostic: it catches obvious body-state and contact failures under the recorded
+scene settings, but it does not certify general physical behavior.
+
+For stack-or-slide probes, the checker compares terminal contact, horizontal drift, and residual
+speed:
+\[
+  A_{\mathrm{stack}} =
+  [c_T = 1] \land [\|\pi_{xy}(x_T-x_0)\| \leq \epsilon_{xy}]
+  \land [\|v_T\| \leq \epsilon_v].
+\]
+The exact thresholds live in configuration and records rather than being hardcoded into prose.

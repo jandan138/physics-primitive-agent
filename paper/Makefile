@@ -1,17 +1,18 @@
 # Multi-venue LaTeX paper build system.
-# Usage: make list | make accv | make arxiv | make eccv | make neurips | make all | make clean | make template-check | make check
+# Usage: make list | make accv | make accv-supp | make accv-all | make arxiv | make eccv | make neurips | make all | make clean | make template-check | make check
 
 VENUES := accv arxiv eccv neurips
 SHARED_DIR := shared
 SHARED_SRCS := $(shell find $(SHARED_DIR) -type f \( -name '*.tex' -o -name '*.bib' -o -name '*.cls' -o -name '*.sty' -o -name '*.pdf' -o -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' -o -name '*.yaml' -o -name '*.yml' \) -print 2>/dev/null)
 
-.PHONY: all clean list template-check check check-latex-tools check-external-class $(VENUES) $(addprefix clean-,$(VENUES)) $(addprefix check-template-,$(VENUES))
+.PHONY: all clean list template-check check check-latex-tools check-external-class accv-supplement accv-supp accv-all $(VENUES) $(addprefix clean-,$(VENUES)) $(addprefix check-template-,$(VENUES))
 
 all: $(VENUES)
 
 list:
 	@printf 'Available venues: %s\n' '$(VENUES)'
 	@printf 'Primary: accv\n'
+	@printf 'ACCV supplement: accv-supp\n'
 	@printf 'Transfer candidates: arxiv eccv neurips\n'
 
 template-check: check-latex-tools $(addprefix check-template-,$(VENUES))
@@ -93,6 +94,25 @@ clean-$(1):
 endef
 
 $(foreach v,$(VENUES),$(eval $(call VENUE_RULE,$(v))))
+
+ACCV_SUPP_MAIN := venues/accv/supplement.tex
+ACCV_SUPP_PDF := venues/accv/build/supplement.pdf
+
+$(ACCV_SUPP_PDF): $(ACCV_SUPP_MAIN) $(accv_LOCAL) $(SHARED_SRCS) | $(accv_BUILDDIR)
+	@$(MAKE) check-latex-tools
+	@$(MAKE) check-template-accv
+	@if command -v latexmk >/dev/null 2>&1; then \
+		cd venues/accv && latexmk -cd -pdf -outdir=build -interaction=nonstopmode -halt-on-error supplement.tex; \
+	else \
+		cd venues/accv && pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex && BIBINPUTS="$$(pwd)/../../shared:" bibtex build/supplement && pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex && pdflatex -interaction=nonstopmode -halt-on-error -output-directory=build supplement.tex; \
+	fi
+
+accv-supplement: $(ACCV_SUPP_PDF)
+	@echo '=== accv supplement built: $(ACCV_SUPP_PDF) ==='
+
+accv-supp: accv-supplement
+
+accv-all: accv accv-supplement
 
 clean: $(addprefix clean-,$(VENUES))
 	@rm -rf submissions arxiv-submission camera-ready

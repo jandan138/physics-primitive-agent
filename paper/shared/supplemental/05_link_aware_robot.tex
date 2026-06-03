@@ -1,0 +1,10 @@
+\section{Link-Aware Robot Package Semantics}
+
+For a robot asset, each candidate primitive must preserve the source link owner. A cross-link merge
+is flagged when a primitive derived from source link $\ell_i$ is attached to body $b_j$ with
+$j \neq \ell_i$:
+\[
+  V_{\mathrm{merge}}(p_i) = [a(p_i) \neq b_{\ell_i}].
+\]
+The robot section explains generated-package consumption and link ownership only. It is not a
+whole-arm manipulation result and does not establish broad robot collision quality.

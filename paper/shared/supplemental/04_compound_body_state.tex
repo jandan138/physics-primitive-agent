@@ -1,0 +1,15 @@
+\section{Compound Body-State Mechanism}
+
+A primitive package can be visually plausible while changing the simulated body state. For a
+compound body with primitive masses $m_i$, centers $c_i$, and inertias $J_i$ in a common body
+frame, the aggregate center of mass is
+\[
+  c = \frac{\sum_i m_i c_i}{\sum_i m_i}.
+\]
+The aggregate inertia follows the parallel-axis theorem:
+\[
+  J = \sum_i \left(J_i + m_i(\|d_i\|^2 I - d_i d_i^\top)\right),
+  \qquad d_i = c_i - c.
+\]
+The diagnostic checker therefore evaluates packages at the body level instead of accepting a set of
+isolated primitives only because each primitive has a reasonable local fit.

@@ -21,6 +21,8 @@ paper/
 ```bash
 cd paper && make list
 cd paper && make accv          # primary submission candidate
+cd paper && make accv-supp     # ACCV supplementary material
+cd paper && make accv-all      # ACCV main paper plus supplementary material
 cd paper && make check-template-accv
 cd paper && make all           # every venue (fails clearly if a template is missing)
 cd paper && make template-check # all venue template check, including transfer candidates
@@ -78,6 +80,14 @@ Use `docs/records/2026-05-26-accv-paper-visual-expansion-plan.md` and later date
 source of truth for page-budget, figure-scope, artifact, and claim-boundary rules. Do not commit
 raw USD assets, large generated render directories, videos, or logs; commit only small paper
 figures, manifests, and reproducible scripts when needed.
+
+## ACCV Supplement
+
+The ACCV supplement is a separate review-mode PDF built from `venues/accv/supplement.tex`. It uses
+the same shared bibliography and preamble conventions as the main ACCV wrapper, but the main paper
+does not input the supplement. Supplement sources live under `shared/supplemental/` and are reserved
+for tutorial derivations, implementation notes, provenance summaries, and supplement-only visual
+plates.
 
 ## Claim Boundary
 
