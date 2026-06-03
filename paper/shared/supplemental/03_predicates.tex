@@ -1,21 +1,145 @@
 \section{Diagnostic Predicate Derivations}
 
-The checker converts a simulated probe trajectory into named predicate terms. For a drop/settle
-probe with final speed $v_T$, final height $z_T$, and floor height $z_f$, the schematic acceptance
-form is
+The diagnostic checker converts simulated state traces into named predicate terms. This section
+states the predicates in a form that can be inspected without reading the implementation. The
+thresholds are owned by configuration and dated records; the equations below explain how recorded
+state variables enter the gate.
+
+\subsection{Drop/Settle Predicate}
+
+Let $x_t=(q_t,\dot q_t)$ denote the body state at time $t$, $z_t$ the relevant support or body
+height, $v_t$ the linear speed, $z_f$ the floor height, and $T$ the final simulation step. The
+drop/settle probe starts with a positive height margin and asks whether the package descends,
+avoids floor breach, and settles:
 \[
   A_{\mathrm{drop}} =
-  [\|v_T\| \leq \epsilon_v] \land [z_T \geq z_f-\epsilon_z] \land
-  [\Delta z_{\mathrm{descent}} > 0].
+  C_{\mathrm{descent}} \land C_{\mathrm{height}} \land C_{\mathrm{speed}}.
 \]
-This predicate is diagnostic: it catches obvious body-state and contact failures under the recorded
-scene settings, but it does not certify general physical behavior.
+The three clauses are
+\begin{align}
+  C_{\mathrm{descent}} &= [z_0 - z_T \geq \epsilon_{\mathrm{drop}}],\\
+  C_{\mathrm{height}} &= [z_T \geq z_f - \epsilon_z],\\
+  C_{\mathrm{speed}} &= [\|v_T\|_2 \leq \epsilon_v].
+\end{align}
+The implementation may emit multiple labels for one failure because the clauses are not mutually
+exclusive. A package can fail by not descending, by breaching the floor, by retaining residual
+speed, or by combining these symptoms. This is why the main paper reports named labels rather than
+only a binary fail cell.
 
-For stack-or-slide probes, the checker compares terminal contact, horizontal drift, and residual
-speed:
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_predicate_drop_settle.pdf}
+\caption{Supplement-only drop/settle predicate anatomy. The visual separates initial height,
+terminal settle window, and accept clauses.}
+\label{fig:supp-predicate-drop-settle}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-predicate-drop-settle} shows how one vertical probe becomes an interpretable
+set of terms. The final label is not hand-written prose; it follows from terminal speed, terminal
+height, and descent checks under recorded settings.
+
+\paragraph{What this does not show.}
+The drop/settle predicate is not a general proof of physical correctness. It is a diagnostic task
+with specific solver settings, initial state, and thresholds.
+
+\subsection{Stack-or-Slide Predicate}
+
+The stack-or-slide scene treats the candidate package as a support surface and places a small probe
+object above it. Let $c_T$ be terminal contact, $r_{xy}=\|\pi_{xy}(x_T-x_0)\|_2$ be horizontal
+drift, $h_T$ be final probe support height, and $v_T$ be final probe speed. A compact gate is
 \[
   A_{\mathrm{stack}} =
-  [c_T = 1] \land [\|\pi_{xy}(x_T-x_0)\| \leq \epsilon_{xy}]
-  \land [\|v_T\| \leq \epsilon_v].
+  [c_T=1] \land [r_{xy}\leq \epsilon_{xy}]
+  \land [h_T \geq h_{\min}] \land [\|v_T\|_2 \leq \epsilon_v].
 \]
-The exact thresholds live in configuration and records rather than being hardcoded into prose.
+This predicate separates three visually similar cases. The probe may touch but slide away; it may
+remain near the support but fall through; or it may stay on the support while retaining too much
+motion. Each symptom points to a different debugging action for the package.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_predicate_stack_slide.pdf}
+\caption{Supplement-only stack-or-slide predicate anatomy. Terminal contact is necessary but not
+sufficient; drift, support height, and residual speed are checked separately.}
+\label{fig:supp-predicate-stack-slide}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-predicate-stack-slide} teaches why a package can appear to support the probe
+in one frame while still failing the diagnostic. The measured drift and residual speed remain part
+of the gate.
+
+\paragraph{What this does not show.}
+The predicate is not a manipulation-stability benchmark and does not imply that a robot can use
+the object in contact-rich operation.
+
+\subsection{Sphere-Rain Predicate}
+
+The sphere-rain probe uses a deterministic set of lightweight contact probes. Let $R$ be the probe
+set and $H(r,P_g)$ indicate whether probe $r$ generated an acceptable contact observation against
+package $P_g$. A useful summary is
+\[
+  \rho(P_g) = \frac{1}{|R|}\sum_{r\in R} H(r,P_g).
+\]
+The checker can then compare $\rho$ with a configured interval and emit labels for missing contact
+coverage or excessive contact counts. The purpose is not exhaustive coverage of all possible
+contacts. The purpose is to expose obvious holes, blocked openings, or contact inflation under a
+fixed and reproducible probe cloud.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_predicate_sphere_rain.pdf}
+\caption{Supplement-only sphere-rain contact-coverage teaching plate. The probe cloud, contact
+bins, and emitted label are shown as separate audit objects.}
+\label{fig:supp-predicate-sphere-rain}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-predicate-sphere-rain} shows how repeated small probes become a coverage
+diagnostic. This helps explain why a package can pass a simple contact canary yet still deserve a
+more specific warning.
+
+\paragraph{What this does not show.}
+The figure does not claim exhaustive geometric coverage, calibrated contact fidelity, or broad
+benchmark superiority over convex-decomposition baselines.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Predicate glossary. This is a supplement-only teaching table, not a copied result table.}
+\label{tab:supp-predicate-glossary}
+\begin{tabular}{p{0.22\linewidth}p{0.34\linewidth}p{0.31\linewidth}}
+\toprule
+Predicate family & Main measured terms & Typical failure labels \\
+\midrule
+Drop/settle & descent, final height, final speed, floor margin & no descent, not settled, floor breach \\
+Stack-or-slide & terminal contact, horizontal drift, support height, final speed & no final contact, excess slide, probe below support \\
+Sphere-rain & contact hit count, spatial bins, excessive or missing contacts & false clearance, blocked opening, contact inflation \\
+Robot consumption & body attachment, source-shape count, self-collision filter count & missing body link, source shapes not suppressed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Example diagnostic parameter table. The table names parameter roles rather than fixing
+numeric thresholds in prose; concrete values are owned by configs and dated records.}
+\label{tab:supp-diagnostic-parameters}
+\begin{tabular}{p{0.2\linewidth}p{0.25\linewidth}p{0.38\linewidth}}
+\toprule
+Parameter & Used by & Interpretation \\
+\midrule
+$\epsilon_v$ & drop/settle; stack-or-slide & maximum final speed for a settled state \\
+$\epsilon_z$ & drop/settle & allowable floor or support-height tolerance \\
+$\epsilon_{xy}$ & stack-or-slide & maximum lateral drift of the probe object \\
+$h_{\min}$ & stack-or-slide & minimum final support height for the probe \\
+$R$ & sphere-rain & deterministic contact-probe set \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The diagnostic parameter table is intentionally role-based. A reviewer can check whether the
+paper's qualitative claims match the predicate families without treating this supplement as a
+second source of threshold truth.

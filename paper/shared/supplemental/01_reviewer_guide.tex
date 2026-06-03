@@ -1,11 +1,59 @@
 \section{Supplementary Reviewer Guide}
 
-This supplement is organized as a technical atlas. Sections~2--5 teach the notation, diagnostic
-predicates, compound body-state mechanism, and link-aware robot package semantics used by the main
-paper. Sections~6--8 collect additional visual explanations, implementation notes, and limitation
-checks.
+This supplement is organized as a tutorial atlas for the simulation-checked diagnostic story in
+the main paper. It does not add a second paper hidden behind the page limit. Instead, it gives the
+definitions, equations, implementation notes, and new explanatory visual plates that make the main
+paper easier to audit. The main paper remains the complete statement of the contribution and
+evidence scope; the supplement is a slower reading path for reviewers who want to inspect how a
+candidate primitive package becomes a Newton task artifact.
 
-\paragraph{How to read the material.}
-The equations are intended to make the diagnostic acceptance criteria auditable. The visual plates
-are explanatory compositions; they are designed to show what the checker measures and where the
-claim boundary stops.
+\paragraph{How to read this supplement.}
+Sections~2--5 are the teaching core. Section~2 defines the package model and the body/link
+attachment map. Section~3 derives the diagnostic predicates used by the small probe scenes.
+Section~4 explains why compound body state can change when locally plausible primitive shapes are
+assembled into a single simulated body. Section~5 explains the robot-specific link ownership rule.
+Sections~6--8 then collect new visual atlas pages, reproducibility notes, and claim-boundary
+checks. The sequence is meant to be read independently of the main-paper figure order.
+
+\paragraph{What is new here.}
+The supplement figures are new tutorial compositions: predicate diagrams, failure storyboards,
+Franka link ownership sketches, source-shape suppression accounting, candidate-lane anatomy, and
+provenance flow. They are not copies of main-paper figures. The supplement tables are notation,
+predicate, parameter, provenance, and boundary tables. They are not copies of main-paper tables and
+do not restate the main quantitative result table.
+
+\paragraph{What remains bounded.}
+The wording follows the same claim registry as the main paper. A package can be called
+simulation-checked only when a dated record links it to a named Newton task, settings, asset,
+environment, and report. The diagnostic checker is a runtime acceptance layer for scoped tasks, not
+a formal verification system. The Franka examples teach link ownership and generated-package
+consumption for a recorded smoke asset; they should not be read as manipulation, whole-arm
+operation, deployment, real-world transfer, or safety certification evidence.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Reading map for the supplement. The entries identify what each section adds beyond the
+main text without expanding the claim boundary.}
+\label{tab:supp-reading-map}
+\begin{tabular}{p{0.18\linewidth}p{0.35\linewidth}p{0.34\linewidth}}
+\toprule
+Section & Reviewer question & Supplement role \\
+\midrule
+S2 & What exactly is a primitive package? & Defines symbols, ownership, body attachment, and outcomes. \\
+S3 & How do probe labels arise? & Derives predicate clauses and explains threshold accounting. \\
+S4 & Why can a good-looking primitive fail? & Teaches aggregate COM and inertia through the parallel-axis theorem. \\
+S5 & What is robot-specific? & Defines link ownership, cross-link merge rejection, and source-shape suppression. \\
+S6 & What should I look for visually? & Provides new tutorial plates and failure storyboards. \\
+S7 & How are artifacts traced? & Links configs, records, figure manifests, and generated files. \\
+S8 & What should I not infer? & Restates unsupported claims and the evidence needed to strengthen them. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The rest of the supplement uses a repeated reading pattern. Each figure is followed by
+\paragraph{What this shows.}
+callouts that name the intended inspection target, and by
+\paragraph{What this does not show.}
+callouts that prevent overreading. This is deliberate: the paper studies safety-affecting
+collision packages, so visual clarity is useful only when paired with explicit evidence limits.

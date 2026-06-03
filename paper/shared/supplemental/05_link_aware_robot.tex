@@ -1,10 +1,113 @@
 \section{Link-Aware Robot Package Semantics}
 
-For a robot asset, each candidate primitive must preserve the source link owner. A cross-link merge
-is flagged when a primitive derived from source link $\ell_i$ is attached to body $b_j$ with
-$j \neq \ell_i$:
+Robot assets introduce a constraint that rigid props do not have: primitive geometry must preserve
+link ownership. A visually plausible whole-robot package is not enough. If a primitive spans a
+joint or attaches to the wrong Newton body, the package can corrupt the robot's articulation even
+before any contact task begins.
+
+\paragraph{Link graph.}
+Let the source robot link graph be $L=(V,E)$, where $V$ are links and $E$ are joints or kinematic
+edges. Each source shape $s\in S$ has an owner map $\lambda(s)\in V$. A generated primitive
+inherits its owner from the source support set:
 \[
-  V_{\mathrm{merge}}(p_i) = [a(p_i) \neq b_{\ell_i}].
+  \ell_i = \lambda(S_i),
 \]
-The robot section explains generated-package consumption and link ownership only. It is not a
-whole-arm manipulation result and does not establish broad robot collision quality.
+where $S_i$ is the source shape subset used by primitive $p_i$. If $S_i$ contains shapes from more
+than one link, the package records a cross-link merge risk rather than silently attaching the
+primitive to one body.
+
+\paragraph{Cross-link merge predicate.}
+The attachment predicate for a generated robot package is
+\[
+  V_{\mathrm{merge}}(p_i) =
+  [a(p_i) \neq b_{\ell_i}] \lor [|\lambda(S_i)| > 1].
+\]
+The first term catches wrong body attachment. The second catches a primitive whose source support
+already spans multiple links. A package passes the structural link gate only when
+\[
+  \sum_i V_{\mathrm{merge}}(p_i)=0.
+\]
+This is a structural audit, not a manipulation result.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_franka_link_frames.pdf}
+\caption{Supplement-only Franka link-ownership teaching plate. The link graph, body attachment,
+and cross-link merge violation are separated.}
+\label{fig:supp-franka-link-frames}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-franka-link-frames} shows the ownership rule that makes robot packages
+different from rigid prop packages. The primitive's frame and body attachment must agree with the
+source link identity.
+
+\paragraph{What this does not show.}
+The figure does not claim whole-robot collision quality, robot manipulation performance, or broad
+articulated-dynamics validity.
+
+\paragraph{Generated-package consumption.}
+After the link gate, the checker must verify that the generated package is what the runtime
+actually consumes. Let $n_{\mathrm{src}}$ be the number of remaining source collision shapes,
+$n_{\mathrm{miss}}$ the number of generated primitives whose owning body was missing, and
+$n_{\mathrm{filter}}$ the number of generated self-collision filter pairs installed for the smoke
+configuration. The package-consumption gate has the schematic form
+\[
+  A_{\mathrm{consume}} =
+  [n_{\mathrm{src}}=0] \land [n_{\mathrm{miss}}=0]
+  \land [n_{\mathrm{filter}}\ \text{recorded}].
+\]
+The generated self-collision filter count is not a quality score. It is evidence that the smoke
+configuration accounted for generated package pairs explicitly.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_generated_package_consumption.pdf}
+\caption{Supplement-only generated-package consumption plate. Missing bodies, source-shape
+suppression, and filter accounting are shown before the task outcome is read.}
+\label{fig:supp-generated-package-consumption}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-generated-package-consumption} teaches the bookkeeping step between package
+generation and robot task smoke. It helps reviewers check that the generated shapes, not stale
+source collision shapes, are entering the diagnostic scene.
+
+\paragraph{What this does not show.}
+The figure is not contact-operation evidence and is not deployment readiness for a robot
+application.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_franka_source_suppression.pdf}
+\caption{Supplement-only source-shape suppression accounting. The plate contrasts source USD
+collision shapes, generated package insertion, and scene-level counts.}
+\label{fig:supp-franka-source-suppression}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-franka-source-suppression} shows source-shape suppression as an explicit
+accounting step. The reviewer should look for zero remaining source collision shapes and zero
+missing generated-body links before reading the task smoke outcome.
+
+\paragraph{What this does not show.}
+The plate does not imply calibrated self-collision behavior or whole-arm manipulation validity.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Supplement-only robot package audit table. It is a semantic checklist, not a copied
+main-paper result table.}
+\label{tab:supp-robot-audit}
+\begin{tabular}{p{0.25\linewidth}p{0.34\linewidth}p{0.28\linewidth}}
+\toprule
+Audit item & Required condition & Unsupported inference \\
+\midrule
+Link ownership & each primitive has one source link owner & whole-robot quality \\
+Body attachment & $a(p_i)=b_{\ell_i}$ for every primitive & manipulation performance \\
+Cross-link merge & $\sum_i V_{\mathrm{merge}}(p_i)=0$ & broad articulated dynamics \\
+Source-shape suppression & source collision shapes removed from the smoke scene & deployment readiness \\
+Generated self-collision filter & filter count recorded for generated package pairs & calibrated robot contact behavior \\
+\bottomrule
+\end{tabular}
+\end{table}

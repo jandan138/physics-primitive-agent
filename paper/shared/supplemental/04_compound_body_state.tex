@@ -1,15 +1,66 @@
 \section{Compound Body-State Mechanism}
 
-A primitive package can be visually plausible while changing the simulated body state. For a
-compound body with primitive masses $m_i$, centers $c_i$, and inertias $J_i$ in a common body
-frame, the aggregate center of mass is
+Geometry-only selection can miss a package-level state change. A primitive may fit a local mesh
+region and still shift the aggregate body state when assembled with the rest of the package. This
+section gives the derivation used to explain that mechanism.
+
+\paragraph{Aggregate center of mass.}
+For primitive components with masses $m_i$ and centers $c_i$ expressed in a common body frame, the
+compound mass and center of mass are
 \[
-  c = \frac{\sum_i m_i c_i}{\sum_i m_i}.
+  M = \sum_i m_i,
+  \qquad
+  c = \frac{1}{M}\sum_i m_i c_i.
 \]
-The aggregate inertia follows the parallel-axis theorem:
+The formula is simple, but its diagnostic implication is important. A large flat primitive can move
+the aggregate center even if its isolated local fit looks plausible. The body state seen by Newton
+is the compound package, not the individual primitive viewed alone.
+
+\paragraph{Aggregate inertia.}
+Let $J_i$ be the inertia of primitive $i$ about its own center in the shared body orientation. The
+parallel-axis theorem moves each inertia to the aggregate center:
 \[
   J = \sum_i \left(J_i + m_i(\|d_i\|^2 I - d_i d_i^\top)\right),
   \qquad d_i = c_i - c.
 \]
-The diagnostic checker therefore evaluates packages at the body level instead of accepting a set of
-isolated primitives only because each primitive has a reasonable local fit.
+The term $m_i(\|d_i\|^2 I - d_i d_i^\top)$ is the body-state sensitivity term. It grows with mass
+and squared distance from the aggregate center. The diagnostic checker does not need to prove that
+this term is the only possible cause of every failure. It only needs to catch packages whose
+recorded simulated state violates the configured predicate.
+
+\paragraph{Why isolated success is insufficient.}
+Suppose primitive $p_j$ passes an isolated drop/settle probe:
+\[
+  A_{\mathrm{drop}}(\{p_j\})=1.
+\]
+It does not follow that
+\[
+  A_{\mathrm{drop}}(P_g)=1,
+\]
+because the full package $P_g$ changes $M$, $c$, $J$, contact layout, and support geometry. The
+acceptance layer therefore evaluates the whole package under the task, not only each primitive's
+local residual.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_compound_body_state_teaching.pdf}
+\caption{Supplement-only compound body-state teaching plate. Local primitive plausibility,
+aggregate mass properties, and the diagnostic gate are shown as separate stages.}
+\label{fig:supp-compound-body-state}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-compound-body-state} explains why the paper separates candidate generation
+from simulation acceptance. The diagnostic checker inspects the compound artifact that Newton
+actually consumes.
+
+\paragraph{What this does not show.}
+The figure does not claim that COM/inertia sensitivity explains every primitive-package failure,
+and it does not claim a validated COM or inertia repair method.
+
+\paragraph{Audit recipe.}
+When a reviewer sees a package-level body-state failure, the useful audit questions are:
+(i)~was the package actually generated and mapped, (ii)~did the isolated component pass a simpler
+probe, (iii)~did the full package change terminal speed, support height, or floor breach, and
+(iv)~does the record preserve the fallback or failure label? These questions are stronger than a
+visual overlay alone because they connect the geometry to the executable scene.

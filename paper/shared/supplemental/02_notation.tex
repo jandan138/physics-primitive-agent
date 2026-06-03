@@ -1,36 +1,106 @@
 \section{Notation and Package Model}
 
-Let an input asset contain source shapes indexed by $s \in S$ and candidate primitive colliders
-indexed by $i \in I$. A candidate primitive package is written
+The main paper describes a four-stage loop: source asset intake, primitive candidate generation,
+Newton diagnostic execution, and accept/fallback reporting. This section makes the hidden objects
+explicit. We write an input asset as a tuple
+\[
+  A = (U, S, G, L, M),
+\]
+where $U$ is the stage or asset identifier, $S$ is the set of source shapes, $G$ is optional render
+or visual geometry, $L$ is an optional link graph, and $M$ is metadata such as units and source
+provenance. The representation mirrors the need to keep geometry, link ownership, and evidence
+records separate when moving assets into Newton~\cite{openusd2026,newton2026}.
+
+A candidate primitive is
 \[
   p_i = (k_i, F_i, T_i, \theta_i, \ell_i),
 \]
-where $k_i$ is the primitive kind, $F_i$ is the source frame, $T_i$ is the primitive transform,
-$\theta_i$ stores dimensions and material-side metadata, and $\ell_i$ is the owning link identity
-when one is available.
+where $k_i$ is the primitive kind, $F_i$ is the source frame, $T_i \in SE(3)$ is the primitive
+transform, $\theta_i$ stores dimensions and material-side metadata, and $\ell_i$ is the owning
+link identity when the source asset is articulated. The candidate package emitted by generator lane
+$g$ is
+\[
+  P_g = \{p_i \mid i \in I_g\}.
+\]
+The package is still a candidate at this point. It is not accepted until a configured diagnostic
+scene $D$ maps $P_g$ into Newton bodies, runs the probes, and emits an auditable outcome.
 
 \begin{table}[t]
 \centering
+\small
 \caption{Supplement-only notation table. It defines audit terms used by the derivations and does
 not duplicate a main-paper result table.}
 \label{tab:supp-notation}
-\begin{tabular}{ll}
+\begin{tabular}{p{0.17\linewidth}p{0.68\linewidth}}
 \toprule
 Symbol & Meaning \\
 \midrule
+$A$ & source asset tuple with stage identity, source shapes, optional render geometry, link graph, and metadata \\
 $S$ & source collision or visual shapes attached to an asset \\
-$I$ & candidate primitive collider indices \\
+$L=(V,E)$ & optional robot or articulated link graph with links $V$ and joints/edges $E$ \\
 $p_i$ & one generated primitive collider candidate \\
-$B$ & simulated rigid bodies or robot links \\
+$P_g$ & primitive or convex package emitted by generator lane $g$ \\
+$B$ & simulated Newton rigid bodies or robot links \\
 $a(p_i)$ & body attachment map for a primitive candidate \\
-$D$ & diagnostic scene with probes and acceptance predicates \\
+$D$ & diagnostic scene with probes, thresholds, and acceptance predicates \\
+$o(D,P_g)$ & recorded outcome: accept, failure, fallback, not applicable, or dependency gap \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-For a link-preserving package, the attachment map is constrained by
+\paragraph{Attachment map.}
+Let $B=\{b_1,\ldots,b_m\}$ be the simulated body set. For a rigid object, all primitives can map to
+one body, so $a(p_i)=b_A$ is usually sufficient. For articulated assets, the link identity must be
+preserved:
 \[
   a(p_i) = b_{\ell_i}.
 \]
-The equality is a structural requirement: a generated primitive for one link must not be silently
-attached to a neighboring link just because the combined geometry looks plausible in isolation.
+This equality is structural, not visual. A primitive that looks plausible in a whole-robot overlay
+can still be invalid if it attaches geometry from one link to a neighboring body. That is why the
+supplement later defines the cross-link merge predicate explicitly.
+
+\paragraph{Candidate generation versus acceptance.}
+The generator lane $g$ can be a bounding primitive, a CPD-style package, CoACD, V-HACD, a native
+primitive routine, or a manual package~\cite{cpd2026,coacd2022,vhacd}. The diagnostic layer does
+not assume that one lane is always best. It asks a narrower question:
+\[
+  \operatorname{accept}(P_g,D) =
+  \begin{cases}
+    1, & \text{if every required predicate in }D\text{ accepts},\\
+    0, & \text{if any required predicate emits a failure label}.
+  \end{cases}
+\]
+Fallback is different from failure. A fallback means the lane did not provide an executable package
+for a configured probe or was routed away by policy. A failure means the package existed, mapped
+into Newton, and was rejected by a named probe.
+
+\paragraph{Outcome vocabulary.}
+The supplement uses the same outcome names as the main paper, but separates their semantics:
+\[
+  o(D,P_g) \in
+  \{\mathrm{accept}, \mathrm{failure}, \mathrm{fallback},
+  \mathrm{not\ applicable}, \mathrm{dependency\ gap}\}.
+\]
+The distinction matters in review. A dependency gap says a required tool or asset was unavailable.
+A not-applicable label says the probe was not meaningful for that asset class. A failure says the
+runtime task executed and rejected the package. A single success rate would hide these categories,
+so the paper keeps them visible.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_candidate_lane_anatomy.pdf}
+\caption{Supplement-only candidate-lane anatomy. The plate shows generator lanes, candidate
+packages, and the diagnostic gate as separate concepts.}
+\label{fig:supp-candidate-lane-anatomy}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-candidate-lane-anatomy} illustrates the most important bookkeeping rule in
+the paper: candidate generation is not acceptance. A generator lane can produce a package with a
+reasonable primitive count and still be rejected later by drop/settle, stack-or-slide, sphere-rain,
+or robot package-consumption probes.
+
+\paragraph{What this does not show.}
+The figure is not a method comparison and is not evidence that one candidate lane is broadly
+superior. It is a teaching diagram for the accounting path that keeps fallback and failure from
+being merged into one ambiguous label.

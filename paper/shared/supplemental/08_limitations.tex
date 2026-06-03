@@ -1,21 +1,83 @@
 \section{Claim Boundary and Limitations}
 
+The supplement closes by restating the boundary in table form. The main paper's evidence supports
+a scoped diagnostic-checker story: primitive packages should be treated as candidates until named
+Newton probes accept them under recorded settings. The evidence does not support stronger claims
+about deployment, certification, real-world transfer, or broad robot operation.
+
 \begin{table}[t]
 \centering
+\small
 \caption{Supplement-only boundary table. It maps supported statement types to unsupported
 overreadings and is not a copy of a main-paper result table.}
 \label{tab:supp-claim-boundary}
-\begin{tabular}{p{0.43\linewidth}p{0.43\linewidth}}
+\begin{tabular}{p{0.42\linewidth}p{0.42\linewidth}}
 \toprule
 Supported statement & Unsupported overreading \\
 \midrule
 Recorded diagnostic predicates ran under scoped settings & General benchmark superiority \\
 Generated packages were consumed by configured smoke scenes & Deployment readiness \\
 Link ownership can be checked structurally & Whole-robot collision quality \\
+Generated self-collision filter pairs are recorded for a smoke scene & Calibrated robot contact behavior \\
 Safety-affecting artifacts require review & Safety certification \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The supplement keeps the same claim boundaries as the main paper. Broader claims require additional
-evidence records, broader robot probes, and reviewer-auditable benchmark definitions.
+\paragraph{Unsupported claim classes.}
+The supplement should not be read as claiming a production compiler, calibrated default selector,
+complete replacement of convex decomposition, or broad primitive speed superiority. It also does
+not claim whole-robot Franka joint-performance validity, manipulation validity, real-world
+transfer, deployment readiness, safety certification, or a safety proof. The phrase diagnostic
+checker is used deliberately instead of formal-verification wording.
+
+\paragraph{Evidence needed for stronger benchmark claims.}
+A broader benchmark claim would require a fixed asset split, source and license metadata, paired
+asset-level metrics, baseline versions and parameters, Newton version and solver settings,
+hardware, seeds, fallback examples, failure examples, and statistical treatment for comparative
+claims. The current supplement does not add such a benchmark.
+
+\paragraph{Evidence needed for stronger robot claims.}
+A stronger robot claim would require more robot assets or tasks, proof that generated packages are
+consumed by robot task runtimes, link/joint graph preservation, source-shape suppression, generated
+self-collision accounting, gravity holds, scripted trajectories, self-collision sanity,
+end-effector sanity, and contact-operation smokes when contact operation is claimed. The current
+Franka material is a scoped generated-package consumption smoke.
+
+\paragraph{Evidence needed for safety or deployment claims.}
+Simulator diagnostics can support review of safety-affecting artifacts, but they do not create a
+deployment protocol or certification standard. A safety or deployment claim would require a
+separate verification standard, environment assumptions, runtime monitoring plan, human review
+procedure, and external evidence record.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Reviewer audit checklist for stronger future claims. The supplement records these as
+missing evidence classes rather than implying that they are already satisfied.}
+\label{tab:supp-future-evidence-checklist}
+\begin{tabular}{p{0.28\linewidth}p{0.32\linewidth}p{0.27\linewidth}}
+\toprule
+Claim class & Additional evidence needed & Current status \\
+\midrule
+Default selector & calibrated thresholds, held-out assets, paired fallbacks & not claimed \\
+Broad benchmark & fixed asset split, baseline parameters, statistics & not claimed \\
+Robot operation & contact-operation smokes and end-effector checks & not claimed \\
+Deployment & deployment protocol and runtime monitoring assumptions & not claimed \\
+Safety certification & external standard and certification evidence & not claimed \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Why this checklist appears in the supplement.}
+The checklist is included to make review easier, not to create future-work claims. A reviewer can
+compare any tempting interpretation against the table: if a statement would require one of these
+missing evidence classes, it is outside the current paper. This convention is especially important
+for primitive collider packages because they are safety-affecting artifacts that may look simple
+while changing simulated body state, contact behavior, or robot link ownership.
+
+\paragraph{Final reading rule.}
+The intended conclusion is conservative: candidate primitive packages are useful because they are
+editable and can be fast after acceptance, but they should be promoted only after named diagnostic
+checks accept them. The supplement teaches how those checks are assembled; it does not broaden what
+the checks prove.

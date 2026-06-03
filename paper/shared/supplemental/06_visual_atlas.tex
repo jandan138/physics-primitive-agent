@@ -1,12 +1,77 @@
 \section{Visual Evidence Atlas}
 
-The atlas pages will use supplement-only figures from the generated supplement-figure directory.
-Each figure will show a new view, a new annotation scheme, or a new tutorial decomposition of an
-existing diagnostic concept.
+The main paper already contains the compact figures needed for the submission narrative. This
+atlas adds new explanatory renderings and diagrams for reviewers who want to inspect the diagnostic
+logic visually. Every figure in this section is a supplement-only asset under
+\texttt{figures/generated/supplement/}; none is a copy of a main-paper figure.
+
+\subsection{Failure Storyboards}
+
+Failure labels can look terse in a table. The storyboard format separates the initial state,
+terminal state, measured symptom, and emitted label. This makes it easier to see that a failure is
+not an omitted baseline or dependency gap: the package was generated, mapped, simulated, and then
+rejected by a named probe.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_failure_storyboard_bowl.pdf}
+\caption{Supplement-only bowl failure storyboard. The storyboard format separates the simulated
+states, measured symptom, and emitted label.}
+\label{fig:supp-failure-storyboard-bowl}
+\end{figure}
 
 \paragraph{What this shows.}
-The intended role of each plate is to make recorded checker behavior easier to inspect.
+Figure~\ref{fig:supp-failure-storyboard-bowl} shows how a diagnostic failure label is anchored in
+state measurements. The value of the storyboard is not photorealism; it is the separation of cause,
+measurement, and label.
 
 \paragraph{What this does not show.}
-The plates do not introduce benchmark superiority, deployment claims, or unrecorded physical
-coverage.
+The storyboard is not a new quantitative result and should not be read as a broad statement about
+all bowls, all V-HACD settings, or all primitive packages.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_failure_storyboard_cup_tray.pdf}
+\caption{Supplement-only cup and tray failure storyboards. Two assets are shown with the same
+diagnostic-template logic but different measured symptoms.}
+\label{fig:supp-failure-storyboard-cup-tray}
+\end{figure}
+
+\paragraph{What this shows.}
+Figure~\ref{fig:supp-failure-storyboard-cup-tray} shows why failure labels should be kept
+probe-specific. Different assets can fail different clauses even when they pass through the same
+candidate-lane and diagnostic-checker interface.
+
+\paragraph{What this does not show.}
+The plate does not rank candidate generators and does not claim that one failure mode dominates a
+larger benchmark.
+
+\subsection{Rigid and Robot Visual Reading Rules}
+
+The atlas uses a restrained drawing style on purpose. The figures are not meant to replace source
+assets, raw renders, or task logs. They are meant to make the audit path legible: source package,
+generated package, diagnostic scene, measured symptom, and claim boundary.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Visual-reading guide for supplement figures. This table explains how to interpret the
+new atlas plates without expanding the evidence boundary.}
+\label{tab:supp-visual-reading}
+\begin{tabular}{p{0.25\linewidth}p{0.34\linewidth}p{0.28\linewidth}}
+\toprule
+Visual element & Intended reading & Do not infer \\
+\midrule
+Colored primitive boxes & generated package components or link-owned bodies & geometric optimality \\
+Arrows and gauges & measured diagnostic terms or state transitions & full dynamics coverage \\
+Failure label cards & emitted probe labels from recorded symptoms & broad baseline ranking \\
+Franka link sketches & ownership and attachment semantics & manipulation success \\
+Provenance flow boxes & reproducible paper artifact chain & external submission content \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Atlas limitation.}
+The deterministic visual style is intentionally less photorealistic than an RTX render. That
+tradeoff keeps the figures small, stable under rebuild, and aligned with the claim boundary. The
+visuals are teaching artifacts; runtime evidence remains in dated records and manifests.
