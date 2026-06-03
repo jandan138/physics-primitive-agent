@@ -58,9 +58,9 @@ def test_compose_fig1_ai_slot_uses_manifest_slots_and_writes_pdf(tmp_path: Path)
                 "selected_overview": str(overview),
                 "slots": {key: str(path) for key, path in slots.items()},
                 "slot_sources": {
-                    "asset_intake": {"renderer": "newton_sensor_tiled_camera"},
-                    "candidate_package": {"renderer": "newton_sensor_tiled_camera"},
-                    "newton_diagnostics": {"renderer": "newton_sensor_tiled_camera"},
+                    "asset_intake": {"renderer": "newton_viewer_rtx_ovrtx"},
+                    "candidate_package": {"renderer": "newton_viewer_rtx_ovrtx"},
+                    "newton_diagnostics": {"renderer": "newton_viewer_rtx_ovrtx"},
                     "decision_report": {
                         "renderer": "built_in_imagegen_slots_plus_deterministic_pil_composition"
                     },
@@ -83,7 +83,7 @@ def test_compose_fig1_ai_slot_uses_manifest_slots_and_writes_pdf(tmp_path: Path)
     assert composed.evidence == "Hybrid Newton/AI protocol schematic; exposition only"
     assert composed.renderer_metadata["mode"] == "hybrid_newton_ai_slot_composition"
     assert composed.renderer_metadata["output_size_px"] == list(FIG1_OUTPUT_SIZE)
-    assert composed.renderer_metadata["slot_sources"]["asset_intake"]["renderer"] == "newton_sensor_tiled_camera"
+    assert composed.renderer_metadata["slot_sources"]["asset_intake"]["renderer"] == "newton_viewer_rtx_ovrtx"
     assert composed.renderer_metadata["slot_sources"]["decision_report"]["renderer"].startswith("built_in_imagegen")
 
 
@@ -110,9 +110,9 @@ def test_compose_fig1_ai_slot_preserves_full_slot_image_edges(tmp_path: Path) ->
                 "selected_overview": str(overview),
                 "slots": {key: str(path) for key, path in slots.items()},
                 "slot_sources": {
-                    "asset_intake": {"renderer": "newton_sensor_tiled_camera"},
-                    "candidate_package": {"renderer": "newton_sensor_tiled_camera"},
-                    "newton_diagnostics": {"renderer": "newton_sensor_tiled_camera"},
+                    "asset_intake": {"renderer": "newton_viewer_rtx_ovrtx"},
+                    "candidate_package": {"renderer": "newton_viewer_rtx_ovrtx"},
+                    "newton_diagnostics": {"renderer": "newton_viewer_rtx_ovrtx"},
                     "decision_report": {
                         "renderer": "built_in_imagegen_slots_plus_deterministic_pil_composition"
                     },
@@ -156,8 +156,8 @@ def test_fig1_ai_slot_manifest_is_replaceable_and_claim_bounded() -> None:
     }
     slot_sources = manifest["slot_sources"]
     for slot in ("asset_intake", "candidate_package", "newton_diagnostics"):
-        assert slot_sources[slot]["renderer"] == "newton_sensor_tiled_camera"
-        assert "fig1_newton_slots" in manifest["slots"][slot]
+        assert slot_sources[slot]["renderer"] == "newton_viewer_rtx_ovrtx"
+        assert "fig1_franka_rtx_slots" in manifest["slots"][slot]
     assert slot_sources["decision_report"]["renderer"].startswith("built_in_imagegen")
     assert "decision_report_ai.png" in manifest["slots"]["decision_report"]
     assert "decision_report" in manifest["replaceable_by_real_render"]
@@ -174,5 +174,5 @@ def test_fig1_ai_slot_is_integrated_into_accv_sources() -> None:
     assert "generated/pipeline_schematic_ai_slot.pdf" in schematic
     assert "pipeline_schematic_ai_slot" in sources
     assert "hybrid_newton_ai_slot_composition" in sources
-    assert "newton_sensor_tiled_camera" in sources
+    assert "newton_viewer_rtx_ovrtx" in sources
     assert "not experimental evidence" in sources

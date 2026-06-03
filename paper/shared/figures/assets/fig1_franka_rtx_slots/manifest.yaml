@@ -1,0 +1,32 @@
+schema_version: 1
+mode: newton_rtx_franka_render_slots
+renderer: newton_viewer_rtx_ovrtx
+slots:
+  asset_intake:
+    image: paper/shared/figures/assets/fig1_franka_rtx_slots/asset_intake_franka_rtx.png
+    sidecar: paper/shared/figures/assets/fig1_franka_rtx_slots/asset_intake_franka_rtx.json
+    image_sha256: a13de6916a9028eb899427f00671b6b4e9288ceeb9eae9474b3f8b20e6db3ed5
+    sidecar_sha256: 5c4d2d2432e35b396ac20b2951b757322aecebbdac098b06be075db7848686d2
+  candidate_package:
+    image: paper/shared/figures/assets/fig1_franka_rtx_slots/candidate_package_franka_rtx.png
+    sidecar: paper/shared/figures/assets/fig1_franka_rtx_slots/candidate_package_franka_rtx.json
+    image_sha256: eaa94a41e3480f9e7c9059ee9ff93470013754c20b13ca8d6112a386489c6b0a
+    sidecar_sha256: 3b909937056996f5211ab9a495ae7cbc615a9532726af1c9ce2a7097c1997cce
+  newton_diagnostics:
+    image: paper/shared/figures/assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.png
+    sidecar: paper/shared/figures/assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.json
+    image_sha256: 30416e36edf367da779d541b5954be40157f24fb9d8bdc52dc5d219a1a22fb5a
+    sidecar_sha256: 4d37881829a95ee8a7944e21b2508fd451fc071b6a48907db19606672f7e8f50
+source_report: /cpfs/user/zhuzihou/dev/physics-primitive-agent/reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json
+source_report_sha256: 785a2c38b9a7ad6caae400fe06e5993cef6214ecfa13861bacb8328bcf95e74a
+source_manifest: /cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/manifests/franka_usd_smoke_assets.yaml
+source_manifest_sha256: 13d46f401f10ba864c77bab3ed62d8fdc3209c62bbb3f97acf9dd391823c6ac2
+source_artifact_root: /cpfs/user/zhuzihou/dev/physics-primitive-agent
+newton:
+  root: /cpfs/shared/simulation/zhuzihou/dev/newton
+  commit: 9f544c81e460
+rtx:
+  renderer: newton_viewer_rtx_ovrtx
+  ovrtx_version: 0.3.0.312915
+claim_boundary: Franka RTX Fig.1 slots are visual exposition from one recorded smoke
+  asset; not whole-robot collision quality or manipulation evidence.

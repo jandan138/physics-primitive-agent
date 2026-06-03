@@ -30,6 +30,10 @@ NEWTON_RENDERED_SLOTS = (
     "candidate_package",
     "newton_diagnostics",
 )
+VALID_NEWTON_RENDERERS = {
+    "newton_sensor_tiled_camera",
+    "newton_viewer_rtx_ovrtx",
+}
 
 
 def load_fig1_slot_manifest(manifest_path: str | Path = DEFAULT_MANIFEST) -> dict[str, Any]:
@@ -104,8 +108,9 @@ def _validate_hybrid_slot_sources(payload: Mapping[str, Any]) -> None:
         raise ValueError(f"hybrid Fig.1 manifest missing slot_sources: {', '.join(missing)}")
     for slot in NEWTON_RENDERED_SLOTS:
         source = slot_sources.get(slot)
-        if not isinstance(source, Mapping) or source.get("renderer") != "newton_sensor_tiled_camera":
-            raise ValueError(f"hybrid Fig.1 slot must use newton_sensor_tiled_camera: {slot}")
+        if not isinstance(source, Mapping) or source.get("renderer") not in VALID_NEWTON_RENDERERS:
+            valid = ", ".join(sorted(VALID_NEWTON_RENDERERS))
+            raise ValueError(f"hybrid Fig.1 slot must use a Newton renderer ({valid}): {slot}")
     decision_source = slot_sources.get("decision_report")
     if not isinstance(decision_source, Mapping):
         raise ValueError("hybrid Fig.1 decision_report slot source must be a mapping")
@@ -128,7 +133,7 @@ def _draw_figure(manifest: Mapping[str, Any]) -> Image.Image:
     xs = [left + i * (panel_w + gap) for i in range(4)]
     specs = (
         ("01", "Asset intake", "USD provenance + link frames", "#1f66a6", "asset_intake"),
-        ("02", "Candidate packages", "primitive and convex lanes", "#2e7d59", "candidate_package"),
+        ("02", "Candidate packages", "link-aware box package", "#2e7d59", "candidate_package"),
         ("03", "Newton diagnostics", "body state, contact, robot", "#b46918", "newton_diagnostics"),
         ("04", "Decision report", "accept, reject, fallback", "#293f66", "decision_report"),
     )
@@ -177,7 +182,7 @@ def _panel(
 def _badges_for_slot(slot: str) -> tuple[str, ...]:
     return {
         "asset_intake": ("scale", "links", "hash"),
-        "candidate_package": ("BBox", "CPD", "V-HACD"),
+        "candidate_package": ("links", "frames", "boxes"),
         "newton_diagnostics": ("drop", "contact", "robot"),
         "decision_report": ("accept", "reject", "fallback"),
     }[slot]

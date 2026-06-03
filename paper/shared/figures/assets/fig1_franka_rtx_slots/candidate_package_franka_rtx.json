@@ -1,0 +1,75 @@
+{
+  "asset_id": "franka_import_smoke",
+  "asset_role": "franka_import_smoke",
+  "claim_boundary": "Franka RTX Fig.1 slots are visual exposition from one recorded smoke asset; not whole-robot collision quality or manipulation evidence.",
+  "details": {
+    "display_pose": {
+      "claim_boundary": "Fixed display pose for Fig.1 visual readability; not manipulation evidence.",
+      "joint_q": [
+        -0.0036802115,
+        0.023901723,
+        0.003680411,
+        -2.3683236,
+        -0.00012918962,
+        2.3922248,
+        0.785492,
+        0.05,
+        0.05
+      ],
+      "source": "newton_examples_franka_ready_pose"
+    },
+    "franka_summary": {
+      "asset_id": "franka_import_smoke",
+      "asset_path": "assets/raw/mirrors/franka_usd_smoke_assets_2026_05_15/franka_import_smoke/franka.usd",
+      "asset_role": "franka_import_smoke",
+      "cross_link_merge_count": 0,
+      "link_boundary_status": "smoke_passed",
+      "link_count": 12,
+      "links_without_primitive_count": 0,
+      "meshless_link_placeholder_count": 1,
+      "package_method": "link_aware_bounding_boxes",
+      "package_primitive_count": 12,
+      "package_status": "smoke_passed",
+      "primitive_count": 12,
+      "primitive_or_hull_count": 12,
+      "robot_package_status": "generated"
+    },
+    "recipe": "newton_viewer_rtx_render_project_franka_usd_smoke_asset",
+    "recorded_package_overlay": {
+      "missing_frames": [],
+      "package_method": "link_aware_bounding_boxes",
+      "recipe": "recorded_link_aware_box_primitives_attached_to_matching_newton_bodies",
+      "recorded_primitive_count": 12,
+      "rendered_primitive_count": 12
+    },
+    "render_asset_source": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/raw/mirrors/franka_usd_smoke_assets_2026_05_15/franka_import_smoke/franka.usd",
+    "usd_import": {
+      "body_count": 12,
+      "joint_count": 12,
+      "path_body_count": 12,
+      "shape_count": 11
+    }
+  },
+  "image_size_px": [
+    640,
+    420
+  ],
+  "newton": {
+    "commit": "9f544c81e460",
+    "root": "/cpfs/shared/simulation/zhuzihou/dev/newton"
+  },
+  "renderer": "newton_viewer_rtx_ovrtx",
+  "rtx": {
+    "ovrtx_version": "0.3.0.312915",
+    "renderer": "newton_viewer_rtx_ovrtx"
+  },
+  "schema_version": 1,
+  "slot": "candidate_package",
+  "source_artifact_root": "/cpfs/user/zhuzihou/dev/physics-primitive-agent",
+  "source_asset": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/raw/mirrors/franka_usd_smoke_assets_2026_05_15/franka_import_smoke/franka.usd",
+  "source_asset_sha256": "2bfd004928d4157ca2fdca3e79bcfb913b4008eef3ec16f839ad89314141976b",
+  "source_manifest": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/manifests/franka_usd_smoke_assets.yaml",
+  "source_manifest_sha256": "13d46f401f10ba864c77bab3ed62d8fdc3209c62bbb3f97acf9dd391823c6ac2",
+  "source_report": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json",
+  "source_report_sha256": "785a2c38b9a7ad6caae400fe06e5993cef6214ecfa13861bacb8328bcf95e74a"
+}

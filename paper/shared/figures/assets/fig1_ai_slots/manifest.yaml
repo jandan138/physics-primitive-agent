@@ -5,26 +5,26 @@ overview_candidates:
   - paper/shared/figures/assets/fig1_ai_slots/overview_candidate_01.png
 selected_overview: paper/shared/figures/assets/fig1_ai_slots/overview_candidate_01.png
 slots:
-  asset_intake: paper/shared/figures/assets/fig1_newton_slots/asset_intake_newton.png
-  candidate_package: paper/shared/figures/assets/fig1_newton_slots/candidate_package_newton.png
-  newton_diagnostics: paper/shared/figures/assets/fig1_newton_slots/newton_diagnostics_newton.png
+  asset_intake: paper/shared/figures/assets/fig1_franka_rtx_slots/asset_intake_franka_rtx.png
+  candidate_package: paper/shared/figures/assets/fig1_franka_rtx_slots/candidate_package_franka_rtx.png
+  newton_diagnostics: paper/shared/figures/assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.png
   decision_report: paper/shared/figures/assets/fig1_ai_slots/decision_report_ai.png
 slot_sources:
   asset_intake:
-    renderer: newton_sensor_tiled_camera
-    sidecar: paper/shared/figures/assets/fig1_newton_slots/asset_intake_newton.json
-    manifest: paper/shared/figures/assets/fig1_newton_slots/manifest.yaml
+    renderer: newton_viewer_rtx_ovrtx
+    sidecar: paper/shared/figures/assets/fig1_franka_rtx_slots/asset_intake_franka_rtx.json
+    manifest: paper/shared/figures/assets/fig1_franka_rtx_slots/manifest.yaml
   candidate_package:
-    renderer: newton_sensor_tiled_camera
-    sidecar: paper/shared/figures/assets/fig1_newton_slots/candidate_package_newton.json
-    manifest: paper/shared/figures/assets/fig1_newton_slots/manifest.yaml
+    renderer: newton_viewer_rtx_ovrtx
+    sidecar: paper/shared/figures/assets/fig1_franka_rtx_slots/candidate_package_franka_rtx.json
+    manifest: paper/shared/figures/assets/fig1_franka_rtx_slots/manifest.yaml
   newton_diagnostics:
-    renderer: newton_sensor_tiled_camera
-    sidecar: paper/shared/figures/assets/fig1_newton_slots/newton_diagnostics_newton.json
-    manifest: paper/shared/figures/assets/fig1_newton_slots/manifest.yaml
+    renderer: newton_viewer_rtx_ovrtx
+    sidecar: paper/shared/figures/assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.json
+    manifest: paper/shared/figures/assets/fig1_franka_rtx_slots/manifest.yaml
   decision_report:
     renderer: built_in_imagegen_slots_plus_deterministic_pil_composition
 replaceable_by_real_render:
   - decision_report
 claim_boundary: Hybrid Newton-rendered Fig.1 slots and the AI/report card are exposition only; not experimental evidence.
-generator: newton_sensor_tiled_camera_slots_plus_built_in_imagegen_report_and_deterministic_pil_composition
+generator: newton_viewer_rtx_ovrtx_franka_slots_plus_built_in_imagegen_report_and_deterministic_pil_composition

@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-03 ACCV Fig.1 Franka RTX Slots](2026-06-03-accv-fig1-franka-rtx-slots.md):
+  replaces the first three ACCV Fig.1 visual slots with Newton ViewerRTX Franka smoke renders,
+  records OVRTX/Newton provenance and clean-room visual review iterations, and keeps the slots as
+  exposition rather than robot performance evidence.
 - [2026-06-03 ACCV Fig.1 Newton Render Slots](2026-06-03-accv-fig1-newton-render-slots.md):
   replaces the first three ACCV Fig.1 visual slots with Newton SensorTiledCamera renders,
   preserves the AI/report card, records provenance sidecars, and keeps the figure as
