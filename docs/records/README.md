@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-03 ACCV Franka RTX Body Figure](2026-06-03-accv-franka-rtx-body-figure.md):
+  replaces the ACCV Franka task-smoke body figure with a Newton ViewerRTX visual plate, records
+  provenance and clean-room visual review, and keeps the figure as generated-package consumption
+  exposition rather than whole-robot or manipulation evidence.
 - [2026-06-03 ACCV Fig.1 Franka RTX Slots](2026-06-03-accv-fig1-franka-rtx-slots.md):
   replaces the first three ACCV Fig.1 visual slots with Newton ViewerRTX Franka smoke renders,
   records OVRTX/Newton provenance and clean-room visual review iterations, and keeps the slots as

@@ -469,6 +469,7 @@ def _render_model_rtx(
     builder: Any,
     output: Path,
     camera: Mapping[str, Any],
+    image_size: tuple[int, int] = (640, 420),
 ) -> None:
     from PIL import Image
 
@@ -478,8 +479,8 @@ def _render_model_rtx(
     newton.eval_fk(model, model.joint_q, model.joint_qd, state)
 
     viewer = newton.viewer.ViewerRTX(
-        width=640,
-        height=420,
+        width=int(image_size[0]),
+        height=int(image_size[1]),
         headless=True,
         paused=False,
         num_frames=4,

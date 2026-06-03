@@ -71,13 +71,19 @@ figures:
     generated_manifest: generated/accv_visuals_manifest.json
     evidence: docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md
     note: Mechanism figure for the capped bed/Franka full-compound sensitivity story.
-  - id: franka_link_aware_task_scene
-    status: generated
-    output: generated/franka_link_aware_task_scene.pdf
-    generated_manifest: generated/accv_visuals_manifest.json
+  - id: franka_link_aware_rtx_task_scene
+    status: generated-rtx
+    output: generated/franka_link_aware_rtx_task_scene.pdf
+    generated_manifest: assets/franka_rtx_task_scene/franka_link_aware_rtx_task_scene.json
     evidence: >-
       docs/records/2026-05-26-link-aware-robot-package-generation.md;
       docs/records/2026-05-26-generated-package-robot-task-probe.md
     note: >-
-      Link-aware generated-package and task-smoke scene figure. It supports generated package
-      consumption evidence only, not whole-robot collision-quality or manipulation claims.
+      RTX-rendered visual context for one recorded Franka link-aware generated-package task smoke.
+      It supports generated package consumption exposition only, not whole-robot collision-quality or manipulation evidence.
+    source_artifacts:
+      - assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.png
+      - assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.json
+      - assets/franka_rtx_task_scene/franka_link_aware_rtx_task_scene.json
+      - generated/franka_link_aware_rtx_task_scene.png
+      - generated/franka_link_aware_rtx_task_scene.pdf

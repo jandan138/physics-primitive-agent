@@ -1,0 +1,53 @@
+{
+  "asset_id": "franka_import_smoke",
+  "asset_role": "franka_import_smoke",
+  "claim_boundary": "Franka RTX task scene is visual context from one recorded smoke asset/package; not whole-robot collision quality evidence, not contact-operation evidence, and not manipulation evidence.",
+  "figure_id": "franka_link_aware_rtx_task_scene",
+  "newton": {
+    "commit": "9f544c81e460",
+    "root": "/cpfs/shared/simulation/zhuzihou/dev/newton"
+  },
+  "output_pdf": "paper/shared/figures/generated/franka_link_aware_rtx_task_scene.pdf",
+  "output_pdf_sha256": "b63be713c4ce41eba97a0fb8ad4343f9c9cf136b821dd369cf577f4b62d09c1e",
+  "output_png": "paper/shared/figures/generated/franka_link_aware_rtx_task_scene.png",
+  "output_png_sha256": "afc4082f742cc1fa93211ec96cc98c9db5ec4ac1deb59c49aa6b983b1a1e658c",
+  "raw_render": "paper/shared/figures/assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.png",
+  "raw_render_sha256": "30416e36edf367da779d541b5954be40157f24fb9d8bdc52dc5d219a1a22fb5a",
+  "renderer": "newton_viewer_rtx_ovrtx",
+  "rtx": {
+    "ovrtx_version": "0.3.0.312915",
+    "renderer": "newton_viewer_rtx_ovrtx"
+  },
+  "schema_version": 1,
+  "source_artifact_root": "/cpfs/user/zhuzihou/dev/physics-primitive-agent",
+  "source_asset": "assets/raw/mirrors/franka_usd_smoke_assets_2026_05_15/franka_import_smoke/franka.usd",
+  "source_asset_sha256": "2bfd004928d4157ca2fdca3e79bcfb913b4008eef3ec16f839ad89314141976b",
+  "source_manifest": "assets/manifests/franka_usd_smoke_assets.yaml",
+  "source_manifest_sha256": "13d46f401f10ba864c77bab3ed62d8fdc3209c62bbb3f97acf9dd391823c6ac2",
+  "source_report": "reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json",
+  "source_report_sha256": "785a2c38b9a7ad6caae400fe06e5993cef6214ecfa13861bacb8328bcf95e74a",
+  "source_rtx_sidecar": "paper/shared/figures/assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.json",
+  "source_rtx_sidecar_sha256": "4d37881829a95ee8a7944e21b2508fd451fc071b6a48907db19606672f7e8f50",
+  "summary": {
+    "asset_id": "franka_import_smoke",
+    "asset_path": "assets/raw/mirrors/franka_usd_smoke_assets_2026_05_15/franka_import_smoke/franka.usd",
+    "asset_role": "franka_import_smoke",
+    "claim_boundary": "Franka RTX task scene is visual context from one recorded smoke asset/package; not whole-robot collision quality evidence, not contact-operation evidence, and not manipulation evidence.",
+    "cross_link_merge_count": 0,
+    "link_boundary_status": "smoke_passed",
+    "link_count": 12,
+    "links_without_primitive_count": 0,
+    "meshless_link_placeholder_count": 1,
+    "missing_body_link_count": 0,
+    "package_method": "link_aware_bounding_boxes",
+    "package_primitive_count": 12,
+    "package_status": "smoke_passed",
+    "primitive_count": 12,
+    "primitive_or_hull_count": 12,
+    "robot_package_status": "generated",
+    "self_collision_filter_pair_count": 66,
+    "source_usd_shape_count": 0,
+    "task_outcome": "accept",
+    "task_status": "smoke_passed"
+  }
+}
