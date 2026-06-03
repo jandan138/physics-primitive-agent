@@ -3,12 +3,17 @@
   "figures": [
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_drop_settle",
       "pdf": "supplement_predicate_drop_settle.pdf",
-      "pdf_sha256": "d590258724d0244e52ed8f554419d08c8ddf68fd4f410d7805012c17dbb8a30e",
+      "pdf_sha256": "8e857ed691a02f07f0d1358721b588db15b15d51e3a853e473a5a36fbc8f8678",
       "png": "supplement_predicate_drop_settle.png",
-      "png_sha256": "215b87339bf0f5398754b8e4b9103d26c5d7984fc735902cc87ae69e425f675f",
+      "png_sha256": "bf8b76f1666f22858fc9b5b2ad511f6fdb92ee710b79a1f612a210b57f71f34a",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_drop_settle_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for drop/settle predicate anatomy with suspended package, settled package, and abstract accept-term tokens.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "391cfd038fe33b0d5f75ecd8375df72c31eec7d1b506b060ef7ee58921049582",
       "source_records": [
         "docs/records/2026-05-14-newton-drop-settle.md"
       ],
@@ -17,12 +22,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_stack_slide",
       "pdf": "supplement_predicate_stack_slide.pdf",
-      "pdf_sha256": "80041b2323bca4bb5c2fdd9871a3a3ecb29cc47b4b810fcd8654cc4464d96099",
+      "pdf_sha256": "fbef190e97a2ae7e0f421cd33be67044a908c0635998d7e3a9faad5605391396",
       "png": "supplement_predicate_stack_slide.png",
-      "png_sha256": "4a100de4870cc96fb78e617ffe44e182a3c7964b925209921be4cbb12620f4ab",
+      "png_sha256": "15a61c39897f019a68b04aeeadcebd72b8a69a5c4c3951d1fe33a5ed52a3f866",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_stack_slide_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for stack-or-slide predicate anatomy with contact, lateral drift, and residual motion cues.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "f660e1caeaacc5604e7063e1e4c2b054857d38638b954158f6b0ff02abe9d307",
       "source_records": [
         "configs/experiments/phase0_baseline.yaml"
       ],
@@ -31,12 +41,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_predicate_sphere_rain",
       "pdf": "supplement_predicate_sphere_rain.pdf",
-      "pdf_sha256": "9568f412694f973e7b048707292285a11b6b2803951c213a24a5d3523ce6a883",
+      "pdf_sha256": "3047b04c71ee787a08465c5a0d0db2debe1ed8480f5fd6071a91abbcb2dfaa4f",
       "png": "supplement_predicate_sphere_rain.png",
-      "png_sha256": "e51336ac7e5c0638033a65f48e8b31302c3b86818e8ef6e6133069e7b89c65c8",
+      "png_sha256": "9aa59282d43edd5b4768e0afb853b3ae29e76bb5769a19b2afa50dd7e5d5a3f5",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_sphere_rain_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for sphere-rain contact coverage with probe cloud, contact highlights, and abstract diagnostic markers.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "783efab536220aac5a0cfbd934ef49440241a0f94f44884b57f6769e70767689",
       "source_records": [
         "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
       ],
@@ -45,12 +60,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_generated_package_consumption",
       "pdf": "supplement_generated_package_consumption.pdf",
-      "pdf_sha256": "c8d06a8afc88fd05f1ede8ed80bab8f897ffa4ab68cc31512b9712af3b3615fb",
+      "pdf_sha256": "14c573d0e6be439cfb79018a806496273775b012f3a0fc4f925943194354884f",
       "png": "supplement_generated_package_consumption.png",
-      "png_sha256": "a22883cd65b0fdec045c2feabbda859382e38e6cf6f9481bba56c55e45db79b5",
+      "png_sha256": "e084ae66dc96580f96536f1d2746ce951b99498db2c85487b919ee00babaa94b",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_generated_package_consumption_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for generated-package consumption with source shapes, generated primitives, and scene-accounting tokens.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "7d6e3554f46810fac8b3ca7823e309dfe5f1a39134391a4f3669e6e959caefb6",
       "source_records": [
         "docs/records/2026-05-26-generated-package-robot-task-probe.md"
       ],
@@ -59,12 +79,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_compound_body_state_teaching",
       "pdf": "supplement_compound_body_state_teaching.pdf",
-      "pdf_sha256": "5071a8254ffa30858e251ed9f7619089e8d808582d2fd500bf66a2a5906b668f",
+      "pdf_sha256": "109636ac32d5260b5f380f70dac749b8d28a8138cd7ac348fe2d714fa743b101",
       "png": "supplement_compound_body_state_teaching.png",
-      "png_sha256": "58c444635300c8da14bfb9ced6ad260cadcfafeae56e4861dd0121c52c8237c7",
+      "png_sha256": "af5e652827bc514ad7c7725415d1b1cf1005ed5acb2b1f6cbb979ac6faa43392",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_compound_body_state_teaching_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for compound body-state teaching with primitive centers, aggregate COM/inertia cues, and diagnostic gate.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "ce44fe2f6f62ab2a60341b321fc5bb982c9a26fb2e629e7bf4fd154dfdfab1da",
       "source_records": [
         "docs/records/2026-05-26-accv-paper-visual-expansion-plan.md"
       ],
@@ -73,12 +98,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_franka_link_frames",
       "pdf": "supplement_franka_link_frames.pdf",
-      "pdf_sha256": "4e836e7349d11d63738bfe9b8b409e5c452b146f86c7e96dbcfe243b7e757841",
+      "pdf_sha256": "d999871c235474fce8bcb5b20d5f8280843b470d751c808318a79aa27b00afa0",
       "png": "supplement_franka_link_frames.png",
-      "png_sha256": "311ddef60dc3e35756ae12ece5a236888fba832c36ac769820bcd003c481d291",
+      "png_sha256": "c85a1f60f94321fc57c786bc4e796d2cd3bf72e0f361d6d3ce9cd7ef16b8bca1",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_franka_link_frames_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for Franka-style link ownership frames with local frames, link-attached primitives, and merge-violation cue.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "f827f942837a02233d11dbe37e08051d1379d9db8a3ca3dea6f03683458938cd",
       "source_records": [
         "docs/records/2026-05-26-link-aware-robot-package-generation.md"
       ],
@@ -87,12 +117,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_franka_source_suppression",
       "pdf": "supplement_franka_source_suppression.pdf",
-      "pdf_sha256": "3370b902c0d2bb0b690742fc3b9342f8d515c93109488a78d453b410212411b1",
+      "pdf_sha256": "33cae4a322e8846d9b6a1484fee42157d8f4739f81eeb3d4868b6c2f64849d0d",
       "png": "supplement_franka_source_suppression.png",
-      "png_sha256": "91d498624d420bfa21afb6f7cf8ef4fe346b7a04cd9ba2a2dbc6b3a34d769568",
+      "png_sha256": "6d4bfbd940dffef0c84dacd81f3428c23bb80c9c6f1edf4271af9c8be99189c8",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_franka_source_suppression_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for source-shape suppression with source collision shapes, generated primitives, and accounting tokens.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "31e9f89bb743d09610dab56c688b6b0bc2d551618122b585821a4837d646f9c3",
       "source_records": [
         "docs/records/2026-05-26-generated-package-robot-task-probe.md"
       ],
@@ -101,12 +136,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_failure_storyboard_bowl",
       "pdf": "supplement_failure_storyboard_bowl.pdf",
-      "pdf_sha256": "fa78593de291b0b5c924615da3888a2b5b96e8c22866d2950377ece31017e34a",
+      "pdf_sha256": "44bf907876cc5672f6fd9e5aa10545d9859f5f2087693c1354147a67e0f1e589",
       "png": "supplement_failure_storyboard_bowl.png",
-      "png_sha256": "35d09a0387be9791a864231be3c35558c7aefd6375b84005d2bcb79d22943b4f",
+      "png_sha256": "d510cebc479b408339cbbb5472b1d53c14977b00fa718ae974a9a94c8d9fbf50",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_failure_storyboard_bowl_slot.png",
+      "slot_prompt_summary": "Wide four-zone tutorial slot for bowl failure storyboard with initial state, terminal state, abstract metric, and failure-token cue.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "a158ab96568dbe14e0c6c5d20e3e38f734dee0e9b8bb6474b6aae1fde248571f",
       "source_records": [
         "docs/records/2026-05-26-phase0-paper-evidence-closure.md"
       ],
@@ -115,12 +155,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_failure_storyboard_cup_tray",
       "pdf": "supplement_failure_storyboard_cup_tray.pdf",
-      "pdf_sha256": "5055b1a0b5b9705ff3caec3960b12cb8857ecf12922e3724fa0e908ca7b6226d",
+      "pdf_sha256": "f45cad325ab1471075dbd91928648451ee8f6b891f99053bf0a7c71fd57aa1f3",
       "png": "supplement_failure_storyboard_cup_tray.png",
-      "png_sha256": "a0cbaea1afa5caeb5d52180312f3ec2c5691d2fb6f64ccac6ba3c8af97fa75ed",
+      "png_sha256": "92c62c02698385eca77688fa92e40505b3244423294cf9bb10f2c21db3bd318c",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_failure_storyboard_cup_tray_slot.png",
+      "slot_prompt_summary": "Wide four-zone tutorial slot for cup/tray failure storyboard with cup, tray, abstract slide metric, and support-loss cue.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "043d4ef1f000252ddb3058410ad37b6542a857260dcd3ece6dd9f40ced8f93cc",
       "source_records": [
         "docs/records/2026-05-26-phase0-vhacd-runtime-followup.md"
       ],
@@ -129,12 +174,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_candidate_lane_anatomy",
       "pdf": "supplement_candidate_lane_anatomy.pdf",
-      "pdf_sha256": "bc3b22a109d3215b13677e399746a3bf1c006f0153a604f597ca44e040e2a231",
+      "pdf_sha256": "fc305abc2de1b76eaba754f7a4a4f9c5fe2af3530eb184239e7931fa8d9fc066",
       "png": "supplement_candidate_lane_anatomy.png",
-      "png_sha256": "cad38cd183a53438128efe86a5d933b9883d7de7270e6dbc9abc8c2d223ed36c",
+      "png_sha256": "85d4c70c2c45c43e628b690d9e8226be8e4d43ca8fa4089d466a3ea170dbdce3",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.png",
+      "slot_prompt_summary": "Wide three-zone tutorial slot for candidate-lane anatomy with abstract generator lanes, primitive package, and diagnostic gate.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "e7e39bade5e9462f5d7d0cc1c06d44458199975533cfd282b4a0f19f21f65201",
       "source_records": [
         "paper/shared/evidence/results_manifest.yaml"
       ],
@@ -143,12 +193,17 @@
     },
     {
       "claim_boundary": "Supplement tutorial visualization only; not benchmark superiority, not deployment readiness, not whole-robot collision quality, and not safety certification.",
-      "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+      "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
       "figure_id": "supplement_provenance_flow",
       "pdf": "supplement_provenance_flow.pdf",
-      "pdf_sha256": "48f61db3f3a12dfba1ce8adc02779f375a4b1073ba20b2fc47e985decc986452",
+      "pdf_sha256": "b0ecafc981d8f3af23e8f169ad5ccaa08be0c4ae870f5a1d8d66d7783fa744b0",
       "png": "supplement_provenance_flow.png",
-      "png_sha256": "4f96d101799bbf6ea7c6b23e748aac7918659b757d3ec4a4a9baa49326354b65",
+      "png_sha256": "f7f57b16f891fe26dcd560feb5dcc2259f36d55b1685a1cae3a46f6794ba5c5f",
+      "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.png",
+      "slot_prompt_summary": "Wide four-zone tutorial slot for artifact provenance flow with abstract config, record, manifest, and supplement artifacts.",
+      "slot_renderer": "built_in_imagegen_ai_slot",
+      "slot_replaceable_by_real_render": true,
+      "slot_sha256": "0cc7fafc0a5477fd14fc8c98c497889c496a8a160f988f78007c09c3839d6b33",
       "source_records": [
         "docs/reference/claim-boundaries.md"
       ],
@@ -157,5 +212,9 @@
     }
   ],
   "manifest_path": "paper/shared/figures/generated/supplement/manifest.json",
-  "schema_version": 1
+  "mode": "ai_slot_composition",
+  "schema_version": 1,
+  "slot_claim_boundary": "AI slot visuals are exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "slot_manifest": "paper/shared/figures/assets/supplement_ai_slots/manifest.yaml",
+  "slot_manifest_sha256": "017283868d1590dab778d3f736a19f1924bfd53a070c84e50a8868b04fb2d2c7"
 }

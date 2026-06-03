@@ -74,6 +74,13 @@ def _write_newton_check_config(path: Path, source_dir: Path):
     )
 
 
+def _write_newton_dependency_gap_module(source_dir: Path) -> None:
+    (source_dir / "newton.py").write_text(
+        "raise ModuleNotFoundError('missing test dependency')\n",
+        encoding="utf-8",
+    )
+
+
 def _write_tiny_usd(path: Path):
     Usd = pytest.importorskip("pxr.Usd")
     UsdGeom = pytest.importorskip("pxr.UsdGeom")
@@ -270,6 +277,7 @@ def test_missing_config_reports_clean_error(capsys):
 def test_check_newton_emits_environment_report(tmp_path, capsys):
     source_dir = tmp_path / "newton-source"
     source_dir.mkdir()
+    _write_newton_dependency_gap_module(source_dir)
     config_path = tmp_path / "newton_check.yaml"
     _write_newton_check_config(config_path, source_dir)
 

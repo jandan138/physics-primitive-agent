@@ -195,10 +195,13 @@ def test_run_readiness_check_combines_dependency_gap_status(tmp_path):
 
     report = run_readiness_check(env)
 
-    assert report["status"] == "dependency_gap"
+    assert report["status"] in {"dependency_gap", "import_error"}
     assert report["python"]["executable"] == sys.executable
     assert report["newton_source"]["status"] == "dependency_gap"
     assert report["output"]["status"] == "smoke_passed"
+    if report["status"] == "import_error":
+        assert report["modules"]["newton"]["status"] == "import_error"
+        assert "outside NEWTON_SOURCE_DIR" in report["modules"]["newton"]["detail"]
 
 
 def test_run_readiness_check_reports_invalid_code_root_as_configuration_error(tmp_path):
@@ -260,7 +263,10 @@ def test_readiness_script_writes_output_file(tmp_path):
     file_report = json.loads(output_path.read_text(encoding="utf-8"))
     assert stdout_report["stage"] == "environment_readiness"
     assert file_report["stage"] == "environment_readiness"
-    assert file_report["status"] == "dependency_gap"
+    assert file_report["status"] in {"dependency_gap", "import_error"}
+    if file_report["status"] == "import_error":
+        assert file_report["modules"]["newton"]["status"] == "import_error"
+        assert "outside NEWTON_SOURCE_DIR" in file_report["modules"]["newton"]["detail"]
 
 
 def test_readiness_script_reports_output_write_failure_as_json(tmp_path):

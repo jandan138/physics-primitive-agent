@@ -4,6 +4,9 @@ import json
 import time
 from pathlib import Path
 
+import yaml
+from PIL import Image
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER = ROOT / "paper"
@@ -88,12 +91,15 @@ def test_supplement_records_hard_constraints_and_claim_boundaries() -> None:
 
 def test_supplement_source_preserves_double_blind_review() -> None:
     manifest = PAPER / "shared/figures/generated/supplement/manifest.json"
+    slot_manifest = PAPER / "shared/figures/assets/supplement_ai_slots/manifest.yaml"
     combined = (
         read_text(PAPER / "venues/accv/supplement.tex")
         + "\n"
         + supplement_source_text()
         + "\n"
         + read_text(manifest)
+        + "\n"
+        + read_text(slot_manifest)
     )
     forbidden = (
         "github.com",
@@ -119,6 +125,62 @@ def test_supplement_figure_manifest_records_sources() -> None:
     for figure in data["figures"]:
         for source_record in figure["source_records"]:
             assert (ROOT / source_record).exists(), source_record
+
+
+def test_supplement_ai_slot_manifest_covers_every_generated_figure() -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        DEFAULT_SLOT_MANIFEST,
+        SUPPLEMENT_FIGURE_IDS,
+        load_supplement_slot_manifest,
+    )
+
+    slot_manifest = load_supplement_slot_manifest(DEFAULT_SLOT_MANIFEST)
+
+    assert slot_manifest["mode"] == "ai_slot_composition"
+    assert set(slot_manifest["slots"]) == set(SUPPLEMENT_FIGURE_IDS)
+    assert "not experimental evidence" in slot_manifest["claim_boundary"]
+    assert "not benchmark" in slot_manifest["claim_boundary"]
+    for figure_id, slot in slot_manifest["slots"].items():
+        asset = ROOT / slot["asset"]
+        assert asset.is_file(), figure_id
+        assert slot["renderer"].startswith("built_in_imagegen")
+        assert slot["prompt_summary"]
+        assert slot["replaceable_by_real_render"] is True
+
+
+def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        SUPPLEMENT_FIGURE_IDS,
+        generate_supplement_figures,
+    )
+
+    slot_manifest = _write_test_slot_manifest(tmp_path, SUPPLEMENT_FIGURE_IDS)
+    output_dir = tmp_path / "supplement"
+
+    manifest = generate_supplement_figures(
+        output_dir=output_dir,
+        slot_manifest_path=slot_manifest,
+    )
+
+    assert manifest["mode"] == "ai_slot_composition"
+    assert manifest["slot_manifest"].endswith("manifest.yaml")
+    assert {figure["figure_id"] for figure in manifest["figures"]} == set(SUPPLEMENT_FIGURE_IDS)
+    for figure in manifest["figures"]:
+        assert figure["slot_asset"].endswith("_slot.png")
+        assert len(figure["slot_sha256"]) == 64
+        assert figure["slot_prompt_summary"] == f"test slot for {figure['figure_id']}"
+        assert figure["slot_renderer"].startswith("built_in_imagegen")
+        assert figure["slot_replaceable_by_real_render"] is True
+        assert "AI slot" in figure["composer"]
+
+
+def test_supplement_figure_composer_uses_ai_slots_instead_of_program_scene_drawer() -> None:
+    source = read_text(ROOT / "src/primitive_collision_compiler/paper/accv_supplement_figures.py")
+
+    assert "class _PanelScenes" not in source
+    assert "def _draw_panel_scene" not in source
+    assert "load_supplement_slot_manifest" in source
+    assert "_paste_slot_strip" in source
 
 
 def test_supplement_figure_generator_outputs_non_main_figure_names(tmp_path: Path) -> None:
@@ -153,6 +215,33 @@ def test_supplement_figure_generation_is_reproducible(tmp_path: Path) -> None:
     ] == [
         tuple(figure[field] for field in fields) for figure in second["figures"]
     ]
+
+
+def test_supplement_ai_slot_edges_are_preserved_in_panel_strip(tmp_path: Path) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        SUPPLEMENT_FIGURE_IDS,
+        _panel_boxes,
+        generate_supplement_figures,
+    )
+
+    slot_manifest = _write_test_slot_manifest(
+        tmp_path,
+        SUPPLEMENT_FIGURE_IDS,
+        edge_markers=True,
+    )
+    output_dir = tmp_path / "supplement"
+
+    generate_supplement_figures(output_dir=output_dir, slot_manifest_path=slot_manifest)
+
+    rendered = Image.open(output_dir / "supplement_predicate_drop_settle.png").convert("RGB")
+    boxes = _panel_boxes(3)
+    first_inner = (boxes[0][0] + 34, boxes[0][1] + 100, boxes[0][0] + 84, boxes[0][3] - 70)
+    last_inner = (boxes[-1][2] - 84, boxes[-1][1] + 100, boxes[-1][2] - 34, boxes[-1][3] - 70)
+    red_pixels = _count_pixels(rendered.crop(first_inner), lambda r, g, b: r > 180 and g < 90 and b < 90)
+    blue_pixels = _count_pixels(rendered.crop(last_inner), lambda r, g, b: r < 90 and g < 140 and b > 180)
+
+    assert red_pixels > 400
+    assert blue_pixels > 400
 
 
 def test_supplement_body_uses_new_figures_and_teaching_material() -> None:
@@ -208,3 +297,62 @@ def test_supplement_figure_panels_do_not_spill_into_gutters(tmp_path: Path) -> N
     for box in (boxes[0], boxes[-1]):
         right_edge = (box[2] - 34, box[1] + 95, box[2] - 4, box[3] - 70)
         assert dark_pixel_count(cup_tray, right_edge) <= 150
+
+
+def _write_test_slot_manifest(
+    tmp_path: Path,
+    figure_ids: tuple[str, ...],
+    *,
+    edge_markers: bool = False,
+) -> Path:
+    asset_dir = tmp_path / "assets"
+    slots: dict[str, dict[str, object]] = {}
+    for index, figure_id in enumerate(figure_ids):
+        slot = asset_dir / f"{figure_id}_slot.png"
+        if edge_markers:
+            _edge_marker_slot(slot)
+        else:
+            color = ["#dae9ff", "#e6f4df", "#fff0d3", "#eee8ff"][index % 4]
+            _solid_slot(slot, color)
+        slots[figure_id] = {
+            "asset": str(slot),
+            "renderer": "built_in_imagegen_ai_slot",
+            "prompt_summary": f"test slot for {figure_id}",
+            "replaceable_by_real_render": True,
+        }
+
+    manifest = tmp_path / "manifest.yaml"
+    manifest.write_text(
+        yaml.safe_dump(
+            {
+                "schema_version": 1,
+                "mode": "ai_slot_composition",
+                "slots": slots,
+                "claim_boundary": "AI slot visuals are exposition only; not experimental evidence and not benchmark evidence.",
+            },
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    return manifest
+
+
+def _solid_slot(path: Path, color: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    Image.new("RGB", (1200, 520), color).save(path)
+
+
+def _edge_marker_slot(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image = Image.new("RGB", (1200, 520), "#eef2f7")
+    for x in range(0, 90):
+        for y in range(image.height):
+            image.putpixel((x, y), (220, 35, 35))
+    for x in range(image.width - 90, image.width):
+        for y in range(image.height):
+            image.putpixel((x, y), (35, 95, 220))
+    image.save(path)
+
+
+def _count_pixels(image: Image.Image, predicate) -> int:
+    return sum(1 for r, g, b in image.getdata() if predicate(r, g, b))

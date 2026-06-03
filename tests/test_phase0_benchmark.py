@@ -57,10 +57,19 @@ def test_phase0_report_records_all_assets_baselines_and_probe_outcomes(tmp_path,
 
     import primitive_collision_compiler.phase0 as phase0
 
+    def fake_convex_decomposition_package(*args, **kwargs):
+        raise phase0.ConvexDecompositionUnavailable("convex decomposition unavailable in fixture")
+
     monkeypatch.setattr(phase0, "run_newton_contact_smoke", fake_contact)
     monkeypatch.setattr(phase0, "run_newton_drop_settle", fake_drop)
     monkeypatch.setattr(phase0, "run_newton_stack_slide", fake_stack, raising=False)
     monkeypatch.setattr(phase0, "run_newton_sphere_rain", fake_sphere)
+    monkeypatch.setattr(
+        phase0,
+        "build_convex_decomposition_package",
+        fake_convex_decomposition_package,
+        raising=False,
+    )
 
     report = build_phase0_rigid_benchmark_report(config_path)
 

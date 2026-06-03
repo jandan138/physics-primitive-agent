@@ -3,17 +3,18 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import math
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any, Mapping, Sequence
 
-from PIL import Image, ImageDraw, ImageFont
+import yaml
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "paper/shared/figures/generated/supplement"
+DEFAULT_SLOT_MANIFEST = REPO_ROOT / "paper/shared/figures/assets/supplement_ai_slots/manifest.yaml"
 CANVAS_SIZE = (1800, 1120)
 DETERMINISTIC_PDF_TIME = time.gmtime(0)
 PANEL_FILL = "#ffffff"
@@ -30,6 +31,8 @@ CLAIM_BOUNDARY = (
     "Supplement tutorial visualization only; not benchmark superiority, not deployment "
     "readiness, not whole-robot collision quality, and not safety certification."
 )
+AI_SLOT_MODE = "ai_slot_composition"
+AI_SLOT_RENDERER_PREFIX = "built_in_imagegen"
 
 
 @dataclass(frozen=True)
@@ -160,12 +163,55 @@ FIGURE_SPECS: tuple[SupplementFigureSpec, ...] = (
 SUPPLEMENT_FIGURE_IDS: tuple[str, ...] = tuple(spec.figure_id for spec in FIGURE_SPECS)
 
 
-def generate_supplement_figures(output_dir: str | Path = DEFAULT_OUTPUT_DIR) -> dict[str, Any]:
+def load_supplement_slot_manifest(
+    manifest_path: str | Path = DEFAULT_SLOT_MANIFEST,
+    *,
+    required_ids: Sequence[str] = SUPPLEMENT_FIGURE_IDS,
+) -> dict[str, Any]:
+    path = Path(manifest_path)
+    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if payload.get("mode") != AI_SLOT_MODE:
+        raise ValueError(f"Supplement AI slot manifest must use mode: {AI_SLOT_MODE}")
+    slots = payload.get("slots")
+    if not isinstance(slots, Mapping):
+        raise ValueError("Supplement AI slot manifest missing slots mapping")
+    missing = [figure_id for figure_id in required_ids if figure_id not in slots]
+    if missing:
+        raise ValueError(f"Supplement AI slot manifest missing slots: {', '.join(missing)}")
+    for figure_id in required_ids:
+        slot = slots[figure_id]
+        if not isinstance(slot, Mapping):
+            raise ValueError(f"Supplement AI slot entry must be a mapping: {figure_id}")
+        asset = slot.get("asset")
+        if not asset:
+            raise ValueError(f"Supplement AI slot missing asset: {figure_id}")
+        asset_path = _repo_path(str(asset))
+        if not asset_path.is_file():
+            raise FileNotFoundError(asset_path)
+        renderer = str(slot.get("renderer", ""))
+        if not renderer.startswith(AI_SLOT_RENDERER_PREFIX):
+            raise ValueError(f"Supplement AI slot must use built-in imagegen renderer: {figure_id}")
+        if not slot.get("prompt_summary"):
+            raise ValueError(f"Supplement AI slot missing prompt summary: {figure_id}")
+        if slot.get("replaceable_by_real_render") is not True:
+            raise ValueError(f"Supplement AI slot must remain replaceable by real render: {figure_id}")
+    return dict(payload)
+
+
+def generate_supplement_figures(
+    output_dir: str | Path = DEFAULT_OUTPUT_DIR,
+    *,
+    slot_manifest_path: str | Path = DEFAULT_SLOT_MANIFEST,
+) -> dict[str, Any]:
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
+    slot_manifest = load_supplement_slot_manifest(slot_manifest_path)
+    slots = slot_manifest["slots"]
     figures: list[dict[str, Any]] = []
     for spec in FIGURE_SPECS:
-        image = _compose_plate(spec)
+        slot = slots[spec.figure_id]
+        slot_path = _repo_path(str(slot["asset"]))
+        image = _compose_plate(spec, slot)
         png_path = out / f"{spec.figure_id}.png"
         pdf_path = out / f"{spec.figure_id}.pdf"
         image.save(png_path)
@@ -190,14 +236,23 @@ def generate_supplement_figures(output_dir: str | Path = DEFAULT_OUTPUT_DIR) -> 
                 "pdf_sha256": _sha256_file(pdf_path),
                 "source_sha256": spec_hash,
                 "source_records": list(spec.source_records),
-                "composer": "primitive_collision_compiler.paper.accv_supplement_figures",
+                "slot_asset": _portable_manifest_path(slot_path),
+                "slot_sha256": _sha256_file(slot_path),
+                "slot_prompt_summary": slot["prompt_summary"],
+                "slot_renderer": slot["renderer"],
+                "slot_replaceable_by_real_render": slot["replaceable_by_real_render"],
+                "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
                 "claim_boundary": spec.claim_boundary,
             }
         )
     manifest_path = out / "manifest.json"
     manifest: dict[str, Any] = {
         "schema_version": 1,
+        "mode": AI_SLOT_MODE,
         "manifest_path": _portable_manifest_path(manifest_path),
+        "slot_manifest": _portable_manifest_path(Path(slot_manifest_path)),
+        "slot_manifest_sha256": _sha256_file(Path(slot_manifest_path)),
+        "slot_claim_boundary": slot_manifest.get("claim_boundary", ""),
         "figure_count": len(figures),
         "figures": figures,
     }
@@ -208,13 +263,17 @@ def generate_supplement_figures(output_dir: str | Path = DEFAULT_OUTPUT_DIR) -> 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--slot-manifest", type=Path, default=DEFAULT_SLOT_MANIFEST)
     args = parser.parse_args(argv)
-    manifest = generate_supplement_figures(output_dir=args.output_dir)
+    manifest = generate_supplement_figures(
+        output_dir=args.output_dir,
+        slot_manifest_path=args.slot_manifest,
+    )
     print(manifest["manifest_path"])
     return 0
 
 
-def _compose_plate(spec: SupplementFigureSpec) -> Image.Image:
+def _compose_plate(spec: SupplementFigureSpec, slot: Mapping[str, Any]) -> Image.Image:
     canvas = Image.new("RGB", CANVAS_SIZE, "#f7f9fc")
     draw = ImageDraw.Draw(canvas)
     _draw_background(draw)
@@ -231,7 +290,9 @@ def _compose_plate(spec: SupplementFigureSpec) -> Image.Image:
     for idx, (label, box) in enumerate(zip(spec.panels, panel_boxes)):
         _rounded(draw, box, 24, PANEL_FILL, PANEL_STROKE, 3)
         draw.text((box[0] + 28, box[1] + 24), label.upper(), font=label_font, fill=_palette(idx))
-        _draw_panel_scene(draw, spec.kind, idx, box)
+    _paste_slot_strip(canvas, _repo_path(str(slot["asset"])), panel_boxes)
+    for box in panel_boxes:
+        _rounded(draw, (box[0] + 34, box[1] + 82, box[2] - 34, box[3] - 32), 18, None, "#cad3df", 2)
 
     show_box = (78, 846, 850, 1034)
     limit_box = (950, 846, 1722, 1034)
@@ -239,248 +300,6 @@ def _compose_plate(spec: SupplementFigureSpec) -> Image.Image:
     _callout(draw, limit_box, "What this does not show", spec.does_not_show, RED, body_font, small_font)
     draw.text((78, 1060), spec.claim_boundary, font=small_font, fill="#6b7280")
     return canvas
-
-
-def _draw_panel_scene(draw: ImageDraw.ImageDraw, kind: str, idx: int, box: tuple[int, int, int, int]) -> None:
-    inner = (box[0] + 34, box[1] + 82, box[2] - 34, box[3] - 32)
-    getattr(_PanelScenes(draw, inner), f"draw_{kind}")(idx)
-
-
-class _PanelScenes:
-    def __init__(self, draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int]) -> None:
-        self.draw = draw
-        self.box = box
-        self.font = _font(23)
-        self.bold = _font(24, bold=True)
-
-    def draw_drop_settle(self, idx: int) -> None:
-        x0, y0, x1, y1 = self.box
-        floor = y1 - 42
-        self.draw.line((x0, floor, x1, floor), fill="#2f3946", width=5)
-        cx = (x0 + x1) // 2
-        if idx == 0:
-            self._box((cx - 58, y0 + 38, cx + 58, y0 + 154), BLUE)
-            self._arrow((cx, y0 + 174), (cx, floor - 34), RED)
-            self.draw.text((x0 + 18, y0 + 18), "z0 > zf", font=self.bold, fill=TEXT)
-        elif idx == 1:
-            self._box((cx - 66, floor - 116, cx + 66, floor - 10), GREEN)
-            self.draw.arc((cx - 92, floor - 150, cx + 92, floor + 34), 200, 340, fill=GREEN, width=6)
-            self.draw.text((x0 + 18, y0 + 18), "||vT|| <= eps", font=self.bold, fill=TEXT)
-        else:
-            self._term_stack(("speed ok", "height ok", "descent ok"), (GREEN, GREEN, GREEN))
-
-    def draw_stack_slide(self, idx: int) -> None:
-        x0, y0, x1, y1 = self.box
-        platform = (x0 + 60, y1 - 88, x1 - 60, y1 - 44)
-        self._box(platform, "#6b7280")
-        if idx == 0:
-            self._box((x0 + 190, y1 - 190, x0 + 310, y1 - 90), GREEN)
-            self.draw.text((x0 + 65, y0 + 30), "terminal contact", font=self.bold, fill=TEXT)
-        elif idx == 1:
-            self._box((x0 + 120, y1 - 190, x0 + 240, y1 - 90), RED)
-            self._box((x0 + 330, y1 - 190, x0 + 450, y1 - 90), "#f5b14c")
-            self._arrow((x0 + 248, y1 - 140), (x0 + 322, y1 - 140), RED)
-            self.draw.text((x0 + 65, y0 + 30), "xy drift measured", font=self.bold, fill=TEXT)
-        else:
-            self._term_stack(("contact", "drift <= eps", "speed <= eps"), (GREEN, RED, GREEN))
-
-    def draw_sphere_rain(self, idx: int) -> None:
-        x0, y0, x1, y1 = self.box
-        bowl = (x0 + 145, y1 - 160, x1 - 145, y1 - 24)
-        self.draw.arc(bowl, 0, 180, fill=BLUE, width=8)
-        if idx == 0:
-            for n in range(20):
-                px = x0 + 80 + (n * 37) % (x1 - x0 - 160)
-                py = y0 + 32 + (n * 53) % 170
-                self.draw.ellipse((px, py, px + 22, py + 22), fill="#9ed1f0", outline=BLUE, width=2)
-        elif idx == 1:
-            for n in range(8):
-                px = x0 + 155 + n * 45
-                self.draw.ellipse((px, y1 - 105, px + 26, y1 - 79), fill=GREEN, outline="#1f5e43", width=2)
-            for n in range(4):
-                px = x0 + 120 + n * 85
-                self.draw.ellipse((px, y1 - 205, px + 24, y1 - 181), fill="#f2b8b5", outline=RED, width=2)
-        else:
-            self._term_stack(("hits counted", "gaps flagged", "label emitted"), (GREEN, GOLD, BLUE))
-
-    def draw_package_consumption(self, idx: int) -> None:
-        if idx == 0:
-            self._robot_arm(source=True)
-            self.draw.text((self.box[0] + 28, self.box[1] + 30), "source collision shapes", font=self.bold, fill=TEXT)
-        elif idx == 1:
-            self._robot_arm(source=False)
-            self.draw.text((self.box[0] + 28, self.box[1] + 30), "generated primitives", font=self.bold, fill=TEXT)
-        else:
-            self._term_stack(("missing bodies = 0", "source shapes = 0", "filters recorded"), (GREEN, GREEN, BLUE))
-
-    def draw_compound(self, idx: int) -> None:
-        x0, y0, x1, y1 = self.box
-        centers = ((x0 + 150, y0 + 145), (x0 + 310, y0 + 225), (x0 + 440, y0 + 120))
-        colors = (BLUE, GREEN, GOLD)
-        for center, color in zip(centers, colors):
-            self.draw.ellipse((center[0] - 52, center[1] - 36, center[0] + 52, center[1] + 36), fill="#eef4fb", outline=color, width=5)
-        if idx == 0:
-            for center in centers:
-                self.draw.ellipse((center[0] - 6, center[1] - 6, center[0] + 6, center[1] + 6), fill=RED)
-            self.draw.text((x0 + 42, y1 - 68), "local primitive fits", font=self.bold, fill=TEXT)
-        elif idx == 1:
-            cx, cy = x0 + 305, y0 + 176
-            self.draw.ellipse((cx - 11, cy - 11, cx + 11, cy + 11), fill=PURPLE)
-            self.draw.line((x0 + 105, cy, x1 - 105, cy), fill=PURPLE, width=3)
-            self.draw.text((x0 + 42, y1 - 68), "aggregate COM and inertia", font=self.bold, fill=TEXT)
-        else:
-            self._term_stack(("local plausible", "body state changed", "probe decides"), (GREEN, GOLD, BLUE))
-
-    def draw_franka_links(self, idx: int) -> None:
-        if idx == 0:
-            self._link_chain(("base", "link2", "link4", "link6", "hand"))
-        elif idx == 1:
-            self._robot_arm(source=False)
-            self.draw.text((self.box[0] + 36, self.box[1] + 250), "a(pi) = b_li", font=self.bold, fill=TEXT)
-        else:
-            self._term_stack(("owner link kept", "merge rejected", "sentinel noted"), (GREEN, RED, BLUE))
-
-    def draw_source_suppression(self, idx: int) -> None:
-        if idx == 0:
-            self._robot_arm(source=True)
-            self.draw.text((self.box[0] + 40, self.box[1] + 242), "source USD shapes present", font=self.bold, fill=TEXT)
-        elif idx == 1:
-            self._robot_arm(source=False)
-            self.draw.text((self.box[0] + 40, self.box[1] + 242), "generated package inserted", font=self.bold, fill=TEXT)
-        else:
-            self._term_stack(("remove source", "insert generated", "count filters"), (RED, GREEN, BLUE))
-
-    def draw_storyboard_bowl(self, idx: int) -> None:
-        labels = ("start", "terminal", "metric", "label")
-        if idx < 2:
-            self._bowl_scene(tilted=idx == 1)
-        elif idx == 2:
-            self._gauge(0.72, RED, "breach")
-        else:
-            self._label_card("failure label", RED, "floor breach")
-        self.draw.text((self.box[0] + 30, self.box[1] + 22), labels[idx], font=self.bold, fill=TEXT)
-
-    def draw_storyboard_cup_tray(self, idx: int) -> None:
-        if idx == 0:
-            self._cup_scene()
-        elif idx == 1:
-            self._tray_scene()
-        elif idx == 2:
-            self._gauge(0.38, GOLD, "slide")
-        else:
-            self._label_card("diagnostic label", GOLD, "support lost")
-
-    def draw_candidate_lane(self, idx: int) -> None:
-        x0, y0, x1, y1 = self.box
-        if idx == 0:
-            lanes = ("BBox", "CPD-style", "V-HACD")
-            for n, lane in enumerate(lanes):
-                y = y0 + 52 + n * 76
-                self._box((x0 + 50, y, x0 + 230, y + 46), _palette(n))
-                self.draw.text((x0 + 260, y + 8), lane, font=self.bold, fill=TEXT)
-        elif idx == 1:
-            for n in range(5):
-                px = x0 + 95 + n * 76
-                self._box((px, y0 + 78 + (n % 2) * 50, px + 58, y0 + 170 + (n % 2) * 50), _palette(n))
-            self.draw.text((x0 + 54, y1 - 65), "package, not isolated primitive", font=self.bold, fill=TEXT)
-        else:
-            self._term_stack(("probe", "accept", "fallback"), (BLUE, GREEN, GOLD))
-
-    def draw_provenance(self, idx: int) -> None:
-        steps = ("config", "record", "manifest", "supplement")
-        x0, y0, x1, y1 = self.box
-        step = steps[idx]
-        cx = (x0 + x1) // 2
-        card = (cx - 78, y0 + 94, cx + 78, y0 + 176)
-        if idx > 0:
-            self._arrow((x0 + 22, y0 + 135), (card[0] - 16, y0 + 135), MUTED)
-        self._box(card, _palette(idx))
-        _center_text(self.draw, step, (card[0], y0 + 195, card[2], y0 + 228), self.bold, TEXT)
-        _center_text(self.draw, f"step {idx + 1}", (card[0], card[1] + 24, card[2], card[3] - 20), self.font, MUTED)
-        if idx < len(steps) - 1:
-            self._arrow((card[2] + 16, y0 + 135), (x1 - 22, y0 + 135), MUTED)
-        if idx == 2:
-            _center_text(self.draw, "hash-bound figures", (x0 + 20, y1 - 76, x1 - 20, y1 - 36), self.font, TEXT)
-        elif idx == 3:
-            _center_text(self.draw, "raw assets stay out of git", (x0 + 20, y1 - 76, x1 - 20, y1 - 36), self.font, TEXT)
-
-    def _box(self, box: tuple[int, int, int, int], color: str) -> None:
-        _rounded(self.draw, box, 14, "#f8fafc", color, 5)
-
-    def _arrow(self, start: tuple[int, int], end: tuple[int, int], color: str) -> None:
-        _arrow(self.draw, start, end, color)
-
-    def _term_stack(self, labels: Iterable[str], colors: Iterable[str]) -> None:
-        x0, y0, x1, _ = self.box
-        for n, (label, color) in enumerate(zip(labels, colors)):
-            y = y0 + 36 + n * 72
-            _rounded(self.draw, (x0 + 55, y, x1 - 55, y + 52), 16, "#f8fafc", color, 4)
-            self.draw.ellipse((x0 + 78, y + 15, x0 + 100, y + 37), fill=color)
-            self.draw.text((x0 + 120, y + 12), label, font=self.bold, fill=TEXT)
-
-    def _robot_arm(self, source: bool) -> None:
-        x0, y0, _, _ = self.box
-        joints = [(x0 + 92, y0 + 220), (x0 + 162, y0 + 150), (x0 + 255, y0 + 192), (x0 + 360, y0 + 110), (x0 + 455, y0 + 164)]
-        for a, b in zip(joints, joints[1:]):
-            self.draw.line((a, b), fill="#2f3946", width=18)
-        for n, joint in enumerate(joints):
-            color = "#cfd8e3" if source else _palette(n)
-            self.draw.ellipse((joint[0] - 28, joint[1] - 28, joint[0] + 28, joint[1] + 28), fill=color, outline="#172033", width=3)
-        if source:
-            for joint in joints[1:4]:
-                self.draw.rectangle((joint[0] - 42, joint[1] - 42, joint[0] + 42, joint[1] + 42), outline=RED, width=4)
-
-    def _link_chain(self, labels: Sequence[str]) -> None:
-        x0, y0, x1, _ = self.box
-        last = None
-        radius = 34
-        left = x0 + 40
-        right = x1 - 40
-        step = (right - left) / max(len(labels) - 1, 1)
-        for n, label in enumerate(labels):
-            cx = int(left + n * step)
-            cy = y0 + 158 + int(32 * math.sin(n))
-            circle = (cx - radius, cy - radius, cx + radius, cy + radius)
-            if last:
-                self.draw.line((last[0], last[1], cx, cy), fill=MUTED, width=5)
-            self.draw.ellipse(circle, fill="#f8fafc", outline=_palette(n), width=5)
-            _center_text(self.draw, label, (cx - 54, cy + 48, cx + 54, cy + 86), self.font, TEXT)
-            last = (cx, cy)
-
-    def _bowl_scene(self, tilted: bool) -> None:
-        x0, y0, x1, y1 = self.box
-        tilt = 30 if tilted else 0
-        self.draw.arc((x0 + 130 + tilt, y0 + 130, x1 - 130 + tilt, y1 - 30), 0, 180, fill=BLUE, width=9)
-        self.draw.line((x0 + 80, y1 - 42, x1 - 80, y1 - 42), fill="#2f3946", width=4)
-
-    def _cup_scene(self) -> None:
-        x0, y0, x1, y1 = self.box
-        width = x1 - x0
-        cup_left = x0 + int(width * 0.30)
-        cup_right = x0 + int(width * 0.66)
-        cup_top = y0 + 82
-        cup_bottom = y1 - 50
-        self.draw.rectangle((cup_left, cup_top, cup_right, cup_bottom), fill="#eef4fb", outline=BLUE, width=7)
-        handle = (cup_right - 6, y0 + 140, min(x1 - 28, cup_right + int(width * 0.26)), y0 + 230)
-        self.draw.arc(handle, 270, 90, fill=BLUE, width=7)
-
-    def _tray_scene(self) -> None:
-        x0, y0, x1, y1 = self.box
-        self.draw.polygon(((x0 + 110, y1 - 78), (x1 - 80, y1 - 118), (x1 - 130, y1 - 40), (x0 + 80, y1 - 28)), fill="#eef4fb", outline=TEAL)
-        self.draw.line((x0 + 120, y0 + 95, x1 - 120, y0 + 145), fill=GOLD, width=8)
-
-    def _gauge(self, value: float, color: str, label: str) -> None:
-        x0, y0, x1, y1 = self.box
-        self.draw.arc((x0 + 120, y0 + 60, x1 - 120, y1 + 140), 190, 350, fill="#d7dee9", width=18)
-        self.draw.arc((x0 + 120, y0 + 60, x1 - 120, y1 + 140), 190, 190 + int(160 * value), fill=color, width=18)
-        self.draw.text((x0 + 185, y0 + 170), label, font=self.bold, fill=color)
-
-    def _label_card(self, title: str, color: str, label: str) -> None:
-        x0, y0, x1, y1 = self.box
-        card = (x0 + 62, y0 + 88, x1 - 62, y1 - 76)
-        _rounded(self.draw, card, 22, "#fff7ed", color, 5)
-        _center_text(self.draw, title, (card[0] + 14, y0 + 124, card[2] - 14, y0 + 158), self.font, TEXT)
-        _center_text(self.draw, label, (card[0] + 14, y0 + 172, card[2] - 14, y0 + 220), _font(29, bold=True), color)
 
 
 def _panel_boxes(count: int) -> list[tuple[int, int, int, int]]:
@@ -492,6 +311,53 @@ def _panel_boxes(count: int) -> list[tuple[int, int, int, int]]:
     width = 380
     gap = 36
     return [(78 + n * (width + gap), top, 78 + n * (width + gap) + width, bottom) for n in range(count)]
+
+
+def _paste_slot_strip(canvas: Image.Image, path: Path, boxes: Sequence[tuple[int, int, int, int]]) -> None:
+    inner_boxes = [(box[0] + 34, box[1] + 82, box[2] - 34, box[3] - 32) for box in boxes]
+    strip_box = (
+        inner_boxes[0][0],
+        inner_boxes[0][1],
+        inner_boxes[-1][2],
+        inner_boxes[0][3],
+    )
+    source = _trim_light_border(Image.open(path).convert("RGB"))
+    strip_size = (strip_box[2] - strip_box[0], strip_box[3] - strip_box[1])
+    strip = Image.new("RGB", strip_size, "#ffffff")
+    fitted = ImageOps.fit(source, strip_size, method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+    strip.paste(fitted, (0, 0))
+    for inner in inner_boxes:
+        crop_box = (
+            inner[0] - strip_box[0],
+            inner[1] - strip_box[1],
+            inner[2] - strip_box[0],
+            inner[3] - strip_box[1],
+        )
+        crop = strip.crop(crop_box)
+        mask = Image.new("L", crop.size, 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, crop.width - 1, crop.height - 1), radius=18, fill=255)
+        canvas.paste(crop, inner[:2], mask)
+
+
+def _trim_light_border(source: Image.Image, threshold: int = 248, margin: int = 20) -> Image.Image:
+    width, height = source.size
+    pixels = source.load()
+    xs: list[int] = []
+    ys: list[int] = []
+    for y in range(height):
+        for x in range(width):
+            if min(pixels[x, y]) < threshold:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return source
+    left = max(min(xs) - margin, 0)
+    top = max(min(ys) - margin, 0)
+    right = min(max(xs) + margin, width - 1)
+    bottom = min(max(ys) + margin, height - 1)
+    if left <= 0 and top <= 0 and right >= width - 1 and bottom >= height - 1:
+        return source
+    return source.crop((left, top, right + 1, bottom + 1))
 
 
 def _draw_background(draw: ImageDraw.ImageDraw) -> None:
@@ -538,20 +404,11 @@ def _rounded(
     draw: ImageDraw.ImageDraw,
     box: tuple[int, int, int, int],
     radius: int,
-    fill: str,
+    fill: str | None,
     outline: str,
     width: int,
 ) -> None:
     draw.rounded_rectangle(box, radius=radius, fill=fill, outline=outline, width=width)
-
-
-def _arrow(draw: ImageDraw.ImageDraw, start: tuple[int, int], end: tuple[int, int], color: str) -> None:
-    draw.line((start, end), fill=color, width=6)
-    angle = math.atan2(end[1] - start[1], end[0] - start[0])
-    size = 20
-    p1 = (end[0] - size * math.cos(angle - 0.55), end[1] - size * math.sin(angle - 0.55))
-    p2 = (end[0] - size * math.cos(angle + 0.55), end[1] - size * math.sin(angle + 0.55))
-    draw.polygon((end, p1, p2), fill=color)
 
 
 def _palette(index: int) -> str:
@@ -595,6 +452,13 @@ def _portable_manifest_path(path: Path) -> str:
         return resolved.relative_to(REPO_ROOT).as_posix()
     except ValueError:
         return resolved.name
+
+
+def _repo_path(raw_path: str) -> Path:
+    path = Path(raw_path)
+    if path.is_absolute():
+        return path
+    return REPO_ROOT / path
 
 
 def _sha256_text(text: str) -> str:

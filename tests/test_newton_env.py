@@ -11,7 +11,7 @@ from primitive_collision_compiler.newton.env import inspect_newton_environment
 def _commit_git_fixture(path: Path) -> str:
     subprocess.run(["git", "init"], cwd=path, check=True, capture_output=True, text=True)
     (path / "README.md").write_text("fixture\n", encoding="utf-8")
-    subprocess.run(["git", "add", "README.md"], cwd=path, check=True, capture_output=True, text=True)
+    subprocess.run(["git", "add", "."], cwd=path, check=True, capture_output=True, text=True)
     subprocess.run(
         [
             "git",
@@ -52,6 +52,10 @@ def test_inspect_newton_environment_reports_missing_source(tmp_path):
 def test_inspect_newton_environment_records_git_commit_for_source_dir(tmp_path):
     source_dir = tmp_path / "newton-source"
     source_dir.mkdir()
+    (source_dir / "newton.py").write_text(
+        "raise ModuleNotFoundError('missing test dependency')\n",
+        encoding="utf-8",
+    )
     source_commit = _commit_git_fixture(source_dir)
 
     report = inspect_newton_environment(source_dir)
