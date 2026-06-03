@@ -103,3 +103,21 @@ def test_supplement_figure_manifest_records_sources() -> None:
     assert "supplement_predicate_drop_settle" in text
     assert "source_sha256" in text
     assert "claim_boundary" in text
+
+
+def test_supplement_figure_generator_outputs_non_main_figure_names(tmp_path: Path) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        SUPPLEMENT_FIGURE_IDS,
+        generate_supplement_figures,
+    )
+
+    output_dir = tmp_path / "supplement"
+    manifest = generate_supplement_figures(output_dir=output_dir)
+
+    assert len(SUPPLEMENT_FIGURE_IDS) >= 10
+    assert all(path.name.startswith("supplement_") for path in output_dir.glob("*.pdf"))
+    assert "phase0_outcome_matrix" not in "\n".join(SUPPLEMENT_FIGURE_IDS)
+    assert manifest["schema_version"] == 1
+    assert manifest["manifest_path"] == str(output_dir / "manifest.json")
+    assert all(item["claim_boundary"] for item in manifest["figures"])
+    assert all(item["source_sha256"] for item in manifest["figures"])
