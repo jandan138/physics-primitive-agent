@@ -192,6 +192,8 @@ Expected: no whitespace errors.
 
 Use the code review workflow with the worktree diff against `main`; fix Critical/Important findings.
 
-- [ ] **Step 4: Merge, commit, and push**
+- [x] **Step 4: Commit and fast-forward main**
 
-Commit on the feature branch, merge or cherry-pick to main after review, rebuild/verify the ACCV PDF on main if needed, then `git push origin main`.
+Commit on the feature branch, fast-forward main after review, and rebuild/verify
+the ACCV PDF on main. Push status is reported in the final operator response
+rather than pre-claimed in the plan file.

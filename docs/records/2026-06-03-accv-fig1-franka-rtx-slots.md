@@ -41,11 +41,12 @@ Complete
 - Rendered final ACCV page 2 for paper-scale visual inspection with
   `mkdir -p /tmp/ppa_fig1_review && pdftoppm -png -r 180 -f 2 -l 2 paper/venues/accv/build/main.pdf /tmp/ppa_fig1_review/accv_page`.
   The inspected page render was `/tmp/ppa_fig1_review/accv_page-02.png`.
-- `sha256sum paper/venues/accv/build/main.pdf paper/shared/figures/generated/pipeline_schematic_ai_slot.pdf paper/shared/figures/generated/pipeline_schematic_ai_slot.png /tmp/ppa_fig1_review/accv_page-02.png`:
-  `00da6e2c279fd8026c1b6018f0166272c9ecc134705380c3cdd92d6d34434b03`,
+- `sha256sum paper/shared/figures/generated/pipeline_schematic_ai_slot.pdf paper/shared/figures/generated/pipeline_schematic_ai_slot.png /tmp/ppa_fig1_review/accv_page-02.png`:
   `bf74dc763f8980096d59832858ed4c6e76e559b4a3dfed333ab9e10d812ea0e5`,
   `4b3acd70399546762a380927717e41fb2830b18dec00f3003f1ff4942ca0d877`,
   and `f874944903172f6c2537badba582484bf8c5fead7b135b64b280018577c119f8`.
+  The full `main.pdf` hash is not used as durable evidence because TeX rebuild
+  metadata can change while the rendered Fig.1 page remains visually identical.
 - `PYTHONPATH=$PWD/src:$PWD python -m pytest tests/test_fig1_franka_rtx_slots.py tests/test_fig1_ai_slot.py tests/test_fig1_newton_slots.py tests/test_paper_layout.py -q`:
   23 passed.
 - `git diff --check`: no whitespace errors.
