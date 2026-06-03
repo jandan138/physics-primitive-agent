@@ -1,0 +1,41 @@
+{
+  "asset_id": "grscenes_cup_08b88d9e_phase0",
+  "asset_role": "contact_affordance",
+  "claim_boundary": "Newton-rendered Fig.1 slots are visual exposition only; not experimental evidence.",
+  "details": {
+    "convex_mesh_render_mode": "aabb_proxy_from_recorded_hull_vertices_for_slot_readability",
+    "lane": "vhacd_if_available",
+    "recipe": "visual_reconstruction_from_recorded_phase0_package_and_probe_fields",
+    "reconstruction_semantics": "visual reconstruction from recorded report/package fields; not a new diagnostic run",
+    "recorded_probe_summary": {
+      "body_state_drop_settle": {
+        "outcome": "failure",
+        "status": "runtime_failure"
+      },
+      "contact_canary": {
+        "outcome": "accept",
+        "status": "smoke_passed"
+      },
+      "sphere_rain": {
+        "outcome": "accept",
+        "status": "smoke_passed"
+      }
+    }
+  },
+  "image_size_px": [
+    640,
+    420
+  ],
+  "newton": {
+    "commit": "9f544c81e460",
+    "root": "/cpfs/shared/simulation/zhuzihou/dev/newton"
+  },
+  "renderer": "newton_sensor_tiled_camera",
+  "schema_version": 1,
+  "slot": "newton_diagnostics",
+  "source_artifact_root": "/cpfs/user/zhuzihou/dev/physics-primitive-agent",
+  "source_manifest": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/manifests/phase0_assets.yaml",
+  "source_manifest_sha256": "921a8c92e52fb9b9cc4a53b6ae265b0e585e06f4a8dbb85c0cb92aff6d3f15b7",
+  "source_report": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json",
+  "source_report_sha256": "785a2c38b9a7ad6caae400fe06e5993cef6214ecfa13861bacb8328bcf95e74a"
+}

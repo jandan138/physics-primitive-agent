@@ -21,6 +21,15 @@ REQUIRED_SLOTS = (
     "newton_diagnostics",
     "decision_report",
 )
+VALID_MANIFEST_MODES = {
+    "ai_slot_composition",
+    "hybrid_newton_ai_slot_composition",
+}
+NEWTON_RENDERED_SLOTS = (
+    "asset_intake",
+    "candidate_package",
+    "newton_diagnostics",
+)
 
 
 def load_fig1_slot_manifest(manifest_path: str | Path = DEFAULT_MANIFEST) -> dict[str, Any]:
@@ -28,8 +37,11 @@ def load_fig1_slot_manifest(manifest_path: str | Path = DEFAULT_MANIFEST) -> dic
     payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if payload.get("figure_id") != "pipeline_schematic_ai_slot":
         raise ValueError("Fig.1 manifest must use figure_id: pipeline_schematic_ai_slot")
-    if payload.get("mode") != "ai_slot_composition":
-        raise ValueError("Fig.1 manifest must use mode: ai_slot_composition")
+    mode = payload.get("mode")
+    if mode not in VALID_MANIFEST_MODES:
+        raise ValueError(
+            "Fig.1 manifest must use mode: ai_slot_composition or hybrid_newton_ai_slot_composition"
+        )
     slots = payload.get("slots")
     if not isinstance(slots, Mapping):
         raise ValueError("Fig.1 manifest missing slots mapping")
@@ -40,6 +52,8 @@ def load_fig1_slot_manifest(manifest_path: str | Path = DEFAULT_MANIFEST) -> dic
         slot_path = _repo_path(str(slots[slot]))
         if not slot_path.is_file():
             raise FileNotFoundError(slot_path)
+    if mode == "hybrid_newton_ai_slot_composition":
+        _validate_hybrid_slot_sources(payload)
     return dict(payload)
 
 
@@ -57,21 +71,47 @@ def compose_fig1_ai_slot(
     slot_hashes = {
         slot: _sha256_file(_repo_path(str(manifest["slots"][slot]))) for slot in REQUIRED_SLOTS
     }
+    mode = str(manifest.get("mode", "ai_slot_composition"))
     metadata = {
-        "mode": "ai_slot_composition",
+        "mode": mode,
         "manifest": str(Path(manifest_path)),
         "png_sidecar": str(png_sidecar),
         "output_size_px": list(FIG1_OUTPUT_SIZE),
         "replaceable_by_real_render": list(manifest.get("replaceable_by_real_render", [])),
         "claim_boundary": manifest.get("claim_boundary", ""),
         "slot_sha256": slot_hashes,
+        "slot_sources": dict(manifest.get("slot_sources", {})),
     }
+    evidence = (
+        "Hybrid Newton/AI protocol schematic; exposition only"
+        if mode == "hybrid_newton_ai_slot_composition"
+        else "AI-slot protocol schematic; exposition only"
+    )
     return FigureOutput(
         "pipeline_schematic_ai_slot",
         output,
-        "AI-slot protocol schematic; exposition only",
+        evidence,
         renderer_metadata=metadata,
     )
+
+
+def _validate_hybrid_slot_sources(payload: Mapping[str, Any]) -> None:
+    slot_sources = payload.get("slot_sources")
+    if not isinstance(slot_sources, Mapping):
+        raise ValueError("hybrid Fig.1 manifest missing slot_sources mapping")
+    missing = [slot for slot in REQUIRED_SLOTS if slot not in slot_sources]
+    if missing:
+        raise ValueError(f"hybrid Fig.1 manifest missing slot_sources: {', '.join(missing)}")
+    for slot in NEWTON_RENDERED_SLOTS:
+        source = slot_sources.get(slot)
+        if not isinstance(source, Mapping) or source.get("renderer") != "newton_sensor_tiled_camera":
+            raise ValueError(f"hybrid Fig.1 slot must use newton_sensor_tiled_camera: {slot}")
+    decision_source = slot_sources.get("decision_report")
+    if not isinstance(decision_source, Mapping):
+        raise ValueError("hybrid Fig.1 decision_report slot source must be a mapping")
+    renderer = str(decision_source.get("renderer", ""))
+    if not renderer.startswith("built_in_imagegen"):
+        raise ValueError("hybrid Fig.1 decision_report slot must preserve the AI/report source")
 
 
 def _draw_figure(manifest: Mapping[str, Any]) -> Image.Image:
@@ -181,7 +221,7 @@ def _feedback_loop(draw: ImageDraw.ImageDraw, xs: Sequence[int], top: int, panel
 
 
 def _footer(draw: ImageDraw.ImageDraw, width: int, height: int) -> None:
-    note = "AI slot visuals are exposition only; evidence remains in dated Newton diagnostics and manifests."
+    note = "Fig. 1 visuals are exposition only; evidence remains in dated Newton diagnostics and manifests."
     _center_text(draw, (width // 2, height - 38), note, _font(21), "#596372")
 
 
@@ -199,6 +239,9 @@ def _paste_slot(canvas: Image.Image, path: Path, box: tuple[int, int, int, int])
 
 
 def _trim_light_border(source: Image.Image, threshold: int = 248, margin: int = 24) -> Image.Image:
+    uniform_trimmed = _trim_uniform_background(source, margin=margin)
+    if uniform_trimmed.size != source.size:
+        return uniform_trimmed
     width, height = source.size
     pixels = source.load()
     xs: list[int] = []
@@ -215,6 +258,41 @@ def _trim_light_border(source: Image.Image, threshold: int = 248, margin: int = 
     right = min(width, max(xs) + 1 + margin)
     bottom = min(height, max(ys) + 1 + margin)
     if left == 0 and top == 0 and right == width and bottom == height:
+        return source
+    return source.crop((left, top, right, bottom))
+
+
+def _trim_uniform_background(
+    source: Image.Image,
+    *,
+    tolerance: int = 7,
+    min_background_fraction: float = 0.35,
+    margin: int = 24,
+) -> Image.Image:
+    width, height = source.size
+    background = source.getpixel((0, 0))
+    pixels = source.load()
+    xs: list[int] = []
+    ys: list[int] = []
+    background_pixels = 0
+    for y in range(height):
+        for x in range(width):
+            pixel = pixels[x, y]
+            if sum(abs(int(pixel[index]) - int(background[index])) for index in range(3)) <= tolerance:
+                background_pixels += 1
+            else:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return source
+    background_fraction = background_pixels / float(width * height)
+    if background_fraction < min_background_fraction:
+        return source
+    left = max(0, min(xs) - margin)
+    top = max(0, min(ys) - margin)
+    right = min(width, max(xs) + 1 + margin)
+    bottom = min(height, max(ys) + 1 + margin)
+    if (right - left) * (bottom - top) > width * height * 0.92:
         return source
     return source.crop((left, top, right, bottom))
 
@@ -286,7 +364,7 @@ def _sha256_file(path: Path) -> str:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Generate the ACCV Fig.1 AI-slot schematic.")
+    parser = argparse.ArgumentParser(description="Generate the ACCV Fig.1 hybrid slot schematic.")
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args(argv)

@@ -1,0 +1,28 @@
+{
+  "asset_id": "grscenes_cup_08b88d9e_phase0",
+  "asset_role": "contact_affordance",
+  "claim_boundary": "Newton-rendered Fig.1 slots are visual exposition only; not experimental evidence.",
+  "details": {
+    "mesh_face_count": 192,
+    "mesh_point_count": 96,
+    "recipe": "render_normalized_source_usd_mesh_with_silhouette_tint",
+    "source_asset": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/raw/mirrors/phase0_grscenes_assets_2026_05_25/contact_affordance/08b88d9e48d6da2d7a59d94a5d15ed13.usd",
+    "source_asset_sha256": "870d7d667c640906ed3adaa744133ad194186152cfea18e46bc924800c1ab7fd"
+  },
+  "image_size_px": [
+    640,
+    420
+  ],
+  "newton": {
+    "commit": "9f544c81e460",
+    "root": "/cpfs/shared/simulation/zhuzihou/dev/newton"
+  },
+  "renderer": "newton_sensor_tiled_camera",
+  "schema_version": 1,
+  "slot": "asset_intake",
+  "source_artifact_root": "/cpfs/user/zhuzihou/dev/physics-primitive-agent",
+  "source_manifest": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/manifests/phase0_assets.yaml",
+  "source_manifest_sha256": "921a8c92e52fb9b9cc4a53b6ae265b0e585e06f4a8dbb85c0cb92aff6d3f15b7",
+  "source_report": "/cpfs/user/zhuzihou/dev/physics-primitive-agent/reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json",
+  "source_report_sha256": "785a2c38b9a7ad6caae400fe06e5993cef6214ecfa13861bacb8328bcf95e74a"
+}

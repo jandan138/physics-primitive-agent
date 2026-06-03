@@ -1,22 +1,26 @@
 schema_version: 1
 figures:
   - id: pipeline_schematic
-    status: generated-ai-slot-composition
-    mode: ai_slot_composition
+    status: generated-hybrid-newton-ai-slot-composition
+    mode: hybrid_newton_ai_slot_composition
     output: generated/pipeline_schematic_ai_slot.pdf
     generated_manifest: assets/fig1_ai_slots/manifest.yaml
     evidence: docs/design/system-architecture.md
     claim_boundary: Exposition only; not experimental evidence.
     note: >-
-      Fig. 1 protocol schematic composed from imagegen-derived visual slots and deterministic
-      code-drawn labels, arrows, panel frames, and claim-boundary note. The AI slot visuals are
-      exposition only and are replaceable by future real renders; they are not experimental
-      evidence.
+      Fig. 1 protocol schematic composed from three newton_sensor_tiled_camera visual slots,
+      one imagegen-derived AI/report slot, and deterministic code-drawn labels, arrows, panel
+      frames, and claim-boundary note. The rendered slots are visual exposition derived from
+      recorded Phase 0 assets/packages, not new experimental evidence.
     source_artifacts:
       - assets/fig1_ai_slots/overview_candidate_01.png
-      - assets/fig1_ai_slots/asset_intake_ai.png
-      - assets/fig1_ai_slots/candidate_package_ai.png
-      - assets/fig1_ai_slots/newton_diagnostics_ai.png
+      - assets/fig1_newton_slots/manifest.yaml
+      - assets/fig1_newton_slots/asset_intake_newton.png
+      - assets/fig1_newton_slots/asset_intake_newton.json
+      - assets/fig1_newton_slots/candidate_package_newton.png
+      - assets/fig1_newton_slots/candidate_package_newton.json
+      - assets/fig1_newton_slots/newton_diagnostics_newton.png
+      - assets/fig1_newton_slots/newton_diagnostics_newton.json
       - assets/fig1_ai_slots/decision_report_ai.png
       - generated/pipeline_schematic_ai_slot.png
       - generated/pipeline_schematic_ai_slot.pdf

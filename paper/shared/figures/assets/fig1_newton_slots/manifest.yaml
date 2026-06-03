@@ -1,0 +1,29 @@
+schema_version: 1
+mode: newton_render_slots
+renderer: newton_sensor_tiled_camera
+slots:
+  asset_intake:
+    image: paper/shared/figures/assets/fig1_newton_slots/asset_intake_newton.png
+    sidecar: paper/shared/figures/assets/fig1_newton_slots/asset_intake_newton.json
+    image_sha256: 9f8b543ff70fe0e69bfd6c2cab67bb1873441e11a93055a50f6c552b3ac974da
+    sidecar_sha256: a3b61af799078a45acd5689da821d6100220903604432ea4503ac740b543be85
+  candidate_package:
+    image: paper/shared/figures/assets/fig1_newton_slots/candidate_package_newton.png
+    sidecar: paper/shared/figures/assets/fig1_newton_slots/candidate_package_newton.json
+    image_sha256: 17f6237646b5dc2fc899fe10aed3f00d7089c20cea9d00b08f1d121891b8479d
+    sidecar_sha256: 4699b3abb82d9a9ef40080716fedbb6344f768cc04afaaeffb9a511add9b0022
+  newton_diagnostics:
+    image: paper/shared/figures/assets/fig1_newton_slots/newton_diagnostics_newton.png
+    sidecar: paper/shared/figures/assets/fig1_newton_slots/newton_diagnostics_newton.json
+    image_sha256: 7d7ace7bfbef70e5e527adbb714e2edb5389715d6b260593e900366ee2ee3253
+    sidecar_sha256: 836370c0cbf94e7e656c0ff37dc7a2a4e0be7a7bbc38050f60c8ca792dd0e92e
+source_report: /cpfs/user/zhuzihou/dev/physics-primitive-agent/reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json
+source_report_sha256: 785a2c38b9a7ad6caae400fe06e5993cef6214ecfa13861bacb8328bcf95e74a
+source_manifest: /cpfs/user/zhuzihou/dev/physics-primitive-agent/assets/manifests/phase0_assets.yaml
+source_manifest_sha256: 921a8c92e52fb9b9cc4a53b6ae265b0e585e06f4a8dbb85c0cb92aff6d3f15b7
+source_artifact_root: /cpfs/user/zhuzihou/dev/physics-primitive-agent
+newton:
+  root: /cpfs/shared/simulation/zhuzihou/dev/newton
+  commit: 9f544c81e460
+claim_boundary: Newton-rendered Fig.1 slots are visual exposition only; not experimental
+  evidence.
