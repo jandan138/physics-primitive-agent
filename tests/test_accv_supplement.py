@@ -123,3 +123,26 @@ def test_supplement_figure_generator_outputs_non_main_figure_names(tmp_path: Pat
     assert manifest["manifest_path"] == str(output_dir / "manifest.json")
     assert all(item["claim_boundary"] for item in manifest["figures"])
     assert all(item["source_sha256"] for item in manifest["figures"])
+
+
+def test_supplement_body_uses_new_figures_and_teaching_material() -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import SUPPLEMENT_FIGURE_IDS
+
+    supplement_text = supplement_source_text()
+    for figure_id in SUPPLEMENT_FIGURE_IDS:
+        expected_path = f"figures/generated/supplement/{figure_id}.pdf"
+        assert expected_path in supplement_text
+
+    assert supplement_text.count(r"\includegraphics") >= len(SUPPLEMENT_FIGURE_IDS)
+    assert supplement_text.count(r"\begin{table}") >= 5
+    assert supplement_text.count(r"\paragraph{What this shows.}") >= 10
+    assert supplement_text.count(r"\paragraph{What this does not show.}") >= 10
+    for phrase in (
+        "parallel-axis theorem",
+        "cross-link merge",
+        "source-shape suppression",
+        "generated self-collision filter",
+        "diagnostic parameter table",
+        "artifact provenance table",
+    ):
+        assert phrase in supplement_text
