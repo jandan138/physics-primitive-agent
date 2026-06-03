@@ -146,3 +146,35 @@ def test_supplement_body_uses_new_figures_and_teaching_material() -> None:
         "artifact provenance table",
     ):
         assert phrase in supplement_text
+
+
+def test_supplement_figure_panels_do_not_spill_into_gutters(tmp_path: Path) -> None:
+    from PIL import Image
+
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        _panel_boxes,
+        generate_supplement_figures,
+    )
+
+    output_dir = tmp_path / "supplement"
+    generate_supplement_figures(output_dir=output_dir)
+
+    def dark_pixel_count(path: Path, box: tuple[int, int, int, int]) -> int:
+        pixels = Image.open(path).convert("RGB").crop(box).getdata()
+        return sum(1 for red, green, blue in pixels if max(red, green, blue) < 220)
+
+    for figure_id, panel_count in (
+        ("supplement_franka_link_frames", 3),
+        ("supplement_provenance_flow", 4),
+    ):
+        png = output_dir / f"{figure_id}.png"
+        boxes = _panel_boxes(panel_count)
+        for left, right in zip(boxes, boxes[1:]):
+            gutter = (left[2] + 4, left[1] + 95, right[0] - 4, left[3] - 70)
+            assert dark_pixel_count(png, gutter) <= 100
+
+    cup_tray = output_dir / "supplement_failure_storyboard_cup_tray.png"
+    boxes = _panel_boxes(4)
+    for box in (boxes[0], boxes[-1]):
+        right_edge = (box[2] - 34, box[1] + 95, box[2] - 4, box[3] - 70)
+        assert dark_pixel_count(cup_tray, right_edge) <= 150
