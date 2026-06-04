@@ -1,36 +1,40 @@
 {
-  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_franka_link_frames",
+  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212cd138488197b992c741d10dcb16",
   "panel_count": 3,
   "panels": [
     {
-      "focus": "primitives stay attached to their source Franka link",
-      "label": "Link graph"
+      "index": 1,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "owner links map to Newton bodies before probing",
-      "label": "Attachment table"
+      "index": 2,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "cross-link primitive merges are rejected structurally",
-      "label": "Merge violation"
+      "index": 3,
+      "role": "AI-generated text-free tutorial panel"
     }
   ],
-  "recipe": "2d_teaching_diagram_franka_link_ownership",
-  "renderer": "deterministic_2d_tutorial_pil",
+  "prompt_summary": "AI-generated text-free academic robotics tutorial strip: link-owned primitives, body attachment cards, and cross-link merge rejection.",
+  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_franka_link_frames_slot.png",
   "slot_composition": {
-    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
-    "tile_size": [
-      620,
-      760
+    "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
+    "segment_bounds_x": [
+      0.0,
+      0.3535,
+      0.7019,
+      1.0
     ]
   },
-  "slot_sha256": "d7217939f86c03528ef8ce68a74e98764681a2785d19f82f762cdd81ab49c646",
+  "slot_sha256": "a7b217201ecb4a0bd8b967495f4a98e797e3f4b58048507bc279b59429d8d458",
   "source_records": [
     "docs/records/2026-05-26-link-aware-robot-package-generation.md"
   ],
-  "style": "academic_2d_tutorial",
+  "style": "ai_generated_academic_2d_tutorial",
   "title": "Franka link ownership frames"
 }

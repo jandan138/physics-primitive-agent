@@ -1,36 +1,40 @@
 {
-  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_generated_package_consumption",
+  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212d1dbfa08197bf8769011abfd480",
   "panel_count": 3,
   "panels": [
     {
-      "focus": "original collision shapes are inventoried before insertion",
-      "label": "Source audit"
+      "index": 1,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "the package creates the Newton bodies actually checked",
-      "label": "Generated package"
+      "index": 2,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "missing bodies, filters, and source remnants are counted",
-      "label": "Runtime accounting"
+      "index": 3,
+      "role": "AI-generated text-free tutorial panel"
     }
   ],
-  "recipe": "2d_teaching_diagram_generated_package_consumption",
-  "renderer": "deterministic_2d_tutorial_pil",
+  "prompt_summary": "AI-generated text-free academic robotics tutorial strip: source inventory, generated package replacement, and audit accounting.",
+  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_generated_package_consumption_slot.png",
   "slot_composition": {
-    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
-    "tile_size": [
-      620,
-      760
+    "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
+    "segment_bounds_x": [
+      0.0,
+      0.3457,
+      0.6515,
+      1.0
     ]
   },
-  "slot_sha256": "7a5e8dce9928dd288f7c22d2fcdf598e2c1ff168cf5d66a97571fb7ba8d2d875",
+  "slot_sha256": "68157d0472f405ba76f4ff15c83ebef5f4bb9dfaa3d22fb0a235c426253f9780",
   "source_records": [
     "docs/records/2026-05-26-generated-package-robot-task-probe.md"
   ],
-  "style": "academic_2d_tutorial",
+  "style": "ai_generated_academic_2d_tutorial",
   "title": "Generated-package consumption check"
 }

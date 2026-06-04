@@ -1,6 +1,6 @@
 schema_version: 1
 mode: ai_slot_composition
-claim_boundary: AI, Newton RTX, and deterministic 2D tutorial slot visuals are exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.
+claim_boundary: AI-generated tutorial, Newton RTX, and AI slot visuals are exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.
 slots:
   supplement_predicate_drop_settle:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_drop_settle_slot.png
@@ -22,27 +22,27 @@ slots:
     replaceable_by_real_render: true
   supplement_generated_package_consumption:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_generated_package_consumption_slot.png
-    renderer: deterministic_2d_tutorial_pil
+    renderer: built_in_imagegen_academic_2d_panel_stitch
     sidecar: paper/shared/figures/assets/supplement_ai_slots/supplement_generated_package_consumption_slot.json
-    prompt_summary: "Three deterministic academic 2D tutorial panels for generated-package consumption: source inventory, generated Newton bodies, and runtime accounting gates."
+    prompt_summary: "AI-generated text-free academic robotics tutorial strip for generated-package consumption: source inventory, generated package replacement, and audit accounting."
     replaceable_by_real_render: true
   supplement_compound_body_state_teaching:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_compound_body_state_teaching_slot.png
-    renderer: deterministic_2d_tutorial_pil
+    renderer: built_in_imagegen_academic_2d_panel_stitch
     sidecar: paper/shared/figures/assets/supplement_ai_slots/supplement_compound_body_state_teaching_slot.json
-    prompt_summary: "Three deterministic academic 2D tutorial panels for compound body-state teaching: primitive terms, aggregate COM/inertia equations, and diagnostic gate consequence."
+    prompt_summary: "AI-generated text-free academic tutorial strip for compound body-state teaching: primitive states, aggregate COM/inertia, and diagnostic consequence."
     replaceable_by_real_render: true
   supplement_franka_link_frames:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_franka_link_frames_slot.png
-    renderer: deterministic_2d_tutorial_pil
+    renderer: built_in_imagegen_academic_2d_panel_stitch
     sidecar: paper/shared/figures/assets/supplement_ai_slots/supplement_franka_link_frames_slot.json
-    prompt_summary: "Three deterministic academic 2D tutorial panels for Franka link ownership: link graph, attachment table, and cross-link merge violation."
+    prompt_summary: "AI-generated text-free academic robotics tutorial strip for Franka link ownership: link-owned primitives, body attachment cards, and cross-link merge rejection."
     replaceable_by_real_render: true
   supplement_franka_source_suppression:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_franka_source_suppression_slot.png
-    renderer: deterministic_2d_tutorial_pil
+    renderer: built_in_imagegen_academic_2d_panel_stitch
     sidecar: paper/shared/figures/assets/supplement_ai_slots/supplement_franka_source_suppression_slot.json
-    prompt_summary: "Three deterministic academic 2D tutorial panels for source-shape suppression: USD inventory, layer rewrite, and audit diff."
+    prompt_summary: "AI-generated text-free academic tutorial strip for source-shape suppression: source layer inventory, suppression, and before-after audit diff."
     replaceable_by_real_render: true
   supplement_failure_storyboard_bowl:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_failure_storyboard_bowl_slot.png
@@ -58,13 +58,13 @@ slots:
     replaceable_by_real_render: true
   supplement_candidate_lane_anatomy:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.png
-    renderer: deterministic_2d_tutorial_pil
+    renderer: built_in_imagegen_academic_2d_panel_stitch
     sidecar: paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.json
-    prompt_summary: "Three deterministic academic 2D tutorial panels for candidate-lane anatomy: generator lanes, package manifest, and diagnostic gate outcomes."
+    prompt_summary: "AI-generated text-free academic tutorial strip for candidate-lane anatomy: generator lanes, abstract package manifest, and diagnostic gate outcomes."
     replaceable_by_real_render: true
   supplement_provenance_flow:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.png
-    renderer: deterministic_2d_tutorial_pil
+    renderer: built_in_imagegen_academic_2d_panel_stitch
     sidecar: paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.json
-    prompt_summary: "Four deterministic academic 2D tutorial panels for artifact provenance: config inputs, dated records, figure manifest, and supplement PDF."
+    prompt_summary: "AI-generated text-free academic tutorial strip for artifact provenance: config inputs, evidence records, figure manifest provenance, and supplement PDF output."
     replaceable_by_real_render: true

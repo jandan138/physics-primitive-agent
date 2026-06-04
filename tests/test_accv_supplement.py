@@ -368,6 +368,44 @@ def test_supplement_slot_manifest_rejects_stale_2d_tutorial_panel_count(
         load_supplement_slot_manifest(slot_manifest, required_ids=(tutorial_id,))
 
 
+def test_supplement_slot_manifest_rejects_bad_2d_tutorial_segment_bounds(
+    tmp_path: Path,
+) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        load_supplement_slot_manifest,
+    )
+
+    tutorial_id = "supplement_franka_source_suppression"
+    slot_manifest = _write_test_slot_manifest(tmp_path, (tutorial_id,))
+    data = yaml.safe_load(slot_manifest.read_text(encoding="utf-8"))
+    sidecar = Path(data["slots"][tutorial_id]["sidecar"])
+    payload = json.loads(sidecar.read_text(encoding="utf-8"))
+    payload["slot_composition"]["segment_bounds_x"] = [0.0, 0.5, 1.0]
+    sidecar.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="sidecar segment bounds"):
+        load_supplement_slot_manifest(slot_manifest, required_ids=(tutorial_id,))
+
+
+def test_supplement_slot_manifest_rejects_weak_2d_tutorial_claim_boundary(
+    tmp_path: Path,
+) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        load_supplement_slot_manifest,
+    )
+
+    tutorial_id = "supplement_candidate_lane_anatomy"
+    slot_manifest = _write_test_slot_manifest(tmp_path, (tutorial_id,))
+    data = yaml.safe_load(slot_manifest.read_text(encoding="utf-8"))
+    sidecar = Path(data["slots"][tutorial_id]["sidecar"])
+    payload = json.loads(sidecar.read_text(encoding="utf-8"))
+    payload["claim_boundary"] = "Visual exposition only; not experimental evidence."
+    sidecar.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="missing claim boundary"):
+        load_supplement_slot_manifest(slot_manifest, required_ids=(tutorial_id,))
+
+
 def test_supplement_figure_composer_uses_ai_slots_instead_of_program_scene_drawer() -> None:
     source = read_text(ROOT / "src/primitive_collision_compiler/paper/accv_supplement_figures.py")
 
@@ -512,6 +550,7 @@ def _write_test_slot_manifest(
         NEWTON_RTX_SUPPLEMENT_RENDERER,
         SCENE_EXPLANATION_FIGURE_IDS,
         SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS,
+        TUTORIAL_2D_CLAIM_BOUNDARY_PHRASES,
         TUTORIAL_2D_RENDERER,
     )
 
@@ -562,12 +601,21 @@ def _write_test_slot_manifest(
                         "schema_version": 1,
                         "figure_id": figure_id,
                         "renderer": TUTORIAL_2D_RENDERER,
-                        "style": "academic_2d_tutorial",
+                        "style": "ai_generated_academic_2d_tutorial",
                         "slot_asset": slot.name,
                         "slot_sha256": _sha256_file(slot),
+                        "slot_composition": {
+                            "segment_bounds_x": [
+                                index / panel_count for index in range(panel_count + 1)
+                            ],
+                        },
                         "panel_count": panel_count,
                         "panels": [{"label": f"panel {index}"} for index in range(panel_count)],
-                        "claim_boundary": "Visual exposition only; not experimental evidence.",
+                        "claim_boundary": (
+                            "Visual exposition only; "
+                            + ", ".join(TUTORIAL_2D_CLAIM_BOUNDARY_PHRASES)
+                            + "."
+                        ),
                     },
                     sort_keys=True,
                 )

@@ -6,7 +6,7 @@
 
 ## Status
 
-Complete
+Superseded
 
 ## Changes
 
@@ -107,5 +107,6 @@ Complete
 
 ## Next Action
 
-- Use the deterministic 2D tutorial slot path for future supplement diagrams whose purpose is
-  conceptual instruction rather than rendering a concrete Newton scene.
+- Superseded for the current ACCV supplement by
+  `docs/records/2026-06-04-accv-supplement-ai-tutorial-slot-retake.md`, which replaces these
+  deterministic program-drawn tutorial slots with AI-generated academic tutorial slots.

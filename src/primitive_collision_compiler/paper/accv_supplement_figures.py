@@ -17,6 +17,7 @@ from primitive_collision_compiler.paper.supplement_newton_rtx_slots import (
 )
 from primitive_collision_compiler.paper.supplement_tutorial_2d_slots import (
     SUPPLEMENT_2D_TUTORIAL_SLOT_IDS,
+    TUTORIAL_2D_CLAIM_BOUNDARY_PHRASES,
     TUTORIAL_2D_RENDERER,
 )
 
@@ -220,7 +221,7 @@ def load_supplement_slot_manifest(
         elif figure_id in SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS:
             if renderer != TUTORIAL_2D_RENDERER:
                 raise ValueError(
-                    f"Supplement 2D tutorial slot must use deterministic renderer: {figure_id}"
+                    f"Supplement 2D tutorial slot must use AI tutorial renderer: {figure_id}"
                 )
             sidecar = slot.get("sidecar")
             if not sidecar:
@@ -326,6 +327,8 @@ def _validate_tutorial_2d_sidecar(
         raise ValueError(f"Supplement 2D tutorial sidecar figure_id mismatch: {figure_id}")
     if payload.get("renderer") != TUTORIAL_2D_RENDERER:
         raise ValueError(f"Supplement 2D tutorial sidecar renderer mismatch: {figure_id}")
+    if payload.get("style") != "ai_generated_academic_2d_tutorial":
+        raise ValueError(f"Supplement 2D tutorial sidecar style mismatch: {figure_id}")
     slot_asset = payload.get("slot_asset")
     if not isinstance(slot_asset, str) or not slot_asset:
         raise ValueError(f"Supplement 2D tutorial sidecar missing slot_asset: {figure_id}")
@@ -342,8 +345,19 @@ def _validate_tutorial_2d_sidecar(
     panels = payload.get("panels")
     if not isinstance(panels, list) or len(panels) != expected_panel_count:
         raise ValueError(f"Supplement 2D tutorial sidecar panels mismatch: {figure_id}")
+    composition = payload.get("slot_composition")
+    if not isinstance(composition, Mapping):
+        raise ValueError(f"Supplement 2D tutorial sidecar missing slot_composition: {figure_id}")
+    _validate_segment_bounds(
+        figure_id,
+        composition.get("segment_bounds_x"),
+        expected_panel_count,
+    )
     claim_boundary = str(payload.get("claim_boundary", ""))
-    if "not experimental evidence" not in claim_boundary:
+    missing_claim_phrases = [
+        phrase for phrase in TUTORIAL_2D_CLAIM_BOUNDARY_PHRASES if phrase not in claim_boundary
+    ]
+    if missing_claim_phrases:
         raise ValueError(f"Supplement 2D tutorial sidecar missing claim boundary: {figure_id}")
 
 
@@ -377,7 +391,7 @@ def _compose_plate(spec: SupplementFigureSpec, slot: Mapping[str, Any]) -> Image
     for idx, (label, box) in enumerate(zip(spec.panels, panel_boxes)):
         _rounded(draw, box, 24, PANEL_FILL, PANEL_STROKE, 3)
         draw.text((box[0] + 28, box[1] + 24), label.upper(), font=label_font, fill=_palette(idx))
-    _paste_slot_strip(canvas, _repo_path(str(slot["asset"])), panel_boxes)
+    _paste_slot_strip(canvas, _repo_path(str(slot["asset"])), panel_boxes, slot=slot)
     for box in panel_boxes:
         _rounded(draw, (box[0] + 34, box[1] + 82, box[2] - 34, box[3] - 32), 18, None, "#cad3df", 2)
 
@@ -400,10 +414,25 @@ def _panel_boxes(count: int) -> list[tuple[int, int, int, int]]:
     return [(78 + n * (width + gap), top, 78 + n * (width + gap) + width, bottom) for n in range(count)]
 
 
-def _paste_slot_strip(canvas: Image.Image, path: Path, boxes: Sequence[tuple[int, int, int, int]]) -> None:
+def _paste_slot_strip(
+    canvas: Image.Image,
+    path: Path,
+    boxes: Sequence[tuple[int, int, int, int]],
+    *,
+    slot: Mapping[str, Any],
+) -> None:
     inner_boxes = [(box[0] + 34, box[1] + 82, box[2] - 34, box[3] - 32) for box in boxes]
-    source = _trim_light_border(Image.open(path).convert("RGB"))
-    for inner, segment in zip(inner_boxes, _slot_segments(source, len(inner_boxes))):
+    source = Image.open(path).convert("RGB")
+    segment_bounds = _slot_segment_bounds(slot, len(inner_boxes))
+    if segment_bounds is None:
+        source = _trim_light_border(source)
+        segments = _slot_segments(source, len(inner_boxes))
+    else:
+        segments = [
+            _trim_light_border(segment, threshold=248, margin=14)
+            for segment in _slot_segments(source, len(inner_boxes), segment_bounds)
+        ]
+    for inner, segment in zip(inner_boxes, segments):
         tile = Image.new("RGB", (inner[2] - inner[0], inner[3] - inner[1]), "#ffffff")
         fitted = ImageOps.contain(segment, tile.size, method=Image.Resampling.LANCZOS)
         tile.paste(fitted, ((tile.width - fitted.width) // 2, (tile.height - fitted.height) // 2))
@@ -412,14 +441,63 @@ def _paste_slot_strip(canvas: Image.Image, path: Path, boxes: Sequence[tuple[int
         canvas.paste(tile, inner[:2], mask)
 
 
-def _slot_segments(source: Image.Image, count: int) -> list[Image.Image]:
+def _slot_segments(
+    source: Image.Image,
+    count: int,
+    segment_bounds: Sequence[float] | None = None,
+) -> list[Image.Image]:
     width, height = source.size
+    if segment_bounds is None:
+        segment_bounds = tuple(index / count for index in range(count + 1))
     segments: list[Image.Image] = []
     for index in range(count):
-        left = round(index * width / count)
-        right = round((index + 1) * width / count)
+        left = round(segment_bounds[index] * width)
+        right = round(segment_bounds[index + 1] * width)
+        left = min(max(left, 0), width - 1)
+        right = min(max(right, left + 1), width)
         segments.append(source.crop((left, 0, right, height)))
     return segments
+
+
+def _slot_segment_bounds(slot: Mapping[str, Any], count: int) -> tuple[float, ...] | None:
+    sidecar = slot.get("sidecar")
+    if not sidecar:
+        return None
+    try:
+        payload = json.loads(_repo_path(str(sidecar)).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    composition = payload.get("slot_composition")
+    if not isinstance(composition, Mapping):
+        return None
+    bounds = composition.get("segment_bounds_x")
+    if bounds is None:
+        return None
+    figure_id = str(payload.get("figure_id", "supplement slot"))
+    return _validate_segment_bounds(figure_id, bounds, count)
+
+
+def _validate_segment_bounds(
+    figure_id: str,
+    bounds: Any,
+    count: int,
+) -> tuple[float, ...]:
+    if not isinstance(bounds, Sequence) or isinstance(bounds, (str, bytes)):
+        raise ValueError(f"Supplement 2D tutorial sidecar segment bounds mismatch: {figure_id}")
+    try:
+        values = tuple(float(value) for value in bounds)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"Supplement 2D tutorial sidecar segment bounds mismatch: {figure_id}"
+        ) from exc
+    if len(values) != count + 1:
+        raise ValueError(f"Supplement 2D tutorial sidecar segment bounds mismatch: {figure_id}")
+    if abs(values[0]) > 1e-6 or abs(values[-1] - 1.0) > 1e-6:
+        raise ValueError(f"Supplement 2D tutorial sidecar segment bounds mismatch: {figure_id}")
+    for left, right in zip(values, values[1:]):
+        if not 0.0 <= left < right <= 1.0:
+            raise ValueError(f"Supplement 2D tutorial sidecar segment bounds mismatch: {figure_id}")
+    return values
 
 
 def _trim_light_border(source: Image.Image, threshold: int = 248, margin: int = 20) -> Image.Image:

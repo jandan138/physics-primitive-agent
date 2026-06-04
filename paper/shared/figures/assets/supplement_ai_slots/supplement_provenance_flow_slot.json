@@ -1,40 +1,45 @@
 {
-  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_provenance_flow",
+  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212deb2c708197b80f60f71b9dd38f",
   "panel_count": 4,
   "panels": [
     {
-      "focus": "paper-visible settings come from repo-relative configs",
-      "label": "Config inputs"
+      "index": 1,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "dated records bind claims to evidence status",
-      "label": "Records"
+      "index": 2,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "slot hashes and sidecars keep generated figures auditable",
-      "label": "Figure manifest"
+      "index": 3,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "LaTeX consumes generated figures without raw asset commits",
-      "label": "Supplement PDF"
+      "index": 4,
+      "role": "AI-generated text-free tutorial panel"
     }
   ],
-  "recipe": "2d_teaching_diagram_artifact_provenance_flow",
-  "renderer": "deterministic_2d_tutorial_pil",
+  "prompt_summary": "AI-generated text-free academic tutorial strip: config inputs, evidence records, figure manifest provenance, and supplement PDF output.",
+  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.png",
   "slot_composition": {
-    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
-    "tile_size": [
-      620,
-      760
+    "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
+    "segment_bounds_x": [
+      0.0,
+      0.2928,
+      0.5023,
+      0.744,
+      1.0
     ]
   },
-  "slot_sha256": "5e26b3b7ddc1de90ef8448f9b8275f49b505c48b1a0bcefba8b45ab65a29b778",
+  "slot_sha256": "e8926b697c152e67c9ff490dd24bb56d84028dc09bca1476a551ad741642381b",
   "source_records": [
     "docs/reference/claim-boundaries.md"
   ],
-  "style": "academic_2d_tutorial",
+  "style": "ai_generated_academic_2d_tutorial",
   "title": "Artifact and provenance flow"
 }

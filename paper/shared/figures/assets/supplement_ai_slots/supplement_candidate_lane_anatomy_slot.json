@@ -1,36 +1,40 @@
 {
-  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_candidate_lane_anatomy",
+  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212c5fde108197aef0ac2b4daef3d0",
   "panel_count": 3,
   "panels": [
     {
-      "focus": "source support sets become lane-local candidates",
-      "label": "Generator lane"
+      "index": 1,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "candidate rows carry owner, mass, and thresholds",
-      "label": "Package manifest"
+      "index": 2,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "same probes assign accept, fallback, or fail labels",
-      "label": "Diagnostic gate"
+      "index": 3,
+      "role": "AI-generated text-free tutorial panel"
     }
   ],
-  "recipe": "2d_teaching_diagram_candidate_lane_manifest_gate",
-  "renderer": "deterministic_2d_tutorial_pil",
+  "prompt_summary": "AI-generated text-free academic tutorial strip: candidate lanes, abstract package manifest, and diagnostic gate outcomes.",
+  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.png",
   "slot_composition": {
-    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
-    "tile_size": [
-      620,
-      760
+    "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
+    "segment_bounds_x": [
+      0.0,
+      0.3547,
+      0.6757,
+      1.0
     ]
   },
-  "slot_sha256": "d84f4707d47d4500a5dcd3d0d0fe564593d00b26c6738ea4f932914365133dbd",
+  "slot_sha256": "fcd8d8626e5815d9a38b1bd05bc85fbb18c47d2aa0c523d4710d312e79aa23bc",
   "source_records": [
     "paper/shared/evidence/results_manifest.yaml"
   ],
-  "style": "academic_2d_tutorial",
+  "style": "ai_generated_academic_2d_tutorial",
   "title": "Candidate-lane anatomy"
 }

@@ -1,36 +1,40 @@
 {
-  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_compound_body_state_teaching",
+  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212c9beff081978949fca1a9528fc0",
   "panel_count": 3,
   "panels": [
     {
-      "focus": "each primitive has local mass, COM, and inertia terms",
-      "label": "Primitive states"
+      "index": 1,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "parallel-axis aggregation changes body-level COM and inertia",
-      "label": "Aggregate body"
+      "index": 2,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "geometry-local plausibility can fail body-state checks",
-      "label": "Gate consequence"
+      "index": 3,
+      "role": "AI-generated text-free tutorial panel"
     }
   ],
-  "recipe": "2d_teaching_diagram_compound_body_state",
-  "renderer": "deterministic_2d_tutorial_pil",
+  "prompt_summary": "AI-generated text-free academic tutorial strip: primitive body states, aggregate body COM/inertia, and diagnostic consequence.",
+  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_compound_body_state_teaching_slot.png",
   "slot_composition": {
-    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
-    "tile_size": [
-      620,
-      760
+    "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
+    "segment_bounds_x": [
+      0.0,
+      0.3524,
+      0.7038,
+      1.0
     ]
   },
-  "slot_sha256": "df4ead359f5dea71e499a9385809c7ec1670e8402efbcbc6c8a432ba97935107",
+  "slot_sha256": "f32cb3d212910362543f6fc08373998d7e4f8e25eac086415d4dcbb1e85e0b4b",
   "source_records": [
     "docs/records/2026-05-26-accv-paper-visual-expansion-plan.md"
   ],
-  "style": "academic_2d_tutorial",
+  "style": "ai_generated_academic_2d_tutorial",
   "title": "Compound body-state mechanism"
 }

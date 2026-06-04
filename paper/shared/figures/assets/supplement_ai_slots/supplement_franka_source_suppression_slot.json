@@ -1,36 +1,40 @@
 {
-  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_franka_source_suppression",
+  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212da5df088197b677a29f33e0fae5",
   "panel_count": 3,
   "panels": [
     {
-      "focus": "source collision prims are counted before rewrite",
-      "label": "USD inventory"
+      "index": 1,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "source shapes are muted while generated shapes are inserted",
-      "label": "Layer operation"
+      "index": 2,
+      "role": "AI-generated text-free tutorial panel"
     },
     {
-      "focus": "remaining-source and generated-body counts must match",
-      "label": "Audit diff"
+      "index": 3,
+      "role": "AI-generated text-free tutorial panel"
     }
   ],
-  "recipe": "2d_teaching_diagram_source_shape_suppression",
-  "renderer": "deterministic_2d_tutorial_pil",
+  "prompt_summary": "AI-generated text-free academic tutorial strip: source layer inventory, source shape suppression, and before/after audit diff.",
+  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_franka_source_suppression_slot.png",
   "slot_composition": {
-    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
-    "tile_size": [
-      620,
-      760
+    "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
+    "segment_bounds_x": [
+      0.0,
+      0.3223,
+      0.7044,
+      1.0
     ]
   },
-  "slot_sha256": "6bd1e4905f916dab399fb9eb8957a2d9a6238f8c66639842ab59a2e6e25115ea",
+  "slot_sha256": "5e71f2ba6d8ca180a4f20976e64fab97dbb35feddf70013a73d9d87a71928b7a",
   "source_records": [
     "docs/records/2026-05-26-generated-package-robot-task-probe.md"
   ],
-  "style": "academic_2d_tutorial",
+  "style": "ai_generated_academic_2d_tutorial",
   "title": "Source-shape suppression accounting"
 }
