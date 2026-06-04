@@ -315,28 +315,24 @@ def _panel_boxes(count: int) -> list[tuple[int, int, int, int]]:
 
 def _paste_slot_strip(canvas: Image.Image, path: Path, boxes: Sequence[tuple[int, int, int, int]]) -> None:
     inner_boxes = [(box[0] + 34, box[1] + 82, box[2] - 34, box[3] - 32) for box in boxes]
-    strip_box = (
-        inner_boxes[0][0],
-        inner_boxes[0][1],
-        inner_boxes[-1][2],
-        inner_boxes[0][3],
-    )
     source = _trim_light_border(Image.open(path).convert("RGB"))
-    strip_size = (strip_box[2] - strip_box[0], strip_box[3] - strip_box[1])
-    strip = Image.new("RGB", strip_size, "#ffffff")
-    fitted = ImageOps.fit(source, strip_size, method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
-    strip.paste(fitted, (0, 0))
-    for inner in inner_boxes:
-        crop_box = (
-            inner[0] - strip_box[0],
-            inner[1] - strip_box[1],
-            inner[2] - strip_box[0],
-            inner[3] - strip_box[1],
-        )
-        crop = strip.crop(crop_box)
-        mask = Image.new("L", crop.size, 0)
-        ImageDraw.Draw(mask).rounded_rectangle((0, 0, crop.width - 1, crop.height - 1), radius=18, fill=255)
-        canvas.paste(crop, inner[:2], mask)
+    for inner, segment in zip(inner_boxes, _slot_segments(source, len(inner_boxes))):
+        tile = Image.new("RGB", (inner[2] - inner[0], inner[3] - inner[1]), "#ffffff")
+        fitted = ImageOps.contain(segment, tile.size, method=Image.Resampling.LANCZOS)
+        tile.paste(fitted, ((tile.width - fitted.width) // 2, (tile.height - fitted.height) // 2))
+        mask = Image.new("L", tile.size, 0)
+        ImageDraw.Draw(mask).rounded_rectangle((0, 0, tile.width - 1, tile.height - 1), radius=18, fill=255)
+        canvas.paste(tile, inner[:2], mask)
+
+
+def _slot_segments(source: Image.Image, count: int) -> list[Image.Image]:
+    width, height = source.size
+    segments: list[Image.Image] = []
+    for index in range(count):
+        left = round(index * width / count)
+        right = round((index + 1) * width / count)
+        segments.append(source.crop((left, 0, right, height)))
+    return segments
 
 
 def _trim_light_border(source: Image.Image, threshold: int = 248, margin: int = 20) -> Image.Image:

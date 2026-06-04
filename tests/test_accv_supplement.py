@@ -183,6 +183,14 @@ def test_supplement_figure_composer_uses_ai_slots_instead_of_program_scene_drawe
     assert "_paste_slot_strip" in source
 
 
+def test_supplement_figure_composer_preserves_slot_segments_without_center_crop() -> None:
+    source = read_text(ROOT / "src/primitive_collision_compiler/paper/accv_supplement_figures.py")
+
+    assert "ImageOps.fit" not in source
+    assert "ImageOps.contain" in source
+    assert "_slot_segments" in source
+
+
 def test_supplement_figure_generator_outputs_non_main_figure_names(tmp_path: Path) -> None:
     from primitive_collision_compiler.paper.accv_supplement_figures import (
         SUPPLEMENT_FIGURE_IDS,

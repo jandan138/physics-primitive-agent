@@ -4,56 +4,56 @@ claim_boundary: AI slot visuals are exposition only; not experimental evidence, 
 slots:
   supplement_predicate_drop_settle:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_drop_settle_slot.png
-    renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for drop/settle predicate anatomy with suspended package, settled package, and abstract accept-term tokens.
+    renderer: built_in_imagegen_ai_slot_panel_stitch
+    prompt_summary: Three independent realistic RTX-style simulator panels stitched into one slot for drop/settle anatomy with complete gripper-held cube, settled cube, and measured 3D acceptance cues.
     replaceable_by_real_render: true
   supplement_predicate_stack_slide:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_stack_slide_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for stack-or-slide predicate anatomy with contact, lateral drift, and residual motion cues.
+    prompt_summary: Wide three-zone realistic RTX-style simulator slot for stack-or-slide anatomy with contact, lateral drift, and residual-motion cues.
     replaceable_by_real_render: true
   supplement_predicate_sphere_rain:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_sphere_rain_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for sphere-rain contact coverage with probe cloud, contact highlights, and abstract diagnostic markers.
+    prompt_summary: Wide three-zone realistic RTX-style simulator slot for sphere-rain contact coverage with probe cloud, contact highlights, and 3D diagnostic markers.
     replaceable_by_real_render: true
   supplement_generated_package_consumption:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_generated_package_consumption_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for generated-package consumption with source shapes, generated primitives, and scene-accounting tokens.
+    prompt_summary: Wide three-zone realistic RTX-style simulator slot for generated-package consumption with source envelopes, generated primitives, and scene-accounting tokens.
     replaceable_by_real_render: true
   supplement_compound_body_state_teaching:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_compound_body_state_teaching_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for compound body-state teaching with primitive centers, aggregate COM/inertia cues, and diagnostic gate.
+    prompt_summary: Wide three-zone realistic RTX-style simulator slot for compound body-state teaching with primitive centers, aggregate COM/inertia cues, and diagnostic gate.
     replaceable_by_real_render: true
   supplement_franka_link_frames:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_franka_link_frames_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for Franka-style link ownership frames with local frames, link-attached primitives, and merge-violation cue.
+    prompt_summary: Wide three-zone realistic RTX-style simulator slot for Franka-style link ownership frames with local frames, link-attached primitives, and merge-violation cue.
     replaceable_by_real_render: true
   supplement_franka_source_suppression:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_franka_source_suppression_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for source-shape suppression with source collision shapes, generated primitives, and accounting tokens.
+    prompt_summary: Wide three-zone realistic RTX-style simulator slot for source-shape suppression with source collision envelopes, generated primitives, and accounting tokens.
     replaceable_by_real_render: true
   supplement_failure_storyboard_bowl:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_failure_storyboard_bowl_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide four-zone tutorial slot for bowl failure storyboard with initial state, terminal state, abstract metric, and failure-token cue.
+    prompt_summary: Wide four-zone realistic RTX-style simulator slot for bowl failure storyboard with initial state, terminal state, metric arcs, and failure-token cue.
     replaceable_by_real_render: true
   supplement_failure_storyboard_cup_tray:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_failure_storyboard_cup_tray_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide four-zone tutorial slot for cup/tray failure storyboard with cup, tray, abstract slide metric, and support-loss cue.
+    prompt_summary: Wide four-zone realistic RTX-style simulator slot for cup/tray failure storyboard with cup, tray, metric arcs, and support-loss cue.
     replaceable_by_real_render: true
   supplement_candidate_lane_anatomy:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.png
-    renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide three-zone tutorial slot for candidate-lane anatomy with abstract generator lanes, primitive package, and diagnostic gate.
+    renderer: built_in_imagegen_ai_slot_panel_stitch
+    prompt_summary: Three independent realistic RTX-style simulator panels stitched into one slot for candidate-lane anatomy with contained generator lanes, primitive package, and diagnostic gate.
     replaceable_by_real_render: true
   supplement_provenance_flow:
     asset: paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.png
     renderer: built_in_imagegen_ai_slot
-    prompt_summary: Wide four-zone tutorial slot for artifact provenance flow with abstract config, record, manifest, and supplement artifacts.
+    prompt_summary: Wide four-zone realistic RTX-style studio slot for artifact provenance flow with physical config, record, manifest, and supplement artifacts.
     replaceable_by_real_render: true
