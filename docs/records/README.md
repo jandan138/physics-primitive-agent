@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-04 ACCV Main Float Layout Gap Fix](2026-06-04-accv-main-float-layout-gap-fix.md):
+  removes large reader-visible gaps after ACCV main-paper Fig.3/Fig.6, top-aligns ACCV float
+  pages, adds float-layout regression tests, and records cross-venue preamble dependency fixes for
+  shared `\FloatBarrier`, `listings`, and table-column macros.
 - [2026-06-04 ACCV Reference Expansion](2026-06-04-accv-reference-expansion.md):
   expands the ACCV main-paper bibliography to 35 cited entries with 30 paper-like cited sources,
   focusing on collision queries, primitive/convex proxy generation, robot simulators, and robot

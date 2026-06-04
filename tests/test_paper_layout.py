@@ -213,7 +213,67 @@ def test_accv_status_and_main_pdf_boundary_are_current() -> None:
     assert "at 7 pages" not in status
     assert "14 main-content pages" in status
     assert "reference-only page" in status
+    assert r"\raggedbottom" in main
+    assert r"\setlength{\@fptop}{0pt}" in main
     assert r"\input{../../shared/sections/appendix}" not in main
     assert r"\bibliography{references}" in main
     assert experiments.count(r"\label{tab:phase0-failure-labels}") == 1
-    assert r"\begin{table}[H]" in experiments
+
+
+def test_accv_main_avoids_forced_experiment_table_floats() -> None:
+    experiments = read_text(PAPER / "shared/sections/experiments.tex")
+
+    assert r"\begin{table}[H]" not in experiments
+    assert experiments.count(r"\begin{table}[tbp]") >= 2
+
+
+def test_accv_main_keeps_experiment_float_groups_bounded() -> None:
+    experiments = read_text(PAPER / "shared/sections/experiments.tex")
+
+    for marker in (
+        r"\subsection{Collision-probe scene renderings}",
+        r"\subsection{Failure labels and measured symptoms}",
+        r"\subsection{Franka articulation smoke}",
+    ):
+        before_marker = experiments.split(marker, 1)[0].rstrip()
+        assert before_marker.endswith(r"\FloatBarrier"), marker
+
+
+def test_shared_float_barriers_are_available_in_all_venues() -> None:
+    experiments = read_text(PAPER / "shared/sections/experiments.tex")
+
+    assert r"\FloatBarrier" in experiments
+    for venue in VENUES:
+        preamble = read_text(PAPER / "venues" / venue / "preamble.tex")
+        assert r"\usepackage{placeins}" in preamble, venue
+
+
+def test_shared_listing_macros_are_available_in_all_venues() -> None:
+    venue_macros = read_text(PAPER / "shared/venue_macros.tex")
+
+    assert r"\lstdefinelanguage" in venue_macros
+    for venue in VENUES:
+        preamble = read_text(PAPER / "venues" / venue / "preamble.tex")
+        assert r"\usepackage{listings}" in preamble, venue
+
+
+def test_shared_table_column_macros_are_available_in_all_venues() -> None:
+    experiments = read_text(PAPER / "shared/sections/experiments.tex")
+
+    assert r"\arraybackslash" in experiments
+    for venue in VENUES:
+        preamble = read_text(PAPER / "venues" / venue / "preamble.tex")
+        assert r"\usepackage{array}" in preamble, venue
+
+
+def test_accv_main_keeps_outcome_matrix_with_its_explanatory_text() -> None:
+    experiments = read_text(PAPER / "shared/sections/experiments.tex")
+    before_label = experiments.split(r"\label{fig:phase0-outcome-matrix}", 1)[0]
+    begin_index = before_label.rfind(r"\begin{figure}")
+    outcome_matrix = re.search(
+        r"\\begin\{figure\}\[(?P<placement>[^\]]+)\]",
+        before_label[begin_index:],
+    )
+
+    assert outcome_matrix is not None
+    assert outcome_matrix.group("placement") == "H"

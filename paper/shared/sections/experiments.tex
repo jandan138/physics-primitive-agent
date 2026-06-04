@@ -16,7 +16,7 @@ The recorded Franka package contains small link-local cylinders and passes its b
 while the bed case fails only when the large flat primitive participates in the full compound body.
 This supports the main separation between a candidate shape and an accepted simulation artifact.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
   \centering
   \includegraphics[width=0.80\textwidth]{figures/generated/bed_franka_mechanism_diagnostic.pdf}
   \caption{Mechanism diagnostic for the capped bed/Franka cylinder records. In full-package context, the bed selected-cylinder package exceeds the recorded settle-speed gate, whereas the isolated target primitive and scoped Franka cylinder package pass their bounded checks. Recorded diagnostic checks reject contact/floor and mass-only explanations as sole causes and support COM/inertia sensitivity for this bounded case.}
@@ -47,14 +47,14 @@ They are mapped collision packages that fail particular Newton probes.
 The keyboard row is retained as a precision negative control: routine probes pass, but the recorded
 policy still routes the asset to manual review rather than promoting it as a solved collider.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{figures/generated/phase0_asset_package_overlays.pdf}
   \caption{Deterministic Phase~0 asset/package overlays for the representative rigid prop, container, and contact-affordance rows. Columns show the input mesh and four generated candidate lanes. High-count lanes draw a readable representative subset with a visible $+N$ marker; counts below each package remain primitive or hull counts in the recorded package, not claims of physical acceptance.}
   \label{fig:phase0-overlays}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure}[tbp]
   \centering
   \includegraphics[width=\textwidth]{figures/generated/phase0_asset_package_control_overlays.pdf}
   \caption{Additional Phase~0 asset/package overlay rows for the stackable tray and the precision negative-control keyboard. The keyboard input column shows aggregated USD default/render mesh prims for recognizability; high-count keyboard package cells draw a labeled representative local marker with a visible $+N$ overflow count. The split keeps the control rows readable while preserving the same candidate-lane ordering and recorded count semantics as Figure~\ref{fig:phase0-overlays}.}
@@ -69,14 +69,14 @@ affordance-sensitive tasks.
 The red cells show the opposite failure mode: detailed decomposition can look geometrically
 plausible and still produce an unstable support, floor breach, or non-settled state.
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{figures/generated/phase0_outcome_matrix.pdf}
   \caption{Outcome matrix for the scoped five-asset rigid run. Green cells are accepted probe outcomes, red cells are recorded failures, gray cells are explicit fallbacks, and light cells are not applicable. Fallback and failure are preserved as evidence rather than omitted from the table.}
   \label{fig:phase0-outcome-matrix}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}[tbp]
   \centering
   \footnotesize
   \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}p{0.25\textwidth}@{}}
@@ -94,6 +94,8 @@ plausible and still produce an unstable support, floor breach, or non-settled st
   \label{tab:phase0-grscenes-rigid}
 \end{table}
 
+\FloatBarrier
+
 \subsection{Collision-probe scene renderings}
 \label{sec:exp-collision-scenes}
 
@@ -108,9 +110,9 @@ package.
 That split is useful: the checker is not a blunt baseline filter.
 It localizes which physical task failed and leaves passing probes visible.
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{figures/generated/phase0_collision_probe_scenes.pdf}
+  \includegraphics[width=0.92\textwidth]{figures/generated/phase0_collision_probe_scenes.pdf}
   \caption{Collision-probe scene visualizations for the recorded V-HACD lanes on the container, cylindrical contact prop, and stackable tray rows. These panels are deterministic diagnostic renderings from the Phase~0 report, not photorealistic evidence. The key point is that a generated and mapped package can pass one task while failing another.}
   \label{fig:phase0-collision-scenes}
 \end{figure}
@@ -120,6 +122,8 @@ If V-HACD had failed to run, the comparison would only show an engineering depen
 Here the generated packages exist, map into Newton shapes, and then fail named probes.
 This separates dependency failures from task-level rejection and motivates reporting probe-specific
 labels rather than a single geometry-generation success rate.
+
+\FloatBarrier
 
 \subsection{Failure labels and measured symptoms}
 \label{sec:exp-failure-labels}
@@ -139,7 +143,7 @@ The tray V-HACD row is again different: the stack/slide probe accepts the packag
 drop/settle rejects it for residual motion.
 This heterogeneity motivates reporting named probes instead of a single binary baseline score.
 
-\begin{table}[H]
+\begin{table}[tbp]
   \centering
   \footnotesize
   \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}>{\raggedright\arraybackslash}p{0.18\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
@@ -163,6 +167,8 @@ This heterogeneity motivates reporting named probes instead of a single binary b
   \label{tab:phase0-failure-labels}
 \end{table}
 
+\FloatBarrier
+
 \subsection{Franka articulation smoke}
 In the Franka smoke run, the USD smoke asset provides the articulated test case.
 The link-aware package generator detects 12 rigid-body links and 12 joint edges, emits 12 link-framed box primitives, and records zero cross-link merges.
@@ -171,7 +177,7 @@ The articulation smoke records joint-tree import, a short gravity hold, and a si
 The generated-package task smoke separately suppresses source USD shapes, attaches all 12 generated package primitives to Newton bodies, records zero missing body links, and passes the same short hold/trajectory probe.
 This is generated-package consumption evidence for one Franka smoke asset, not whole-robot collider quality or manipulation evidence.
 
-\begin{figure}[t]
+\begin{figure}[tbp]
   \centering
   \includegraphics[width=0.98\textwidth]{figures/generated/franka_link_aware_rtx_task_scene.pdf}
   \caption{RTX view of the single Franka link-aware generated-package smoke. The visual plate shows the recorded link-framed package in the Newton task context with source USD collision shapes suppressed, 12 generated box primitives attached to 12 detected links, zero missing body links, and 66 generated self-collision filter pairs for the smoke configuration. This supports bounded package-consumption exposition only; it is not whole-robot collision-quality or manipulation evidence.}
