@@ -38,10 +38,6 @@ SUPPLEMENT_NEWTON_RTX_SLOT_IDS = (
     "supplement_predicate_drop_settle",
     "supplement_predicate_stack_slide",
     "supplement_predicate_sphere_rain",
-    "supplement_generated_package_consumption",
-    "supplement_compound_body_state_teaching",
-    "supplement_franka_link_frames",
-    "supplement_franka_source_suppression",
     "supplement_failure_storyboard_bowl",
     "supplement_failure_storyboard_cup_tray",
 )

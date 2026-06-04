@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-04 ACCV Supplement 2D Tutorial Slot Pass](2026-06-04-accv-supplement-2d-tutorial-slot-pass.md):
+  replaces unclear or repeated supplement slot imagery for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8,
+  and Fig.11 with deterministic academic 2D tutorial diagrams, records clean-room visual review,
+  and keeps the diagrams as exposition rather than new evidence.
 - [2026-06-04 ACCV Supplement Newton RTX Layout Pass](2026-06-04-accv-supplement-newton-rtx-layout-pass.md):
   replaces scene-explanation supplement slots with Newton ViewerRTX renders, relaxes supplement
   float placement to remove large stretched paragraph gaps, records layout/visual verification,

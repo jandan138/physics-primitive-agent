@@ -1,42 +1,36 @@
 {
-  "claim_boundary": "Newton RTX supplement scene slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_franka_link_frames",
-  "newton": {
-    "commit": "9f544c81e460",
-    "root": "external/newton"
-  },
   "panel_count": 3,
   "panels": [
     {
-      "asset": "external_artifact/supplement_franka_link_frames_01_asset_intake.png",
-      "sha256": "0d9465d828affa80ecd974e877713072f5aad1e0e1e9746d19df0400fdb67cba"
+      "focus": "primitives stay attached to their source Franka link",
+      "label": "Link graph"
     },
     {
-      "asset": "external_artifact/supplement_franka_link_frames_02_candidate_package.png",
-      "sha256": "252284fb27b3b69aebc9a24bdd6b2971a69188d892f063caf8f39c491222fc5c"
+      "focus": "owner links map to Newton bodies before probing",
+      "label": "Attachment table"
     },
     {
-      "asset": "external_artifact/supplement_franka_link_frames_03_newton_diagnostics.png",
-      "sha256": "198c9dd7214561b10db3d5f53d0c05056819a0472883a0898de51c91c7fd44da"
+      "focus": "cross-link primitive merges are rejected structurally",
+      "label": "Merge violation"
     }
   ],
-  "recipe": "recorded_franka_smoke_rebuilt_in_newton_viewer_rtx",
-  "renderer": "newton_viewer_rtx_ovrtx",
-  "rtx": {
-    "ovrtx_version": "0.3.0.312915",
-    "renderer": "newton_viewer_rtx_ovrtx"
-  },
+  "recipe": "2d_teaching_diagram_franka_link_ownership",
+  "renderer": "deterministic_2d_tutorial_pil",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_franka_link_frames_slot.png",
   "slot_composition": {
-    "source_panel_size": [
-      620,
-      620
-    ],
+    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
     "tile_size": [
       620,
       760
     ]
   },
-  "slot_sha256": "cce7afb5c4138babb155a67a659c98f97a2126deb2c71bfea9eb716702ab3be9"
+  "slot_sha256": "d7217939f86c03528ef8ce68a74e98764681a2785d19f82f762cdd81ab49c646",
+  "source_records": [
+    "docs/records/2026-05-26-link-aware-robot-package-generation.md"
+  ],
+  "style": "academic_2d_tutorial",
+  "title": "Franka link ownership frames"
 }

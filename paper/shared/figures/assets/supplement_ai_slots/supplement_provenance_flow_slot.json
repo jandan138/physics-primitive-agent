@@ -1,0 +1,40 @@
+{
+  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "figure_id": "supplement_provenance_flow",
+  "panel_count": 4,
+  "panels": [
+    {
+      "focus": "paper-visible settings come from repo-relative configs",
+      "label": "Config inputs"
+    },
+    {
+      "focus": "dated records bind claims to evidence status",
+      "label": "Records"
+    },
+    {
+      "focus": "slot hashes and sidecars keep generated figures auditable",
+      "label": "Figure manifest"
+    },
+    {
+      "focus": "LaTeX consumes generated figures without raw asset commits",
+      "label": "Supplement PDF"
+    }
+  ],
+  "recipe": "2d_teaching_diagram_artifact_provenance_flow",
+  "renderer": "deterministic_2d_tutorial_pil",
+  "schema_version": 1,
+  "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.png",
+  "slot_composition": {
+    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
+    "tile_size": [
+      620,
+      760
+    ]
+  },
+  "slot_sha256": "5e26b3b7ddc1de90ef8448f9b8275f49b505c48b1a0bcefba8b45ab65a29b778",
+  "source_records": [
+    "docs/reference/claim-boundaries.md"
+  ],
+  "style": "academic_2d_tutorial",
+  "title": "Artifact and provenance flow"
+}

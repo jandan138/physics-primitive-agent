@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import time
 from pathlib import Path
 
+import pytest
 import yaml
 from PIL import Image
 
@@ -182,7 +184,9 @@ def test_supplement_ai_slot_manifest_covers_every_generated_figure() -> None:
         DEFAULT_SLOT_MANIFEST,
         NEWTON_RTX_SUPPLEMENT_RENDERER,
         SCENE_EXPLANATION_FIGURE_IDS,
+        SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS,
         SUPPLEMENT_FIGURE_IDS,
+        TUTORIAL_2D_RENDERER,
         load_supplement_slot_manifest,
     )
 
@@ -203,6 +207,12 @@ def test_supplement_ai_slot_manifest_covers_every_generated_figure() -> None:
             assert sidecar, figure_id
             assert not Path(sidecar).is_absolute(), figure_id
             assert (ROOT / str(sidecar)).is_file(), figure_id
+        elif figure_id in SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS:
+            assert slot["renderer"] == TUTORIAL_2D_RENDERER
+            sidecar = slot.get("sidecar")
+            assert sidecar, figure_id
+            assert not Path(sidecar).is_absolute(), figure_id
+            assert (ROOT / str(sidecar)).is_file(), figure_id
         else:
             assert slot["renderer"].startswith("built_in_imagegen")
 
@@ -211,7 +221,9 @@ def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) 
     from primitive_collision_compiler.paper.accv_supplement_figures import (
         NEWTON_RTX_SUPPLEMENT_RENDERER,
         SCENE_EXPLANATION_FIGURE_IDS,
+        SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS,
         SUPPLEMENT_FIGURE_IDS,
+        TUTORIAL_2D_RENDERER,
         generate_supplement_figures,
     )
 
@@ -234,6 +246,10 @@ def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) 
             assert figure["slot_renderer"] == NEWTON_RTX_SUPPLEMENT_RENDERER
             assert figure["slot_sidecar"].endswith("_slot.json")
             assert len(figure["slot_sidecar_sha256"]) == 64
+        elif figure["figure_id"] in SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS:
+            assert figure["slot_renderer"] == TUTORIAL_2D_RENDERER
+            assert figure["slot_sidecar"].endswith("_slot.json")
+            assert len(figure["slot_sidecar_sha256"]) == 64
         else:
             assert figure["slot_renderer"].startswith("built_in_imagegen")
         assert figure["slot_replaceable_by_real_render"] is True
@@ -243,13 +259,14 @@ def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) 
 def test_supplement_slot_manifest_accepts_newton_rtx_scene_slots(tmp_path: Path) -> None:
     from primitive_collision_compiler.paper.accv_supplement_figures import (
         NEWTON_RTX_SUPPLEMENT_RENDERER,
+        SCENE_EXPLANATION_FIGURE_IDS,
         SUPPLEMENT_FIGURE_IDS,
         load_supplement_slot_manifest,
     )
 
     slot_manifest = _write_test_slot_manifest(tmp_path, SUPPLEMENT_FIGURE_IDS)
     data = yaml.safe_load(slot_manifest.read_text(encoding="utf-8"))
-    scene_id = SUPPLEMENT_FIGURE_IDS[0]
+    scene_id = next(iter(SCENE_EXPLANATION_FIGURE_IDS))
     sidecar = tmp_path / "scene_sidecar.json"
     sidecar.write_text(
         json.dumps(
@@ -273,6 +290,82 @@ def test_supplement_slot_manifest_accepts_newton_rtx_scene_slots(tmp_path: Path)
 
     assert loaded["slots"][scene_id]["renderer"] == NEWTON_RTX_SUPPLEMENT_RENDERER
     assert loaded["slots"][scene_id]["sidecar"] == str(sidecar)
+
+
+def test_supplement_slot_manifest_accepts_2d_tutorial_slots(tmp_path: Path) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS,
+        TUTORIAL_2D_RENDERER,
+        load_supplement_slot_manifest,
+    )
+
+    tutorial_id = next(iter(SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS))
+    slot_manifest = _write_test_slot_manifest(tmp_path, (tutorial_id,))
+
+    loaded = load_supplement_slot_manifest(slot_manifest, required_ids=(tutorial_id,))
+
+    assert loaded["slots"][tutorial_id]["renderer"] == TUTORIAL_2D_RENDERER
+    assert loaded["slots"][tutorial_id]["sidecar"].endswith("_slot.json")
+
+
+def test_supplement_slot_manifest_rejects_mismatched_2d_tutorial_sidecar(
+    tmp_path: Path,
+) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        TUTORIAL_2D_RENDERER,
+        load_supplement_slot_manifest,
+    )
+
+    tutorial_id = "supplement_candidate_lane_anatomy"
+    slot_manifest = _write_test_slot_manifest(tmp_path, (tutorial_id,))
+    data = yaml.safe_load(slot_manifest.read_text(encoding="utf-8"))
+    sidecar = Path(data["slots"][tutorial_id]["sidecar"])
+    payload = json.loads(sidecar.read_text(encoding="utf-8"))
+    payload["figure_id"] = "supplement_provenance_flow"
+    payload["renderer"] = TUTORIAL_2D_RENDERER
+    sidecar.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="sidecar figure_id"):
+        load_supplement_slot_manifest(slot_manifest, required_ids=(tutorial_id,))
+
+
+def test_supplement_slot_manifest_rejects_stale_2d_tutorial_sidecar_hash(
+    tmp_path: Path,
+) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        load_supplement_slot_manifest,
+    )
+
+    tutorial_id = "supplement_candidate_lane_anatomy"
+    slot_manifest = _write_test_slot_manifest(tmp_path, (tutorial_id,))
+    data = yaml.safe_load(slot_manifest.read_text(encoding="utf-8"))
+    sidecar = Path(data["slots"][tutorial_id]["sidecar"])
+    payload = json.loads(sidecar.read_text(encoding="utf-8"))
+    payload["slot_sha256"] = "0" * 64
+    sidecar.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="sidecar slot_sha256"):
+        load_supplement_slot_manifest(slot_manifest, required_ids=(tutorial_id,))
+
+
+def test_supplement_slot_manifest_rejects_stale_2d_tutorial_panel_count(
+    tmp_path: Path,
+) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        load_supplement_slot_manifest,
+    )
+
+    tutorial_id = "supplement_provenance_flow"
+    slot_manifest = _write_test_slot_manifest(tmp_path, (tutorial_id,))
+    data = yaml.safe_load(slot_manifest.read_text(encoding="utf-8"))
+    sidecar = Path(data["slots"][tutorial_id]["sidecar"])
+    payload = json.loads(sidecar.read_text(encoding="utf-8"))
+    payload["panel_count"] = 3
+    payload["panels"] = payload["panels"][:3]
+    sidecar.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="sidecar panel_count"):
+        load_supplement_slot_manifest(slot_manifest, required_ids=(tutorial_id,))
 
 
 def test_supplement_figure_composer_uses_ai_slots_instead_of_program_scene_drawer() -> None:
@@ -415,11 +508,15 @@ def _write_test_slot_manifest(
     edge_markers: bool = False,
 ) -> Path:
     from primitive_collision_compiler.paper.accv_supplement_figures import (
+        FIGURE_SPECS,
         NEWTON_RTX_SUPPLEMENT_RENDERER,
         SCENE_EXPLANATION_FIGURE_IDS,
+        SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS,
+        TUTORIAL_2D_RENDERER,
     )
 
     asset_dir = tmp_path / "assets"
+    panel_counts = {spec.figure_id: len(spec.panels) for spec in FIGURE_SPECS}
     slots: dict[str, dict[str, object]] = {}
     for index, figure_id in enumerate(figure_ids):
         slot = asset_dir / f"{figure_id}_slot.png"
@@ -455,6 +552,29 @@ def _write_test_slot_manifest(
                 encoding="utf-8",
             )
             slots[figure_id]["renderer"] = NEWTON_RTX_SUPPLEMENT_RENDERER
+            slots[figure_id]["sidecar"] = str(sidecar)
+        elif figure_id in SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS:
+            panel_count = panel_counts[figure_id]
+            sidecar = asset_dir / f"{figure_id}_slot.json"
+            sidecar.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "figure_id": figure_id,
+                        "renderer": TUTORIAL_2D_RENDERER,
+                        "style": "academic_2d_tutorial",
+                        "slot_asset": slot.name,
+                        "slot_sha256": _sha256_file(slot),
+                        "panel_count": panel_count,
+                        "panels": [{"label": f"panel {index}"} for index in range(panel_count)],
+                        "claim_boundary": "Visual exposition only; not experimental evidence.",
+                    },
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            slots[figure_id]["renderer"] = TUTORIAL_2D_RENDERER
             slots[figure_id]["sidecar"] = str(sidecar)
 
     manifest = tmp_path / "manifest.yaml"
@@ -492,3 +612,11 @@ def _edge_marker_slot(path: Path) -> None:
 
 def _count_pixels(image: Image.Image, predicate) -> int:
     return sum(1 for r, g, b in image.getdata() if predicate(r, g, b))
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()

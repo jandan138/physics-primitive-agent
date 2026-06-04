@@ -15,6 +15,10 @@ from primitive_collision_compiler.paper.supplement_newton_rtx_slots import (
     NEWTON_RTX_SUPPLEMENT_RENDERER,
     SUPPLEMENT_NEWTON_RTX_SLOT_IDS,
 )
+from primitive_collision_compiler.paper.supplement_tutorial_2d_slots import (
+    SUPPLEMENT_2D_TUTORIAL_SLOT_IDS,
+    TUTORIAL_2D_RENDERER,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -39,6 +43,7 @@ CLAIM_BOUNDARY = (
 AI_SLOT_MODE = "ai_slot_composition"
 AI_SLOT_RENDERER_PREFIX = "built_in_imagegen"
 SCENE_EXPLANATION_FIGURE_IDS = SUPPLEMENT_NEWTON_RTX_SLOT_IDS
+SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS = SUPPLEMENT_2D_TUTORIAL_SLOT_IDS
 
 
 @dataclass(frozen=True)
@@ -167,6 +172,9 @@ FIGURE_SPECS: tuple[SupplementFigureSpec, ...] = (
     ),
 )
 SUPPLEMENT_FIGURE_IDS: tuple[str, ...] = tuple(spec.figure_id for spec in FIGURE_SPECS)
+SUPPLEMENT_PANEL_COUNTS: dict[str, int] = {
+    spec.figure_id: len(spec.panels) for spec in FIGURE_SPECS
+}
 
 
 def load_supplement_slot_manifest(
@@ -209,6 +217,25 @@ def load_supplement_slot_manifest(
             sidecar_text = sidecar_path.read_text(encoding="utf-8")
             if "/cpfs/" in sidecar_text or "zhuzihou" in sidecar_text:
                 raise ValueError(f"Supplement Newton RTX sidecar leaks local path: {figure_id}")
+        elif figure_id in SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS:
+            if renderer != TUTORIAL_2D_RENDERER:
+                raise ValueError(
+                    f"Supplement 2D tutorial slot must use deterministic renderer: {figure_id}"
+                )
+            sidecar = slot.get("sidecar")
+            if not sidecar:
+                raise ValueError(f"Supplement 2D tutorial slot missing sidecar: {figure_id}")
+            sidecar_path = _repo_path(str(sidecar))
+            if not sidecar_path.is_file():
+                raise FileNotFoundError(sidecar_path)
+            sidecar_text = sidecar_path.read_text(encoding="utf-8")
+            if "/cpfs/" in sidecar_text or "zhuzihou" in sidecar_text:
+                raise ValueError(f"Supplement 2D tutorial sidecar leaks local path: {figure_id}")
+            _validate_tutorial_2d_sidecar(
+                figure_id=figure_id,
+                sidecar_text=sidecar_text,
+                asset_path=asset_path,
+            )
         elif not renderer.startswith(AI_SLOT_RENDERER_PREFIX):
             raise ValueError(f"Supplement AI slot must use built-in imagegen renderer: {figure_id}")
         if not slot.get("prompt_summary"):
@@ -281,6 +308,43 @@ def generate_supplement_figures(
     }
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return manifest
+
+
+def _validate_tutorial_2d_sidecar(
+    *,
+    figure_id: str,
+    sidecar_text: str,
+    asset_path: Path,
+) -> None:
+    try:
+        payload = json.loads(sidecar_text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Supplement 2D tutorial sidecar is not valid JSON: {figure_id}") from exc
+    if not isinstance(payload, Mapping):
+        raise ValueError(f"Supplement 2D tutorial sidecar must be a JSON object: {figure_id}")
+    if payload.get("figure_id") != figure_id:
+        raise ValueError(f"Supplement 2D tutorial sidecar figure_id mismatch: {figure_id}")
+    if payload.get("renderer") != TUTORIAL_2D_RENDERER:
+        raise ValueError(f"Supplement 2D tutorial sidecar renderer mismatch: {figure_id}")
+    slot_asset = payload.get("slot_asset")
+    if not isinstance(slot_asset, str) or not slot_asset:
+        raise ValueError(f"Supplement 2D tutorial sidecar missing slot_asset: {figure_id}")
+    if Path(slot_asset).is_absolute():
+        raise ValueError(f"Supplement 2D tutorial sidecar slot_asset must be portable: {figure_id}")
+    expected_asset = _portable_manifest_path(asset_path)
+    if slot_asset != expected_asset:
+        raise ValueError(f"Supplement 2D tutorial sidecar slot_asset mismatch: {figure_id}")
+    if payload.get("slot_sha256") != _sha256_file(asset_path):
+        raise ValueError(f"Supplement 2D tutorial sidecar slot_sha256 mismatch: {figure_id}")
+    expected_panel_count = SUPPLEMENT_PANEL_COUNTS[figure_id]
+    if payload.get("panel_count") != expected_panel_count:
+        raise ValueError(f"Supplement 2D tutorial sidecar panel_count mismatch: {figure_id}")
+    panels = payload.get("panels")
+    if not isinstance(panels, list) or len(panels) != expected_panel_count:
+        raise ValueError(f"Supplement 2D tutorial sidecar panels mismatch: {figure_id}")
+    claim_boundary = str(payload.get("claim_boundary", ""))
+    if "not experimental evidence" not in claim_boundary:
+        raise ValueError(f"Supplement 2D tutorial sidecar missing claim boundary: {figure_id}")
 
 
 def main(argv: Sequence[str] | None = None) -> int:

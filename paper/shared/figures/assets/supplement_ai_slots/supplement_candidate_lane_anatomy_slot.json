@@ -1,0 +1,36 @@
+{
+  "claim_boundary": "Deterministic 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "figure_id": "supplement_candidate_lane_anatomy",
+  "panel_count": 3,
+  "panels": [
+    {
+      "focus": "source support sets become lane-local candidates",
+      "label": "Generator lane"
+    },
+    {
+      "focus": "candidate rows carry owner, mass, and thresholds",
+      "label": "Package manifest"
+    },
+    {
+      "focus": "same probes assign accept, fallback, or fail labels",
+      "label": "Diagnostic gate"
+    }
+  ],
+  "recipe": "2d_teaching_diagram_candidate_lane_manifest_gate",
+  "renderer": "deterministic_2d_tutorial_pil",
+  "schema_version": 1,
+  "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.png",
+  "slot_composition": {
+    "layout": "fixed-width panel strip; each segment is contained by the paper composer",
+    "tile_size": [
+      620,
+      760
+    ]
+  },
+  "slot_sha256": "d84f4707d47d4500a5dcd3d0d0fe564593d00b26c6738ea4f932914365133dbd",
+  "source_records": [
+    "paper/shared/evidence/results_manifest.yaml"
+  ],
+  "style": "academic_2d_tutorial",
+  "title": "Candidate-lane anatomy"
+}
