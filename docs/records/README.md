@@ -46,6 +46,10 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-04 ACCV Reference Expansion](2026-06-04-accv-reference-expansion.md):
+  expands the ACCV main-paper bibliography to 35 cited entries with 30 paper-like cited sources,
+  focusing on collision queries, primitive/convex proxy generation, robot simulators, and robot
+  collision checking without changing experiment claims.
 - [2026-06-04 ACCV Supplement Labeled AI Tutorial Slot Retake](2026-06-04-accv-supplement-labeled-ai-tutorial-slot-retake.md):
   retakes the six ACCV supplement tutorial slot strips for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8,
   and Fig.11 with AI-generated in-image labels, records paper-scale visual review, and keeps the

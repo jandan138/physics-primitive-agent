@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -8,10 +9,42 @@ ACTIVE_DOCS = (
     ROOT / "README.md",
     ROOT / "AGENTS.md",
 )
+ACCV_MAIN_SECTIONS = (
+    "abstract.tex",
+    "intro.tex",
+    "related.tex",
+    "background.tex",
+    "method.tex",
+    "experiments.tex",
+    "discussion.tex",
+    "conclusion.tex",
+)
+NON_PAPER_REFERENCE_KEYS = {
+    "ericson2004",
+    "newton2026",
+    "openusd2026",
+    "vhacd",
+    "warp2022",
+}
+MIN_ACCV_MAIN_PAPER_REFERENCES = 30
+CITATION_RE = re.compile(r"\\cite[a-zA-Z*]*(?:\[[^\]]*\]){0,2}\{([^}]+)\}")
+BIB_ENTRY_RE = re.compile(r"^@(?P<entry_type>\w+)\{(?P<key>[^,]+),", re.MULTILINE)
 
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
+
+def citation_keys(tex: str) -> set[str]:
+    keys: set[str] = set()
+    for match in CITATION_RE.finditer(tex):
+        keys.update(key.strip() for key in match.group(1).split(",") if key.strip())
+    return keys
+
+
+def bibliography_keys() -> set[str]:
+    references = read_text(PAPER / "shared/references.bib")
+    return {match.group("key") for match in BIB_ENTRY_RE.finditer(references)}
 
 
 def test_shared_tree_and_evidence_registry() -> None:
@@ -129,6 +162,29 @@ def test_active_docs_describe_multi_venue_workflow() -> None:
         "paper/",
     ):
         assert required in combined, required
+
+
+def test_accv_related_work_uses_scoped_literature_themes() -> None:
+    related = read_text(PAPER / "shared/sections/related.tex")
+    for heading in (
+        "Collision queries and proxy data structures",
+        "Primitive and convex collision proxies",
+        "Physics-engine validation and robot simulators",
+        "Robot collision authoring",
+    ):
+        assert heading in related
+
+
+def test_accv_main_cites_at_least_thirty_paper_references() -> None:
+    bib_keys = bibliography_keys()
+    main_citations: set[str] = set()
+    for section in ACCV_MAIN_SECTIONS:
+        main_citations.update(citation_keys(read_text(PAPER / "shared/sections" / section)))
+
+    assert main_citations <= bib_keys
+
+    paper_citations = main_citations - NON_PAPER_REFERENCE_KEYS
+    assert len(paper_citations) >= MIN_ACCV_MAIN_PAPER_REFERENCES
 
 
 def test_experiments_section_avoids_unsupported_superiority_claims() -> None:

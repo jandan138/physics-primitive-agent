@@ -1,19 +1,26 @@
 \section{Related Work}
 \label{sec:related}
 
+\paragraph{Collision queries and proxy data structures.}
+Collision pipelines usually start from lower-level proximity queries and bounding hierarchies rather than from a simulator-facing package decision.
+Classical distance and interference methods include GJK distance queries, oriented bounding-box trees, k-DOP hierarchies, swept-sphere volumes, and general-purpose proximity libraries such as FCL~\cite{gilbert1988gjk,gottschalk1996obbtree,klosowski1998kdop,larsen2000rss,pan2012fcl}.
+These methods make collision checking tractable, but they do not decide whether a generated collider package preserves compound body state, contact behavior, or articulated-link semantics after import.
+
 \paragraph{Primitive and convex collision proxies.}
-Manual primitives, single convex hulls, and convex decomposition methods are standard tools for making collision checks tractable in real-time systems~\cite{ericson2004}.
-Approximate convex decomposition methods trade geometric fidelity against collision cost; examples include animated-mesh transfer~\cite{thul2018acd}, V-HACD~\cite{vhacd}, and collision-aware decomposition with tree search~\cite{coacd2022}.
-Recent CPD-style work fits compact primitive sets directly for rigid-body collision use~\cite{cpd2026}.
+Manual primitives, single convex hulls, and convex decomposition methods are standard tools for real-time collision representation~\cite{ericson2004}.
+Approximate convex decomposition trades geometric fidelity against collision cost through polyhedral ACD, V-HACD, animated-mesh transfer, and collision-aware tree search~\cite{lien2007acd,vhacd,thul2018acd,coacd2022}.
+Recent CPD-style and differentiable convex-primitive work fit compact primitive sets directly for rigid-body collision use~\cite{cpd2026,tracy2023dcol}.
 We treat these systems as candidate generators or baselines, not as the novelty claim of this work.
 
-\paragraph{Physics-engine validation.}
+\paragraph{Physics-engine validation and robot simulators.}
 Physics engines expose contact, penetration, body-state, and articulation behavior that geometric fitting cannot see.
+Prior robot-simulation work has emphasized engine behavior, contact-rich control, simulator interfaces, and benchmark environments, including MuJoCo, Gazebo, DART, SAPIEN, Isaac Gym, Brax, robosuite, ManiSkill, and ManiSkill2~\cite{todorov2012mujoco,erez2015simtools,koenig2004gazebo,lee2018dart,xiang2020sapien,makoviychuk2021isaacgym,freeman2021brax,zhu2025robosuite,mu2021maniskill,gu2023maniskill2}.
 Newton is a useful target for this study because it is built around robotics simulation, OpenUSD import, and Warp-backed computation~\cite{newton2026,warp2022,openusd2026}.
 Our framing is a diagnostic checker under named Newton tasks and settings, not formal verification or safety certification.
 The difference matters: a candidate can be geometrically plausible and still be rejected when simulation probes expose unstable compound state, blocked contact affordances, or task-specific robot import risk.
 
 \paragraph{Robot collision authoring.}
+Robot planning systems routinely rely on collision-validity checks, from sampling-based roadmaps and trees to trajectory optimizers and ROS motion-planning stacks~\cite{kavraki1996prm,lavalle2001kinodynamic,kuffner2000rrtconnect,karaman2011rrtstar,zucker2013chomp,kalakrishnan2011stomp,schulman2014trajopt,sucan2012ompl,chitta2012moveit,zolotas2025robotcollisionchecking}.
 Articulated assets require link-aware packages: primitives must not merge across joints, and articulation smoke checks are prerequisites for any whole-robot claim.
 Current Franka evidence includes capped package task smokes, one link-aware package generation record with a boundary check, one USD articulation smoke, and one generated-package robot task smoke that consumes the link-aware package.
 That evidence supports package-consumption readiness for a bounded smoke path, but not whole-robot collider quality, manipulation performance, or end-effector accuracy.
