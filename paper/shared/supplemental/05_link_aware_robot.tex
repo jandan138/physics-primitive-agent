@@ -29,13 +29,14 @@ already spans multiple links. A package passes the structural link gate only whe
 \]
 This is a structural audit, not a manipulation result.
 
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_franka_link_frames.pdf}
 \caption{Supplement-only Franka link-ownership teaching plate. The link graph, body attachment,
 and cross-link merge violation are separated.}
 \label{fig:supp-franka-link-frames}
 \end{figure}
+\FloatBarrier
 
 \paragraph{What this shows.}
 Figure~\ref{fig:supp-franka-link-frames} shows the ownership rule that makes robot packages
@@ -60,13 +61,14 @@ configuration. The package-consumption gate has the schematic form
 The generated self-collision filter count is not a quality score. It is evidence that the smoke
 configuration accounted for generated package pairs explicitly.
 
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_generated_package_consumption.pdf}
 \caption{Supplement-only generated-package consumption plate. Missing bodies, source-shape
 suppression, and filter accounting are shown before the task outcome is read.}
 \label{fig:supp-generated-package-consumption}
 \end{figure}
+\FloatBarrier
 
 \paragraph{What this shows.}
 Figure~\ref{fig:supp-generated-package-consumption} teaches the bookkeeping step between package
@@ -84,13 +86,14 @@ application. It also does not calibrate self-collision behavior. The filter coun
 it records that generated pairs were handled explicitly in the smoke scene, but a contact-operation
 claim would require separate robot tasks and additional records.
 
-\begin{figure}[H]
+\begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_franka_source_suppression.pdf}
 \caption{Supplement-only source-shape suppression accounting. The plate contrasts source USD
 collision shapes, generated package insertion, and scene-level counts.}
 \label{fig:supp-franka-source-suppression}
 \end{figure}
+\FloatBarrier
 
 \paragraph{What this shows.}
 Figure~\ref{fig:supp-franka-source-suppression} shows source-shape suppression as an explicit
@@ -100,7 +103,7 @@ missing generated-body links before reading the task smoke outcome.
 \paragraph{What this does not show.}
 The plate does not imply calibrated self-collision behavior or whole-arm manipulation validity.
 
-\begin{table}[t]
+\begin{table}[!ht]
 \centering
 \small
 \caption{Supplement-only robot package audit table. It is a semantic checklist, not a copied
@@ -118,3 +121,4 @@ Generated self-collision filter & filter count recorded for generated package pa
 \bottomrule
 \end{tabular}
 \end{table}
+\FloatBarrier

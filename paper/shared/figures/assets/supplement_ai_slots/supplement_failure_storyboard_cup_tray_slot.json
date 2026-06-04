@@ -1,0 +1,46 @@
+{
+  "claim_boundary": "Newton RTX supplement scene slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "figure_id": "supplement_failure_storyboard_cup_tray",
+  "newton": {
+    "commit": "9f544c81e460",
+    "root": "external/newton"
+  },
+  "panel_count": 4,
+  "panels": [
+    {
+      "asset": "external_artifact/supplement_failure_storyboard_cup_tray_01_cup.png",
+      "sha256": "89919f127076f8f16ceab4f4357399d6b4e8c6876a663e7463774d961dc0c916"
+    },
+    {
+      "asset": "external_artifact/supplement_failure_storyboard_cup_tray_02_tray.png",
+      "sha256": "b5b9d8cea93a16649ad26faa883e778a73683a364425821cb7d49458ded90156"
+    },
+    {
+      "asset": "external_artifact/supplement_failure_storyboard_cup_tray_03_metric.png",
+      "sha256": "dac1bc522b495dd43394c0f49f57f82f48ba7e8ea363bd4b3fc3d7b69731839f"
+    },
+    {
+      "asset": "external_artifact/supplement_failure_storyboard_cup_tray_04_label.png",
+      "sha256": "fcd98870b7733eb98222207d5fc3bc9789ae121580afbc9589f515ca28a8591c"
+    }
+  ],
+  "recipe": "newton_primitive_scene_rebuilt_for_supplement_viewer_rtx",
+  "renderer": "newton_viewer_rtx_ovrtx",
+  "rtx": {
+    "ovrtx_version": "0.3.0.312915",
+    "renderer": "newton_viewer_rtx_ovrtx"
+  },
+  "schema_version": 1,
+  "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_failure_storyboard_cup_tray_slot.png",
+  "slot_composition": {
+    "source_panel_size": [
+      620,
+      620
+    ],
+    "tile_size": [
+      620,
+      760
+    ]
+  },
+  "slot_sha256": "ab69bb352e615eb0e31ef8d1413e37297aec43a8e5421498683368988fdc6679"
+}

@@ -1,0 +1,42 @@
+{
+  "claim_boundary": "Newton RTX supplement scene slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "figure_id": "supplement_franka_source_suppression",
+  "newton": {
+    "commit": "9f544c81e460",
+    "root": "external/newton"
+  },
+  "panel_count": 3,
+  "panels": [
+    {
+      "asset": "external_artifact/supplement_franka_source_suppression_01_asset_intake.png",
+      "sha256": "f9c41e9d542aa760766b313d3e5ec9b3fd0fb9c2f67509e32adbc05537ec0b07"
+    },
+    {
+      "asset": "external_artifact/supplement_franka_source_suppression_02_candidate_package.png",
+      "sha256": "1b4e8eeafea683a43a512df3e95dc2efa723fe0faaa16a233f6267011cb07b87"
+    },
+    {
+      "asset": "external_artifact/supplement_franka_source_suppression_03_newton_diagnostics.png",
+      "sha256": "0287468529e8b703e8f999667f8f4e575c09f55c3705ed161ff5a8bf6c66016b"
+    }
+  ],
+  "recipe": "recorded_franka_smoke_rebuilt_in_newton_viewer_rtx",
+  "renderer": "newton_viewer_rtx_ovrtx",
+  "rtx": {
+    "ovrtx_version": "0.3.0.312915",
+    "renderer": "newton_viewer_rtx_ovrtx"
+  },
+  "schema_version": 1,
+  "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_franka_source_suppression_slot.png",
+  "slot_composition": {
+    "source_panel_size": [
+      620,
+      620
+    ],
+    "tile_size": [
+      620,
+      760
+    ]
+  },
+  "slot_sha256": "5ee1143a187b1fa42edb3a52870a2d835252f88a57502f4025c56793f7b7c3c1"
+}

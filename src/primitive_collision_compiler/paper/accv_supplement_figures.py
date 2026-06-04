@@ -11,6 +11,11 @@ from typing import Any, Mapping, Sequence
 import yaml
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
+from primitive_collision_compiler.paper.supplement_newton_rtx_slots import (
+    NEWTON_RTX_SUPPLEMENT_RENDERER,
+    SUPPLEMENT_NEWTON_RTX_SLOT_IDS,
+)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "paper/shared/figures/generated/supplement"
@@ -33,6 +38,7 @@ CLAIM_BOUNDARY = (
 )
 AI_SLOT_MODE = "ai_slot_composition"
 AI_SLOT_RENDERER_PREFIX = "built_in_imagegen"
+SCENE_EXPLANATION_FIGURE_IDS = SUPPLEMENT_NEWTON_RTX_SLOT_IDS
 
 
 @dataclass(frozen=True)
@@ -189,7 +195,21 @@ def load_supplement_slot_manifest(
         if not asset_path.is_file():
             raise FileNotFoundError(asset_path)
         renderer = str(slot.get("renderer", ""))
-        if not renderer.startswith(AI_SLOT_RENDERER_PREFIX):
+        if figure_id in SCENE_EXPLANATION_FIGURE_IDS:
+            if renderer != NEWTON_RTX_SUPPLEMENT_RENDERER:
+                raise ValueError(
+                    f"Supplement scene slot must use Newton RTX renderer: {figure_id}"
+                )
+            sidecar = slot.get("sidecar")
+            if not sidecar:
+                raise ValueError(f"Supplement Newton RTX scene slot missing sidecar: {figure_id}")
+            sidecar_path = _repo_path(str(sidecar))
+            if not sidecar_path.is_file():
+                raise FileNotFoundError(sidecar_path)
+            sidecar_text = sidecar_path.read_text(encoding="utf-8")
+            if "/cpfs/" in sidecar_text or "zhuzihou" in sidecar_text:
+                raise ValueError(f"Supplement Newton RTX sidecar leaks local path: {figure_id}")
+        elif not renderer.startswith(AI_SLOT_RENDERER_PREFIX):
             raise ValueError(f"Supplement AI slot must use built-in imagegen renderer: {figure_id}")
         if not slot.get("prompt_summary"):
             raise ValueError(f"Supplement AI slot missing prompt summary: {figure_id}")
@@ -226,25 +246,28 @@ def generate_supplement_figures(
             producer="primitive_collision_compiler.paper.accv_supplement_figures",
         )
         spec_hash = _sha256_text(_canonical_spec(spec))
-        figures.append(
-            {
-                "figure_id": spec.figure_id,
-                "title": spec.title,
-                "png": png_path.name,
-                "pdf": pdf_path.name,
-                "png_sha256": _sha256_file(png_path),
-                "pdf_sha256": _sha256_file(pdf_path),
-                "source_sha256": spec_hash,
-                "source_records": list(spec.source_records),
-                "slot_asset": _portable_manifest_path(slot_path),
-                "slot_sha256": _sha256_file(slot_path),
-                "slot_prompt_summary": slot["prompt_summary"],
-                "slot_renderer": slot["renderer"],
-                "slot_replaceable_by_real_render": slot["replaceable_by_real_render"],
-                "composer": "AI slot deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
-                "claim_boundary": spec.claim_boundary,
-            }
-        )
+        figure_record: dict[str, Any] = {
+            "figure_id": spec.figure_id,
+            "title": spec.title,
+            "png": png_path.name,
+            "pdf": pdf_path.name,
+            "png_sha256": _sha256_file(png_path),
+            "pdf_sha256": _sha256_file(pdf_path),
+            "source_sha256": spec_hash,
+            "source_records": list(spec.source_records),
+            "slot_asset": _portable_manifest_path(slot_path),
+            "slot_sha256": _sha256_file(slot_path),
+            "slot_prompt_summary": slot["prompt_summary"],
+            "slot_renderer": slot["renderer"],
+            "slot_replaceable_by_real_render": slot["replaceable_by_real_render"],
+            "composer": "AI slot / Newton RTX deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
+            "claim_boundary": spec.claim_boundary,
+        }
+        if slot.get("sidecar"):
+            sidecar_path = _repo_path(str(slot["sidecar"]))
+            figure_record["slot_sidecar"] = _portable_manifest_path(sidecar_path)
+            figure_record["slot_sidecar_sha256"] = _sha256_file(sidecar_path)
+        figures.append(figure_record)
     manifest_path = out / "manifest.json"
     manifest: dict[str, Any] = {
         "schema_version": 1,

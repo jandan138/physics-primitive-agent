@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from pathlib import Path
 
@@ -113,6 +114,55 @@ def test_supplement_source_preserves_double_blind_review() -> None:
         assert phrase not in combined
 
 
+def test_supplement_uses_flexible_float_layout_for_text_flow() -> None:
+    supplement_entrypoint = read_text(PAPER / "venues/accv/supplement.tex")
+    supplement_text = supplement_source_text()
+
+    assert r"\raggedbottom" in supplement_entrypoint
+    assert r"\usepackage{placeins}" in read_text(PAPER / "venues/accv/preamble.tex")
+    assert r"\begin{figure}[H]" not in supplement_text
+    assert r"\begin{table}[H]" not in supplement_text
+    assert supplement_text.count(r"\begin{figure}[tbp]") >= 8
+
+
+def test_failure_storyboards_cannot_form_a_float_only_page() -> None:
+    visual_atlas = read_text(SUPPLEMENTAL / "06_visual_atlas.tex")
+    robot_section = read_text(SUPPLEMENTAL / "05_link_aware_robot.tex")
+
+    storyboards = re.findall(
+        r"\\begin\{figure\}\[(?P<placement>[^\]]+)\].*?"
+        r"\\label\{(?P<label>fig:supp-failure-storyboard-[^}]+)\}.*?"
+        r"\\end\{figure\}",
+        visual_atlas,
+        flags=re.DOTALL,
+    )
+    assert {label for _, label in storyboards} == {
+        "fig:supp-failure-storyboard-bowl",
+        "fig:supp-failure-storyboard-cup-tray",
+    }
+    for placement, _label in storyboards:
+        assert "p" not in placement
+        assert "h" in placement
+
+    assert visual_atlas.count(r"\FloatBarrier") >= 4
+    assert robot_section.rstrip().endswith(r"\FloatBarrier")
+
+
+def test_large_robot_scene_figures_are_bound_to_their_explanatory_text() -> None:
+    robot_section = read_text(SUPPLEMENTAL / "05_link_aware_robot.tex")
+
+    for label in (
+        "fig:supp-franka-link-frames",
+        "fig:supp-generated-package-consumption",
+        "fig:supp-franka-source-suppression",
+    ):
+        match = re.search(
+            rf"\\label\{{{re.escape(label)}\}}\s*\\end\{{figure\}}\s*\\FloatBarrier",
+            robot_section,
+        )
+        assert match is not None, label
+
+
 def test_supplement_figure_manifest_records_sources() -> None:
     manifest = PAPER / "shared/figures/generated/supplement/manifest.json"
     assert manifest.exists()
@@ -130,6 +180,8 @@ def test_supplement_figure_manifest_records_sources() -> None:
 def test_supplement_ai_slot_manifest_covers_every_generated_figure() -> None:
     from primitive_collision_compiler.paper.accv_supplement_figures import (
         DEFAULT_SLOT_MANIFEST,
+        NEWTON_RTX_SUPPLEMENT_RENDERER,
+        SCENE_EXPLANATION_FIGURE_IDS,
         SUPPLEMENT_FIGURE_IDS,
         load_supplement_slot_manifest,
     )
@@ -143,13 +195,22 @@ def test_supplement_ai_slot_manifest_covers_every_generated_figure() -> None:
     for figure_id, slot in slot_manifest["slots"].items():
         asset = ROOT / slot["asset"]
         assert asset.is_file(), figure_id
-        assert slot["renderer"].startswith("built_in_imagegen")
         assert slot["prompt_summary"]
         assert slot["replaceable_by_real_render"] is True
+        if figure_id in SCENE_EXPLANATION_FIGURE_IDS:
+            assert slot["renderer"] == NEWTON_RTX_SUPPLEMENT_RENDERER
+            sidecar = slot.get("sidecar")
+            assert sidecar, figure_id
+            assert not Path(sidecar).is_absolute(), figure_id
+            assert (ROOT / str(sidecar)).is_file(), figure_id
+        else:
+            assert slot["renderer"].startswith("built_in_imagegen")
 
 
 def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) -> None:
     from primitive_collision_compiler.paper.accv_supplement_figures import (
+        NEWTON_RTX_SUPPLEMENT_RENDERER,
+        SCENE_EXPLANATION_FIGURE_IDS,
         SUPPLEMENT_FIGURE_IDS,
         generate_supplement_figures,
     )
@@ -169,9 +230,49 @@ def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) 
         assert figure["slot_asset"].endswith("_slot.png")
         assert len(figure["slot_sha256"]) == 64
         assert figure["slot_prompt_summary"] == f"test slot for {figure['figure_id']}"
-        assert figure["slot_renderer"].startswith("built_in_imagegen")
+        if figure["figure_id"] in SCENE_EXPLANATION_FIGURE_IDS:
+            assert figure["slot_renderer"] == NEWTON_RTX_SUPPLEMENT_RENDERER
+            assert figure["slot_sidecar"].endswith("_slot.json")
+            assert len(figure["slot_sidecar_sha256"]) == 64
+        else:
+            assert figure["slot_renderer"].startswith("built_in_imagegen")
         assert figure["slot_replaceable_by_real_render"] is True
         assert "AI slot" in figure["composer"]
+
+
+def test_supplement_slot_manifest_accepts_newton_rtx_scene_slots(tmp_path: Path) -> None:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        NEWTON_RTX_SUPPLEMENT_RENDERER,
+        SUPPLEMENT_FIGURE_IDS,
+        load_supplement_slot_manifest,
+    )
+
+    slot_manifest = _write_test_slot_manifest(tmp_path, SUPPLEMENT_FIGURE_IDS)
+    data = yaml.safe_load(slot_manifest.read_text(encoding="utf-8"))
+    scene_id = SUPPLEMENT_FIGURE_IDS[0]
+    sidecar = tmp_path / "scene_sidecar.json"
+    sidecar.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "figure_id": scene_id,
+                "renderer": NEWTON_RTX_SUPPLEMENT_RENDERER,
+                "newton": {"root": "external/newton", "commit": "test"},
+                "rtx": {"renderer": NEWTON_RTX_SUPPLEMENT_RENDERER, "ovrtx_version": "test"},
+                "claim_boundary": "Visual exposition only; not benchmark evidence.",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    data["slots"][scene_id]["renderer"] = NEWTON_RTX_SUPPLEMENT_RENDERER
+    data["slots"][scene_id]["sidecar"] = str(sidecar)
+    slot_manifest.write_text(yaml.safe_dump(data, sort_keys=True), encoding="utf-8")
+
+    loaded = load_supplement_slot_manifest(slot_manifest, required_ids=(scene_id,))
+
+    assert loaded["slots"][scene_id]["renderer"] == NEWTON_RTX_SUPPLEMENT_RENDERER
+    assert loaded["slots"][scene_id]["sidecar"] == str(sidecar)
 
 
 def test_supplement_figure_composer_uses_ai_slots_instead_of_program_scene_drawer() -> None:
@@ -313,6 +414,11 @@ def _write_test_slot_manifest(
     *,
     edge_markers: bool = False,
 ) -> Path:
+    from primitive_collision_compiler.paper.accv_supplement_figures import (
+        NEWTON_RTX_SUPPLEMENT_RENDERER,
+        SCENE_EXPLANATION_FIGURE_IDS,
+    )
+
     asset_dir = tmp_path / "assets"
     slots: dict[str, dict[str, object]] = {}
     for index, figure_id in enumerate(figure_ids):
@@ -328,6 +434,28 @@ def _write_test_slot_manifest(
             "prompt_summary": f"test slot for {figure_id}",
             "replaceable_by_real_render": True,
         }
+        if figure_id in SCENE_EXPLANATION_FIGURE_IDS:
+            sidecar = asset_dir / f"{figure_id}_slot.json"
+            sidecar.write_text(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "figure_id": figure_id,
+                        "renderer": NEWTON_RTX_SUPPLEMENT_RENDERER,
+                        "newton": {"root": "external/newton", "commit": "test"},
+                        "rtx": {
+                            "renderer": NEWTON_RTX_SUPPLEMENT_RENDERER,
+                            "ovrtx_version": "test",
+                        },
+                        "claim_boundary": "Visual exposition only; not benchmark evidence.",
+                    },
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            slots[figure_id]["renderer"] = NEWTON_RTX_SUPPLEMENT_RENDERER
+            slots[figure_id]["sidecar"] = str(sidecar)
 
     manifest = tmp_path / "manifest.yaml"
     manifest.write_text(

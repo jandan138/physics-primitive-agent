@@ -46,6 +46,13 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-04 ACCV Supplement Newton RTX Layout Pass](2026-06-04-accv-supplement-newton-rtx-layout-pass.md):
+  replaces scene-explanation supplement slots with Newton ViewerRTX renders, relaxes supplement
+  float placement to remove large stretched paragraph gaps, records layout/visual verification,
+  and keeps all RTX visuals as exposition rather than new evidence.
+- [2026-06-04 ACCV Supplement AI Slot Visual Retake](2026-06-04-accv-supplement-ai-slot-visual-retake.md):
+  retakes the supplement AI-slot figures after visual review, switches strip composition from
+  center cropping to containment, and records paper-scale review evidence for the retaken slots.
 - [2026-06-03 ACCV Supplement Tutorial Atlas](2026-06-03-accv-supplement-tutorial-atlas.md):
   adds a separate ACCV supplement with tutorial-heavy derivations, supplement-only figures and
   tables, deterministic figure provenance, layout guards against duplicated main-paper artifacts,

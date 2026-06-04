@@ -1,0 +1,42 @@
+{
+  "claim_boundary": "Newton RTX supplement scene slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not whole-robot collision quality, and not safety certification.",
+  "figure_id": "supplement_predicate_sphere_rain",
+  "newton": {
+    "commit": "9f544c81e460",
+    "root": "external/newton"
+  },
+  "panel_count": 3,
+  "panels": [
+    {
+      "asset": "external_artifact/supplement_predicate_sphere_rain_01_probe_cloud.png",
+      "sha256": "dab37ba5625d0c49f19e6c648abde58656bcee121ba76c888d59fc48f324f8a4"
+    },
+    {
+      "asset": "external_artifact/supplement_predicate_sphere_rain_02_contact_bins.png",
+      "sha256": "d4567cf8483f96bf764f04f1354ffa97d41ed69a21e2bc2b5132a0992cb47fa3"
+    },
+    {
+      "asset": "external_artifact/supplement_predicate_sphere_rain_03_diagnostic_label.png",
+      "sha256": "eec5a588ce7e1892773edd6820c96cef944c61570e801de7f600cb9f4454d12f"
+    }
+  ],
+  "recipe": "newton_primitive_scene_rebuilt_for_supplement_viewer_rtx",
+  "renderer": "newton_viewer_rtx_ovrtx",
+  "rtx": {
+    "ovrtx_version": "0.3.0.312915",
+    "renderer": "newton_viewer_rtx_ovrtx"
+  },
+  "schema_version": 1,
+  "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_predicate_sphere_rain_slot.png",
+  "slot_composition": {
+    "source_panel_size": [
+      620,
+      620
+    ],
+    "tile_size": [
+      620,
+      760
+    ]
+  },
+  "slot_sha256": "da746cf05620af64bcc142c66020e20887fa2faac73a50778e2af571b990e0c2"
+}
