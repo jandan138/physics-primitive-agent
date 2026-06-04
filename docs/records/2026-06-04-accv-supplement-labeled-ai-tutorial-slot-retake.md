@@ -1,4 +1,4 @@
-# 2026-06-04 ACCV Supplement AI Tutorial Slot Retake
+# 2026-06-04 ACCV Supplement Labeled AI Tutorial Slot Retake
 
 ## Date
 
@@ -6,40 +6,39 @@
 
 ## Status
 
-Superseded
+Complete
 
 ## Changes
 
-- Replaced the program-drawn supplement tutorial slots for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8,
-  and Fig.11 with AI-generated academic tutorial slot strips.
-- Kept critical paper text outside the generated slot images: figure titles, panel labels,
-  callout text, captions, and claim-boundary text remain deterministic in the paper composer or
-  LaTeX.
-- Updated the tutorial slot sidecars to record the built-in image-generation source id, slot
-  hash, panel count, AI tutorial style, and per-slot normalized segment boundaries.
-- Changed the supplement figure composer to use sidecar segment boundaries before contain-scaling
-  each panel, instead of assuming that AI-generated wide strips are evenly divided.
-- Regenerated the six affected slot images, six sidecars, composed supplement PNG/PDF figures,
-  generated supplement manifest, and ACCV supplement PDF.
+- Retook the six supplement tutorial slot strips for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8, and
+  Fig.11 using AI-generated academic tutorial imagery with visible in-image labels.
+- Replaced the earlier text-free AI slot strips so the small images now carry short local labels
+  such as generator/package/check, COM/gate, link/body-attachment/merge-risk, source/generated
+  counts, suppression audit, and config/record/manifest/PDF provenance flow.
+- Preserved deterministic paper-owned text for figure titles, outer panel headers, callout boxes,
+  captions, and claim-boundary footer text.
+- Updated tutorial slot sidecars with the new built-in image-generation source ids, slot hashes,
+  labeled-panel recipe, panel roles, prompt summaries, and reviewed segment boundaries.
+- Regenerated the six affected supplement PNG/PDF figures and the ACCV supplement PDF.
 
 ## Visual Review
 
-- Local review inspected raw slot, composed figure, final PDF page, and dense page crop contact
-  sheets under the temporary review directory.
-- Local result: the AI-generated slots are visually more polished than the replaced program-drawn
-  diagrams; Fig.6, Fig.7, and Fig.8 are semantically distinct; Fig.8 no longer has edge-cut
-  markers after sidecar-guided segmenting; and final PDF pages show no obvious text overlap,
-  caption collision, or slot clipping.
-- Independent clean-room visual review inspected only the supplied review images. Reviewer
-  verdict: `WARN` only because the first dense QA crops cut into the figure titles; raw AI slots,
-  composed figures, and final PDF pages were all reported as `PASS`, with no commit-blocking
-  figure issue.
-- The QA-only Fig.8 and Fig.11 dense crops were re-exported with extra top padding after the
-  review warning; the paper figure assets and PDF were unchanged by that crop-only correction.
-- Independent code review found no blocking issue. Its low-risk finding was that sidecar claim
-  boundary validation accepted the weak phrase `not experimental evidence` alone; the loader and
-  tests now require all tutorial claim-boundary exclusion phrases, including benchmark,
-  deployment, manipulation, whole-robot collision-quality, and safety-certification exclusions.
+- Local raw-slot review inspected
+  `/tmp/ppa_labeled_slots_review/raw_labeled_slots_sheet.png`.
+- Local composed-figure review inspected
+  `/tmp/ppa_labeled_slots_review/composed_labeled_figures_sheet.png`.
+- Local paper-scale review inspected the rendered supplement PDF page sheet
+  `/tmp/ppa_labeled_slots_review/pdf_labeled_pages_sheet.png`.
+- Local dense-region review inspected
+  `/tmp/ppa_labeled_slots_review/pdf_labeled_figure_crops_sheet_v3.png`.
+- A first composed review found the Fig.5 strip segmentation too tight for the generated
+  `BODY`/`GATE` regions; the compound-body slot bounds were reset to thirds and the figure was
+  regenerated before PDF review.
+- Independent clean-room visual review inspected only the supplied images. Reviewer verdict:
+  `PASS`. The reviewer found all six groups visible and identifiable, the main in-image labels
+  useful, no obvious clipping or caption collision, and no retake requirement. The only residual
+  risk was that a few micro-labels in dense provenance/accounting panels are near the lower
+  readability limit.
 
 ## Verification
 
@@ -48,10 +47,9 @@ Superseded
   result: six sidecars written.
 - Supplement figure composition:
   `PYTHONPATH=$PWD/src:$PWD python -m primitive_collision_compiler.paper.accv_supplement_figures`;
-  result: `paper/shared/figures/generated/supplement/manifest.json` regenerated.
+  result: generated supplement figure manifest and six affected figure PNG/PDF files regenerated.
 - ACCV build:
-  `make -C paper accv-all`; result: main and supplement PDFs built, supplement page count remains
-  20.
+  `make -C paper accv-all`; result: `main.pdf` and `supplement.pdf` built.
 - Targeted sidecar and segment-bound tests:
   `PYTHONPATH=$PWD/src:$PWD python -m pytest tests/test_supplement_tutorial_2d_slots.py tests/test_accv_supplement.py::test_supplement_slot_manifest_accepts_2d_tutorial_slots tests/test_accv_supplement.py::test_supplement_slot_manifest_rejects_mismatched_2d_tutorial_sidecar tests/test_accv_supplement.py::test_supplement_slot_manifest_rejects_stale_2d_tutorial_sidecar_hash tests/test_accv_supplement.py::test_supplement_slot_manifest_rejects_stale_2d_tutorial_panel_count tests/test_accv_supplement.py::test_supplement_slot_manifest_rejects_bad_2d_tutorial_segment_bounds tests/test_accv_supplement.py::test_supplement_slot_manifest_rejects_weak_2d_tutorial_claim_boundary tests/test_accv_supplement.py::test_supplement_figure_composer_preserves_slot_segments_without_center_crop -q`;
   result: `11 passed`.
@@ -68,13 +66,12 @@ Superseded
   `rg -n "Underfull \\vbox|Overfull|LaTeX Warning" paper/venues/accv/build/supplement.log`;
   result: no matches, exit 1.
 - Provenance leak scan over the slot manifest, slot sidecars, generated supplement figure
-  manifest, and this record found no private absolute path prefix, user-name, repository-host, or
-  institution-name matches.
+  manifest, this record, the superseded AI tutorial record, and the record index found no private
+  absolute path prefix, user-name, repository-host, or institution-name matches.
 
 ## Artifacts
 
 - `src/primitive_collision_compiler/paper/supplement_tutorial_2d_slots.py`
-- `src/primitive_collision_compiler/paper/accv_supplement_figures.py`
 - `paper/shared/figures/assets/supplement_ai_slots/manifest.yaml`
 - `paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.png`
 - `paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.json`
@@ -89,27 +86,30 @@ Superseded
 - `paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.png`
 - `paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.json`
 - `paper/shared/figures/generated/supplement/manifest.json`
-- `paper/shared/figures/generated/supplement/*.png`
-- `paper/shared/figures/generated/supplement/*.pdf`
+- `paper/shared/figures/generated/supplement/supplement_candidate_lane_anatomy.png`
+- `paper/shared/figures/generated/supplement/supplement_candidate_lane_anatomy.pdf`
+- `paper/shared/figures/generated/supplement/supplement_compound_body_state_teaching.png`
+- `paper/shared/figures/generated/supplement/supplement_compound_body_state_teaching.pdf`
+- `paper/shared/figures/generated/supplement/supplement_franka_link_frames.png`
+- `paper/shared/figures/generated/supplement/supplement_franka_link_frames.pdf`
+- `paper/shared/figures/generated/supplement/supplement_generated_package_consumption.png`
+- `paper/shared/figures/generated/supplement/supplement_generated_package_consumption.pdf`
+- `paper/shared/figures/generated/supplement/supplement_franka_source_suppression.png`
+- `paper/shared/figures/generated/supplement/supplement_franka_source_suppression.pdf`
+- `paper/shared/figures/generated/supplement/supplement_provenance_flow.png`
+- `paper/shared/figures/generated/supplement/supplement_provenance_flow.pdf`
 - `paper/venues/accv/build/supplement.pdf`
-- `tests/test_supplement_tutorial_2d_slots.py`
-- `tests/test_accv_supplement.py`
 
 ## Claim Impact
 
 - No experimental, benchmark, deployment, real-world transfer, safety-certification,
   manipulation, or whole-robot collision-quality claims are added.
-- The AI-generated tutorial slots are explanatory review aids only. They do not replace Phase 0
+- The labeled AI tutorial slots are explanatory review aids only. They do not replace Phase 0
   evidence records, quantitative result manifests, or Newton diagnostic reports.
 - Claim boundaries remain aligned with `docs/reference/claim-boundaries.md`,
   `paper/shared/evidence/claims.yaml`, and dated Phase 0 records.
 
-## Superseded By
-
-- `docs/records/2026-06-04-accv-supplement-labeled-ai-tutorial-slot-retake.md` retakes the same
-  six tutorial slot strips with visible AI-generated in-image labels, while preserving the
-  sidecar-guided segmentation and claim-boundary constraints from this pass.
-
 ## Next Action
 
-- Treat the labeled AI tutorial slot retake as the current ACCV supplement slot state.
+- Continue using labeled AI tutorial slots as the current ACCV supplement state; retake only if a
+  later paper-scale visual review flags a concrete readability or clipping issue.

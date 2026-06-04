@@ -1,24 +1,24 @@
 {
   "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_compound_body_state_teaching",
-  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212c9beff081978949fca1a9528fc0",
+  "imagegen_source": "built_in_imagegen:ig_0c846f8ef4c4d1bf016a213b5a14788197a8fa6c7e9b842a5d",
   "panel_count": 3,
   "panels": [
     {
       "index": 1,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     },
     {
       "index": 2,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     },
     {
       "index": 3,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     }
   ],
-  "prompt_summary": "AI-generated text-free academic tutorial strip: primitive body states, aggregate body COM/inertia, and diagnostic consequence.",
-  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "prompt_summary": "AI-generated labeled academic tutorial strip: primitive parts, aggregate body COM/inertia, and diagnostic gate consequence.",
+  "recipe": "built_in_imagegen_labeled_panel_strip_selected_by_visual_review",
   "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_compound_body_state_teaching_slot.png",
@@ -26,12 +26,12 @@
     "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
     "segment_bounds_x": [
       0.0,
-      0.3524,
-      0.7038,
+      0.3333,
+      0.6667,
       1.0
     ]
   },
-  "slot_sha256": "f32cb3d212910362543f6fc08373998d7e4f8e25eac086415d4dcbb1e85e0b4b",
+  "slot_sha256": "7c8c279e55d12c3f0c3669aa88f957584717dd39506cb583261c581565ce2269",
   "source_records": [
     "docs/records/2026-05-26-accv-paper-visual-expansion-plan.md"
   ],

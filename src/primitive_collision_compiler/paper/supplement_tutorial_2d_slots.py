@@ -89,7 +89,7 @@ def _write_sidecar(spec: TutorialSlotSpec, slot_path: Path) -> Path:
         "title": spec.title,
         "renderer": TUTORIAL_2D_RENDERER,
         "style": "ai_generated_academic_2d_tutorial",
-        "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+        "recipe": "built_in_imagegen_labeled_panel_strip_selected_by_visual_review",
         "imagegen_source": spec.imagegen_source,
         "prompt_summary": spec.prompt_summary,
         "slot_asset": _portable_path(slot_path),
@@ -100,7 +100,7 @@ def _write_sidecar(spec: TutorialSlotSpec, slot_path: Path) -> Path:
         },
         "panel_count": spec.panel_count,
         "panels": [
-            {"index": index + 1, "role": "AI-generated text-free tutorial panel"}
+            {"index": index + 1, "role": "AI-generated labeled tutorial panel"}
             for index in range(spec.panel_count)
         ],
         "source_records": list(spec.source_records),
@@ -116,72 +116,72 @@ def _slot_specs() -> dict[str, TutorialSlotSpec]:
             figure_id="supplement_candidate_lane_anatomy",
             title="Candidate-lane anatomy",
             panel_count=3,
-            segment_bounds_x=(0.0, 0.3547, 0.6757, 1.0),
+            segment_bounds_x=(0.0, 0.3562, 0.6883, 1.0),
             prompt_summary=(
-                "AI-generated text-free academic tutorial strip: candidate lanes, abstract package "
-                "manifest, and diagnostic gate outcomes."
+                "AI-generated labeled academic tutorial strip: generator lanes, package "
+                "manifest, and diagnostic check outcomes."
             ),
-            imagegen_source="built_in_imagegen:ig_0b45743eae151d4e016a212c5fde108197aef0ac2b4daef3d0",
+            imagegen_source="built_in_imagegen:ig_0c846f8ef4c4d1bf016a213b14858c819780eedb0d8d4b7430",
             source_records=("paper/shared/evidence/results_manifest.yaml",),
         ),
         "supplement_generated_package_consumption": TutorialSlotSpec(
             figure_id="supplement_generated_package_consumption",
             title="Generated-package consumption check",
             panel_count=3,
-            segment_bounds_x=(0.0, 0.3457, 0.6515, 1.0),
+            segment_bounds_x=(0.0, 0.3044, 0.6144, 1.0),
             prompt_summary=(
-                "AI-generated text-free academic robotics tutorial strip: source inventory, "
-                "generated package replacement, and audit accounting."
+                "AI-generated labeled academic robotics tutorial strip: source inventory, "
+                "generated package replacement, and body/filter/pair counts."
             ),
-            imagegen_source="built_in_imagegen:ig_0b45743eae151d4e016a212d1dbfa08197bf8769011abfd480",
+            imagegen_source="built_in_imagegen:ig_0c846f8ef4c4d1bf016a213c073d0c8197a26fa77bd0686718",
             source_records=("docs/records/2026-05-26-generated-package-robot-task-probe.md",),
         ),
         "supplement_compound_body_state_teaching": TutorialSlotSpec(
             figure_id="supplement_compound_body_state_teaching",
             title="Compound body-state mechanism",
             panel_count=3,
-            segment_bounds_x=(0.0, 0.3524, 0.7038, 1.0),
+            segment_bounds_x=(0.0, 0.3333, 0.6667, 1.0),
             prompt_summary=(
-                "AI-generated text-free academic tutorial strip: primitive body states, aggregate "
-                "body COM/inertia, and diagnostic consequence."
+                "AI-generated labeled academic tutorial strip: primitive parts, aggregate "
+                "body COM/inertia, and diagnostic gate consequence."
             ),
-            imagegen_source="built_in_imagegen:ig_0b45743eae151d4e016a212c9beff081978949fca1a9528fc0",
+            imagegen_source="built_in_imagegen:ig_0c846f8ef4c4d1bf016a213b5a14788197a8fa6c7e9b842a5d",
             source_records=("docs/records/2026-05-26-accv-paper-visual-expansion-plan.md",),
         ),
         "supplement_franka_link_frames": TutorialSlotSpec(
             figure_id="supplement_franka_link_frames",
             title="Franka link ownership frames",
             panel_count=3,
-            segment_bounds_x=(0.0, 0.3535, 0.7019, 1.0),
+            segment_bounds_x=(0.0, 0.3016, 0.6516, 1.0),
             prompt_summary=(
-                "AI-generated text-free academic robotics tutorial strip: link-owned primitives, "
-                "body attachment cards, and cross-link merge rejection."
+                "AI-generated labeled academic robotics tutorial strip: link labels, "
+                "owner/frame attachment labels, and cross-link merge-risk label."
             ),
-            imagegen_source="built_in_imagegen:ig_0b45743eae151d4e016a212cd138488197b992c741d10dcb16",
+            imagegen_source="built_in_imagegen:ig_0c846f8ef4c4d1bf016a213bbed3a08197817a8c5772f23057",
             source_records=("docs/records/2026-05-26-link-aware-robot-package-generation.md",),
         ),
         "supplement_franka_source_suppression": TutorialSlotSpec(
             figure_id="supplement_franka_source_suppression",
             title="Source-shape suppression accounting",
             panel_count=3,
-            segment_bounds_x=(0.0, 0.3223, 0.7044, 1.0),
+            segment_bounds_x=(0.0, 0.3387, 0.6026, 1.0),
             prompt_summary=(
-                "AI-generated text-free academic tutorial strip: source layer inventory, source "
-                "shape suppression, and before/after audit diff."
+                "AI-generated labeled academic tutorial strip: before source shapes, source "
+                "shape replacement, and generated-count audit."
             ),
-            imagegen_source="built_in_imagegen:ig_0b45743eae151d4e016a212da5df088197b677a29f33e0fae5",
+            imagegen_source="built_in_imagegen:ig_0c846f8ef4c4d1bf016a213c5898788197b5d77a34a2c23c4b",
             source_records=("docs/records/2026-05-26-generated-package-robot-task-probe.md",),
         ),
         "supplement_provenance_flow": TutorialSlotSpec(
             figure_id="supplement_provenance_flow",
             title="Artifact and provenance flow",
             panel_count=4,
-            segment_bounds_x=(0.0, 0.2928, 0.5023, 0.7440, 1.0),
+            segment_bounds_x=(0.0, 0.2846, 0.4852, 0.7212, 1.0),
             prompt_summary=(
-                "AI-generated text-free academic tutorial strip: config inputs, evidence records, "
-                "figure manifest provenance, and supplement PDF output."
+                "AI-generated labeled academic tutorial strip: config inputs, evidence records, "
+                "manifest hashes, and supplement PDF audit output."
             ),
-            imagegen_source="built_in_imagegen:ig_0b45743eae151d4e016a212deb2c708197b80f60f71b9dd38f",
+            imagegen_source="built_in_imagegen:ig_0c846f8ef4c4d1bf016a213c9d8c1c8197b7c133e451163d8f",
             source_records=("docs/reference/claim-boundaries.md",),
         ),
     }

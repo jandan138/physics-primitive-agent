@@ -1,24 +1,24 @@
 {
   "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_candidate_lane_anatomy",
-  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212c5fde108197aef0ac2b4daef3d0",
+  "imagegen_source": "built_in_imagegen:ig_0c846f8ef4c4d1bf016a213b14858c819780eedb0d8d4b7430",
   "panel_count": 3,
   "panels": [
     {
       "index": 1,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     },
     {
       "index": 2,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     },
     {
       "index": 3,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     }
   ],
-  "prompt_summary": "AI-generated text-free academic tutorial strip: candidate lanes, abstract package manifest, and diagnostic gate outcomes.",
-  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "prompt_summary": "AI-generated labeled academic tutorial strip: generator lanes, package manifest, and diagnostic check outcomes.",
+  "recipe": "built_in_imagegen_labeled_panel_strip_selected_by_visual_review",
   "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_candidate_lane_anatomy_slot.png",
@@ -26,12 +26,12 @@
     "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
     "segment_bounds_x": [
       0.0,
-      0.3547,
-      0.6757,
+      0.3562,
+      0.6883,
       1.0
     ]
   },
-  "slot_sha256": "fcd8d8626e5815d9a38b1bd05bc85fbb18c47d2aa0c523d4710d312e79aa23bc",
+  "slot_sha256": "f896dd9cb899cf5de02bcbd950d631716cde7e9063fea1b71ca3177db77eeeca",
   "source_records": [
     "paper/shared/evidence/results_manifest.yaml"
   ],

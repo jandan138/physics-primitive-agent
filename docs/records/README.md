@@ -46,11 +46,14 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-04 ACCV Supplement Labeled AI Tutorial Slot Retake](2026-06-04-accv-supplement-labeled-ai-tutorial-slot-retake.md):
+  retakes the six ACCV supplement tutorial slot strips for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8,
+  and Fig.11 with AI-generated in-image labels, records paper-scale visual review, and keeps the
+  visuals as exposition rather than new evidence.
 - [2026-06-04 ACCV Supplement AI Tutorial Slot Retake](2026-06-04-accv-supplement-ai-tutorial-slot-retake.md):
-  replaces program-drawn supplement tutorial slots for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8,
-  and Fig.11 with AI-generated academic tutorial slots, records sidecar-guided strip segment
-  boundaries to avoid card-edge clipping, and keeps the visuals as exposition rather than new
-  evidence.
+  superseded text-free AI tutorial slot retake that replaced program-drawn supplement tutorial
+  slots for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8, and Fig.11 and introduced sidecar-guided strip
+  segment boundaries to avoid card-edge clipping.
 - [2026-06-04 ACCV Supplement 2D Tutorial Slot Pass](2026-06-04-accv-supplement-2d-tutorial-slot-pass.md):
   superseded deterministic 2D tutorial pass that replaced unclear or repeated supplement slot
   imagery for Fig.1, Fig.5, Fig.6, Fig.7, Fig.8, and Fig.11 with program-drawn academic tutorial

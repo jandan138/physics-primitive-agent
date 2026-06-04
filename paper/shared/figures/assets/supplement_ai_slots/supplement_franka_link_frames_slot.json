@@ -1,24 +1,24 @@
 {
   "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_franka_link_frames",
-  "imagegen_source": "built_in_imagegen:ig_0b45743eae151d4e016a212cd138488197b992c741d10dcb16",
+  "imagegen_source": "built_in_imagegen:ig_0c846f8ef4c4d1bf016a213bbed3a08197817a8c5772f23057",
   "panel_count": 3,
   "panels": [
     {
       "index": 1,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     },
     {
       "index": 2,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     },
     {
       "index": 3,
-      "role": "AI-generated text-free tutorial panel"
+      "role": "AI-generated labeled tutorial panel"
     }
   ],
-  "prompt_summary": "AI-generated text-free academic robotics tutorial strip: link-owned primitives, body attachment cards, and cross-link merge rejection.",
-  "recipe": "built_in_imagegen_text_free_panel_strip_selected_by_visual_review",
+  "prompt_summary": "AI-generated labeled academic robotics tutorial strip: link labels, owner/frame attachment labels, and cross-link merge-risk label.",
+  "recipe": "built_in_imagegen_labeled_panel_strip_selected_by_visual_review",
   "renderer": "built_in_imagegen_academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_franka_link_frames_slot.png",
@@ -26,12 +26,12 @@
     "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
     "segment_bounds_x": [
       0.0,
-      0.3535,
-      0.7019,
+      0.3016,
+      0.6516,
       1.0
     ]
   },
-  "slot_sha256": "a7b217201ecb4a0bd8b967495f4a98e797e3f4b58048507bc279b59429d8d458",
+  "slot_sha256": "1a0f6d26d7fdd23c451eac65f4c29bcc7d895f6fb76b9ed6f734f3172165d32c",
   "source_records": [
     "docs/records/2026-05-26-link-aware-robot-package-generation.md"
   ],
