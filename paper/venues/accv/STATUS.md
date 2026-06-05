@@ -11,7 +11,7 @@ ACCV 2026 format policy checked on 2026-05-26:
 - Main paper page limit: 14 pages including figures and tables, with unlimited reference-only pages.
 - Review mode: double blind; omit acknowledgements, institutional identifiers, author-identifying media, and author-identifying links.
 - External links: avoid links that expand submission content, compromise anonymity, or bypass page/media/deadline limits.
-- Current local build: `make -C paper accv` produces `paper/venues/accv/build/main.pdf` with 14 main-content pages plus one reference-only page after the Fig. 1 AI-slot visual pass and main-PDF appendix removal.
+- Current local build: `make -C paper accv` produces `paper/venues/accv/build/main.pdf` with 13 main-content pages plus three reference-only pages after the Fig. 1 AI-slot visual pass, reference expansion, main-PDF appendix removal, and main-text float compaction.
 - Supplement local build: `make -C paper accv-supp` produces `paper/venues/accv/build/supplement.pdf`; `make -C paper accv-all` builds the main ACCV PDF and the supplement together.
 - Review style: `preamble.tex` loads `accv` with `review`, `year=2026`, and placeholder `ID=*****`; replace the ID after OpenReview registration.
 

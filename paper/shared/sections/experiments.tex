@@ -1,20 +1,18 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We report the recorded five-asset Phase~0 slice and one Franka smoke asset.
-The experiments answer three bounded questions: when does package context change a geometry-plausible primitive, do generated baseline packages fail only after successful Newton mapping, and what extra ownership condition appears for articulated assets?
+The experiments test whether the proposed gate changes the story told by geometry alone.
+We use the recorded five-asset Phase~0 rigid slice and one Franka smoke asset to ask three questions: can package context flip an otherwise plausible primitive, can generated baseline packages fail only after successful Newton mapping, and what ownership condition appears once the asset is articulated?
 
 \subsection{Mechanism study: capped bed versus Franka cylinders}
 \label{sec:exp-mechanism}
 
+The first test isolates the paper's core failure mode: a primitive can be geometrically plausible and still become unacceptable only after it joins a package.
 For the recorded capped scope, the bed selected-cylinder package fails drop/settle with residual final speed about $0.082$\,m/s, while a recorded Franka cost-guided cylinder package passes with about $0.00071$\,m/s.
-The same target bed cylinder passes as an isolated primitive; the failure is a full-compound package effect.
+The same target bed cylinder passes as an isolated primitive, so the failing variable is package context rather than the cylinder shape alone.
 COM/inertia sensitivity is the strongest supported mechanism; mass alone and contact/floor are rejected as sole explanations in the recorded diagnostic checks.
 Figure~\ref{fig:bed-franka-mechanism} summarizes the mechanism evidence.
-The important point is not that cylinders are generally bad.
-The recorded Franka package contains small link-local cylinders and passes its bounded task smoke,
-while the bed case fails only when the large flat primitive participates in the full compound body.
-This supports the main separation between a candidate shape and an accepted simulation artifact.
+The resulting takeaway is narrow but important: the acceptance gate catches a package-level body-state failure that a per-primitive geometry check would accept.
 
 \begin{figure}[tbp]
   \centering
@@ -24,28 +22,27 @@ This supports the main separation between a candidate shape and an accepted simu
 \end{figure}
 
 \subsection{Diagnostic guard}
-An opt-in package body-state guard falls back only the flagged capped bed package while keeping the unflagged Franka cylinder package in the recorded Newton task smoke.
+The guard test asks whether the checker can reject the failing context without discarding every primitive package of the same family.
+In the recorded task path, the opt-in body-state guard falls back only the flagged capped bed package while keeping the unflagged Franka cylinder package in the Newton task smoke.
+This is the behavior the acceptance layer is meant to expose: a selective fallback with a diagnostic reason, rather than a global ban on a primitive type.
 
 \subsection{Collision-only throughput microbenchmark}
 In one bed-aligned pressure scene with 32 accepted box primitives versus 32 convex64 mesh proxies, native primitives report median $2.21\times$ generated contacts per collide call and about $5.3\%$ lower collision-only wall time.
-This is scoped collision-pipeline evidence, not a full-simulation speedup claim.
+This result gives a reason to keep accepted native primitives in the pipeline: after a package passes the gate, primitive structure can matter for collision throughput.
+The measurement remains a single collision-only pressure scene, so it motivates the acceptance-first design rather than a general speed claim.
 
 \subsection{Phase 0 rigid-asset diagnostic table}
-Table~\ref{tab:phase0-grscenes-rigid} summarizes the current scoped Phase~0 rigid run over five materialized GRScenes assets.
-The run records first-mesh bounding-primitive, CPD-style, and CoACD convex-mesh candidate lanes with Newton contact, drop/settle, stack-or-slide, and sphere-rain probes.
-It also records V-HACD runtime evidence for all five assets, with V-HACD probe failures on the container, contact-affordance, and stackable rows.
-We treat these V-HACD failures as recorded diagnostic outcomes: the packages are generated and mapped, but the Newton task probes reject them, illustrating why candidate generation and Newton task acceptance must be reported separately.
-It also includes one Franka link-aware package generation record, one Franka USD articulation smoke, and one generated-package Franka task smoke.
-It is not a complete Phase~0 benchmark: the asset set is small, robot generated-package checks currently cover only one Franka smoke asset, and the task suite does not cover manipulation or broad articulated dynamics.
+Table~\ref{tab:phase0-grscenes-rigid} moves from the mechanism case to a small multi-asset gate audit.
+The recorded Phase~0 rigid run covers five materialized GRScenes assets, first-mesh bounding primitives, CPD-style packages, CoACD convex-mesh candidates, V-HACD candidates, and Newton contact, drop/settle, stack-or-slide, and sphere-rain probes.
+The useful signal is not a win/loss ranking.
+V-HACD generates packages for all five assets, yet the container, contact-affordance, and stackable rows still contain probe failures after Newton mapping.
+This is exactly the distinction the method is designed to preserve: candidate availability is not task acceptance.
+The same report family also records one Franka link-aware package generation record, one Franka USD articulation smoke, and one generated-package Franka task smoke; broader benchmark and robot-operation claims remain outside this small slice.
 
-Figures~\ref{fig:phase0-overlays} and~\ref{fig:phase0-control-overlays} show why a table alone is insufficient.
-Each row starts from default/render mesh prims loaded through the repo-local USD mirror, then shows the
-candidate package geometry that the diagnostics consume.
-The container, contact-affordance, and stackable rows are especially informative: all three have V-HACD hull packages, so
-the later failures are not dependency gaps or missing-baseline artifacts.
-They are mapped collision packages that fail particular Newton probes.
-The keyboard row is retained as a precision negative control: routine probes pass, but the recorded
-policy still routes the asset to manual review rather than promoting it as a solved collider.
+Figures~\ref{fig:phase0-overlays} and~\ref{fig:phase0-control-overlays} make the audit legible.
+Each row starts from default/render mesh prims loaded through the repo-local USD mirror and then shows the candidate geometry consumed by the diagnostics.
+The container, contact-affordance, and stackable rows matter because the failed V-HACD lanes are present, mapped packages rather than dependency gaps.
+The keyboard row plays the opposite role: routine probes pass, but the precision policy still routes it to manual review, showing that the gate can preserve caution even without a red runtime cell.
 
 \begin{figure}[tbp]
   \centering
@@ -62,12 +59,9 @@ policy still routes the asset to manual review rather than promoting it as a sol
 \end{figure}
 
 Figure~\ref{fig:phase0-outcome-matrix} expands the table into the full rigid diagnostic matrix.
-The single-convex lane is intentionally visible as gray fallback cells.
-The green cells show that simple bounding packages can survive these smoke probes, but this is not
-a superiority claim: bounding boxes are coarse and can be inappropriate for precision or
-affordance-sensitive tasks.
-The red cells show the opposite failure mode: detailed decomposition can look geometrically
-plausible and still produce an unstable support, floor breach, or non-settled state.
+The matrix is useful because it keeps three different events visually separate: a package can pass, fail after mapping, or be routed away as fallback.
+Green cells show that simple packages can survive these smoke probes; red cells show that more detailed decompositions can still create unstable support, floor breach, or residual-motion labels.
+The point is not to crown a baseline, but to make the acceptance decision auditable.
 
 \begin{figure}[H]
   \centering
@@ -107,8 +101,7 @@ heights, and the right column summarizes the stack-or-slide probe.
 For the bowl, both drop/settle and stack/slide reject the V-HACD package.
 For the cylindrical contact prop and tray, the V-HACD stack/slide probe passes while drop/settle still rejects the
 package.
-That split is useful: the checker is not a blunt baseline filter.
-It localizes which physical task failed and leaves passing probes visible.
+That split is the central value of the checker: it localizes the physical question that failed while leaving passing probes visible.
 
 \begin{figure}[H]
   \centering
@@ -117,11 +110,10 @@ It localizes which physical task failed and leaves passing probes visible.
   \label{fig:phase0-collision-scenes}
 \end{figure}
 
-The collision-scene panels also show why the V-HACD failures carry useful evidence.
-If V-HACD had failed to run, the comparison would only show an engineering dependency gap.
+The collision-scene panels also explain why the V-HACD failures are informative rather than merely negative.
+If V-HACD had failed to run, the comparison would only expose a dependency gap.
 Here the generated packages exist, map into Newton shapes, and then fail named probes.
-This separates dependency failures from task-level rejection and motivates reporting probe-specific
-labels rather than a single geometry-generation success rate.
+The gate therefore turns a vague ``bad package'' into a task-level rejection.
 
 \FloatBarrier
 
@@ -141,11 +133,13 @@ The cup V-HACD package shows a different failure: the final height is close to t
 final speed still exceeds the settle gate.
 The tray V-HACD row is again different: the stack/slide probe accepts the package, while
 drop/settle rejects it for residual motion.
-This heterogeneity motivates reporting named probes instead of a single binary baseline score.
+The failure vocabulary is therefore more than bookkeeping: it tells a reviewer which physical assumption broke.
 
-\begin{table}[tbp]
+\begin{table}[!htbp]
   \centering
-  \footnotesize
+  \scriptsize
+  \setlength{\tabcolsep}{2.2pt}
+  \renewcommand{\arraystretch}{0.92}
   \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}>{\raggedright\arraybackslash}p{0.18\textwidth}>{\raggedright\arraybackslash}p{0.14\textwidth}>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.19\textwidth}@{}}
     \toprule
     Asset & Lane & Probe & Failure labels & Recorded symptom \\
@@ -170,12 +164,13 @@ This heterogeneity motivates reporting named probes instead of a single binary b
 \FloatBarrier
 
 \subsection{Franka articulation smoke}
-In the Franka smoke run, the USD smoke asset provides the articulated test case.
+The Franka smoke run adds a different kind of acceptance condition: for articulated assets, the package must preserve ownership before contact behavior is even meaningful.
+The USD smoke asset provides the articulated test case.
 The link-aware package generator detects 12 rigid-body links and 12 joint edges, emits 12 link-framed box primitives, and records zero cross-link merges.
 The \texttt{panda\_link8} primitive is an explicit meshless sentinel because that link has no mesh in the source USD mirror.
 The articulation smoke records joint-tree import, a short gravity hold, and a simple kinematic trajectory as passed.
 The generated-package task smoke separately suppresses source USD shapes, attaches all 12 generated package primitives to Newton bodies, records zero missing body links, and passes the same short hold/trajectory probe.
-This is generated-package consumption evidence for one Franka smoke asset, not whole-robot collider quality or manipulation evidence.
+This shows package consumption for one Franka smoke asset; contact-operation and manipulation behavior require broader robot probes.
 
 \begin{figure}[tbp]
   \centering
@@ -185,10 +180,11 @@ This is generated-package consumption evidence for one Franka smoke asset, not w
 \end{figure}
 
 Primitive packages for articulated assets must preserve link identity, because a visually plausible
-whole-robot proxy can be unusable if it merges geometry across joints.
+robot proxy can be unusable if it merges geometry across joints.
 The link-boundary check therefore runs before task execution: every primitive must
 have one source link, use that link as its frame, and avoid cross-link merges.
 The subsequent generated-package task smoke then records package consumption by Newton bodies with
 source USD collision shapes suppressed.
-The recorded task has a short gravity hold and a simple trajectory only; it is a consumption and
-boundary smoke, not manipulation evidence.
+The recorded task is intentionally short, but it completes the paper's accounting chain: source link
+identity, generated primitive ownership, Newton body attachment, and task consumption are all visible
+as separate checks.

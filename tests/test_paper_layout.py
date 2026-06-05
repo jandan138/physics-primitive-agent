@@ -211,7 +211,7 @@ def test_accv_status_and_main_pdf_boundary_are_current() -> None:
     experiments = read_text(PAPER / "shared/sections/experiments.tex")
 
     assert "at 7 pages" not in status
-    assert "14 main-content pages" in status
+    assert "13 main-content pages" in status
     assert "reference-only page" in status
     assert r"\raggedbottom" in main
     assert r"\setlength{\@fptop}{0pt}" in main
@@ -224,7 +224,9 @@ def test_accv_main_avoids_forced_experiment_table_floats() -> None:
     experiments = read_text(PAPER / "shared/sections/experiments.tex")
 
     assert r"\begin{table}[H]" not in experiments
-    assert experiments.count(r"\begin{table}[tbp]") >= 2
+    assert experiments.count(r"\begin{table}[tbp]") >= 1
+    assert r"\begin{table}[!htbp]" in experiments
+    assert r"\renewcommand{\arraystretch}{0.92}" in experiments
 
 
 def test_accv_main_keeps_experiment_float_groups_bounded() -> None:

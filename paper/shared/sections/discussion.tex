@@ -1,35 +1,21 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\paragraph{Why geometry-only selection fails.}
-The bed/Franka cylinder record shows that per-primitive geometric success is insufficient: package context changes compound body state and simulation labels.
-The Phase~0 overlays extend the same lesson to multi-asset baselines.
-V-HACD, CoACD, CPD-style packages, and bounding primitives are all useful candidate sources, but
-none of them is the acceptance criterion.
-The compiler needs the diagnostic layer because the failure can appear only after the package is
-placed in a task scene with gravity, contact, support, and robot-body ownership.
+\paragraph{Why geometry-only selection is insufficient.}
+The bed/Franka cylinder record shows that per-primitive geometric success is insufficient once package context changes compound body state and simulation labels.
+The Phase~0 overlays extend the same lesson across candidate lanes: V-HACD, CoACD, CPD-style packages, and bounding primitives can all be useful proposals, but none is the acceptance criterion.
+The proposed pipeline needs the diagnostic layer because the failure can appear only after the package is placed in a task scene with gravity, contact, support, and robot-body ownership.
 
-\paragraph{Performance versus safety.}
+\paragraph{Performance versus diagnostic acceptance.}
 The contact-throughput microbenchmark motivates keeping accepted native primitives, but throughput alone cannot override a failed body-state or articulation gate.
 This is why the throughput result remains scoped as a collision-only hook.
 It motivates primitive packages after acceptance; it does not justify selecting a primitive package
 that fails drop/settle, stack/slide, or link-boundary checks.
 
 \paragraph{Visual evidence boundaries.}
-The new figures are generated from recorded reports and repo-local USD mirrors.
-They help reviewers inspect candidate packages and probe scenes, but they do not add unrecorded
-runtime evidence.
-The source GRScenes assets are treated as internal evidence until media and license status are
-cleared for public submission.
-For that reason, the paper uses diagnostic mesh/package overlays and scene schematics rather than
-texture-heavy marketing renders.
+The figures are deterministic views of recorded packages and probes: they help reviewers inspect the artifact path, but they do not add unrecorded runtime evidence.
 
 \paragraph{Limitations.}
-We do not claim a production compiler, calibrated default selector, validated COM/inertia repair, broad cylinder stability, whole-robot manipulation performance, deployment readiness, real-world transfer, or safety certification.
-The V-HACD failures are diagnostic rejections under the scoped Phase~0 configuration, not evidence of broad V-HACD inferiority.
-The Franka generated-package result is one consumption smoke with generated self-collision pairs disabled for reproducibility, not contact-operation or manipulation evidence.
-Future benchmark claims require broader generated-package robot task probes and broader multi-asset paired baselines.
-The current rigid suite has five assets, so it supports the ACCV proof-point claim about the
-checker loop but not a benchmark-superiority claim.
-The current robot suite has one Franka smoke asset, so it supports link-aware package consumption
-evidence but not whole-robot performance claims.
+The current evidence supports a diagnostic checker loop, a recorded bed/Franka body-state mechanism case, a narrow collision-only performance hook, a five-asset rigid Phase~0 gate audit, and one Franka generated-package consumption smoke.
+It does not yet support a production compiler, calibrated default selector, validated COM/inertia repair, broad cylinder stability, broad benchmark superiority, robot manipulation performance, deployment readiness, real-world transfer, or safety certification.
+Future work should broaden paired asset suites, add generated-package robot task probes, and test contact-operation settings before stronger benchmark or robot-operation claims are made.

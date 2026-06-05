@@ -1,7 +1,7 @@
 \begin{abstract}
 Automatic primitive collider generation can emit plausible packages that still fail inside a physics engine: compound mass properties, contact behavior, and robot articulation constraints are not visible from mesh fit alone.
-We study a \simchecked{} acceptance layer for primitive collider generation in Newton workflows that treats candidate packages as safety-affecting artifacts until named diagnostics accept, reject, or route them to fallback.
-CPD-style primitive decomposition and convex decomposition methods remain candidate generators and baselines; our contribution is the downstream acceptance layer that closes the loop with executable simulation checks.
+We study a \simchecked{} acceptance layer for Newton workflows that treats each generated package as a hypothesis until named diagnostics accept, reject, or route it to fallback.
+CPD-style primitive decomposition and convex decomposition methods remain candidate generators and baselines; our contribution is the downstream gate that closes the loop with executable simulation checks.
 Recorded evidence on capped bed and Franka assets shows a geometry-passing bed cylinder can fail drop/settle only in a full compound package because of body-state sensitivity, while smaller Franka cylinder packages pass under their recorded gates.
 A scoped collision-only microbenchmark on the bed asset reports $2.21\times$ higher generated-contact throughput for accepted Newton-native boxes than for same-count convex-mesh proxies in one pressure scene.
 A scoped Phase~0 diagnostic run records V-HACD candidate packages that generate but fail named Newton probes on three assets, and one Franka generated-package task smoke where all 12 link-aware primitives are consumed by Newton.
