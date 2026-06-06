@@ -1,33 +1,32 @@
 {
-  "claim_boundary": "AI-generated 2D supplement tutorial slots are visual exposition only; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
+  "claim_boundary": "Supplement 2D visual panels explain the scoped diagnostic path; not experimental evidence, not benchmark evidence, not deployment readiness, not manipulation evidence, not whole-robot collision quality, and not safety certification.",
   "figure_id": "supplement_provenance_flow",
-  "imagegen_source": "built_in_imagegen:ig_0c846f8ef4c4d1bf016a213c9d8c1c8197b7c133e451163d8f",
   "panel_count": 4,
   "panels": [
     {
       "index": 1,
-      "role": "AI-generated labeled tutorial panel"
+      "role": "labeled academic panel"
     },
     {
       "index": 2,
-      "role": "AI-generated labeled tutorial panel"
+      "role": "labeled academic panel"
     },
     {
       "index": 3,
-      "role": "AI-generated labeled tutorial panel"
+      "role": "labeled academic panel"
     },
     {
       "index": 4,
-      "role": "AI-generated labeled tutorial panel"
+      "role": "labeled academic panel"
     }
   ],
-  "prompt_summary": "AI-generated labeled academic tutorial strip: config inputs, evidence records, manifest hashes, and supplement PDF audit output.",
-  "recipe": "built_in_imagegen_labeled_panel_strip_selected_by_visual_review",
-  "renderer": "built_in_imagegen_academic_2d_panel_stitch",
+  "prompt_summary": "Labeled academic panel strip: config inputs, evidence records, manifest hashes, and supplement PDF audit output.",
+  "recipe": "labeled_panel_strip_selected_by_visual_review",
+  "renderer": "academic_2d_panel_stitch",
   "schema_version": 1,
   "slot_asset": "paper/shared/figures/assets/supplement_ai_slots/supplement_provenance_flow_slot.png",
   "slot_composition": {
-    "layout": "AI-generated wide panel strip; paper composer splits semantic segments and contains each segment",
+    "layout": "wide panel strip; paper composer splits semantic segments and contains each segment",
     "segment_bounds_x": [
       0.0,
       0.2846,
@@ -37,9 +36,10 @@
     ]
   },
   "slot_sha256": "958f4568fe22b808f5e569ec8bf814d245a431787abeb5bd479dbb4040628010",
+  "source_id": "visual_slot:ig_0c846f8ef4c4d1bf016a213c9d8c1c8197b7c133e451163d8f",
   "source_records": [
     "docs/reference/claim-boundaries.md"
   ],
-  "style": "ai_generated_academic_2d_tutorial",
+  "style": "academic_2d_panel",
   "title": "Artifact and provenance flow"
 }

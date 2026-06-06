@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import numpy as np
 import pytest
@@ -768,105 +768,85 @@ def test_save_mechanism_diagnostic_from_rendered_panel_uses_single_visual_plate(
     assert saved_sizes == [(12.2, 3.25)]
 
 
-def test_save_mechanism_diagnostic_invokes_renderer_when_available(
+def test_save_mechanism_diagnostic_uses_ai_slot_even_when_renderer_available(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     import matplotlib
 
     matplotlib.use("Agg")
     from matplotlib import pyplot as plt
-
-    calls: list[str] = []
-    fake_root = tmp_path / "newton-render"
-    (fake_root / "src/newton_render/render").mkdir(parents=True)
-    (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
-
-    def fake_run(**kwargs: Any) -> Path:
-        calls.append(kwargs["recipe"])
-        out = kwargs["output_png"]
-        out.parent.mkdir(parents=True, exist_ok=True)
-        plt.imsave(out, np.ones((100, 160, 3)))
-        out.with_suffix(".json").write_text(
-            json.dumps(
-                {
-                    "recipe": kwargs["recipe"],
-                    "output_png_sha256": "fake-panel-sha",
-                    "input_hashes": {"scene.json": "fake-scene-sha"},
-                    "source_claim_boundary_note": "Diagnostic rendering; not a new Newton run.",
-                    "mechanism_visual_mode": "subscene_status_scene",
-                    "rendered_component_ids": ["bed_full_package_fail"],
-                    "subscene_ids": ["bed_full_package_fail"],
-                    "status_label_layout": {"entries": [{"key": "failure"}]},
-                }
-            ),
-            encoding="utf-8",
-        )
-        return out
-
-    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
-    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
-
-    figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
-
-    assert calls == ["mechanism_diagnostic_scene"]
-    assert figure.path.is_file()
-    assert figure.renderer_metadata["recipe"] == "mechanism_diagnostic_scene"
-    assert "src/newton_render/render/paper_diagnostic_scenes.py" in figure.renderer_metadata["renderer_source_hashes"]
-
-
-def test_save_mechanism_diagnostic_falls_back_without_renderer(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    import matplotlib
-
-    matplotlib.use("Agg")
-    from matplotlib import pyplot as plt
-
-    monkeypatch.setattr(accv_visuals, "_phase0_newton_render_root", lambda: None)
-    monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: None)
-    saved_axes_counts: list[int] = []
-    saved_sizes: list[tuple[float, float]] = []
-    saved_titles: list[list[str]] = []
-
-    def capture_save(fig, path):
-        saved_axes_counts.append(len(fig.axes))
-        saved_sizes.append(tuple(float(value) for value in fig.get_size_inches()))
-        saved_titles.append([axis.get_title() for axis in fig.axes])
-        fig.savefig(path)
-
-    monkeypatch.setattr(accv_visuals, "_save_pdf", capture_save)
-
-    figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
-
-    assert figure.path.is_file()
-    assert figure.evidence == "2026-05-22 cylinder mechanism records"
-    assert saved_axes_counts == [1]
-    assert saved_sizes == [(12.2, 3.25)]
-    assert saved_titles == [["Mechanism diagnostic: package context matters"]]
-    assert "Recorded audit checks" not in saved_titles[0]
-
-
-def test_save_mechanism_diagnostic_raises_for_explicit_renderer_failure(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    import matplotlib
-
-    matplotlib.use("Agg")
-    from matplotlib import pyplot as plt
+    import primitive_collision_compiler.paper.fig2_mechanism_ai_slot as fig2_ai_slot
 
     fake_root = tmp_path / "newton-render"
     (fake_root / "src/newton_render/render").mkdir(parents=True)
     (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
 
-    monkeypatch.setenv("NEWTON_RENDER_ROOT", str(fake_root))
+    compose_calls: list[dict[str, Any]] = []
+
+    def fake_compose(output_path: Path, *, metrics: Mapping[str, Any]) -> dict[str, Any]:
+        Path(output_path).write_bytes(b"%PDF-1.4\n")
+        Path(output_path).with_suffix(".png").write_bytes(b"png")
+        compose_calls.append(dict(metrics))
+        return {"mode": "visual_composition", "composer": "fake-fig2-composer"}
+
     monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+    monkeypatch.setattr(
+        accv_visuals,
+        "_run_newton_render_paper_scene",
+        lambda **kwargs: pytest.fail("Fig.2 should not call the old Newton renderer"),
+    )
+    monkeypatch.setattr(fig2_ai_slot, "compose_fig2_mechanism_ai_slot", fake_compose)
 
-    def fake_run(**kwargs: Any) -> Path:
-        raise RuntimeError("renderer failed")
+    figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
 
-    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+    assert compose_calls
+    assert figure.path.is_file()
+    assert figure.renderer_metadata["mode"] == "visual_composition"
+    assert "Mechanism diagnostic" in figure.evidence
 
-    with pytest.raises(RuntimeError, match="renderer failed"):
+
+def test_save_mechanism_diagnostic_records_ai_slot_metadata(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+    import primitive_collision_compiler.paper.fig2_mechanism_ai_slot as fig2_ai_slot
+
+    def fake_compose(output_path: Path, *, metrics: Mapping[str, Any]) -> dict[str, Any]:
+        Path(output_path).write_bytes(b"%PDF-1.4\n")
+        return {
+            "mode": "visual_composition",
+            "composer": "primitive_collision_compiler.paper.fig2_mechanism_ai_slot",
+            "claim_boundary": "Fig.2 visual panels explain the recorded mechanism; not experimental evidence.",
+        }
+
+    monkeypatch.setattr(fig2_ai_slot, "compose_fig2_mechanism_ai_slot", fake_compose)
+
+    figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
+
+    assert figure.path.is_file()
+    assert figure.renderer_metadata["composer"] == "primitive_collision_compiler.paper.fig2_mechanism_ai_slot"
+    assert "not experimental evidence" in figure.renderer_metadata["claim_boundary"]
+    assert "paper/shared/evidence/results_manifest.yaml" in figure.source_records
+
+
+def test_save_mechanism_diagnostic_propagates_ai_slot_composer_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+    import primitive_collision_compiler.paper.fig2_mechanism_ai_slot as fig2_ai_slot
+
+    def fake_compose(output_path: Path, *, metrics: Mapping[str, Any]) -> dict[str, Any]:
+        raise RuntimeError("visual composer failed")
+
+    monkeypatch.setattr(fig2_ai_slot, "compose_fig2_mechanism_ai_slot", fake_compose)
+
+    with pytest.raises(RuntimeError, match="visual composer failed"):
         accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
 
 
@@ -907,27 +887,36 @@ def test_paper_scene_newton_render_root_raises_for_explicit_missing_recipe(
         accv_visuals._paper_scene_newton_render_root()
 
 
-def test_save_mechanism_diagnostic_raises_when_auto_renderer_invocation_fails(
+def test_save_mechanism_diagnostic_ignores_stale_auto_renderer_failure(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     import matplotlib
 
     matplotlib.use("Agg")
     from matplotlib import pyplot as plt
+    import primitive_collision_compiler.paper.fig2_mechanism_ai_slot as fig2_ai_slot
 
     fake_root = tmp_path / "newton-render"
     (fake_root / "src/newton_render/render").mkdir(parents=True)
     (fake_root / "src/newton_render/render/paper_diagnostic_scenes.py").write_text("", encoding="utf-8")
 
     monkeypatch.setattr(accv_visuals, "_paper_scene_newton_render_root", lambda: fake_root)
+    monkeypatch.setattr(
+        accv_visuals,
+        "_run_newton_render_paper_scene",
+        lambda **kwargs: pytest.fail("Fig.2 should ignore the stale auto-renderer path"),
+    )
 
-    def fake_run(**kwargs: Any) -> Path:
-        raise RuntimeError("auto renderer failed")
+    def fake_compose(output_path: Path, *, metrics: Mapping[str, Any]) -> dict[str, Any]:
+        Path(output_path).write_bytes(b"%PDF-1.4\n")
+        return {"mode": "visual_composition"}
 
-    monkeypatch.setattr(accv_visuals, "_run_newton_render_paper_scene", fake_run)
+    monkeypatch.setattr(fig2_ai_slot, "compose_fig2_mechanism_ai_slot", fake_compose)
 
-    with pytest.raises(RuntimeError, match="auto renderer failed"):
-        accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
+    figure = accv_visuals._save_mechanism_diagnostic(tmp_path, plt)
+
+    assert figure.path.is_file()
+    assert figure.renderer_metadata["mode"] == "visual_composition"
 
 
 def test_save_franka_task_scene_from_rendered_panel_creates_pdf(tmp_path: Path) -> None:

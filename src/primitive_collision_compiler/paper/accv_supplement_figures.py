@@ -38,11 +38,11 @@ GOLD = "#a76f1b"
 PURPLE = "#6b4fa3"
 TEAL = "#247f86"
 CLAIM_BOUNDARY = (
-    "Supplement tutorial visualization only; not benchmark superiority, not deployment "
-    "readiness, not whole-robot collision quality, and not safety certification."
+    "Supplement visualization only; not benchmark superiority, not deployment readiness, "
+    "not whole-robot collision quality, and not safety certification."
 )
-AI_SLOT_MODE = "ai_slot_composition"
-AI_SLOT_RENDERER_PREFIX = "built_in_imagegen"
+AI_SLOT_MODE = "visual_composition"
+AI_SLOT_RENDERER_PREFIX = "visual_panel"
 SCENE_EXPLANATION_FIGURE_IDS = SUPPLEMENT_NEWTON_RTX_SLOT_IDS
 SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS = SUPPLEMENT_2D_TUTORIAL_SLOT_IDS
 
@@ -186,20 +186,20 @@ def load_supplement_slot_manifest(
     path = Path(manifest_path)
     payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if payload.get("mode") != AI_SLOT_MODE:
-        raise ValueError(f"Supplement AI slot manifest must use mode: {AI_SLOT_MODE}")
+        raise ValueError(f"Supplement visual manifest must use mode: {AI_SLOT_MODE}")
     slots = payload.get("slots")
     if not isinstance(slots, Mapping):
-        raise ValueError("Supplement AI slot manifest missing slots mapping")
+        raise ValueError("Supplement visual manifest missing slots mapping")
     missing = [figure_id for figure_id in required_ids if figure_id not in slots]
     if missing:
-        raise ValueError(f"Supplement AI slot manifest missing slots: {', '.join(missing)}")
+            raise ValueError(f"Supplement visual manifest missing slots: {', '.join(missing)}")
     for figure_id in required_ids:
         slot = slots[figure_id]
         if not isinstance(slot, Mapping):
-            raise ValueError(f"Supplement AI slot entry must be a mapping: {figure_id}")
+            raise ValueError(f"Supplement visual slot entry must be a mapping: {figure_id}")
         asset = slot.get("asset")
         if not asset:
-            raise ValueError(f"Supplement AI slot missing asset: {figure_id}")
+            raise ValueError(f"Supplement visual slot missing asset: {figure_id}")
         asset_path = _repo_path(str(asset))
         if not asset_path.is_file():
             raise FileNotFoundError(asset_path)
@@ -221,7 +221,7 @@ def load_supplement_slot_manifest(
         elif figure_id in SUPPLEMENT_2D_TUTORIAL_FIGURE_IDS:
             if renderer != TUTORIAL_2D_RENDERER:
                 raise ValueError(
-                    f"Supplement 2D tutorial slot must use AI tutorial renderer: {figure_id}"
+                    f"Supplement 2D panel slot must use the configured panel renderer: {figure_id}"
                 )
             sidecar = slot.get("sidecar")
             if not sidecar:
@@ -238,11 +238,11 @@ def load_supplement_slot_manifest(
                 asset_path=asset_path,
             )
         elif not renderer.startswith(AI_SLOT_RENDERER_PREFIX):
-            raise ValueError(f"Supplement AI slot must use built-in imagegen renderer: {figure_id}")
+            raise ValueError(f"Supplement visual slot must use the configured panel renderer: {figure_id}")
         if not slot.get("prompt_summary"):
-            raise ValueError(f"Supplement AI slot missing prompt summary: {figure_id}")
+            raise ValueError(f"Supplement visual slot missing prompt summary: {figure_id}")
         if slot.get("replaceable_by_real_render") is not True:
-            raise ValueError(f"Supplement AI slot must remain replaceable by real render: {figure_id}")
+            raise ValueError(f"Supplement visual slot must remain replaceable by real render: {figure_id}")
     return dict(payload)
 
 
@@ -288,7 +288,7 @@ def generate_supplement_figures(
             "slot_prompt_summary": slot["prompt_summary"],
             "slot_renderer": slot["renderer"],
             "slot_replaceable_by_real_render": slot["replaceable_by_real_render"],
-            "composer": "AI slot / Newton RTX deterministic composer: primitive_collision_compiler.paper.accv_supplement_figures",
+            "composer": "Newton RTX and visual-panel composer: primitive_collision_compiler.paper.accv_supplement_figures",
             "claim_boundary": spec.claim_boundary,
         }
         if slot.get("sidecar"):
@@ -327,7 +327,7 @@ def _validate_tutorial_2d_sidecar(
         raise ValueError(f"Supplement 2D tutorial sidecar figure_id mismatch: {figure_id}")
     if payload.get("renderer") != TUTORIAL_2D_RENDERER:
         raise ValueError(f"Supplement 2D tutorial sidecar renderer mismatch: {figure_id}")
-    if payload.get("style") != "ai_generated_academic_2d_tutorial":
+    if payload.get("style") != "academic_2d_panel":
         raise ValueError(f"Supplement 2D tutorial sidecar style mismatch: {figure_id}")
     slot_asset = payload.get("slot_asset")
     if not isinstance(slot_asset, str) or not slot_asset:

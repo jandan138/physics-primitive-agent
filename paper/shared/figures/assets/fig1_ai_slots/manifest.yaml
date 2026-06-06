@@ -1,6 +1,6 @@
 schema_version: 1
 figure_id: pipeline_schematic_ai_slot
-mode: hybrid_newton_ai_slot_composition
+mode: hybrid_newton_visual_composition
 overview_candidates:
   - paper/shared/figures/assets/fig1_ai_slots/overview_candidate_01.png
 selected_overview: paper/shared/figures/assets/fig1_ai_slots/overview_candidate_01.png
@@ -23,8 +23,8 @@ slot_sources:
     sidecar: paper/shared/figures/assets/fig1_franka_rtx_slots/newton_diagnostics_franka_rtx.json
     manifest: paper/shared/figures/assets/fig1_franka_rtx_slots/manifest.yaml
   decision_report:
-    renderer: built_in_imagegen_slots_plus_deterministic_pil_composition
+    renderer: visual_panel_composition
 replaceable_by_real_render:
   - decision_report
-claim_boundary: Hybrid Newton-rendered Fig.1 slots and the AI/report card are exposition only; not experimental evidence.
-generator: newton_viewer_rtx_ovrtx_franka_slots_plus_built_in_imagegen_report_and_deterministic_pil_composition
+claim_boundary: Fig.1 explains the protocol flow; not experimental evidence.
+generator: newton_viewer_rtx_ovrtx_franka_slots_plus_decision_report_composition

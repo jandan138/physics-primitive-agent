@@ -39,52 +39,33 @@
       ]
     },
     {
-      "evidence": "newton-render diagnostic scene reconstruction + 2026-05-22 cylinder mechanism records",
+      "evidence": "Mechanism diagnostic; quantitative evidence remains in 2026-05-22 cylinder mechanism records",
       "id": "bed_franka_mechanism_diagnostic",
       "path": "paper/shared/figures/generated/bed_franka_mechanism_diagnostic.pdf",
       "renderer_metadata": {
-        "recipe": "mechanism_diagnostic_scene",
-        "renderer_source_hashes": {
-          "src/newton_render/figures/engine.py": "da08c3decb0f1de3b766f938cf56e64902d1cf5bc5c337e79890b8dc9a8a1655",
-          "src/newton_render/render/paper_diagnostic_scenes.py": "11788501cacb4284d0a316b52e565709c4ed1105a8b91508085017d3477add6d"
+        "claim_boundary": "Fig.2 visual panels explain the recorded mechanism; not experimental evidence, not benchmark evidence, not broad cylinder evidence, and not safety certification.",
+        "composer": "primitive_collision_compiler.paper.fig2_mechanism_ai_slot",
+        "manifest": "paper/shared/figures/assets/fig2_mechanism_ai_slots/manifest.yaml",
+        "mode": "visual_composition",
+        "output_size_px": [
+          2400,
+          1280
+        ],
+        "png_sidecar": "paper/shared/figures/generated/bed_franka_mechanism_diagnostic.png",
+        "replaceable_by_real_render": [
+          "isolated_target_pass",
+          "full_package_fail",
+          "mechanism_audit"
+        ],
+        "slot_prompt_summary": {
+          "full_package_fail": "Newton RTX-style text-free bed collision package with transparent cyan proxies and a muted-red highlighted capsule diagnostic failure cue.",
+          "isolated_target_pass": "Newton RTX-style text-free isolated capsule/cylinder primitive on a light simulator floor, generated with safe padding for contain placement.",
+          "mechanism_audit": "Newton RTX-style text-free package body-state audit with collider proxies, offset COM marker, coordinate axes, diagnostic rays, and inertia ellipsoid."
         },
-        "sidecar": {
-          "claim_boundary_note": "Diagnostic scene recipe for simulation-checked primitive collider packages; not compiler functionality, benchmark superiority, deployment readiness, or safety certification.",
-          "figure_id": "bed_franka_mechanism_diagnostic",
-          "input_hashes": {
-            "meta.yaml": "7c5bf558962ae3ee0011201793ccf4ee7e7dbc55666274ec4e51cc03be701952",
-            "scene.json": "cb2d61dace4395c04eae1fff53911eb0d296b66dc17ba93989bd3fd3f99e3bc9"
-          },
-          "mechanism_visual_mode": "subscene_status_scene",
-          "output_png_sha256": "56572f55d9ff60c899cfcc12ff16a6b8107c31d3bd7d0a47d5c19bce3a4e8f84",
-          "paper_readability": {
-            "annotation_scale": "large_paper_panel",
-            "label_contrast": "bold_paper_labels",
-            "tight_crop": true
-          },
-          "recipe": "mechanism_diagnostic_scene",
-          "render_quality": {
-            "default_zoom": 1.38,
-            "dpi": 260,
-            "ground_extent": 1.55
-          },
-          "rendered_component_ids": [
-            "bed_full_package_fail",
-            "isolated_target_pass",
-            "franka_link_local_pass"
-          ],
-          "source_claim_boundary_note": "Diagnostic rendering; not a new Newton run.",
-          "status_label_layout": {
-            "entries": [],
-            "font_size": 7.4,
-            "mode": "stacked_top_right",
-            "title_visible": false
-          },
-          "subscene_ids": [
-            "bed_full_package_fail",
-            "isolated_target_pass",
-            "franka_link_local_pass"
-          ]
+        "slot_sha256": {
+          "full_package_fail": "01c3af4ff0cb00a5698d6d23e26a0c29602a8494e806efcf01305b6db2487285",
+          "isolated_target_pass": "2edf704e7af75b867e0d35ede5829860541aad37fce5bae59f2f750b2dec914d",
+          "mechanism_audit": "40fbbd8bcfe8c5abb62e25e33b80caea84bc705173a575495c18965df84f524d"
         }
       },
       "source_records": [

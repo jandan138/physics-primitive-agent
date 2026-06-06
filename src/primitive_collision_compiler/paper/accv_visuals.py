@@ -1163,38 +1163,18 @@ def _outcome_matrix_title() -> str:
 def _save_mechanism_diagnostic(output: Path, plt: Any) -> FigureOutput:
     entry = _load_result_entry("bed_franka_cylinder_mechanism")
     metrics = entry.get("metrics") or {}
-    render_root = _paper_scene_newton_render_root()
-    if render_root is not None:
-        bundle_dir = _write_paper_scene_bundle(
-            REPO_ROOT / "reports/generated/accv_paper_scene_bundles/bed_franka_mechanism_diagnostic",
-            figure_id="bed_franka_mechanism_diagnostic",
-            recipe="mechanism_diagnostic_scene",
-            scene_payload=_mechanism_scene_payload(metrics),
-        )
-        panel = _run_newton_render_paper_scene(
-            newton_render_root=render_root,
-            bundle_dir=bundle_dir,
-            output_png=REPO_ROOT / "reports/generated/accv_paper_scene_panels/bed_franka_mechanism_diagnostic.png",
-            recipe="mechanism_diagnostic_scene",
-        )
-        return _save_mechanism_diagnostic_from_rendered_panel(
-            panel,
-            output,
-            plt,
-            renderer_metadata=_paper_scene_renderer_metadata(render_root, panel),
-        )
-
-    fig, ax = plt.subplots(figsize=(12.2, 3.25), constrained_layout=True)
-    _draw_mechanism_scene(ax, metrics, plt)
-    _draw_mechanism_summary_badges(ax, metrics)
     path = output / "bed_franka_mechanism_diagnostic.pdf"
-    _save_pdf(fig, path)
-    plt.close(fig)
+    from primitive_collision_compiler.paper.fig2_mechanism_ai_slot import (
+        compose_fig2_mechanism_ai_slot,
+    )
+
+    renderer_metadata = compose_fig2_mechanism_ai_slot(path, metrics=metrics)
     return FigureOutput(
         "bed_franka_mechanism_diagnostic",
         path,
-        "2026-05-22 cylinder mechanism records",
+        "Mechanism diagnostic; quantitative evidence remains in 2026-05-22 cylinder mechanism records",
         _mechanism_source_records(),
+        renderer_metadata,
     )
 
 

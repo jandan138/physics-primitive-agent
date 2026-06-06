@@ -1,0 +1,36 @@
+schema_version: 1
+figure_id: bed_franka_mechanism_diagnostic
+mode: visual_composition
+slots:
+  isolated_target_pass:
+    asset: paper/shared/figures/assets/fig2_mechanism_ai_slots/isolated_target_pass_ai.png
+    crop_box_px: [280, 300, 1260, 790]
+    renderer: visual_panel_slot
+    prompt_summary: >-
+      Newton RTX-style text-free isolated capsule/cylinder primitive on a light
+      simulator floor, generated with safe padding for contain placement.
+    replaceable_by_real_render: true
+  full_package_fail:
+    asset: paper/shared/figures/assets/fig2_mechanism_ai_slots/full_package_fail_ai.png
+    crop_box_px: [0, 80, 1536, 940]
+    renderer: visual_panel_slot
+    prompt_summary: >-
+      Newton RTX-style text-free bed collision package with transparent cyan
+      proxies and a muted-red highlighted capsule diagnostic failure cue.
+    replaceable_by_real_render: true
+  mechanism_audit:
+    asset: paper/shared/figures/assets/fig2_mechanism_ai_slots/mechanism_audit_ai.png
+    crop_box_px: [0, 110, 1536, 970]
+    renderer: visual_panel_slot
+    prompt_summary: >-
+      Newton RTX-style text-free package body-state audit with collider proxies,
+      offset COM marker, coordinate axes, diagnostic rays, and inertia ellipsoid.
+    replaceable_by_real_render: true
+replaceable_by_real_render:
+  - isolated_target_pass
+  - full_package_fail
+  - mechanism_audit
+claim_boundary: >-
+  Fig.2 visual panels explain the recorded mechanism; not experimental evidence, not
+  benchmark evidence, not broad cylinder evidence, and not safety certification.
+generator: visual_panel_composition

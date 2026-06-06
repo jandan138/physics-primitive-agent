@@ -16,8 +16,8 @@ The resulting takeaway is narrow but important: the acceptance gate catches a pa
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.80\textwidth]{figures/generated/bed_franka_mechanism_diagnostic.pdf}
-  \caption{Mechanism diagnostic for the capped bed/Franka cylinder records. In full-package context, the bed selected-cylinder package exceeds the recorded settle-speed gate, whereas the isolated target primitive and scoped Franka cylinder package pass their bounded checks. Recorded diagnostic checks reject contact/floor and mass-only explanations as sole causes and support COM/inertia sensitivity for this bounded case.}
+  \includegraphics[width=0.94\textwidth]{figures/generated/bed_franka_mechanism_diagnostic.pdf}
+  \caption{Mechanism diagnostic for the capped bed/Franka cylinder records. The isolated target primitive passes its bounded check, but the selected cylinder fails once it participates in the capped bed package and exceeds the recorded settle-speed gate. The scoped Franka cylinder package stays below the same gate. The paired diagnostic checks reject contact/floor and mass-only explanations as sole causes and point to COM/inertia sensitivity for this bounded case.}
   \label{fig:bed-franka-mechanism}
 \end{figure}
 
@@ -175,7 +175,7 @@ This shows package consumption for one Franka smoke asset; contact-operation and
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=0.98\textwidth]{figures/generated/franka_link_aware_rtx_task_scene.pdf}
-  \caption{RTX view of the single Franka link-aware generated-package smoke. The visual plate shows the recorded link-framed package in the Newton task context with source USD collision shapes suppressed, 12 generated box primitives attached to 12 detected links, zero missing body links, and 66 generated self-collision filter pairs for the smoke configuration. This supports bounded package-consumption exposition only; it is not whole-robot collision-quality or manipulation evidence.}
+  \caption{RTX visual context for the single Franka link-aware generated-package smoke. The visual plate illustrates the recorded link-framed package in the Newton task context with source USD collision shapes suppressed, 12 generated box primitives attached to 12 detected links, zero missing body links, and 66 generated self-collision filter pairs for the smoke configuration. This supports bounded package-consumption exposition only; it is not whole-robot collision-quality or manipulation evidence.}
   \label{fig:franka-task-scene}
 \end{figure}
 

@@ -192,7 +192,7 @@ def test_supplement_ai_slot_manifest_covers_every_generated_figure() -> None:
 
     slot_manifest = load_supplement_slot_manifest(DEFAULT_SLOT_MANIFEST)
 
-    assert slot_manifest["mode"] == "ai_slot_composition"
+    assert slot_manifest["mode"] == "visual_composition"
     assert set(slot_manifest["slots"]) == set(SUPPLEMENT_FIGURE_IDS)
     assert "not experimental evidence" in slot_manifest["claim_boundary"]
     assert "not benchmark" in slot_manifest["claim_boundary"]
@@ -214,7 +214,7 @@ def test_supplement_ai_slot_manifest_covers_every_generated_figure() -> None:
             assert not Path(sidecar).is_absolute(), figure_id
             assert (ROOT / str(sidecar)).is_file(), figure_id
         else:
-            assert slot["renderer"].startswith("built_in_imagegen")
+            assert slot["renderer"].startswith("visual_panel")
 
 
 def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) -> None:
@@ -235,7 +235,7 @@ def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) 
         slot_manifest_path=slot_manifest,
     )
 
-    assert manifest["mode"] == "ai_slot_composition"
+    assert manifest["mode"] == "visual_composition"
     assert manifest["slot_manifest"].endswith("manifest.yaml")
     assert {figure["figure_id"] for figure in manifest["figures"]} == set(SUPPLEMENT_FIGURE_IDS)
     for figure in manifest["figures"]:
@@ -251,9 +251,9 @@ def test_supplement_figure_generator_records_ai_slot_provenance(tmp_path: Path) 
             assert figure["slot_sidecar"].endswith("_slot.json")
             assert len(figure["slot_sidecar_sha256"]) == 64
         else:
-            assert figure["slot_renderer"].startswith("built_in_imagegen")
+            assert figure["slot_renderer"].startswith("visual_panel")
         assert figure["slot_replaceable_by_real_render"] is True
-        assert "AI slot" in figure["composer"]
+        assert "visual-panel composer" in figure["composer"]
 
 
 def test_supplement_slot_manifest_accepts_newton_rtx_scene_slots(tmp_path: Path) -> None:
@@ -566,7 +566,7 @@ def _write_test_slot_manifest(
             _solid_slot(slot, color)
         slots[figure_id] = {
             "asset": str(slot),
-            "renderer": "built_in_imagegen_ai_slot",
+            "renderer": "visual_panel_slot",
             "prompt_summary": f"test slot for {figure_id}",
             "replaceable_by_real_render": True,
         }
@@ -601,7 +601,7 @@ def _write_test_slot_manifest(
                         "schema_version": 1,
                         "figure_id": figure_id,
                         "renderer": TUTORIAL_2D_RENDERER,
-                        "style": "ai_generated_academic_2d_tutorial",
+                        "style": "academic_2d_panel",
                         "slot_asset": slot.name,
                         "slot_sha256": _sha256_file(slot),
                         "slot_composition": {
@@ -630,9 +630,9 @@ def _write_test_slot_manifest(
         yaml.safe_dump(
             {
                 "schema_version": 1,
-                "mode": "ai_slot_composition",
+                "mode": "visual_composition",
                 "slots": slots,
-                "claim_boundary": "AI slot visuals are exposition only; not experimental evidence and not benchmark evidence.",
+                "claim_boundary": "Visual panels explain the scoped diagnostic path; not experimental evidence and not benchmark evidence.",
             },
             sort_keys=True,
         ),

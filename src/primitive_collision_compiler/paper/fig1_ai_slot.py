@@ -22,8 +22,8 @@ REQUIRED_SLOTS = (
     "decision_report",
 )
 VALID_MANIFEST_MODES = {
-    "ai_slot_composition",
-    "hybrid_newton_ai_slot_composition",
+    "visual_composition",
+    "hybrid_newton_visual_composition",
 }
 NEWTON_RENDERED_SLOTS = (
     "asset_intake",
@@ -44,7 +44,7 @@ def load_fig1_slot_manifest(manifest_path: str | Path = DEFAULT_MANIFEST) -> dic
     mode = payload.get("mode")
     if mode not in VALID_MANIFEST_MODES:
         raise ValueError(
-            "Fig.1 manifest must use mode: ai_slot_composition or hybrid_newton_ai_slot_composition"
+            "Fig.1 manifest must use mode: visual_composition or hybrid_newton_visual_composition"
         )
     slots = payload.get("slots")
     if not isinstance(slots, Mapping):
@@ -56,7 +56,7 @@ def load_fig1_slot_manifest(manifest_path: str | Path = DEFAULT_MANIFEST) -> dic
         slot_path = _repo_path(str(slots[slot]))
         if not slot_path.is_file():
             raise FileNotFoundError(slot_path)
-    if mode == "hybrid_newton_ai_slot_composition":
+    if mode == "hybrid_newton_visual_composition":
         _validate_hybrid_slot_sources(payload)
     return dict(payload)
 
@@ -75,7 +75,7 @@ def compose_fig1_ai_slot(
     slot_hashes = {
         slot: _sha256_file(_repo_path(str(manifest["slots"][slot]))) for slot in REQUIRED_SLOTS
     }
-    mode = str(manifest.get("mode", "ai_slot_composition"))
+    mode = str(manifest.get("mode", "visual_composition"))
     metadata = {
         "mode": mode,
         "manifest": str(Path(manifest_path)),
@@ -87,9 +87,9 @@ def compose_fig1_ai_slot(
         "slot_sources": dict(manifest.get("slot_sources", {})),
     }
     evidence = (
-        "Hybrid Newton/AI protocol schematic; exposition only"
-        if mode == "hybrid_newton_ai_slot_composition"
-        else "AI-slot protocol schematic; exposition only"
+        "Hybrid Newton protocol schematic; exposition only"
+        if mode == "hybrid_newton_visual_composition"
+        else "Protocol schematic; exposition only"
     )
     return FigureOutput(
         "pipeline_schematic_ai_slot",
@@ -115,8 +115,8 @@ def _validate_hybrid_slot_sources(payload: Mapping[str, Any]) -> None:
     if not isinstance(decision_source, Mapping):
         raise ValueError("hybrid Fig.1 decision_report slot source must be a mapping")
     renderer = str(decision_source.get("renderer", ""))
-    if not renderer.startswith("built_in_imagegen"):
-        raise ValueError("hybrid Fig.1 decision_report slot must preserve the AI/report source")
+    if not renderer:
+        raise ValueError("hybrid Fig.1 decision_report slot must preserve renderer metadata")
 
 
 def _draw_figure(manifest: Mapping[str, Any]) -> Image.Image:

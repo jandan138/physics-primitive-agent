@@ -57,7 +57,7 @@ def test_supplement_ai_tutorial_sidecar_writer_records_checked_assets(tmp_path: 
         serialized = json.dumps(payload, sort_keys=True)
         assert payload["renderer"] == TUTORIAL_2D_RENDERER
         assert payload["figure_id"] == figure_id
-        assert payload["style"] == "ai_generated_academic_2d_tutorial"
+        assert payload["style"] == "academic_2d_panel"
         assert payload["panel_count"] == EXPECTED_PANEL_COUNTS[figure_id]
         assert len(payload["panels"]) == EXPECTED_PANEL_COUNTS[figure_id]
         segment_bounds = payload["slot_composition"]["segment_bounds_x"]

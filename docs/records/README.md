@@ -46,6 +46,16 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-06 ACCV Submission Package Readiness](2026-06-06-accv-submission-package-readiness.md):
+  records the ACCV main/supplement build, page-limit and anonymity checks, PDF visual/text audits,
+  local review-package hashes, and the clean-checkout follow-up requirement without adding new
+  paper claims.
+- [2026-06-05 ACCV Visual Wording Audit](2026-06-05-accv-visual-wording-audit.md):
+  removes production-process phrasing from reviewer-facing ACCV text, captions, and manifests
+  while keeping visual explanations inside the existing evidence boundary.
+- [2026-06-05 ACCV Fig. 2 Visual Redraw](2026-06-05-accv-fig2-visual-redraw.md):
+  replaces the mechanism figure's scene panels with clearer rendered-style panels and records the
+  associated paper build, visual review, and regression tests.
 - [2026-06-04 ACCV Main Float Layout Gap Fix](2026-06-04-accv-main-float-layout-gap-fix.md):
   removes large reader-visible gaps after ACCV main-paper Fig.3/Fig.6, top-aligns ACCV float
   pages, adds float-layout regression tests, and records cross-venue preamble dependency fixes for

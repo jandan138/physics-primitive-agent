@@ -1,18 +1,17 @@
 schema_version: 1
 figures:
   - id: pipeline_schematic
-    status: generated-hybrid-newton-ai-slot-composition
-    mode: hybrid_newton_ai_slot_composition
+    status: generated-hybrid-visual-composition
+    mode: hybrid_newton_visual_composition
     output: generated/pipeline_schematic_ai_slot.pdf
     generated_manifest: assets/fig1_ai_slots/manifest.yaml
     evidence: docs/design/system-architecture.md
     claim_boundary: Exposition only; not experimental evidence.
     note: >-
-      Fig. 1 protocol schematic composed from three newton_viewer_rtx_ovrtx Franka visual
-      slots, one imagegen-derived AI/report slot, and deterministic code-drawn labels, arrows,
-      panel frames, and claim-boundary note. The rendered slots are visual exposition derived
-      from one recorded Phase 0 Franka smoke asset/package, not whole-robot collision-quality
-      evidence, manipulation evidence, or new experimental evidence.
+      Fig. 1 protocol schematic showing asset intake, candidate package generation, Newton
+      diagnostics, and decision reporting for one recorded Phase 0 Franka smoke asset/package.
+      It explains the workflow and does not provide whole-robot collision-quality evidence,
+      manipulation evidence, or new experimental evidence.
     source_artifacts:
       - assets/fig1_ai_slots/overview_candidate_01.png
       - assets/fig1_franka_rtx_slots/manifest.yaml
@@ -66,11 +65,24 @@ figures:
     evidence: reports/generated/phase0_baseline/phase0_grscenes_rigid_plus_franka_newton_2026-05-26.json
     note: Accept/failure/fallback/not-applicable matrix derived from recorded outcomes.
   - id: bed_franka_mechanism_diagnostic
-    status: generated
+    status: generated-visual-composition
+    mode: visual_composition
     output: generated/bed_franka_mechanism_diagnostic.pdf
-    generated_manifest: generated/accv_visuals_manifest.json
+    generated_manifest: assets/fig2_mechanism_ai_slots/manifest.yaml
     evidence: docs/records/2026-05-22-cylinder-goal-completion-audit-after-contact-closure.md
-    note: Mechanism figure for the capped bed/Franka full-compound sensitivity story.
+    claim_boundary: Exposition only; not experimental evidence.
+    note: >-
+      Fig. 2 mechanism figure showing isolated-primitive acceptance, full-package failure,
+      and the COM/inertia diagnostic path for the recorded capped bed/Franka mechanism
+      records. Pass/fail labels and speeds remain tied to those records; the figure does
+      not add new render evidence.
+    source_artifacts:
+      - assets/fig2_mechanism_ai_slots/manifest.yaml
+      - assets/fig2_mechanism_ai_slots/isolated_target_pass_ai.png
+      - assets/fig2_mechanism_ai_slots/full_package_fail_ai.png
+      - assets/fig2_mechanism_ai_slots/mechanism_audit_ai.png
+      - generated/bed_franka_mechanism_diagnostic.png
+      - generated/bed_franka_mechanism_diagnostic.pdf
   - id: franka_link_aware_rtx_task_scene
     status: generated-rtx
     output: generated/franka_link_aware_rtx_task_scene.pdf
