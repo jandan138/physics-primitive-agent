@@ -40,6 +40,9 @@ Complete
   severe gaps, clipped figures, and broken figure placement.
 - `zip -q accv2026-review.zip main.pdf supplement.pdf SHA256SUMS README.txt` produced the local
   review package, and `unzip -l accv2026-review.zip` listed the four expected files.
+- After commit `1bb8f53`, a clean local clone rebuilt the ACCV main paper and supplement, reran
+  the focused paper tests with `110 passed`, reported 16 main-PDF pages and 20 supplement-PDF
+  pages, passed the same reviewer-facing text scan, and passed the final LaTeX log scan.
 
 ## Artifacts
 
@@ -62,6 +65,5 @@ Complete
 
 ## Next Action
 
-- Commit and push the tracked source, figure, test, and record updates.
-- Rebuild from a clean committed checkout before treating the repository state as ready for
-  reviewer-package upload.
+- Fill the submission portal metadata, author/conflict fields, and upload fields manually from the
+  local review package.
