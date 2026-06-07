@@ -32,18 +32,16 @@ This is a structural audit, not a manipulation result.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_franka_link_frames.pdf}
-\caption{Supplement-only Franka link-ownership teaching plate. The link graph, body attachment,
+\caption{Franka link-ownership plate. The link graph, body attachment,
 and cross-link merge violation are separated.}
 \label{fig:supp-franka-link-frames}
 \end{figure}
 \FloatBarrier
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-franka-link-frames} shows the ownership rule that makes robot packages
 different from rigid prop packages. The primitive's frame and body attachment must agree with the
 source link identity.
-
-\paragraph{What this does not show.}
 The figure does not claim whole-robot collision quality, robot manipulation performance, or broad
 articulated-dynamics validity.
 
@@ -64,14 +62,14 @@ configuration accounted for generated package pairs explicitly.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_generated_package_consumption.pdf}
-\caption{Supplement-only generated-package consumption plate. Missing bodies, source-shape
+\caption{Generated-package consumption plate. Missing bodies, source-shape
 suppression, and filter accounting are shown before the task outcome is read.}
 \label{fig:supp-generated-package-consumption}
 \end{figure}
 \FloatBarrier
 
-\paragraph{What this shows.}
-Figure~\ref{fig:supp-generated-package-consumption} teaches the bookkeeping step between package
+\paragraph{Reading note.}
+Figure~\ref{fig:supp-generated-package-consumption} explains the bookkeeping step between package
 generation and robot task smoke. It helps reviewers check that the generated shapes, not stale
 source collision shapes, are entering the diagnostic scene.
 The practical audit order is: first check that every generated primitive has a target body; next
@@ -79,8 +77,6 @@ check that source collision shapes were suppressed; then check that generated se
 pairs were counted under the smoke configuration; only after those accounting checks should the
 hold or trajectory outcome be read. This order prevents a visually plausible robot scene from
 masking a stale source-shape path.
-
-\paragraph{What this does not show.}
 The figure is not contact-operation evidence and is not deployment readiness for a robot
 application. It also does not calibrate self-collision behavior. The filter count is useful because
 it records that generated pairs were handled explicitly in the smoke scene, but a contact-operation
@@ -89,24 +85,22 @@ claim would require separate robot tasks and additional records.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_franka_source_suppression.pdf}
-\caption{Supplement-only source-shape suppression accounting. The plate contrasts source USD
+\caption{Source-shape suppression accounting. The plate contrasts source USD
 collision shapes, generated package insertion, and scene-level counts.}
 \label{fig:supp-franka-source-suppression}
 \end{figure}
 \FloatBarrier
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-franka-source-suppression} shows source-shape suppression as an explicit
 accounting step. The reviewer should look for zero remaining source collision shapes and zero
 missing generated-body links before reading the task smoke outcome.
-
-\paragraph{What this does not show.}
 The plate does not imply calibrated self-collision behavior or whole-arm manipulation validity.
 
 \begin{table}[!ht]
 \centering
 \small
-\caption{Supplement-only robot package audit table. It is a semantic checklist, not a copied
+\caption{Robot package audit table. It is a semantic checklist, not a copied
 main-paper result table.}
 \label{tab:supp-robot-audit}
 \begin{tabular}{p{0.25\linewidth}p{0.34\linewidth}p{0.28\linewidth}}

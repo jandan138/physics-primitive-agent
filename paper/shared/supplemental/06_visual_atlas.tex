@@ -1,10 +1,10 @@
 \section{Visual Evidence Atlas}
 
 The main paper already contains the compact figures needed for the submission narrative. This
-atlas adds new explanatory plates and diagrams for reviewers who want to inspect the diagnostic
+atlas adds explanatory plates and diagrams for reviewers who want to inspect the diagnostic
 logic visually. The plates cover predicate anatomy, failure storyboards, package accounting,
-robot-link ownership, and provenance flow. Every final figure in this section is a supplement-only
-asset under \texttt{figures/generated/supplement/}; none is a copy of a main-paper figure.
+robot-link ownership, and provenance flow. These figures are distinct from the main-paper figures
+and do not add new runtime evidence.
 
 \subsection{Failure Storyboards}
 
@@ -16,18 +16,16 @@ rejected by a named probe.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.84\textwidth]{figures/generated/supplement/supplement_failure_storyboard_bowl.pdf}
-\caption{Supplement-only bowl failure storyboard. The storyboard format separates the simulated
+\caption{Bowl failure storyboard. The storyboard format separates the simulated
 states, measured symptom, and emitted label.}
 \label{fig:supp-failure-storyboard-bowl}
 \end{figure}
 \FloatBarrier
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-failure-storyboard-bowl} shows how a diagnostic failure label is anchored in
 state measurements. The value of the storyboard is not photorealism; it is the separation of cause,
 measurement, and label.
-
-\paragraph{What this does not show.}
 The storyboard is not a new quantitative result and should not be read as a broad statement about
 all bowls, all V-HACD settings, or all primitive packages.
 \FloatBarrier
@@ -35,18 +33,16 @@ all bowls, all V-HACD settings, or all primitive packages.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.84\textwidth]{figures/generated/supplement/supplement_failure_storyboard_cup_tray.pdf}
-\caption{Supplement-only cup and tray failure storyboards. Two assets are shown with the same
+\caption{Cup and tray failure storyboards. Two assets are shown with the same
 diagnostic-template logic but different measured symptoms.}
 \label{fig:supp-failure-storyboard-cup-tray}
 \end{figure}
 \FloatBarrier
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-failure-storyboard-cup-tray} shows why failure labels should be kept
 probe-specific. Different assets can fail different clauses even when they pass through the same
 candidate-lane and diagnostic-checker interface.
-
-\paragraph{What this does not show.}
 The plate does not rank candidate generators and does not claim that one failure mode dominates a
 larger benchmark.
 \FloatBarrier

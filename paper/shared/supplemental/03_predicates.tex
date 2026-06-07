@@ -29,17 +29,15 @@ only a binary fail cell.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_predicate_drop_settle.pdf}
-\caption{Supplement-only drop/settle predicate anatomy. The visual separates initial height,
+\caption{Drop/settle predicate anatomy. The visual separates initial height,
 terminal settle window, and accept clauses.}
 \label{fig:supp-predicate-drop-settle}
 \end{figure}
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-predicate-drop-settle} shows how one vertical probe becomes an interpretable
 set of terms. The final label is not hand-written prose; it follows from terminal speed, terminal
 height, and descent checks under recorded settings.
-
-\paragraph{What this does not show.}
 The drop/settle predicate is not a general proof of physical correctness. It is a diagnostic task
 with specific solver settings, initial state, and thresholds.
 
@@ -60,23 +58,21 @@ motion. Each symptom points to a different debugging action for the package.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_predicate_stack_slide.pdf}
-\caption{Supplement-only stack-or-slide predicate anatomy. Terminal contact is necessary but not
+\caption{Stack-or-slide predicate anatomy. Terminal contact is necessary but not
 sufficient; drift, support height, and residual speed are checked separately.}
 \label{fig:supp-predicate-stack-slide}
 \end{figure}
 
-\paragraph{What this shows.}
-Figure~\ref{fig:supp-predicate-stack-slide} teaches why a package can appear to support the probe
+\paragraph{Reading note.}
+Figure~\ref{fig:supp-predicate-stack-slide} explains why a package can appear to support the probe
 in one frame while still failing the diagnostic. The measured drift and residual speed remain part
 of the gate.
-
-\paragraph{What this does not show.}
 The predicate is not a manipulation-stability benchmark and does not imply that a robot can use
 the object in contact-rich operation.
 
 \subsection{Sphere-Rain Predicate}
 
-The sphere-rain probe uses a deterministic set of lightweight contact probes. Let $R$ be the probe
+The sphere-rain probe uses a fixed set of lightweight contact probes. Let $R$ be the probe
 set and $H(r,P_g)$ indicate whether probe $r$ generated an acceptable contact observation against
 package $P_g$. A useful summary is
 \[
@@ -90,24 +86,22 @@ fixed and reproducible probe cloud.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_predicate_sphere_rain.pdf}
-\caption{Supplement-only sphere-rain contact-coverage teaching plate. The probe cloud, contact
+\caption{Sphere-rain contact-coverage plate. The probe cloud, contact
 bins, and emitted label are shown as separate audit objects.}
 \label{fig:supp-predicate-sphere-rain}
 \end{figure}
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-predicate-sphere-rain} shows how repeated small probes become a coverage
 diagnostic. This helps explain why a package can pass a simple contact canary yet still deserve a
 more specific warning.
-
-\paragraph{What this does not show.}
 The figure does not claim exhaustive geometric coverage, calibrated contact fidelity, or broad
 benchmark superiority over convex-decomposition baselines.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Predicate glossary. This is a supplement-only teaching table, not a copied result table.}
+\caption{Predicate glossary. This table defines diagnostic terms; it is not a copied result table.}
 \label{tab:supp-predicate-glossary}
 \begin{tabular}{p{0.22\linewidth}p{0.34\linewidth}p{0.31\linewidth}}
 \toprule
@@ -135,7 +129,7 @@ $\epsilon_v$ & drop/settle; stack-or-slide & maximum final speed for a settled s
 $\epsilon_z$ & drop/settle & allowable floor or support-height tolerance \\
 $\epsilon_{xy}$ & stack-or-slide & maximum lateral drift of the probe object \\
 $h_{\min}$ & stack-or-slide & minimum final support height for the probe \\
-$R$ & sphere-rain & deterministic contact-probe set \\
+$R$ & sphere-rain & fixed contact-probe set \\
 \bottomrule
 \end{tabular}
 \end{table}

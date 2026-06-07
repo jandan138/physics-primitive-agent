@@ -1,36 +1,33 @@
 \section{Implementation and Reproducibility Notes}
 
 The repository separates small reviewer-facing paper artifacts from large raw assets and logs.
-This section explains how the supplement is rebuilt and how the generated figures remain
+This section explains how the supplement is rebuilt and how the paper figures remain
 auditable without committing raw 3D assets, videos, or run directories.
 
 \paragraph{Build path.}
 The ACCV supplement is a separate venue-local entrypoint. It inputs the same ACCV preamble as the
 main paper, uses the shared bibliography, and remains in anonymous review mode. The main paper does
 not input the supplement. This preserves ACCV self-contained-paper requirements while allowing the
-supplementary PDF to provide derivations, teaching diagrams, and provenance notes.
+supplementary PDF to provide derivations, explanatory diagrams, and provenance notes.
 
 \paragraph{Figure generation.}
-Supplement figures are rebuilt by the paper figure pipeline from a slot manifest. The generated
-assets live in the supplement-figure directory and are accompanied by a manifest. The manifest
-records the figure id, PDF/PNG names, file hashes, source-record
-references, composer id, slot provenance, and claim-boundary text. The source hash is derived from
-the figure specification, so edits to titles, panels, or boundary text change the manifest.
+Supplement figures are rebuilt by the paper figure pipeline from figure specifications and compact
+panel assets. The assets live with the other supplement figures and are accompanied by a manifest.
+The manifest records the figure id, PDF/PNG names, file hashes, source-record references, and
+claim-boundary text. Edits to titles, panels, or boundary text therefore change the recorded hash.
 
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_provenance_flow.pdf}
-\caption{Supplement-only artifact provenance flow. Configs, records, generated figures, manifests,
+\caption{Artifact provenance flow. Configs, records, paper figures, manifests,
 and supplement sources remain linked without committing raw assets.}
 \label{fig:supp-provenance-flow}
 \end{figure}
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-provenance-flow} shows the artifact provenance table in visual form: configs
-and records feed compact generated figures, manifests record hashes, and LaTeX consumes only small
+and records feed compact paper figures, manifests record hashes, and LaTeX consumes only small
 paper assets.
-
-\paragraph{What this does not show.}
 The figure is not an external-link requirement for ACCV review and does not add unsubmitted
 content outside the PDF package.
 
@@ -47,7 +44,7 @@ artifacts, not raw asset locations.}
 Artifact class & Reviewer-facing role & Commit policy \\
 \midrule
 Supplement source & section text, equations, tables, and figure references & committed \\
-Composed figures & figure visuals used in the PDF & committed as small PDF/PNG files \\
+Paper figures & figure visuals used in the PDF & committed as small PDF/PNG files \\
 Figure manifest & hashes, source-record names, claim-boundary notes & committed \\
 Configs and registries & threshold ownership and claim alignment & committed \\
 Dated records & durable compact provenance summaries & committed when compact \\
@@ -65,6 +62,6 @@ no citation commands. Once citations are present, BibTeX runs normally.
 \paragraph{Why raw assets are excluded.}
 The artifact policy is not cosmetic. Collision packages are safety-affecting artifacts, and raw
 asset mirrors, generated run directories, and logs can be large, license-sensitive, or
-environment-specific. The paper therefore commits compact, deterministic outputs and records the
+environment-specific. The paper therefore commits compact PDF/PNG outputs and records the
 larger materials by anonymous artifact class and dated record. This keeps ACCV review reproducible
 without turning the source repository into a raw asset bundle.

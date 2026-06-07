@@ -46,6 +46,9 @@ Proposed | In progress | Complete | Failed | Superseded
 
 ## Current Record Index
 
+- [2026-06-07 ACCV Polish Submission Refresh](2026-06-07-accv-polish-submission-refresh.md):
+  records the ACCV main/supplement polish pass, refreshed local review package, page/text/log/visual
+  checks, and unchanged claim boundaries for the submission candidate.
 - [2026-06-06 ACCV Submission Package Readiness](2026-06-06-accv-submission-package-readiness.md):
   records the ACCV main/supplement build, page-limit and anonymity checks, PDF visual/text audits,
   local review-package hashes, and the clean-checkout follow-up requirement without adding new

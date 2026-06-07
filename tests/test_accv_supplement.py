@@ -494,8 +494,7 @@ def test_supplement_body_uses_new_figures_and_teaching_material() -> None:
 
     assert supplement_text.count(r"\includegraphics") >= len(SUPPLEMENT_FIGURE_IDS)
     assert supplement_text.count(r"\begin{table}") >= 5
-    assert supplement_text.count(r"\paragraph{What this shows.}") >= 10
-    assert supplement_text.count(r"\paragraph{What this does not show.}") >= 10
+    assert supplement_text.count(r"\paragraph{Reading note.}") >= 10
     for phrase in (
         "parallel-axis theorem",
         "cross-link merge",
@@ -503,6 +502,10 @@ def test_supplement_body_uses_new_figures_and_teaching_material() -> None:
         "generated self-collision filter",
         "diagnostic parameter table",
         "artifact provenance table",
+        "not a method comparison",
+        "not a new quantitative result",
+        "unsubmitted",
+        "does not broaden what",
     ):
         assert phrase in supplement_text
 

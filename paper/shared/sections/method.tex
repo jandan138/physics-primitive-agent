@@ -30,14 +30,14 @@ The categories are intentionally not collapsed into one score.
 \emph{Accept} means the package survived the task; \emph{failure} means it was available and mapped but produced a named runtime label; \emph{fallback} means the lane was routed away explicitly; \emph{not applicable} keeps rigid and robot probes from being misread as each other.
 
 \paragraph{Probe scenes.}
-The diagnostic scenes are intentionally small and deterministic.
+The diagnostic scenes are intentionally small and fixed by configuration.
 The drop/settle scene places the package above a static plane and records descent, contact,
 floor breach, final support height, and final linear speed.
 The stack-or-slide scene treats the package as the support, places a small probe box above it, and
 records final contact, horizontal displacement, probe height, and support breach.
 The sphere-rain scene uses a fixed set of small probes to stress contact coverage without turning
 the run into a full manipulation benchmark.
-The scenes are small by design: they are repeatable stressors that expose when a plausible proxy becomes unusable under a specific physical question.
+The scenes are small by design: they are repeatable stressors that expose when a plausible proxy becomes unusable for a specific physical question.
 
 \paragraph{Fallback policy.}
 Failed packages route to another candidate lane, a convex-mesh fallback, SDF, or manual review depending on configuration.
@@ -47,4 +47,4 @@ This keeps fallback accounting conservative: accepted primitive packages remain 
 
 \paragraph{Evidence registry.}
 Quantitative statements in this manuscript are backed by the shared \texttt{claims.yaml} registry and dated records under \texttt{docs/records/}.
-The figures follow the same rule: they visualize recorded Phase~0 reports and repo-local ignored USD mirrors, but do not add unrecorded evidence.
+The figures follow the same rule: they visualize recorded Phase~0 reports and asset mirrors, but do not add unrecorded evidence.

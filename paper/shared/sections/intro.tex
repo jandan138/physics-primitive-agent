@@ -13,9 +13,9 @@ We study \emph{simulation-checked} acceptance for Newton workflows.
 The organizing principle is simple: treat every primitive package as a hypothesis, preserve USD provenance and link boundaries~\cite{openusd2026}, test the hypothesis with named Newton diagnostics~\cite{newton2026}, and record whether the package is accepted, rejected, or routed to fallback.
 In this framing, fallback is useful evidence: it records where geometry-only candidate generation stopped being enough.
 
-We make three contributions within a Phase~0 Newton diagnostic setting.
-First, it makes the acceptance gate explicit: candidate generation, package provenance, Newton task construction, and fallback accounting are separate records.
-Second, it grounds the gate in mechanism evidence: a capped bed cylinder passes in isolation but fails drop/settle as a full compound, and generated V-HACD packages for bowl, cup, and tray map into Newton yet fail named probes.
-Third, it extends the same accounting to an articulated Franka smoke path, where link-framed primitives must be consumed by Newton bodies without crossing link ownership.
+Within a Phase~0 Newton diagnostic setting, we make three contributions.
+First, we separate candidate generation, package provenance, Newton task construction, and fallback accounting into auditable records.
+Second, we ground the gate in mechanism evidence: a capped bed cylinder passes in isolation but fails drop/settle as a full compound, and generated V-HACD packages for bowl, cup, and tray map into Newton yet fail named probes.
+Third, we extend the same accounting to an articulated Franka smoke path, where link-framed primitives must be consumed by Newton bodies without crossing link ownership.
 
 \input{../../shared/figures/pipeline_schematic}

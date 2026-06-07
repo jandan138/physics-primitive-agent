@@ -28,7 +28,7 @@ scene $D$ maps $P_g$ into Newton bodies, runs the probes, and emits an auditable
 \begin{table}[t]
 \centering
 \small
-\caption{Supplement-only notation table. It defines audit terms used by the derivations and does
+\caption{Notation table for the supplement. It defines audit terms used by the derivations and does
 not duplicate a main-paper result table.}
 \label{tab:supp-notation}
 \begin{tabular}{p{0.17\linewidth}p{0.68\linewidth}}
@@ -89,18 +89,16 @@ so the paper keeps them visible.
 \begin{figure}[tbp]
 \centering
 \includegraphics[width=0.92\textwidth]{figures/generated/supplement/supplement_candidate_lane_anatomy.pdf}
-\caption{Supplement-only candidate-lane anatomy. The plate shows generator lanes, candidate
+\caption{Candidate-lane anatomy. The plate shows generator lanes, candidate
 packages, and the diagnostic gate as separate concepts.}
 \label{fig:supp-candidate-lane-anatomy}
 \end{figure}
 
-\paragraph{What this shows.}
+\paragraph{Reading note.}
 Figure~\ref{fig:supp-candidate-lane-anatomy} illustrates the most important bookkeeping rule in
 the paper: candidate generation is not acceptance. A generator lane can produce a package with a
 reasonable primitive count and still be rejected later by drop/settle, stack-or-slide, sphere-rain,
 or robot package-consumption probes.
-
-\paragraph{What this does not show.}
 The figure is not a method comparison and is not evidence that one candidate lane is broadly
-superior. It is a teaching diagram for the accounting path that keeps fallback and failure from
-being merged into one ambiguous label.
+superior. It explains the accounting path that keeps fallback and failure from being merged into
+one ambiguous label.
